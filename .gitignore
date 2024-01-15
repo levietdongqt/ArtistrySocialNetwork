@@ -1,0 +1,61 @@
+# Compiled class file
+/BackEnd/**/*.class
+
+# Log file
+/BackEnd/**/*.log
+
+# BlueJ files
+/BackEnd/**/*.ctxt
+
+# Mobile Tools for Java (J2ME)
+/BackEnd/**/.mtj.tmp/
+
+# Package Files #
+/BackEnd/**/*.jar
+/BackEnd/**/*.war
+/BackEnd/**/*.nar
+/BackEnd/**/*.ear
+/BackEnd/**/*.zip
+/BackEnd/**/*.tar.gz
+/BackEnd/**/*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+/BackEnd/**/hs_err_pid*
+/BackEnd/**/replay_pid*
+
+#Ignore for NextJS
+# dependencies
+/FrontEnd/node_modules
+/FrontEnd/.pnp
+/FrontEnd/.pnp.js
+/FrontEnd/.yarn/install-state.gz
+
+# testing
+/FrontEnd/coverage
+
+# next.js
+/FrontEnd/.next/
+/FrontEnd/out/
+
+# production
+/FrontEnd/build
+
+# misc
+/FrontEnd/.DS_Store
+/FrontEnd/*.pem
+
+# debug
+/FrontEnd/npm-debug.log*
+/FrontEnd/yarn-debug.log*
+/FrontEnd/yarn-error.log*
+
+# local env files
+/FrontEnd/.env*.local
+
+# vercel
+/FrontEnd/.vercel
+
+# typescript
+/FrontEnd/*.tsbuildinfo
+/FrontEnd/next-env.d.ts
+
