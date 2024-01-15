@@ -1,5 +1,5 @@
 
-export default function AdminHome() {
+export default function Page() {
 
   return (
     <>
