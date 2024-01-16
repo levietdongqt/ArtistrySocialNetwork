@@ -1,0 +1,5 @@
+interface News {
+ name : string ;
+}
+
+
