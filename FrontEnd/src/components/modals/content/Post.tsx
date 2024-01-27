@@ -16,7 +16,7 @@ const formItemLayout = {
 
 interface PostParams {
   User: User;
-  CloseRequest: Function;
+  IsOpen :boolean
 }
 interface User {
   id: number;
@@ -24,7 +24,7 @@ interface User {
   avatar: string;
 }
 
-export function Post({ User, CloseRequest }: PostParams) {
+export function Post({ User, IsOpen }: PostParams) {
   const [form] = Form.useForm();
   const handleChange = (value: string) => {
     console.log(`selected ${value}`);
@@ -32,9 +32,6 @@ export function Post({ User, CloseRequest }: PostParams) {
 
   const handleSubmit = (values: Store) => {
     console.log(values);
-    if (values != null) {
-      CloseRequest();
-    }
   };
   return (
     <>
@@ -43,7 +40,7 @@ export function Post({ User, CloseRequest }: PostParams) {
       </h2>
       <Form
         form={form}
-        onFinish={handleSubmit}
+        onClick={handleSubmit}
         {...formItemLayout}
         variant="filled"
         style={{ maxWidth: 600 }}

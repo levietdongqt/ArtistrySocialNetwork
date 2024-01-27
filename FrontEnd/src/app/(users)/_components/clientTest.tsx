@@ -24,28 +24,27 @@ const user: User = {
 }
 
 export default function ClientTest(props : any) {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  
 
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
+  // const openModal = (setModalIsOpen) => {
+  //   setModalIsOpen(true);
+  // };
 
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
+  // const closeModal = () => {
+  //   setModalIsOpen(false);
+  // };
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const notify = () => useToast({ type: alertType.success, message: 'HELLO' });
   return (
     <>
           <Button onClick={notify}>Click Me</Button>
-          <Button onClick={openModal}>Create Post</Button>
+          <Button onClick={() => modalHandler(true)}>Create Post</Button>
 
           <CustomModal
-            isOpen={modalIsOpen}
-            onRequestClose={closeModal}
+            isOpen={true}
           >
-            <Post User={user} CloseRequest={() => closeModal()}></Post>
+            <Post User={user} IsOpen={false}></Post>
           </CustomModal>
     </>
   )
