@@ -43,7 +43,7 @@ export function Post({ User, CloseRequest }: PostParams) {
       </h2>
       <Form
         form={form}
-        onFinish={handleSubmit}
+        onClick={handleSubmit}
         {...formItemLayout}
         variant="filled"
         style={{ maxWidth: 600 }}
