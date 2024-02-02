@@ -3,7 +3,7 @@ export default function Page() {
 
     return (
       <>
-        <h1>Profile nè</h1>
+        <h1>Profile nè sdsds</h1>
       </>
     )
   }
