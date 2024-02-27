@@ -39,7 +39,7 @@ export default function ClientTest(props : any) {
   return (
     <>
           <Button onClick={notify}>Click Me</Button>
-          <Button onClick={() => modalHandler(true)}>Create Post</Button>
+         {/* <Button onClick={() => modalHandler(true)}>Create Post</Button> */}
 
           <CustomModal
             isOpen={true}
