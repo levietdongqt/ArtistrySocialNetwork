@@ -1,17 +1,6 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import {
-  doc,
-  limit,
-  query,
-  where,
-  orderBy,
-  documentId
-} from 'firebase/firestore';
 import { useAuth } from '@lib/context/auth-context';
-import { useCollection } from '@lib/hooks/useCollection';
-import { useDocument } from '@lib/hooks/useDocument';
-import { usersCollection } from '@lib/firebase/collections';
 import { UserCard } from '../user/user-card';
 import { Loading } from '@components/ui/loading';
 import { Error } from '@components/ui/error';
@@ -20,11 +9,13 @@ import { variants } from './aside-trends';
 export function Suggestions(): JSX.Element {
   /*const { randomSeed } = useAuth();*/
 
-  const { data: adminData, loading: adminLoading } = useDocument(
+  /*const { data: adminData, loading: adminLoading } = useDocument(
     doc(usersCollection, 'Twt0A27bx9YcG4vu3RTsR7ifJzf2'),
     { allowNull: true }
-  );
+  );*/
+  const adminData = null;
 const suggestionsLoading = false;
+const adminLoading = false;
   /*const { data: suggestionsData, loading: suggestionsLoading } = useCollection(
     query(
       usersCollection,

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { getDoc, doc, onSnapshot } from 'firebase/firestore';
-import { usersCollection } from '@lib/firebase/collections';
 import { useCacheRef } from './useCacheRef';
 import type { DocumentReference } from 'firebase/firestore';
 import type { User } from '@lib/types/user';
@@ -44,7 +43,7 @@ export function useDocument<T>(
     setData(null);
     setLoading(true);
 
-    const populateUser = async (currentData: DataWithRef<T>): Promise<void> => {
+    /*const populateUser = async (currentData: DataWithRef<T>): Promise<void> => {
       const userData = await getDoc(
         doc(usersCollection, currentData.createdBy)
       );
@@ -52,7 +51,7 @@ export function useDocument<T>(
 
       setData(dataWithUser);
       setLoading(false);
-    };
+    };*/
 
     const unsubscribe = onSnapshot(docRef, (snapshot) => {
       const data = snapshot.data({ serverTimestamps: 'estimate' });
@@ -63,11 +62,11 @@ export function useDocument<T>(
         return;
       }
 
-      if (includeUser) void populateUser(data as DataWithRef<T>);
+     /* if (includeUser) void populateUser(data as DataWithRef<T>);
       else {
         setData(data as T);
         setLoading(false);
-      }
+      }*/
     });
 
     return unsubscribe;

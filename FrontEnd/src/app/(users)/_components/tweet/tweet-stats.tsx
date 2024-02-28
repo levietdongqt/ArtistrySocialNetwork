@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import cn from 'clsx';
-import { manageRetweet, manageLike } from '@lib/firebase/utils';
 import { ViewTweetStats } from '../view/view-tweet-stats';
 import { TweetOption } from './tweet-option';
 import { TweetShare } from './tweet-share';
@@ -114,11 +113,11 @@ export function TweetStats({
           stats={currentTweets}
           iconName='ArrowPathRoundedSquareIcon'
           viewTweet={viewTweet}
-          onClick={manageRetweet(
+          onClick={/*manageRetweet(
             tweetIsRetweeted ? 'unretweet' : 'retweet',
             userId,
             tweetId
-          )}
+          )*/() =>{}}
         />
         <TweetOption
           className={cn(
@@ -132,11 +131,11 @@ export function TweetStats({
           stats={currentLikes}
           iconName='HeartIcon'
           viewTweet={viewTweet}
-          onClick={manageLike(
+          onClick={/*manageLike(
             tweetIsLiked ? 'unlike' : 'like',
             userId,
             tweetId
-          )}
+          )*/() =>{}}
         />
         <TweetShare userId={userId} tweetId={tweetId} viewTweet={viewTweet} />
         {isOwner && (

@@ -9,41 +9,44 @@ import { UserHomeLayout } from '../../_components/layout/user-home-layout';
 import { StatsEmpty } from '../../_components/tweet/stats-empty';
 import { Loading } from '@components/ui/loading';
 import { Tweet } from '../../_components/tweet/tweet';
-import type { ReactElement, ReactNode } from 'react';
+
 
 export default function UserTweets() {
   const { user } = useUser();
 
   const { id, username, pinnedTweet } = user ?? {};
 
-  const { data: pinnedData } = useDocument(
+  /*const { data: pinnedData } = useDocument(
     doc(tweetsCollection, pinnedTweet ?? 'null'),
     {
       disabled: !pinnedTweet,
       allowNull: true,
       includeUser: true
     }
-  );
+  );*/
 
-  const { data: ownerTweets, loading: ownerLoading } = useCollection(
+/*  const { data: ownerTweets, loading: ownerLoading } = useCollection(
     query(
       tweetsCollection,
       where('createdBy', '==', id),
       where('parent', '==', null)
     ),
     { includeUser: true, allowNull: true }
-  );
+  );*/
 
-  const { data: peopleTweets, loading: peopleLoading } = useCollection(
+ /* const { data: peopleTweets, loading: peopleLoading } = useCollection(
     query(
       tweetsCollection,
       where('createdBy', '!=', id),
       where('userRetweets', 'array-contains', id)
     ),
     { includeUser: true, allowNull: true }
-  );
+  );*/
 
-  const mergedTweets = mergeData(true, ownerTweets, peopleTweets);
+  /*const mergedTweets = mergeData(true, ownerTweets, peopleTweets);*/
+    const ownerLoading = false;
+    const peopleLoading = false;
+
 
   return (
       <ProtectedLayout>
@@ -54,19 +57,21 @@ export default function UserTweets() {
                 <section>
                   {ownerLoading || peopleLoading ? (
                       <Loading className='mt-5' />
-                  ) : !mergedTweets ? (
+                  ) /*: !mergedTweets ? (
                       <StatsEmpty
                           title={`@${username as string} hasn't tweeted`}
                           description='When they do, their Tweets will show up here.'
                       />
-                  ) : (
+                  )*/ : (
                       <AnimatePresence mode='popLayout'>
-                        {pinnedData && (
-                            <Tweet pinned {...pinnedData} key={`pinned-${pinnedData.id}`} />
-                        )}
-                        {mergedTweets.map((tweet) => (
-                            <Tweet {...tweet} profile={user} key={tweet.id} />
-                        ))}
+                       {/* {pinnedData && (*/}
+                            {/*<Tweet pinned {...pinnedData} key={`pinned-${pinnedData.id}`} />*/}
+                            <Tweet  key={`pinned-${'1'}`} />
+                       {/* )}*/}
+                        {/*{mergedTweets.map((tweet) => (*/}
+                            {/*<Tweet {...tweet} profile={user} key={tweet.id} />*/}
+                            <Tweet key={'1'} />
+                       {/*))}*/}
                       </AnimatePresence>
                   )}
                 </section>

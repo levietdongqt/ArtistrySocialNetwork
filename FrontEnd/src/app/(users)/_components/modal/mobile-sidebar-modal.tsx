@@ -13,7 +13,6 @@ import { Modal } from './modal';
 import { ActionModal } from './action-modal';
 import { DisplayModal } from './display-modal';
 import type { NavLink } from '../sidebar/sidebar';
-import type { User } from '@lib/types/user';
 
 export type MobileNavLink = Omit<NavLink, 'canBeHidden'>;
 

@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
-import { usersCollection } from '@lib/firebase/collections';
 import type { CollectionReference } from 'firebase/firestore';
 import type { User } from '@lib/types/user';
 
@@ -41,7 +40,7 @@ export function useArrayDocument<T>(
 
     if (includeUser && !data) setLoading(true);
 
-    const populateUser = async (currentData: DataWithRef<T>): Promise<void> => {
+    /*const populateUser = async (currentData: DataWithRef<T>): Promise<void> => {
       const dataWithUser = await Promise.all(
         currentData.map(async (currentData) => {
           const user = (
@@ -52,7 +51,7 @@ export function useArrayDocument<T>(
       );
       setData(dataWithUser);
       setLoading(false);
-    };
+    };*/
 
     const fetchData = async (): Promise<void> => {
       try {
@@ -70,11 +69,11 @@ export function useArrayDocument<T>(
           return;
         }
 
-        if (includeUser) void populateUser(docs as DataWithRef<T>);
+        /*if (includeUser) void populateUser(docs as DataWithRef<T>);
         else {
           setData(docs as T[]);
           setLoading(false);
-        }
+        }*/
       } catch {
         setData(null);
         setLoading(false);

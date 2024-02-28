@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useDocument } from '@lib/hooks/useDocument';
 import { useUser } from '@lib/context/user-context';
 import { isPlural } from '@lib/utils';
-import { userStatsCollection } from '@lib/firebase/collections';
 import { UserName } from './user-name';
 import type { Variants } from 'framer-motion';
 
@@ -23,22 +22,22 @@ export function UserHeader(): JSX.Element {
   const { user, loading } = useUser();
 
   const userId = user ? user.id : null;
-
-  const { data: statsData, loading: statsLoading } = useDocument(
+  const statsLoading = false;
+  /*const { data: statsData, loading: statsLoading } = useDocument(
     doc(userStatsCollection(userId ?? 'null'), 'stats'),
     {
       allowNull: true,
       disabled: !userId
     }
-  );
+  );*/
 
-  const { tweets, likes } = statsData ?? {};
+  /*const { tweets, likes } = statsData ?? {};*/
 
-  const [totalTweets, totalPhotos, totalLikes] = [
+  /*const [totalTweets, totalPhotos, totalLikes] = [
     (user?.totalTweets ?? 0) + (tweets?.length ?? 0),
     user?.totalPhotos,
     likes?.length
-  ];
+  ];*/
 
   const currentPage = pathname.split('/').pop() ?? '';
 
@@ -71,7 +70,7 @@ export function UserHeader(): JSX.Element {
             verified={user.verified}
           />
           <p className='text-xs text-light-secondary dark:text-dark-secondary'>
-            {isInFollowPage
+           {/* {isInFollowPage
               ? `@${user.username}`
               : isInTweetPage
               ? totalTweets
@@ -85,7 +84,7 @@ export function UserHeader(): JSX.Element {
                 : 'No Photo & GIF'
               : totalLikes
               ? `${totalLikes} Like${isPlural(totalLikes)}`
-              : 'No Like'}
+              : 'No Like'}*/}
           </p>
         </motion.div>
       )}

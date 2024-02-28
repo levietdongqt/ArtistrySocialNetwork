@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import { checkUsernameAvailability, updateUsername } from '@lib/firebase/utils';
 import { useAuth } from '@lib/context/auth-context';
 import { useModal } from '@lib/hooks/useModal';
 import { isValidUsername } from '@lib/validation';
@@ -27,13 +26,13 @@ export function UpdateUsername() {
 
   useEffect(() => {
     const checkAvailability = async (value: string): Promise<void> => {
-      const empty = await checkUsernameAvailability(value);
+      /*const empty = await checkUsernameAvailability(value);*/
 
-      if (empty) setAvailable(true);
+      /*if (empty) setAvailable(true);
       else {
         setAvailable(false);
         setErrorMessage('This username has been taken. Please choose another.');
-      }
+      }*/
     };
 
     if (!visited && inputValue.length > 0) setVisited(true);

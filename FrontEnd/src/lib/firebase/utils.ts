@@ -1,50 +1,11 @@
-import {
-  doc,
-  query,
-  where,
-  limit,
-  setDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  increment,
-  writeBatch,
-  arrayUnion,
-  arrayRemove,
-  serverTimestamp,
-  getCountFromServer
-} from 'firebase/firestore';
+
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { db, storage } from './app';
-import {
-  usersCollection,
-  tweetsCollection,
-  userStatsCollection,
-  userBookmarksCollection
-} from './collections';
-import type { WithFieldValue, Query } from 'firebase/firestore';
-import type { EditableUserData } from '@lib/types/user';
+import {storage } from './app';
 import type { FilesWithId, ImagesPreview } from '@lib/types/file';
-import type { Bookmark } from '@lib/types/bookmark';
-import type { Theme, Accent } from '@lib/types/theme';
 
-export async function checkUsernameAvailability(
-  username: string
-): Promise<boolean> {
-  const { empty } = await getDocs(
-    query(usersCollection, where('username', '==', username), limit(1))
-  );
-  return empty;
-}
 
-export async function getCollectionCount<T>(
-  collection: Query<T>
-): Promise<number> {
-  const snapshot = await getCountFromServer(collection);
-  return snapshot.data().count;
-}
 
-export async function updateUserData(
+/*export async function updateUserData(
   userId: string,
   userData: EditableUserData
 ): Promise<void> {
@@ -53,8 +14,9 @@ export async function updateUserData(
     ...userData,
     updatedAt: serverTimestamp()
   });
-}
+}*/
 
+/*
 export async function updateUserTheme(
   userId: string,
   themeData: { theme?: Theme; accent?: Accent }
@@ -62,8 +24,9 @@ export async function updateUserTheme(
   const userRef = doc(usersCollection, userId);
   await updateDoc(userRef, { ...themeData });
 }
+*/
 
-export async function updateUsername(
+/*export async function updateUsername(
   userId: string,
   username?: string
 ): Promise<void> {
@@ -72,8 +35,9 @@ export async function updateUsername(
     ...(username && { username }),
     updatedAt: serverTimestamp()
   });
-}
+}*/
 
+/*
 export async function managePinnedTweet(
   type: 'pin' | 'unpin',
   userId: string,
@@ -85,8 +49,9 @@ export async function managePinnedTweet(
     pinnedTweet: type === 'pin' ? tweetId : null
   });
 }
+*/
 
-export async function manageFollow(
+/*export async function manageFollow(
   type: 'follow' | 'unfollow',
   userId: string,
   targetUserId: string
@@ -117,12 +82,12 @@ export async function manageFollow(
   }
 
   await batch.commit();
-}
+}*/
 
-export async function removeTweet(tweetId: string): Promise<void> {
+/*export async function removeTweet(tweetId: string): Promise<void> {
   const userRef = doc(tweetsCollection, tweetId);
   await deleteDoc(userRef);
-}
+}*/
 
 export async function uploadImages(
   userId: string,
@@ -152,6 +117,7 @@ export async function uploadImages(
   return imagesPreview;
 }
 
+/*
 export async function manageReply(
   type: 'increment' | 'decrement',
   tweetId: string
@@ -167,8 +133,9 @@ export async function manageReply(
     // do nothing, because parent tweet was already deleted
   }
 }
+*/
 
-export async function manageTotalTweets(
+/*export async function manageTotalTweets(
   type: 'increment' | 'decrement',
   userId: string
 ): Promise<void> {
@@ -177,9 +144,9 @@ export async function manageTotalTweets(
     totalTweets: increment(type === 'increment' ? 1 : -1),
     updatedAt: serverTimestamp()
   });
-}
+}*/
 
-export async function manageTotalPhotos(
+/*export async function manageTotalPhotos(
   type: 'increment' | 'decrement',
   userId: string
 ): Promise<void> {
@@ -188,9 +155,9 @@ export async function manageTotalPhotos(
     totalPhotos: increment(type === 'increment' ? 1 : -1),
     updatedAt: serverTimestamp()
   });
-}
+}*/
 
-export function manageRetweet(
+/*export function manageRetweet(
   type: 'retweet' | 'unretweet',
   userId: string,
   tweetId: string
@@ -223,8 +190,9 @@ export function manageRetweet(
 
     await batch.commit();
   };
-}
+}*/
 
+/*
 export function manageLike(
   type: 'like' | 'unlike',
   userId: string,
@@ -259,30 +227,4 @@ export function manageLike(
     await batch.commit();
   };
 }
-
-export async function manageBookmark(
-  type: 'bookmark' | 'unbookmark',
-  userId: string,
-  tweetId: string
-): Promise<void> {
-  const bookmarkRef = doc(userBookmarksCollection(userId), tweetId);
-
-  if (type === 'bookmark') {
-    const bookmarkData: WithFieldValue<Bookmark> = {
-      id: tweetId,
-      createdAt: serverTimestamp()
-    };
-    await setDoc(bookmarkRef, bookmarkData);
-  } else await deleteDoc(bookmarkRef);
-}
-
-export async function clearAllBookmarks(userId: string): Promise<void> {
-  const bookmarksRef = userBookmarksCollection(userId);
-  const bookmarksSnapshot = await getDocs(bookmarksRef);
-
-  const batch = writeBatch(db);
-
-  bookmarksSnapshot.forEach(({ ref }) => batch.delete(ref));
-
-  await batch.commit();
-}
+*/

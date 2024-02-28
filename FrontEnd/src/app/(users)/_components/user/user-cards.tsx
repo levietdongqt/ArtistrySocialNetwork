@@ -4,10 +4,8 @@ import { StatsEmpty } from '../tweet/stats-empty';
 import { Loading } from '@components/ui/loading';
 import { variants } from '../user/user-header';
 import { UserCard } from './user-card';
-import type { User } from '@lib/types/user';
 import type { StatsType } from '../view/view-tweet-stats';
 import type { StatsEmptyProps } from '../tweet/stats-empty';
-import {random} from "nanoid";
 
 type FollowType = 'following' | 'followers';
 

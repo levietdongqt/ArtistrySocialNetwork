@@ -7,15 +7,6 @@ import cn from 'clsx';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '@lib/context/auth-context';
 import { useModal } from '@lib/hooks/useModal';
-import { tweetsCollection } from '@lib/firebase/collections';
-import {
-  removeTweet,
-  manageReply,
-  manageFollow,
-  managePinnedTweet,
-  manageTotalTweets,
-  manageTotalPhotos
-} from '@lib/firebase/utils';
 import { delayScroll, preventBubbling, sleep } from '@lib/utils';
 import { Modal } from '../modal/modal';
 import { ActionModal } from '../modal/action-modal';
@@ -94,7 +85,7 @@ export function TweetActions({
   /*const isInAdminControl = isAdmin && !isOwner;*/
   /*const tweetIsPinned = pinnedTweet === tweetId;*/
 
-  const handleRemove = async (): Promise<void> => {
+ /* const handleRemove = async (): Promise<void> => {
     if (viewTweet)
       if (parentId) {
         const parentSnapshot = await getDoc(doc(tweetsCollection, parentId));
@@ -112,12 +103,12 @@ export function TweetActions({
       parentId && manageReply('decrement', parentId)
     ]);
 
-    /*toast.success(
+    /!*toast.success(
       `${isInAdminControl ? `@${username}'s` : 'Your'} Tweet was deleted`
     );
-*/
+*!/
     removeCloseModal();
-  };
+  };*/
 
   /*const handlePin = async (): Promise<void> => {
     await managePinnedTweet(tweetIsPinned ? 'unpin' : 'pin', userId, tweetId);
@@ -127,18 +118,18 @@ export function TweetActions({
     pinCloseModal();
   };*/
 
-  const handleFollow =
+  /*const handleFollow =
     (closeMenu: () => void, ...args: Parameters<typeof manageFollow>) =>
     async (): Promise<void> => {
       const [type] = args;
 
       closeMenu();
-      await manageFollow(...args);
+      /!*await manageFollow(...args);*!/
 
       toast.success(
         `You ${type === 'follow' ? 'followed' : 'unfollowed'} @${username}`
       );
-    };
+    };*/
 
 /*  const userIsFollowed = following.includes(createdBy);
 
@@ -169,7 +160,7 @@ const  userIsFollowed = false;
                             focus-visible:bg-accent-red/90'
           mainBtnLabel='Delete'
           focusOnMainBtn
-          action={handleRemove}
+          action={/*handleRemove*/() => {}}
           closeModal={removeCloseModal}
         />
       </Modal>
@@ -253,9 +244,9 @@ const  userIsFollowed = false;
                     <Popover.Button
                       className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
                       as={Button}
-                      onClick={preventBubbling(
-                        handleFollow(close, 'unfollow', /*userId*/'1', createdBy)
-                      )}
+                      onClick={/*preventBubbling(
+                        handleFollow(close, 'unfollow', /!*userId*!/'1', createdBy)
+                      )*/()=>{}}
                     >
                       <HeroIcon iconName='UserMinusIcon' />
                       Unfollow @{username}
@@ -264,9 +255,9 @@ const  userIsFollowed = false;
                     <Popover.Button
                       className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
                       as={Button}
-                      onClick={preventBubbling(
-                        handleFollow(close, 'follow', /*userId*/'1', createdBy)
-                      )}
+                      onClick={/*preventBubbling(
+                        handleFollow(close, 'follow', /!*userId*!/'1', createdBy)
+                      )*/()=>{}}
                     >
                       <HeroIcon iconName='UserPlusIcon' />
                       Follow @{username}

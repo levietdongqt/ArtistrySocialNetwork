@@ -16,8 +16,6 @@ import { TweetStats } from '../tweet/tweet-stats';
 import { TweetDate } from '../tweet/tweet-date';
 import { Input } from '../input/input';
 import type { RefObject } from 'react';
-import type { User } from '@lib/types/user';
-import type { Tweet } from '@lib/types/tweet';
 import boolean from "async-validator/dist-types/validator/boolean";
 import {Timestamp} from "firebase/firestore";
 

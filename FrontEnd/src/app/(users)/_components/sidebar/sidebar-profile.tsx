@@ -12,7 +12,6 @@ import { UserAvatar } from '../user/user-avatar';
 import { UserName } from '../user/user-name';
 import { UserUsername } from '../user/user-username';
 import { variants } from './more-settings';
-import type { User } from '@lib/types/user';
 
 export function SidebarProfile(): JSX.Element {
   const {  signOut } = useAuth();
