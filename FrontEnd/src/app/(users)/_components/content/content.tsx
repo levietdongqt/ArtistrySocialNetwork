@@ -11,15 +11,15 @@ import { UserAvatar } from '../user/user-avatar';
 import { UserTooltip } from '../user/user-tooltip';
 import { UserName } from '../user/user-name';
 import { UserUsername } from '../user/user-username';
-import { TweetActions } from './tweet-actions';
-import { TweetStatus } from './tweet-status';
-import { TweetStats } from './tweet-stats';
-import { TweetDate } from './tweet-date';
+import { ContentAction } from './content-action';
+import { ContentStatus } from './content-status';
+import { ContentStats } from './content-stats';
+import { ContentDate } from './content-date';
 import type { Variants } from 'framer-motion';
 import {Timestamp} from "firebase/firestore";
 
 
-export type TweetProps = /*Tweet &*/ {
+export type TweetProps = /*Content &*/ {
   /*user: User;*/
   modal?: boolean;
   pinned?: boolean;
@@ -33,14 +33,14 @@ export const variants: Variants = {
   exit: { opacity: 0, transition: { duration: 0.2 } }
 };
 
-export function Tweet(tweet: TweetProps) {
+export function Content(tweet: TweetProps) {
 
   /*const { id: ownerId, name, username, verified, photoURL } = tweetUserData;
 
   const { user } = useAuth();
 
 
-  const tweetLink = `/tweet/${tweetId}`;
+  const tweetLink = `/content/${tweetId}`;
 
   const userId = user?.id as string;
 
@@ -103,18 +103,18 @@ const text = "verified";
           <div className='grid grid-cols-[auto,1fr] gap-x-3 gap-y-1'>
             <AnimatePresence initial={false}>
               {modal ? null : pinned ? (
-                <TweetStatus type='pin'>
+                <ContentStatus type='pin'>
                   <p className='text-sm font-bold'>Pinned Tweet</p>
-                </TweetStatus>
+                </ContentStatus>
               ) : (
                 tweetIsRetweeted && (
-                  <TweetStatus type='tweet'>
+                  <ContentStatus type='tweet'>
                     {/*<Link href={profileUsername as string} className='custom-underline truncate text-sm font-bold'>*/}
                     <Link href={"haha"} className='custom-underline truncate text-sm font-bold'>
                        {/* {userId === profileId ? 'You' : profileName} Retweeted*/}
                       You
                     </Link>
-                  </TweetStatus>
+                  </ContentStatus>
                 )
               )}
             </AnimatePresence>
@@ -143,11 +143,11 @@ const text = "verified";
                   <UserTooltip modal={modal}>
                     <UserUsername username={"username"} />
                   </UserTooltip>
-                  <TweetDate tweetLink={"tweetLink"} createdAt={Timestamp.now()} />
+                  <ContentDate tweetLink={"tweetLink"} createdAt={Timestamp.now()} />
                 </div>
                 <div className='px-4'>
                   {!modal && (
-                    <TweetActions
+                    <ContentAction
                       isOwner={false}
                       ownerId={"ownerId"}
                       tweetId={"tweetId"}
@@ -185,7 +185,7 @@ const text = "verified";
                   />
                 )}
                 {!modal && (
-                  <TweetStats
+                  <ContentStats
                     reply={reply}
                     userId={"userId"}
                     /*isOwner={isOwner}*/
@@ -197,7 +197,8 @@ const text = "verified";
                     userReplies={2}
                     /*userRetweets={userRetweets}*/
                     userRetweets={["s","ss","sss"]}
-                    openModal={!parent ? openModal : undefined}
+                    /*openModal={!parent ? openModal : undefined}*/
+                    openModal={openModal}
                   />
                 )}
               </div>

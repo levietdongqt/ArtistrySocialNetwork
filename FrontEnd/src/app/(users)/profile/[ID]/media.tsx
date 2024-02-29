@@ -4,9 +4,9 @@ import { MainLayout } from '../../_components/layout/main-layout';
 import { SEO } from '../../_components/common/seo';
 import { UserDataLayout } from '../../_components/layout/user-data-layout';
 import { UserHomeLayout } from '../../_components/layout/user-home-layout';
-import { Tweet } from '../../_components/tweet/tweet';
+import { Content } from '../../_components/content/content';
 import { Loading } from '@components/ui/loading';
-import { StatsEmpty } from '../../_components/tweet/stats-empty';
+import { StatsEmpty } from '../../_components/content/stats-empty';
 
 export default function UserMedia(): JSX.Element {
   /*const { user } = useUser();*/
@@ -46,8 +46,8 @@ export default function UserMedia(): JSX.Element {
                                   />
                               ) */: (
                                   <AnimatePresence mode='popLayout'>
-                                      {/*{sortedTweets.map((tweet) => (*/}
-                                      <Tweet key={'1'} />
+                                      {/*{sortedTweets.map((content) => (*/}
+                                      <Content key={'1'} />
                                       {/*))}*/}
                                   </AnimatePresence>
                               )}

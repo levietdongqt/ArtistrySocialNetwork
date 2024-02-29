@@ -6,9 +6,9 @@ import { UserLayout, ProtectedLayout } from '../../_components/layout/common-lay
 import { MainLayout } from '../../_components/layout/main-layout';
 import { UserDataLayout } from '../../_components/layout/user-data-layout';
 import { UserHomeLayout } from '../../_components/layout/user-home-layout';
-import { StatsEmpty } from '../../_components/tweet/stats-empty';
+import { StatsEmpty } from '../../_components/content/stats-empty';
 import { Loading } from '@components/ui/loading';
-import { Tweet } from '../../_components/tweet/tweet';
+import { Content } from '../../_components/content/content';
 
 
 export default function UserTweets() {
@@ -49,8 +49,6 @@ export default function UserTweets() {
 
 
   return (
-      <ProtectedLayout>
-        <MainLayout>
           <UserLayout>
             <UserDataLayout>
               <UserHomeLayout>
@@ -65,12 +63,12 @@ export default function UserTweets() {
                   )*/ : (
                       <AnimatePresence mode='popLayout'>
                        {/* {pinnedData && (*/}
-                            {/*<Tweet pinned {...pinnedData} key={`pinned-${pinnedData.id}`} />*/}
-                            <Tweet  key={`pinned-${'1'}`} />
+                            {/*<Content pinned {...pinnedData} key={`pinned-${pinnedData.id}`} />*/}
+                            <Content key={`pinned-${'1'}`} />
                        {/* )}*/}
-                        {/*{mergedTweets.map((tweet) => (*/}
-                            {/*<Tweet {...tweet} profile={user} key={tweet.id} />*/}
-                            <Tweet key={'1'} />
+                        {/*{mergedTweets.map((content) => (*/}
+                            {/*<Content {...content} profile={user} key={content.id} />*/}
+                            <Content key={'1'} />
                        {/*))}*/}
                       </AnimatePresence>
                   )}
@@ -78,8 +76,6 @@ export default function UserTweets() {
               </UserHomeLayout>
             </UserDataLayout>
           </UserLayout>
-        </MainLayout>
-      </ProtectedLayout>
   );
 }
 

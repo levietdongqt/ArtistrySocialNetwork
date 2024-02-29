@@ -130,7 +130,7 @@ export async function manageReply(
       updatedAt: serverTimestamp()
     });
   } catch {
-    // do nothing, because parent tweet was already deleted
+    // do nothing, because parent content was already deleted
   }
 }
 */

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { NumberStats } from '../tweet/number-stats';
+import { NumberStats } from '../content/number-stats';
 import type { User } from '@lib/types/user';
 
 type UserFollowStatsProps = Pick<User, 'following' | 'followers'>;

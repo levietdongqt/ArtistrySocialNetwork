@@ -28,32 +28,28 @@ export default function Studio() {
     const { back } = useRouter();
 
     return (
-        <ProtectedLayout>
-            <MainLayout>
-                <PeopleLayout>
-                     <MainContainer>
-                        <SEO title='Studio' />
-                        <MainHeader useActionButton title='Studio' action={back} />
-                        <section>
-                            {loading ? (
-                                <Loading className='mt-5' />
-                            ) : /*!data ? (
-                                <Error message='Something went wrong' />
-                            ) : */(
-                                <>
-                                    <motion.div className='mt-0.5' {...variants}>
-                                       {/* {data?.map((userData:any) => (*/}
-                                            {/*<UserCard {...userData} key={userData.id} follow />*/}
-                                            <UserCard  follow />
-                                       {/* ))}*/}
-                                    </motion.div>
-                                    {/*<LoadMore />*/}
-                                </>
-                            )}
-                        </section>
-                    </MainContainer>
-                </PeopleLayout>
-            </MainLayout>
-        </ProtectedLayout>
+        <PeopleLayout>
+             <MainContainer>
+                <SEO title='Studio' />
+                <MainHeader useActionButton title='Studio' action={back} />
+                <section>
+                    {loading ? (
+                        <Loading className='mt-5' />
+                    ) : /*!data ? (
+                        <Error message='Something went wrong' />
+                    ) : */(
+                        <>
+                            <motion.div className='mt-0.5' {...variants}>
+                               {/* {data?.map((userData:any) => (*/}
+                                    {/*<UserCard {...userData} key={userData.id} follow />*/}
+                                    <UserCard  follow />
+                               {/* ))}*/}
+                            </motion.div>
+                            {/*<LoadMore />*/}
+                        </>
+                    )}
+                </section>
+            </MainContainer>
+        </PeopleLayout>
     );
 }

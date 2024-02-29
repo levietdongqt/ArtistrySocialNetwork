@@ -10,7 +10,7 @@ type TweetDateProps =  {
   createdAt: Timestamp;
 };
 
-export function TweetDate({
+export function ContentDate({
   createdAt,
   tweetLink,
   viewTweet

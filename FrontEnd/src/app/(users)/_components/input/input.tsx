@@ -71,7 +71,7 @@ const isAdmin = false;
 
     /*const userId = user?.id as string;*/
 /*
-    const tweetData: WithFieldValue<Omit<Tweet, 'id'>> = {
+    const tweetData: WithFieldValue<Omit<Content, 'id'>> = {
       text: inputValue.trim() || null,
       parent: isReplying && parent ? parent : null,
       images: await uploadImages(userId, selectedImages),

@@ -42,20 +42,20 @@ type PinModalData = Record<'title' | 'description' | 'mainBtnLabel', string>;
 
 const pinModalData: Readonly<PinModalData[]> = [
   {
-    title: 'Pin Tweet to from profile?',
+    title: 'Pin Content to from profile?',
     description:
-      'This will appear at the top of your profile and replace any previously pinned Tweet.',
+      'This will appear at the top of your profile and replace any previously pinned Content.',
     mainBtnLabel: 'Pin'
   },
   {
-    title: 'Unpin Tweet from profile?',
+    title: 'Unpin Content from profile?',
     description:
       'This will no longer appear automatically at the top of your profile.',
     mainBtnLabel: 'Unpin'
   }
 ];
 
-export function TweetActions({
+export function ContentAction({
   isOwner,
   ownerId,
   tweetId,
@@ -90,7 +90,7 @@ export function TweetActions({
       if (parentId) {
         const parentSnapshot = await getDoc(doc(tweetsCollection, parentId));
         if (parentSnapshot.exists()) {
-          await push(`/tweet/${parentId}`, undefined);
+          await push(`/content/${parentId}`, undefined);
           delayScroll(200)();
           await sleep(50);
         } else await push('/home');
@@ -104,7 +104,7 @@ export function TweetActions({
     ]);
 
     /!*toast.success(
-      `${isInAdminControl ? `@${username}'s` : 'Your'} Tweet was deleted`
+      `${isInAdminControl ? `@${username}'s` : 'Your'} Content was deleted`
     );
 *!/
     removeCloseModal();
@@ -113,7 +113,7 @@ export function TweetActions({
   /*const handlePin = async (): Promise<void> => {
     await managePinnedTweet(tweetIsPinned ? 'unpin' : 'pin', userId, tweetId);
     toast.success(
-      `Your tweet was ${tweetIsPinned ? 'unpinned' : 'pinned'} to your profile`
+      `Your content was ${tweetIsPinned ? 'unpinned' : 'pinned'} to your profile`
     );
     pinCloseModal();
   };*/
@@ -150,7 +150,7 @@ const  userIsFollowed = false;
         closeModal={removeCloseModal}
       >
         <ActionModal
-          title='Delete Tweet?'
+          title='Delete Content?'
           description={`This can’t be undone and it will be removed from ${
             isInAdminControl ? `@${username}'s` : 'your'
           } profile, the timeline of any accounts that follow ${

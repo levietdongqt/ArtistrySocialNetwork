@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { doc } from 'firebase/firestore';
 import { useDocument } from '@lib/hooks/useDocument';
-import { Tweet } from '../tweet/tweet';
+import { Content } from '../content/content';
 import type { RefObject } from 'react';
 
 type ViewParentTweetProps = {
@@ -45,5 +45,5 @@ const data = {
       </div>
     );
 
-  return <Tweet parentTweet {...data} />;
+  return <Content parentTweet {...data} />;
 }

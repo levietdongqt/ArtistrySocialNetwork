@@ -7,7 +7,7 @@ import { siteURL } from '@lib/env';
 import { Button } from '@components/ui/button';
 import { HeroIcon } from '@components/ui/hero-icon';
 import { ToolTip } from '@components/ui/tooltip';
-import { variants } from './tweet-actions';
+import { variants } from './content-action';
 
 type TweetShareProps = {
   userId: string;
@@ -15,7 +15,7 @@ type TweetShareProps = {
   viewTweet?: boolean;
 };
 
-export function TweetShare({
+export function ContentShare({
   userId,
   tweetId,
   viewTweet

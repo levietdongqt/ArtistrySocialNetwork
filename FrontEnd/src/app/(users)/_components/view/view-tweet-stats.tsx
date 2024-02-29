@@ -4,7 +4,7 @@ import { useArrayDocument } from '@lib/hooks/useArrayDocument';
 import { useModal } from '@lib/hooks/useModal';
 import { Modal } from '../modal/modal';
 import { TweetStatsModal } from '../modal/tweet-stats-modal';
-import { NumberStats } from '../tweet/number-stats';
+import { NumberStats } from '../content/number-stats';
 import { UserCards } from '../user/user-cards';
 import type { Tweet } from '@lib/types/tweet';
 

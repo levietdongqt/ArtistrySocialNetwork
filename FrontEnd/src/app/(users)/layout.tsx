@@ -4,6 +4,8 @@ import { AuthContextProvider } from '@lib/context/auth-context';
 import { ThemeContextProvider } from '@lib/context/theme-context';
 import { AppHead } from './_components/common/app-head';
 import {WindowContextProvider} from "@lib/context/window-context";
+import {MainLayout} from "./_components/layout/main-layout";
+import {ProtectedLayout} from "./_components/layout/common-layout";
 
 
 export default function RootLayout({
@@ -15,13 +17,15 @@ export default function RootLayout({
         <html lang="en">
         <AppHead />
         <body>
-        <WindowContextProvider>
-            {/*<AuthContextProvider>*/}
-                {/*<ThemeContextProvider>*/}
-                        {children}
-                {/*</ThemeContextProvider>*/}
-            {/*</AuthContextProvider>*/}
-        </WindowContextProvider>
+            <ProtectedLayout>
+                <MainLayout>
+                    {/*<AuthContextProvider>*/}
+                        {/*<ThemeContextProvider>*/}
+                                {children}
+                        {/*</ThemeContextProvider>*/}
+                    {/*</AuthContextProvider>*/}
+                </MainLayout>
+              </ProtectedLayout>
         </body>
         </html>
     )
