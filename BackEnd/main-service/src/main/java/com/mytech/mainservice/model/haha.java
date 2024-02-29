@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.util.HashMap;
+
 @Entity
 @Table(name = "haha")
 public class haha {
@@ -15,5 +17,7 @@ public class haha {
     }
 
     public static void main(String[] args) {
+        HashMap<String,Integer> lisst = new HashMap<String,Integer>();
+
     }
 }
