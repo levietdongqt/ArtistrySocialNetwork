@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useAuth } from '@lib/context/auth-context';
+import { useAuth } from '../../../../context/auth-context';
 import { useModal } from '@lib/hooks/useModal';
 import { Button } from '@components/ui/button';
 import { UserAvatar } from '../user/user-avatar';
@@ -35,7 +35,7 @@ const topNavLinks: Readonly<MobileNavLink[]> = [
   },
   {
     href: '/people',
-    linkName: 'Twitter Circle',
+    linkName: 'Social Circle',
     iconName: 'UserGroupIcon'
   }
 ];
@@ -104,7 +104,7 @@ export function MobileSidebarModal({
         <ActionModal
           useIcon
           focusOnMainBtn
-          title='Log out of Twitter?'
+          title='Log out of Social?'
           description='You can always log back in at any time. If you just want to switch accounts, you can do that by adding an existing account.'
           mainBtnLabel='Log out'
           action={signOut}

@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { NumberStats } from '../content/number-stats';
-import type { User } from '@lib/types/user';
+import type { User } from '../../../../models/user';
 
 type UserFollowStatsProps = Pick<User, 'following' | 'followers'>;
 type Stats = [string, string, number, number];

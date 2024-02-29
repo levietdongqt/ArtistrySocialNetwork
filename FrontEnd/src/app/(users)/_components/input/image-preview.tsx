@@ -11,7 +11,7 @@ import { Button } from '@components/ui/button';
 import { HeroIcon } from '@components/ui/hero-icon';
 import { ToolTip } from '@components/ui/tooltip';
 import type { MotionProps } from 'framer-motion';
-import type { ImagesPreview, ImageData } from '@lib/types/file';
+import type { ImagesPreview, ImageData } from '../../../../models/file';
 
 type ImagePreviewProps = {
   tweet?: boolean;

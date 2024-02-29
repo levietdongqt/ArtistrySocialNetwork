@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 import { where } from 'firebase/firestore';
-import { useAuth } from '@lib/context/auth-context';
+import { useAuth } from '../../../context/auth-context';
 import { useInfiniteScroll } from '@lib/hooks/useInfiniteScroll';
 import {
     PeopleLayout,

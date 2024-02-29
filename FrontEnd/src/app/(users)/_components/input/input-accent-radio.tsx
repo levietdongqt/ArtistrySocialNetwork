@@ -1,7 +1,7 @@
 import cn from 'clsx';
-import { useTheme } from '@lib/context/theme-context';
+import { useTheme } from '../../../../context/theme-context';
 import { HeroIcon } from '@components/ui/hero-icon';
-import type { Accent } from '@lib/types/theme';
+import type { Accent } from '../../../../models/theme';
 
 type InputAccentRadioProps = {
   type: Accent;

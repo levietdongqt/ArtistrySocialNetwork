@@ -6,7 +6,7 @@ import { HeroIcon } from '@components/ui/hero-icon';
 import { NextImage } from '@components/ui/next-image';
 import { ToolTip } from '@components/ui/tooltip';
 import type { ReactNode, ChangeEvent } from 'react';
-import type { User } from '@lib/types/user';
+import type { User } from '../../../../models/user';
 
 type EditProfileModalProps = Pick<
   User,

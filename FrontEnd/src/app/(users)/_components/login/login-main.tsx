@@ -1,4 +1,4 @@
-import { useAuth } from '@lib/context/auth-context';
+import { useAuth } from '../../../../context/auth-context';
 import { NextImage } from '@components/ui/next-image';
 import { CustomIcon } from '@components/ui/custom-icon';
 import { Button } from '@components/ui/button';
@@ -13,7 +13,7 @@ export function LoginMain(): JSX.Element {
           imgClassName='object-cover'
           blurClassName='bg-accent-blue'
           src='/assets/twitter-banner.png'
-          alt='Twitter banner'
+          alt='Social banner'
           layout='fill'
           useSkeleton
         />
@@ -34,7 +34,7 @@ export function LoginMain(): JSX.Element {
                        lg:text-6xl lg:before:content-["Happening_now"]'
           />
           <h2 className='hidden text-xl lg:block lg:text-3xl'>
-            Join Twitter today.
+            Join Social today.
           </h2>
         </div>
         <div className='flex max-w-xs flex-col gap-6 [&_button]:py-2'>

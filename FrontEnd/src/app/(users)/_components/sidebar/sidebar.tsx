@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { useAuth } from '@lib/context/auth-context';
-import { useWindow } from '@lib/context/window-context';
+import { useAuth } from '../../../../context/auth-context';
+import { useWindow } from '../../../../context/window-context';
 import { useModal } from '@lib/hooks/useModal';
 import { Modal } from '../modal/modal';
 import { Input } from '../input/input';

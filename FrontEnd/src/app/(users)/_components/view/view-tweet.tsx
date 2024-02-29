@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import cn from 'clsx';
-import { useAuth } from '@lib/context/auth-context';
+import { useAuth } from '../../../../context/auth-context';
 import { useModal } from '@lib/hooks/useModal';
 import { Modal } from '../modal/modal';
 import { TweetReplyModal } from '../modal/tweet-reply-modal';

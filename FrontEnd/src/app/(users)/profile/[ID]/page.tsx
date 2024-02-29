@@ -1,6 +1,6 @@
 import { doc, query, where } from 'firebase/firestore';
 import { AnimatePresence } from 'framer-motion';
-import { useUser } from '@lib/context/user-context';
+import { useUser } from '../../../../context/user-context';
 import { mergeData } from '@lib/merge';
 import { UserLayout, ProtectedLayout } from '../../_components/layout/common-layout';
 import { MainLayout } from '../../_components/layout/main-layout';

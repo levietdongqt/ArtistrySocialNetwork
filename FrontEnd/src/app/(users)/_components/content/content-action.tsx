@@ -5,7 +5,7 @@ import { Popover } from '@headlessui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import cn from 'clsx';
 import { toast } from 'react-hot-toast';
-import { useAuth } from '@lib/context/auth-context';
+import { useAuth } from '../../../../context/auth-context';
 import { useModal } from '@lib/hooks/useModal';
 import { delayScroll, preventBubbling, sleep } from '@lib/utils';
 import { Modal } from '../modal/modal';
@@ -15,8 +15,8 @@ import { ToolTip } from '@components/ui/tooltip';
 import { HeroIcon } from '@components/ui/hero-icon';
 import { CustomIcon } from '@components/ui/custom-icon';
 import type { Variants } from 'framer-motion';
-import type { Tweet } from '@lib/types/tweet';
-import type { User } from '@lib/types/user';
+import type { Tweet } from '../../../../models/tweet';
+import type { User } from '../../../../models/user';
 
 export const variants: Variants = {
   initial: { opacity: 0, y: -25 },

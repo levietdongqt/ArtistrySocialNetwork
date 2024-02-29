@@ -15,8 +15,7 @@ export default function UserLikes(): JSX.Element {
     /*const {data,loading} = useTweet();*/
     const loading = false;
   return (
-      <ProtectedLayout>
-          <MainLayout>
+
               <UserLayout>
                   <UserDataLayout>
                       <UserHomeLayout>
@@ -45,8 +44,6 @@ export default function UserLikes(): JSX.Element {
                       </UserHomeLayout>
                   </UserDataLayout>
               </UserLayout>
-          </MainLayout>
-      </ProtectedLayout>
   );
 }
 

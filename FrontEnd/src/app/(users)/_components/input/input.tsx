@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useId } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import cn from 'clsx';
 import { toast } from 'react-hot-toast';
-import { useAuth } from '@lib/context/auth-context';
+import { useAuth } from '../../../../context/auth-context';
 import { sleep } from '@lib/utils';
 import { getImagesData } from '@lib/validation';
 import { UserAvatar } from '../user/user-avatar';
@@ -13,7 +13,7 @@ import { ImagePreview } from './image-preview';
 import { InputOptions } from './input-options';
 import type { ReactNode, FormEvent, ChangeEvent, ClipboardEvent } from 'react';
 import type { Variants } from 'framer-motion';
-import type { FilesWithId, ImagesPreview, ImageData } from '@lib/types/file';
+import type { FilesWithId, ImagesPreview, ImageData } from '../../../../models/file';
 
 type InputProps = {
   modal?: boolean;

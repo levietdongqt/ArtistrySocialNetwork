@@ -16,8 +16,6 @@ export default function UserWithReplies(): JSX.Element {
 
 
   return (
-      <ProtectedLayout>
-          <MainLayout>
               <UserLayout>
                   <UserDataLayout>
                       <UserHomeLayout>
@@ -46,7 +44,5 @@ export default function UserWithReplies(): JSX.Element {
                       </UserHomeLayout>
                   </UserDataLayout>
               </UserLayout>
-          </MainLayout>
-      </ProtectedLayout>
   );
 }

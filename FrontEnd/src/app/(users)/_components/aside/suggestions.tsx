@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useAuth } from '@lib/context/auth-context';
+import { useAuth } from '../../../../context/auth-context';
 import { UserCard } from '../user/user-card';
 import { Loading } from '@components/ui/loading';
 import { Error } from '@components/ui/error';

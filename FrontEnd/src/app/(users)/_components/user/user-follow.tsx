@@ -1,4 +1,4 @@
-import { useUser } from '@lib/context/user-context';
+import { useUser } from '../../../../context/user-context';
 import { SEO } from '../common/seo';
 import { UserCards } from '../user/user-cards';
 
@@ -28,7 +28,7 @@ const loading = false;
       <SEO
         title={`People ${
           type === 'following' ? 'followed by' : 'following'
-        } ${'name'} (@${'username'}) / Twitter`}
+        } ${'name'} (@${'username'}) / Social`}
       />
       <UserCards follow data={[]} type={type} loading={loading} />
     </>

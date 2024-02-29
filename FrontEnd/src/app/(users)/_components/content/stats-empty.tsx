@@ -1,6 +1,6 @@
 import cn from 'clsx';
 import { NextImage } from '@components/ui/next-image';
-import type { ImageData } from '@lib/types/file';
+import type { ImageData } from '../../../../models/file';
 
 export type StatsEmptyProps = {
   title: string;

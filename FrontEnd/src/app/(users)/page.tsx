@@ -1,6 +1,6 @@
 'use client'
 import { AnimatePresence } from 'framer-motion';
-import {useWindow} from '@lib/context/window-context';
+import {useWindow} from '../../context/window-context';
 import { useInfiniteScroll } from '@lib/hooks/useInfiniteScroll';
 import { HomeLayout, ProtectedLayout } from './_components/layout/common-layout';
 import { MainLayout } from './_components/layout/main-layout';
@@ -26,7 +26,7 @@ export default function Home(){
     return (
         <HomeLayout>
                     <MainContainer>
-                        <SEO title='Home / Twitter' />
+                        <SEO title='Home / Social' />
                         <MainHeader
                             useMobileSidebar
                             title='Home'

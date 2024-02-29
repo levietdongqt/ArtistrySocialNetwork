@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@lib/context/auth-context';
+import { useAuth } from '../../../../context/auth-context';
 import { sleep } from '@lib/utils';
 import { Placeholder } from '../common/placeholder';
 import type { LayoutProps } from './common-layout';

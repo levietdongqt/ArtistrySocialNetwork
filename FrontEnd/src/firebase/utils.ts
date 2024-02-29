@@ -1,7 +1,7 @@
 
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import {storage } from './app';
-import type { FilesWithId, ImagesPreview } from '@lib/types/file';
+import type { FilesWithId, ImagesPreview } from '../models/file';
 
 
 

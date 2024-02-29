@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import cn from 'clsx';
-import { useWindow } from '@lib/context/window-context';
+import { useWindow } from '../../../../context/window-context';
 import { FollowButton } from '@components/ui/follow-button';
 import { NextImage } from '@components/ui/next-image';
 import { UserAvatar } from './user-avatar';

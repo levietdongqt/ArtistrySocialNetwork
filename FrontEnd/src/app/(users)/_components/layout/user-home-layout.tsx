@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
-import { useAuth } from '@lib/context/auth-context';
-import { useUser } from '@lib/context/user-context';
+import { useAuth } from '../../../../context/auth-context';
+import { useUser } from '../../../../context/user-context';
 import { SEO } from '../common/seo';
 import { UserHomeCover } from '../user/user-home-cover';
 import { UserHomeAvatar } from '../user/user-home-avatar';
@@ -43,7 +43,7 @@ export function UserHomeLayout({ children }: LayoutProps): JSX.Element {
     <>
       {userData && (
         <SEO
-          title={`${`${userData.name} (@${userData.username})`} / Twitter`}
+          title={`${`${userData.name} (@${userData.username})`} / Social`}
         />
       )}
       <motion.section {...variants} exit={undefined}>

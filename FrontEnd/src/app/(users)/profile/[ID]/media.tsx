@@ -25,8 +25,6 @@ export default function UserMedia(): JSX.Element {
   /*const sortedTweets = mergeData(true, data);*/
     const loading = false;
   return (
-      <ProtectedLayout>
-          <MainLayout>
               <UserLayout>
                   <UserDataLayout>
                       <UserHomeLayout>
@@ -55,7 +53,5 @@ export default function UserMedia(): JSX.Element {
                       </UserHomeLayout>
                   </UserDataLayout>
               </UserLayout>
-          </MainLayout>
-      </ProtectedLayout>
   );
 }

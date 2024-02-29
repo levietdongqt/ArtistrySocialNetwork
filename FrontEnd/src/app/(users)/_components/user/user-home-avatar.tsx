@@ -3,7 +3,7 @@ import { Button } from '@components/ui/button';
 import { NextImage } from '@components/ui/next-image';
 import { Modal } from '../modal/modal';
 import { ImageModal } from '../modal/image-modal';
-import type { ImageData } from '@lib/types/file';
+import type { ImageData } from '../../../../models/file';
 
 type UserHomeAvatarProps = {
   profileData?: ImageData | null;

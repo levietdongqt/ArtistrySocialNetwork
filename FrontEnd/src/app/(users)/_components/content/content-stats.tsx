@@ -5,7 +5,7 @@ import cn from 'clsx';
 import { ViewTweetStats } from '../view/view-tweet-stats';
 import { TweetOption } from './content-option';
 import { ContentShare } from './content-share';
-import type { Tweet } from '@lib/types/tweet';
+import type { Tweet } from '../../../../models/tweet';
 
 type TweetStatsProps = Pick<
   Tweet,

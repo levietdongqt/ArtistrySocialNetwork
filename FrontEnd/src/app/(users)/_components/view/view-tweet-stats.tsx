@@ -6,7 +6,7 @@ import { Modal } from '../modal/modal';
 import { TweetStatsModal } from '../modal/tweet-stats-modal';
 import { NumberStats } from '../content/number-stats';
 import { UserCards } from '../user/user-cards';
-import type { Tweet } from '@lib/types/tweet';
+import type { Tweet } from '../../../../models/tweet';
 
 type viewTweetStats = Pick<Tweet, 'userRetweets' | 'userLikes'> & {
   likeMove: number;

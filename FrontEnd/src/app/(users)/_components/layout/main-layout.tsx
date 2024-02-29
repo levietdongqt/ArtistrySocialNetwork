@@ -2,7 +2,7 @@
 import { SWRConfig } from 'swr';
 import { Toaster } from 'react-hot-toast';
 import { fetchJSON } from '@lib/fetch';
-import { WindowContextProvider } from '@lib/context/window-context';
+import { WindowContextProvider } from '../../../../context/window-context';
 import { Sidebar } from '../sidebar/sidebar';
 import type { DefaultToastOptions } from 'react-hot-toast';
 import type { LayoutProps } from './common-layout';

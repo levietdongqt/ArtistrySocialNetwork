@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Content } from './content';
 import { ContentParent } from './content-parent';
-import type { TweetWithUser } from '@lib/types/tweet';
+import type { TweetWithUser } from '../../../../models/tweet';
 
 type TweetWithParentProps = {
   data: TweetWithUser[];

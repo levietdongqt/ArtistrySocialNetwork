@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
   signOut as signOutFirebase
 } from 'firebase/auth';
-import { auth } from '@lib/firebase/app';
+import { auth } from '../firebase/app';
 import { getRandomId, getRandomInt } from '@lib/random';
 import type { ReactNode } from 'react';
 
