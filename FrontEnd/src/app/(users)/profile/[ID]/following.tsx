@@ -7,15 +7,11 @@ import type { ReactElement, ReactNode } from 'react';
 
 export default function UserFollowing(): JSX.Element {
   return (
-      <ProtectedLayout>
-          <MainLayout>
               <UserLayout>
                   <UserDataLayout>
                       <UserFollowLayout><UserFollow type='following' /></UserFollowLayout>
                   </UserDataLayout>
               </UserLayout>
-          </MainLayout>
-      </ProtectedLayout>
   );
 }
 

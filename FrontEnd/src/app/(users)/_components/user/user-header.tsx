@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { doc } from 'firebase/firestore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useDocument } from '@lib/hooks/useDocument';
-import { useUser } from '@lib/context/user-context';
+import { useUser } from '../../../../context/user-context';
 import { isPlural } from '@lib/utils';
 import { UserName } from './user-name';
 import type { Variants } from 'framer-motion';
@@ -74,8 +74,8 @@ export function UserHeader(): JSX.Element {
               ? `@${user.username}`
               : isInTweetPage
               ? totalTweets
-                ? `${totalTweets} ${`Tweet${isPlural(totalTweets)}`}`
-                : 'No Tweet'
+                ? `${totalTweets} ${`Content${isPlural(totalTweets)}`}`
+                : 'No Content'
               : currentPage === 'media'
               ? totalPhotos
                 ? `${totalPhotos} Photo${isPlural(totalPhotos)} & GIF${isPlural(

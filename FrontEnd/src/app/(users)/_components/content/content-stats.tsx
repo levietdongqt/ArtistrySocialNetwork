@@ -3,9 +3,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import cn from 'clsx';
 import { ViewTweetStats } from '../view/view-tweet-stats';
-import { TweetOption } from './tweet-option';
-import { TweetShare } from './tweet-share';
-import type { Tweet } from '@lib/types/tweet';
+import { TweetOption } from './content-option';
+import { ContentShare } from './content-share';
+import type { Tweet } from '../../../../models/tweet';
 
 type TweetStatsProps = Pick<
   Tweet,
@@ -19,7 +19,7 @@ type TweetStatsProps = Pick<
   openModal?: () => void;
 };
 
-export function TweetStats({
+export function ContentStats({
   reply,
   userId,
   isOwner,
@@ -137,7 +137,7 @@ export function TweetStats({
             tweetId
           )*/() =>{}}
         />
-        <TweetShare userId={userId} tweetId={tweetId} viewTweet={viewTweet} />
+        <ContentShare userId={userId} tweetId={tweetId} viewTweet={viewTweet} />
         {isOwner && (
           <TweetOption
             className='hover:text-accent-blue focus-visible:text-accent-blue'

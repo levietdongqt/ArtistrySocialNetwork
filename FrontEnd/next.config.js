@@ -1,4 +1,4 @@
-/** @types {import('next').NextConfig} */
+/** @models {import('next').NextConfig} */
 const nextConfig = {
     images: {
         domains: ['cdn.wallpapersafari.com'],

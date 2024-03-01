@@ -11,8 +11,8 @@ export type LayoutProps = {
 };
 
 export function ProtectedLayout({ children }: LayoutProps) {
-  const user = useRequireAuth();
-  if (!user) return <Placeholder />;
+  /*const user = useRequireAuth();
+  if (!user) return <Placeholder />;*/
   return <>{children}</>;
 }
 

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useUser } from '@lib/context/user-context';
+import { useUser } from '../../../../context/user-context';
 import { Loading } from '@components/ui/loading';
 import { UserNav } from '../user/user-nav';
 import { variants } from '../user/user-header';

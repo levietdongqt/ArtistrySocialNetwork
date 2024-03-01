@@ -1,7 +1,7 @@
 
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import {storage } from './app';
-import type { FilesWithId, ImagesPreview } from '@lib/types/file';
+import type { FilesWithId, ImagesPreview } from '../models/file';
 
 
 
@@ -130,7 +130,7 @@ export async function manageReply(
       updatedAt: serverTimestamp()
     });
   } catch {
-    // do nothing, because parent tweet was already deleted
+    // do nothing, because parent content was already deleted
   }
 }
 */

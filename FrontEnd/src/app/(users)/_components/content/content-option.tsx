@@ -5,7 +5,7 @@ import { ToolTip } from '@components/ui/tooltip';
 import { NumberStats } from './number-stats';
 import type { IconName } from '@components/ui/hero-icon';
 
-type TweetOption = {
+type ContentOption = {
   tip: string;
   move?: number;
   stats?: number;
@@ -27,7 +27,7 @@ export function TweetOption({
   viewTweet,
   iconClassName,
   onClick
-}: TweetOption): JSX.Element {
+}: ContentOption): JSX.Element {
   return (
     <button
       className={cn(

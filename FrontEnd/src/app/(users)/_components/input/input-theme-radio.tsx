@@ -1,7 +1,7 @@
 import cn from 'clsx';
-import { useTheme } from '@lib/context/theme-context';
+import { useTheme } from '../../../../context/theme-context';
 import { HeroIcon } from '@components/ui/hero-icon';
-import type { Theme } from '@lib/types/theme';
+import type { Theme } from '../../../../models/theme';
 
 type InputThemeRadioProps = {
   type: Theme;

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import type { CollectionReference } from 'firebase/firestore';
-import type { User } from '@lib/types/user';
+import type { User } from '../../models/user';
 
 type UserArrayDocument<T> = {
   data: T[] | null;

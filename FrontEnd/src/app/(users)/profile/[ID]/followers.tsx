@@ -6,8 +6,7 @@ import { UserFollow } from '../../_components/user/user-follow';
 import type { ReactElement, ReactNode } from 'react';
 export default function UserFollowers(): JSX.Element {
   return (
-      <ProtectedLayout>
-          <MainLayout>
+
               <UserLayout>
                   <UserDataLayout>
                       <UserFollowLayout>
@@ -15,8 +14,6 @@ export default function UserFollowers(): JSX.Element {
                       </UserFollowLayout>
                   </UserDataLayout>
               </UserLayout>
-          </MainLayout>
-      </ProtectedLayout>
   );
 }
 

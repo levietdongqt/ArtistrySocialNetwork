@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from 'react';
 import { getRandomId } from '@lib/random';
-import { Tweet } from './tweet';
-import type { LoadedParents } from './tweet-with-parent';
+import { Content } from './content';
+import type { LoadedParents } from './content-with-parent';
 
 type TweetParentProps = {
   parentId: string;
@@ -9,7 +9,7 @@ type TweetParentProps = {
   addParentId: (parentId: string, componentId: string) => void;
 };
 
-export function TweetParent({
+export function ContentParent({
   parentId,
   loadedParents,
   addParentId
@@ -34,5 +34,5 @@ export function TweetParent({
 
   if (loading || !isParentAlreadyLoaded /*|| !data*/) return null;
 
-  return <Tweet parentTweet />;
+  return <Content parentTweet />;
 }
