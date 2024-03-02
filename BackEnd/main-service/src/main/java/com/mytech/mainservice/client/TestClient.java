@@ -7,7 +7,6 @@ import org.springframework.web.service.annotation.HttpExchange;
 
 @FeignClient(name="RUNTIME-SERVICE")
 public interface TestClient {
-
     @GetMapping("/api/runtime/test1")
     public String test1();
 

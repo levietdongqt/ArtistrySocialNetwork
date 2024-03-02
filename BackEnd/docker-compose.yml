@@ -1,0 +1,23 @@
+version: 'v2.23.3-desktop.2'
+networks:
+  my_network:
+    driver: bridge
+services:
+  server-config:
+    build: ./server-config/
+    image: server-config
+    networks:
+      - my_network
+    ports:
+      - "8088:8088"
+    restart: always
+  server-registry:
+    build: ./server-registry/
+    image: server-registry
+    networks:
+      - my_network
+    restart: always
+    ports:
+     - "8761:8761"
+    depends_on:
+     - server-config
