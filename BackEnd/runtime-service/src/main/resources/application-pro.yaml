@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: runtime-service
+  config:
+    import: optional:configserver:http://localhost:8088
+
+
+
+

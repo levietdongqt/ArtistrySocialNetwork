@@ -22,8 +22,8 @@ export function WindowContextProvider({
                                         children
                                       }: WindowContextProviderProps): JSX.Element {
   const [windowSize, setWindowSize] = useState<WindowSize>({
-    width: window.innerWidth,
-    height: window.innerHeight
+    width: 0,
+    height: 0
   });
 
   useEffect(() => {

@@ -3,6 +3,7 @@ import { useState, useEffect, useContext, createContext, useMemo } from 'react';
 import {
   signInWithPopup,
   GoogleAuthProvider,
+  FacebookAuthProvider,
   onAuthStateChanged,
   signOut as signOutFirebase
 } from 'firebase/auth';
