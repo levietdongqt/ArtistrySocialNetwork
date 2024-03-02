@@ -1,4 +1,4 @@
-import { useAuth } from '@lib/context/auth-context';
+import { useAuth } from '../../context/auth-context';
 import { useModal } from '@lib/hooks/useModal';
 import { preventBubbling } from '@lib/utils';
 import { Modal } from '../../app/(users)/_components/modal/modal';

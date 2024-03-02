@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import cn from 'clsx';
-import { useAuth } from '@lib/context/auth-context';
+import { useAuth } from '../../../../context/auth-context';
 import { useModal } from '@lib/hooks/useModal';
 import { Modal } from '../modal/modal';
 import { TweetReplyModal } from '../modal/tweet-reply-modal';
@@ -10,10 +10,10 @@ import { UserAvatar } from '../user/user-avatar';
 import { UserTooltip } from '../user/user-tooltip';
 import { UserName } from '../user/user-name';
 import { UserUsername } from '../user/user-username';
-import { variants } from '../tweet/tweet';
-import { TweetActions } from '../tweet/tweet-actions';
-import { TweetStats } from '../tweet/tweet-stats';
-import { TweetDate } from '../tweet/tweet-date';
+import { variants } from '../content/content';
+import { ContentAction } from '../content/content-action';
+import { ContentStats } from '../content/content-stats';
+import { ContentDate } from '../content/content-date';
 import { Input } from '../input/input';
 import type { RefObject } from 'react';
 import boolean from "async-validator/dist-types/validator/boolean";
@@ -102,7 +102,7 @@ export function ViewTweet(tweet: ViewTweetProps): JSX.Element {
               </UserTooltip>
             </div>
             <div className='px-4'>
-              <TweetActions
+              <ContentAction
                 viewTweet
                 isOwner={false}
                 ownerId={"ownerId"}
@@ -140,8 +140,8 @@ export function ViewTweet(tweet: ViewTweetProps): JSX.Element {
           className='inner:hover-animation inner:border-b inner:border-light-border
                      dark:inner:border-dark-border'
         >
-          <TweetDate viewTweet tweetLink={tweetLink} createdAt={Timestamp.now()} />
-          <TweetStats
+          <ContentDate viewTweet tweetLink={tweetLink} createdAt={Timestamp.now()} />
+          <ContentStats
             viewTweet
             reply={reply}
             userId={"userId"}

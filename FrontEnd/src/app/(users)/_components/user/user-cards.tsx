@@ -1,11 +1,11 @@
 import cn from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
-import { StatsEmpty } from '../tweet/stats-empty';
+import { StatsEmpty } from '../content/stats-empty';
 import { Loading } from '@components/ui/loading';
 import { variants } from '../user/user-header';
 import { UserCard } from './user-card';
 import type { StatsType } from '../view/view-tweet-stats';
-import type { StatsEmptyProps } from '../tweet/stats-empty';
+import type { StatsEmptyProps } from '../content/stats-empty';
 
 type FollowType = 'following' | 'followers';
 
@@ -25,12 +25,12 @@ const allNoStatsData: Readonly<NoStatsData> = {
     title: 'Amplify Tweets you like',
     imageData: { src: '/assets/no-retweets.png', alt: 'No retweets' },
     description:
-      'Share someone else’s Tweet on your timeline by Retweeting it. When you do, it’ll show up here.'
+      'Share someone else’s Content on your timeline by Retweeting it. When you do, it’ll show up here.'
   },
   likes: {
-    title: 'No Tweet Likes yet',
+    title: 'No Content Likes yet',
     imageData: { src: '/assets/no-likes.png', alt: 'No likes' },
-    description: 'When you like a Tweet, it’ll show up here.'
+    description: 'When you like a Content, it’ll show up here.'
   },
   following: {
     title: 'Be in the know',

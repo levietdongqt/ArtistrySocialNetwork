@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { useAuth } from '@lib/context/auth-context';
-import { useWindow } from '@lib/context/window-context';
+import { useAuth } from '../../../../context/auth-context';
+import { useWindow } from '../../../../context/window-context';
 import { useModal } from '@lib/hooks/useModal';
 import { Modal } from '../modal/modal';
 import { Input } from '../input/input';
@@ -61,7 +61,7 @@ const navLinks: Readonly<NavLink[]> = [
 
 export function Sidebar() {
 
-  /*const { isMobile } = useWindow();*/
+  const { isMobile } = useWindow();
 
   const { open, openModal, closeModal } = useModal();
 
@@ -94,7 +94,7 @@ export function Sidebar() {
                            dark:text-twitter-icon dark:hover:bg-dark-primary/10'
             >
 
-                <CustomIcon className='h-7 w-7' iconName='TwitterIcon' />
+                <CustomIcon className='h-7 w-7' iconName='GameIcon' />
             </Link>
           </h1>
           <nav className='flex items-center justify-around xs:flex-col xs:justify-center xl:block'>
@@ -107,7 +107,7 @@ export function Sidebar() {
               linkName='Profile'
               iconName='UserIcon'
             />
-           {/* {!isMobile && <MoreSettings />}*/}
+            {!isMobile && <MoreSettings />}
           </nav>
           <Button
             className='accent-tab absolute right-4 -translate-y-[72px] bg-main-accent text-lg font-bold text-white

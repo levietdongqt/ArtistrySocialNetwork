@@ -14,7 +14,7 @@ const footerLinks = [
   ['Brand Resources', 'https://about.twitter.com/press/brand-assets'],
   ['Advertising', 'https://ads.twitter.com/?ref=gl-tw-tw-twitter-advertise'],
   ['Marketing', 'https://marketing.twitter.com'],
-  ['Twitter for Business', 'https://business.twitter.com'],
+  ['Social for Business', 'https://business.twitter.com'],
   ['Developers', 'https://developer.twitter.com'],
   ['Directory', 'https://twitter.com/i/directory/profiles'],
   ['Settings', 'https://twitter.com/settings']
@@ -35,7 +35,7 @@ export function LoginFooter(): JSX.Element {
             {linkName}
           </a>
         ))}
-        <p>© 2022 Twitter, Inc.</p>
+        <p>© 2024 Team2, Inc.</p>
       </nav>
     </footer>
   );

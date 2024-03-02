@@ -6,8 +6,8 @@ export function AppHead() {
       <meta name='og:title' content='social media' />
       <link rel='icon' href='/favicon.ico' />
       <link rel='manifest' href='/site.webmanifest' key='site-manifest' />
-      <meta name='twitter:site' content='@ccrsxx' />
-      <meta name='twitter:card' content='summary_large_image' />
+      <meta name='Social Booking:site' content='@Team2' />
+      <meta name='Social Booking:card' content='summary_large_image' />
     </head>
   );
 }

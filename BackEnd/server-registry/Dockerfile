@@ -1,5 +1,5 @@
 FROM openjdk:19
-EXPOSE 8088
+EXPOSE 8761
 ARG JAR_FILE=target/server-registry-0.0.1-SNAPSHOT.jar
-ADD ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+ADD ${JAR_FILE} server-registry.jar
+ENTRYPOINT ["java","-jar","/server-registry.jar"]

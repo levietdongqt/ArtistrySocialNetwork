@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getDoc, doc, onSnapshot } from 'firebase/firestore';
 import { useCacheRef } from './useCacheRef';
 import type { DocumentReference } from 'firebase/firestore';
-import type { User } from '@lib/types/user';
+import type { User } from '../../models/user';
 
 type UseDocument<T> = {
   data: T | null;

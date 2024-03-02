@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import cn from 'clsx';
-import { useUser } from '@lib/context/user-context';
+import { useUser } from '../../../../context/user-context';
 import { useModal } from '@lib/hooks/useModal';
-import { uploadImages } from '@lib/firebase/utils';
+import { uploadImages } from '../../../../firebase/utils';
 import { sleep } from '@lib/utils';
 import { getImagesData } from '@lib/validation';
 import { Modal } from '../modal/modal';
@@ -11,8 +11,8 @@ import { EditProfileModal } from '../modal/edit-profile-modal';
 import { Button } from '@components/ui/button';
 import { InputField } from '../input/input-field';
 import type { ChangeEvent, KeyboardEvent } from 'react';
-import type { FilesWithId } from '@lib/types/file';
-import type { User, EditableData, EditableUserData } from '@lib/types/user';
+import type { FilesWithId } from '../../../../models/file';
+import type { User, EditableData, EditableUserData } from '../../../../models/user';
 import type { InputFieldProps } from '../input/input-field';
 
 type RequiredInputFieldProps = Omit<InputFieldProps, 'handleChange'> & {

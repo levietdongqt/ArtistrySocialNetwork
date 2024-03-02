@@ -1,6 +1,6 @@
 import { Input } from '../input/input';
-import { Tweet } from '../tweet/tweet';
-import type { TweetProps } from '../tweet/tweet';
+import { Content } from '../content/content';
+import type { TweetProps } from '../content/content';
 
 type TweetReplyModalProps = {
   tweet: TweetProps;
@@ -15,10 +15,10 @@ export function TweetReplyModal({
     <Input
       modal
       replyModal
-      parent={{ id: "tweet.id", username: "tweet.user.username" }}
+      parent={{ id: "content.id", username: "content.user.username" }}
       closeModal={closeModal}
     >
-      <Tweet modal parentTweet/>
+      <Content modal parentTweet/>
     </Input>
   );
 }

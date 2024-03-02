@@ -1,5 +1,5 @@
 import cn from 'clsx';
-import type { User, EditableData } from '@lib/types/user';
+import type { User, EditableData } from '../../../../models/user';
 import type { KeyboardEvent, ChangeEvent } from 'react';
 
 export type InputFieldProps = {

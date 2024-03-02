@@ -1,5 +1,5 @@
 import { getRandomId } from './random';
-import type { FilesWithId, FileWithId, ImagesPreview } from './types/file';
+import type { FilesWithId, FileWithId, ImagesPreview } from '../models/file';
 
 const IMAGE_EXTENSIONS = [
   'apng',

@@ -5,7 +5,7 @@ import { UserName } from './user-name';
 import { UserFollowing } from './user-following';
 import { UserFollowStats } from './user-follow-stats';
 import type { IconName } from '@components/ui/hero-icon';
-import type { User } from '@lib/types/user';
+import type { User } from '../../../../models/user';
 
 type UserDetailsProps = Pick<
   User,

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { UserContextProvider } from '@lib/context/user-context';
+import { UserContextProvider } from '../../../../context/user-context';
 import { SEO } from '../common/seo';
 import { MainContainer } from '../home/main-container';
 import { MainHeader } from '../home/main-header';
@@ -21,7 +21,7 @@ export function UserDataLayout({ children }: LayoutProps): JSX.Element {
   const user = null;
   return (
     <UserContextProvider value={{ user, loading }}>
-      {!user && !loading && <SEO title='User not found / Twitter' />}
+      {!user && !loading && <SEO title='User not found / Social' />}
       <MainContainer>
         <MainHeader useActionButton action={back}>
           <UserHeader />
