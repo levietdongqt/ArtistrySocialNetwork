@@ -5,10 +5,10 @@ import cn from 'clsx';
 import { ViewTweetStats } from '../view/view-tweet-stats';
 import { TweetOption } from './content-option';
 import { ContentShare } from './content-share';
-import type { Tweet } from '../../../../models/tweet';
+import type { Post } from '../../../../models/post';
 
 type TweetStatsProps = Pick<
-  Tweet,
+  Post,
   'userLikes' | 'userRetweets' | 'userReplies'
 > & {
   reply?: boolean;

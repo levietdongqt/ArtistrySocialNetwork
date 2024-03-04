@@ -1,3 +1,4 @@
+
 import cn from 'clsx';
 import { useTheme } from '../../../../context/theme-context';
 import { HeroIcon } from '@components/ui/hero-icon';
@@ -24,7 +25,8 @@ const InputColors: Readonly<InputAccentData> = {
 
 export function InputAccentRadio({ type }: InputAccentRadioProps): JSX.Element {
   const { accent, changeAccent } = useTheme();
-
+  console.log("accent" + accent);
+  console.log("changeAccent" + changeAccent);
   const bgColor = InputColors[type];
   const isChecked = type === accent;
 

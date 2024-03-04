@@ -9,15 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emoji-mart/data": "^1.1.2",
-    "@emoji-mart/react": "^1.1.1",
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.1.1",
     "antd": "^5.13.1",
     "autoprefixer": "^10.4.17",
     "axios": "^1.6.7",
     "clsx": "^2.1.0",
-    "emoji-mart": "^5.5.2",
+    "emoji-picker-react": "^4.8.0",
     "firebase": "^10.6.0",
     "framer-motion": "^11.0.6",
     "next": "14.0.4",

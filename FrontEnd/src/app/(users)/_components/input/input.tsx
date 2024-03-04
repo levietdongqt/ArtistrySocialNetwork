@@ -44,7 +44,7 @@ export function Input({
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [visited, setVisited] = useState(false);
-
+  const [selectedEmoji, setSelectedEmoji] = useState(null);
   /*const { user, isAdmin } = useAuth();*/
   /*const { name, username, photoURL } = user as User;*/
 
@@ -113,7 +113,11 @@ const isAdmin = false;
       { duration: 6000 }
     );
   };
-
+  const handleEmojiClick = (emoji:any) => {
+    console.log(emoji.emoji);
+    setSelectedEmoji(emoji.emoji);
+    setInputValue((prevInputValue) => prevInputValue + emoji.emoji);
+  };
   const handleImageUpload = (
     e: ChangeEvent<HTMLInputElement> | ClipboardEvent<HTMLTextAreaElement>
   ): void => {
@@ -262,6 +266,7 @@ const isAdmin = false;
                 isValidTweet={isValidTweet}
                 isCharLimitExceeded={isCharLimitExceeded}
                 handleImageUpload={handleImageUpload}
+                handleEmojiClick={handleEmojiClick}
               />
             )}
           </AnimatePresence>

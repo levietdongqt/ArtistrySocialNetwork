@@ -1,5 +1,3 @@
-import { UserAvatar } from '../user/user-avatar';
-import { UserName } from '../user/user-name';
 import { InputThemeRadio } from '../input/input-theme-radio';
 import { Button } from '@components/ui/button';
 import { InputAccentRadio } from '../input/input-accent-radio';
@@ -27,38 +25,6 @@ const accentsColor: Readonly<Accent[]> = [
 export function DisplayModal({ closeModal }: DisplayModalProps): JSX.Element {
   return (
     <div className='flex flex-col items-center gap-6'>
-      <div className='flex flex-col gap-3 text-center'>
-        <h2 className='text-2xl font-bold'>Customize your view</h2>
-        <p className='text-light-secondary dark:text-dark-secondary'>
-          These settings affect all the Social accounts on this browser.
-        </p>
-      </div>
-      <article
-        className='hover-animation mx-8 rounded-2xl border 
-                   border-light-border px-4 py-3 dark:border-dark-border'
-      >
-        <div className='grid grid-cols-[auto,1fr] gap-3'>
-          <UserAvatar src='/assets/twitter-avatar.jpg' alt='Twitter' />
-          <div>
-            <div className='flex gap-1'>
-              <UserName verified name='SOcial' />
-              <p className='text-light-secondary dark:text-dark-secondary'>
-                @Social
-              </p>
-              <div className='flex gap-1 text-light-secondary dark:text-dark-secondary'>
-                <i>·</i>
-                <p>26m</p>
-              </div>
-            </div>
-            <p className='whitespace-pre-line break-words'>
-              At the heart of Social are short messages called Social — just
-              like this one — which can include photos, videos, links, text,
-              hashtags, and mentions like{' '}
-              <span className='text-main-accent'>@Social</span>.
-            </p>
-          </div>
-        </div>
-      </article>
       <div className='flex w-full flex-col gap-1'>
         <p className='text-sm font-bold text-light-secondary dark:text-dark-secondary'>
           Color
