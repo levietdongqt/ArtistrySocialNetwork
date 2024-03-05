@@ -1,4 +1,4 @@
-
+'use client'
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import cn from 'clsx';
