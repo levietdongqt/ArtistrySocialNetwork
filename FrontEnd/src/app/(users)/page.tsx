@@ -29,7 +29,7 @@ export default function Home(){
                         <SEO title='Home / Social' />
                         <MainHeader
                             useMobileSidebar
-                            title='Home'
+                            title='Trang chủ'
                             className='flex items-center justify-between'
                         >
                             <UpdateUsername />

@@ -54,7 +54,7 @@ export function SearchBar(): JSX.Element {
           className='peer flex-1 bg-transparent outline-none 
                      placeholder:text-light-secondary dark:placeholder:text-dark-secondary'
           type='text'
-          placeholder='Search....'
+          placeholder='Tìm kiếm ....'
           ref={inputRef}
           value={inputValue}
           onChange={handleChange}

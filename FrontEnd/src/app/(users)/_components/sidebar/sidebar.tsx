@@ -21,26 +21,19 @@ export type NavLink = {
 
 const navLinks: Readonly<NavLink[]> = [
   {
-    href: '/home',
-    linkName: 'Home',
+    href: '/',
+    linkName: 'Trang chủ',
     iconName: 'HomeIcon'
   },
   {
-    href: '/explore',
-    linkName: 'Explore',
-    iconName: 'HashtagIcon',
-    disabled: true,
-    canBeHidden: true
-  },
-  {
     href: '/notifications',
-    linkName: 'Notifications',
+    linkName: 'Thông báo',
     iconName: 'BellIcon',
-    disabled: true
+    disabled: false
   },
   {
     href: '/messages',
-    linkName: 'Messages',
+    linkName: 'Tin nhắn',
     iconName: 'EnvelopeIcon',
     disabled: true
   },
@@ -89,7 +82,7 @@ export function Sidebar() {
       >
         <section className='flex flex-col justify-center gap-2 xs:items-center xl:items-stretch'>
           <h1 className='hidden xs:flex'>
-            <Link href='/home'  className='custom-button main-tab text-accent-blue transition hover:bg-light-primary/10
+            <Link href='/'  className='custom-button main-tab text-accent-blue transition hover:bg-light-primary/10
                            focus-visible:bg-accent-blue/10 focus-visible:!ring-accent-blue/80
                            dark:text-twitter-icon dark:hover:bg-dark-primary/10'
             >
@@ -102,9 +95,9 @@ export function Sidebar() {
               <SidebarLink {...linkData} key={linkData.href} />
             ))}
             <SidebarLink
-              href={`/user/${username}`}
+              href={`/profile/${username}`}
               username={username}
-              linkName='Profile'
+              linkName='Tài khoản'
               iconName='UserIcon'
             />
             {!isMobile && <MoreSettings />}
@@ -119,7 +112,7 @@ export function Sidebar() {
               className='block h-6 w-6 xl:hidden'
               iconName='FeatherIcon'
             />
-            <p className='hidden xl:block'>Tweet</p>
+            <p className='hidden xl:block'>Post</p>
           </Button>
         </section>
         {/*{!isMobile && <SidebarProfile />}*/}
