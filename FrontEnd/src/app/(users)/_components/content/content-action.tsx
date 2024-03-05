@@ -15,7 +15,7 @@ import { ToolTip } from '@components/ui/tooltip';
 import { HeroIcon } from '@components/ui/hero-icon';
 import { CustomIcon } from '@components/ui/custom-icon';
 import type { Variants } from 'framer-motion';
-import type { Tweet } from '../../../../models/tweet';
+import type { Post } from '../../../../models/post';
 import type { User } from '../../../../models/user';
 
 export const variants: Variants = {
@@ -28,7 +28,7 @@ export const variants: Variants = {
   exit: { opacity: 0, y: -25, transition: { duration: 0.2 } }
 };
 
-type TweetActionsProps = Pick<Tweet, 'createdBy'> & {
+type TweetActionsProps = Pick<Post, 'createdBy'> & {
   isOwner: boolean;
   ownerId: string;
   tweetId: string;

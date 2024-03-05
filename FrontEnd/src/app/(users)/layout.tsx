@@ -17,15 +17,15 @@ export default function RootLayout({
         <html lang="en">
         <AppHead />
         <body>
-            <ProtectedLayout>
-                <MainLayout>
-                    {/*<AuthContextProvider>*/}
-                        {/*<ThemeContextProvider>*/}
-                                {children}
-                        {/*</ThemeContextProvider>*/}
-                    {/*</AuthContextProvider>*/}
-                </MainLayout>
-              </ProtectedLayout>
+            {/*<AuthContextProvider>*/}
+                <ThemeContextProvider>
+                    <ProtectedLayout>
+                        <MainLayout>
+                        {children}
+                        </MainLayout>
+                    </ProtectedLayout>
+                </ThemeContextProvider>
+            {/*</AuthContextProvider>*/}
         </body>
         </html>
     )

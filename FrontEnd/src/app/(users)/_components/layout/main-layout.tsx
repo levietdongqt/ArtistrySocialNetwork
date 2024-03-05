@@ -17,11 +17,6 @@ const toastOptions: DefaultToastOptions = {
 };
 
 export function MainLayout({ children }: LayoutProps) {
-    if(typeof window === 'undefined') {
-        console.log('window is undefined')
-    }else{
-        console.log('window is defined')
-    }
   return (
     <div className='flex w-full justify-center gap-0 lg:gap-4'>
       <WindowContextProvider>

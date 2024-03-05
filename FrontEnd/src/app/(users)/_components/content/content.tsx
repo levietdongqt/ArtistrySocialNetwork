@@ -60,9 +60,9 @@ export function Content(tweet: TweetProps) {
 
 
   const modal = false;
-  const parentTweet = true;
+  const parentTweet = false;
   const reply = true;
-  const pinned = true;
+  const pinned = false;
   const tweetIsRetweeted = true;
 const verified = false;
 const text = "verified";
@@ -80,7 +80,7 @@ const text = "verified";
       {...(!modal ? { ...variants, layout: 'position' } : {})}
       animate={{
         ...variants.animate,
-        ...(parentTweet && { transition: { duration: 0.2 } })
+        /*...(parentTweet && { transition: { duration: 0.2 } })*/
       }}
     >
       <Modal
