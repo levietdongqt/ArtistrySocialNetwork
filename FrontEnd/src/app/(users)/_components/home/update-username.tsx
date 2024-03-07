@@ -90,27 +90,6 @@ export function UpdateUsername() {
 
   return (
     <>
-      <Modal
-        modalClassName='flex flex-col gap-6 max-w-xl bg-main-background w-full p-8 rounded-2xl h-[576px]'
-        open={open}
-        closeModal={/*cancelUpdateUsername*/() =>{}}
-      >
-        <UsernameModal
-          loading={loading}
-          available={available}
-          alreadySet={alreadySet}
-          changeUsername={changeUsername}
-          cancelUpdateUsername={/*cancelUpdateUsername*/() =>{}}
-        >
-          <InputField
-            label='Username'
-            inputId='username'
-            inputValue={inputValue}
-            errorMessage={errorMessage}
-            handleChange={handleChange}
-          />
-        </UsernameModal>
-      </Modal>
       <Button
         className='dark-bg-tab group relative p-2 hover:bg-light-primary/10
                    active:bg-light-primary/20 dark:hover:bg-dark-primary/10 

@@ -14,7 +14,7 @@ import { Loading } from '@components/ui/loading';
 import { Error } from '@components/ui/error';
 
 export default function Home(){
-    // const { isMobile } = useWindow();
+    const { isMobile } = useWindow();
     /*console.log("Home " + UseTweet().data);
     const { data, loading, LoadMore } = useInfiniteScroll(
         UseTweet().data,
@@ -29,12 +29,12 @@ export default function Home(){
                         <SEO title='Home / Social' />
                         <MainHeader
                             useMobileSidebar
-                            title='Home'
+                            title='Trang chủ'
                             className='flex items-center justify-between'
                         >
                             <UpdateUsername />
                         </MainHeader>
-                        {/* {!isMobile && <Input />} */}
+                        {!isMobile && <Input />}
                         <section className='mt-0.5 xs:mt-0'>
                             {loading ? (
                                 <Loading className='mt-5' />
