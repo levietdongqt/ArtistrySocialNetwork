@@ -24,9 +24,19 @@ spring:
             uri: lb://main-service
             predicates:
               - Path=/api/main/**
+            filters:
+              - AuthenticationFilter
           - id: runtime-service
-            uri: lb://runtime-service
+            uri: lb://realtime-service
             predicates:
-              - Path=/api/runtime/**
+              - Path=/api/realtime/**
+            filters:
+              - AuthenticationFilter
+          - id: auth-service
+            uri: lb://auth-service
+            predicates:
+              - Path=/api/auth/**
+            filters:
+              - AuthenticationFilter
 
 

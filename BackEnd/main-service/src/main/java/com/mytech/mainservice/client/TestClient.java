@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 
-@FeignClient(name="RUNTIME-SERVICE")
+@FeignClient (name="REALTIME-SERVICE")
 public interface TestClient {
-    @GetMapping("/api/runtime/test1")
+    @GetMapping("/api/realtime/test2")
     public String test1();
 
     @GetMapping("/test2")

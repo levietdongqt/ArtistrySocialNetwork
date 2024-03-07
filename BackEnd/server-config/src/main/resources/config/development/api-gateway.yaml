@@ -12,21 +12,40 @@ management:
   tracing:
     sampling:
       probability: 1.0
-
 spring:
   application:
     name: api-gateway
   cloud:
     gateway:
-      mvc:
-        routes:
-          - id: main-service
-            uri: lb://main-service
-            predicates:
-              - Path=/api/main/**
-          - id: runtime-service
-            uri: lb://runtime-service
-            predicates:
-              - Path=/api/runtime/**
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+              - PUT
+      routes:
+        - id: main-service
+          uri: lb://main-service
+          predicates:
+            - Path=/api/main/**
+          filters:
+            - AuthenticationFilter
+        - id: runtime-service
+          uri: lb://realtime-service
+          predicates:
+            - Path=/api/realtime/**
+          filters:
+            - AuthenticationFilter
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - AuthenticationFilter
+
 
 
