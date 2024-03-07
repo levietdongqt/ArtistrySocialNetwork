@@ -48,7 +48,7 @@ export function MoreSettings(): JSX.Element {
                   className='h-7 w-7'
                   iconName='EllipsisHorizontalCircleIcon'
                 />{' '}
-                <p className='hidden xl:block'>More</p>
+                <p className='hidden xl:block'>Thêm</p>
               </div>
             </Menu.Button>
             <AnimatePresence>
@@ -70,7 +70,7 @@ export function MoreSettings(): JSX.Element {
                         onClick={preventBubbling()}
                       >
                         <HeroIcon iconName='Cog8ToothIcon' />
-                        Settings and privacy
+                        Cài đặt và chính sách
                       </MenuLink>
                     )}
                   </Menu.Item>
@@ -85,7 +85,7 @@ export function MoreSettings(): JSX.Element {
                         onClick={preventBubbling()}
                       >
                         <HeroIcon iconName='QuestionMarkCircleIcon' />
-                        Help center
+                        Helps
                       </MenuLink>
                     )}
                   </Menu.Item>
@@ -99,7 +99,7 @@ export function MoreSettings(): JSX.Element {
                         onClick={openModal}
                       >
                         <HeroIcon iconName='PaintBrushIcon' />
-                        Display
+                        Chỉnh màu
                       </Button>
                     )}
                   </Menu.Item>

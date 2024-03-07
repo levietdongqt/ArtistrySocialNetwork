@@ -135,7 +135,7 @@ export function   InputForm({
                        placeholder:text-light-secondary dark:placeholder:text-dark-secondary'
             value={inputValue}
             placeholder={
-              reply || replyModal ? 'Content your reply' : "What's happening?"
+              reply || replyModal ? 'Trả lời....' : "Đăng gì đấy...."
             }
             onBlur={handleShowHideNav(true)}
             minRows={loading ? 1 : modal && !isUploadingImages ? 3 : 1}
@@ -167,7 +167,7 @@ export function   InputForm({
                        px-3 text-main-accent hover:bg-main-accent/10 active:bg-main-accent/20'
           >
             <HeroIcon className='h-4 w-4' iconName='GlobeAmericasIcon' />
-            <p className='font-bold'>Everyone can reply</p>
+            <p className='font-bold'>Mọi người có thể reply</p>
           </button>
         </motion.div>
     </div>
