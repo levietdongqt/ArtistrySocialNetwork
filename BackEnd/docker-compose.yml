@@ -1,8 +1,10 @@
-version: 'v2.23.3-desktop.2'
+version: '3'
 networks:
   my_network:
     driver: bridge
 services:
+
+  # Config for Server-Config
   server-config:
     build: ./server-config/
     image: server-config
@@ -11,9 +13,12 @@ services:
     ports:
       - "8088:8088"
     restart: always
+
+  # Config for Server-registry  
   server-registry:
     build: ./server-registry/
     image: server-registry
+    entrypoint: ./wait-for-it.sh server-config:8088 --strict -- java -jar server-registry.jar
     networks:
       - my_network
     restart: always
@@ -21,3 +26,59 @@ services:
      - "8761:8761"
     depends_on:
      - server-config
+
+  # Config for Main-Service
+  main-service:
+    build: ./main-service/
+    image: main-service
+    entrypoint: ./wait-for-it.sh server-registry:8761 --strict -- java -jar main-service.jar
+    networks:
+      - my_network
+    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      - server-registry
+      - server-config
+
+  # Config for Realtime-Service
+  realtime-service:
+    build: ./realtime-service/
+    image: realtime-service
+    entrypoint: ./wait-for-it.sh server-registry:8761 --strict  -- java -jar realtime-service.jar
+    networks:
+      - my_network
+    restart: always
+    ports:
+      - "8082:8082"
+    depends_on:
+      - server-registry
+      - server-config
+
+  # Config for Auth-Service
+  auth-service:
+    build: ./auth-service/
+    image: auth-service
+    entrypoint: ./wait-for-it.sh server-registry:8761 --strict  -- java -jar auth-service.jar
+    networks:
+      - my_network
+    restart: always
+    ports:
+      - "8083:8083"
+    depends_on:
+      - server-registry
+      - server-config
+
+  # Config for Gateway-Service
+  gateway-service:
+    build: ./gateway-service/
+    image: gateway-service
+    entrypoint: ./wait-for-it.sh main-service:8081 --strict -- ./wait-for-it.sh realtime-service:8082  --strict -- java -jar gateway-service.jar
+    networks:
+      - my_network
+    restart: always
+    ports:
+      - "8060:8060"
+    depends_on:
+      - main-service
+      - realtime-service
