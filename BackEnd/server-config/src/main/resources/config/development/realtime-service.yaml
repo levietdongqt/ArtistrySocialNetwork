@@ -1,12 +1,12 @@
 server:
   port: 8082
   servlet:
-    context-path: /api/runtime
+    context-path: /api/realtime
 
 
 spring:
   application:
-    name: runtime-service
+    name: realtime-service
 
 eureka:
   client:

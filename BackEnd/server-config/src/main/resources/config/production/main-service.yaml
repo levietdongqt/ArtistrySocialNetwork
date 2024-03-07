@@ -8,7 +8,7 @@ spring:
     name: main-service
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/aptechsem4
+    url: jdbc:mysql://host.docker.internal/aptechsem4
     username: root
     password: 123456
   jpa:
@@ -19,4 +19,4 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://server-registry:8761/eureka

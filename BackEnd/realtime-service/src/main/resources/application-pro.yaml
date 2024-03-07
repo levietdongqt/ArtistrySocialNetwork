@@ -1,8 +1,8 @@
 spring:
   application:
-    name: runtime-service
+    name: realtime-service
   config:
-    import: optional:configserver:http://localhost:8088
+    import: "optional:configserver:http://server-config:8088"
 
 
 
