@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: realtime-service
+  config:
+    import: "optional:configserver:http://server-config:8088"
+
+
+
+

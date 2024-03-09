@@ -18,7 +18,9 @@ interface CreateModalParams {
 
 export default function CustomModal( {isOpen,children } : CreateModalParams) {
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    console.log("Form modal")
+
+
+
     const handleCloseModal = () => {
         setModalIsOpen(false);
     };
