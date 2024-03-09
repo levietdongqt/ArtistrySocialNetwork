@@ -1,0 +1,51 @@
+server:
+  port: 8060
+
+eureka:
+  client:
+    client:
+      register-with-eureka: false
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+              - PUT
+      routes:
+        - id: main-service
+          uri: lb://main-service
+          predicates:
+            - Path=/api/main/**
+          filters:
+            - AuthenticationFilter
+        - id: runtime-service
+          uri: lb://realtime-service
+          predicates:
+            - Path=/api/realtime/**
+          filters:
+            - AuthenticationFilter
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - AuthenticationFilter
+
+
+
