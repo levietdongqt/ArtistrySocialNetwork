@@ -1,4 +1,4 @@
-
+'use client'
 import { useRef, useEffect } from 'react';
 import cn from 'clsx';
 import { Dialog } from '@headlessui/react';

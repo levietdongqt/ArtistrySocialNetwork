@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../../context/auth-context';
@@ -35,7 +36,7 @@ const adminLoading = false;
           <h2 className='text-xl font-bold'>Who to follow</h2>
           {adminData && <UserCard />}
           {/*{suggestionsData?.map((userData) => (*/}
-            <UserCard key={'1'} />
+            <UserCard follow />
           {/*))}*/}
           <Link href='/people' className='custom-button accent-tab hover-card block w-full rounded-2xl
                          rounded-t-none text-center text-main-accent'>

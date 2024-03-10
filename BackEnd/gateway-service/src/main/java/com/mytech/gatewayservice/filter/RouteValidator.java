@@ -8,6 +8,8 @@ import java.util.function.Predicate;
 
 @Component
 public class RouteValidator {
+
+    // danh sach open api
     public static final List<String> openApiEndpoints = List.of(
             "/api/main/auth/register",
             "/api/main/auth/login",

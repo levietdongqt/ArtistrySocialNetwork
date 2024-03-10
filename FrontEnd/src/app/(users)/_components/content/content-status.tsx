@@ -1,3 +1,4 @@
+'use client'
 import { motion } from 'framer-motion';
 import { HeroIcon } from '@components/ui/hero-icon';
 import { CustomIcon } from '@components/ui/custom-icon';

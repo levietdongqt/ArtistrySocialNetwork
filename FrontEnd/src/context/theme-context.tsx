@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect, createContext, useContext } from 'react';
 import { useAuth } from './auth-context';
 import type { ReactNode, ChangeEvent } from 'react';

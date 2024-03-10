@@ -1,4 +1,4 @@
-
+'use client'
 import { useState, useEffect, useContext, createContext, useMemo } from 'react';
 import {
   signInWithPopup,

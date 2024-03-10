@@ -1,3 +1,4 @@
+'use client'
 import { AnimatePresence } from 'framer-motion';
 import { UserLayout, ProtectedLayout } from '../../_components/layout/common-layout';
 import { MainLayout } from '../../_components/layout/main-layout';
@@ -45,7 +46,7 @@ export default function UserMedia(): JSX.Element {
                               ) */: (
                                   <AnimatePresence mode='popLayout'>
                                       {/*{sortedTweets.map((content) => (*/}
-                                      <Content key={'1'} />
+                                      <Content  />
                                       {/*))}*/}
                                   </AnimatePresence>
                               )}

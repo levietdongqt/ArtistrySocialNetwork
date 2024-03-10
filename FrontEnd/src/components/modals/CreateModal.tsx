@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Modal from "react-modal";
+/*import Modal from "react-modal";*/
 
 interface CreateModalParams {
     isOpen: boolean;
@@ -23,7 +23,7 @@ export default function CustomModal( {isOpen,children } : CreateModalParams) {
         setModalIsOpen(false);
     };
     return (
-        <Modal
+        /*<Modal
             isOpen={modalIsOpen}
             onRequestClose={handleCloseModal}
             ariaHideApp={false}
@@ -33,6 +33,9 @@ export default function CustomModal( {isOpen,children } : CreateModalParams) {
             <div className="modal-content">
                 {children}
             </div>
-        </Modal>
+        </Modal>*/
+        <div>
+
+        </div>
     )
 }

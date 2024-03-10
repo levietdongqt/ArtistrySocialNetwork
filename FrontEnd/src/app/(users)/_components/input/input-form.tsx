@@ -1,4 +1,4 @@
-
+'use client'
 import { useEffect } from 'react';
 import TextArea from 'react-textarea-autosize';
 import { motion } from 'framer-motion';

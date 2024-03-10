@@ -17,8 +17,6 @@ export function SidebarLink({
                               disabled,
                               canBeHidden
                             }: SidebarLinkProps) {
-
-
   const asPath = usePathname();
   const isActive = username ? asPath.includes(username) : asPath === href;
 
