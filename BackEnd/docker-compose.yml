@@ -55,20 +55,6 @@ services:
       - server-registry
       - server-config
 
-  # Config for Auth-Service
-  auth-service:
-    build: ./auth-service/
-    image: auth-service
-    entrypoint: ./wait-for-it.sh server-registry:8761 --strict  -- java -jar auth-service.jar
-    networks:
-      - my_network
-    restart: always
-    ports:
-      - "8083:8083"
-    depends_on:
-      - server-registry
-      - server-config
-
   # Config for Gateway-Service
   gateway-service:
     build: ./gateway-service/

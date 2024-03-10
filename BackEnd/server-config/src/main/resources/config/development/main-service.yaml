@@ -1,19 +1,22 @@
 server:
-  port: 8081
+  port: 8080
   servlet:
     context-path: /api/main
-
+management:
+  security:
+    enabled: false
 spring:
   application:
     name: main-service
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/projectsem4
-    username: mario
-    password: Tiennam1
+    url: jdbc:mysql://socialweb.mysql.database.azure.com:3306/projectsem4
+    useSSL: true
+    username: project
+    password: Thuhuy@123
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
 
 eureka:
