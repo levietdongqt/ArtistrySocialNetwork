@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 import cn from 'clsx';
 import { variants } from '../user/user-header';
-import { UserNavLink } from './user-nav-link';
+import {SearchNavLink} from "./search-nav-link";
 
 type UserNavProps = {
   follow?: boolean;
@@ -10,10 +10,10 @@ type UserNavProps = {
 
 const allNavs = [
   [
-    { name: 'Tweets', path: '' },
-    { name: 'Tweets & replies', path: 'with_replies' },
-    { name: 'Media', path: 'media' },
-    { name: 'Likes', path: 'likes' }
+    { name: 'Top', path: '' },
+    { name: 'latest', path: 'with_replies' },
+    { name: 'people', path: 'media' },
+    { name: 'studio', path: 'likes' }
   ],
   [
     { name: 'Following', path: 'following' },
@@ -21,7 +21,7 @@ const allNavs = [
   ]
 ] as const;
 
-export function UserNav({ follow }: UserNavProps): JSX.Element {
+export function SearchNav({ follow }: UserNavProps): JSX.Element {
   const userNav = allNavs[+!!follow];
 
   return (
@@ -35,7 +35,7 @@ export function UserNav({ follow }: UserNavProps): JSX.Element {
       exit={undefined}
     >
       {userNav.map(({ name, path }) => (
-        <UserNavLink name={name} path={path} key={name} />
+        <SearchNavLink name={name} path={path} key={name} />
       ))}
     </motion.nav>
   );

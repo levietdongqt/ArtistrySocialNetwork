@@ -39,6 +39,17 @@ export function UserLayout({ children }: LayoutProps): JSX.Element {
     </>
   );
 }
+export function SearchLayout({ children }: LayoutProps): JSX.Element {
+    return (
+        <>
+            {children}
+            <Aside>
+                <Suggestions />
+                <AsideTrends />
+            </Aside>
+        </>
+    );
+}
 export function StudioLayout({ children }: LayoutProps): JSX.Element {
     return (
         <>

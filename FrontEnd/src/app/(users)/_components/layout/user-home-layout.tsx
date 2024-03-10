@@ -1,4 +1,5 @@
-import { useRouter } from 'next/router';
+'use client'
+import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../../context/auth-context';
 import { useUser } from '../../../../context/user-context';
@@ -21,9 +22,7 @@ export function UserHomeLayout({ children }: LayoutProps): JSX.Element {
   /*const { user, isAdmin } = useAuth();*/
   const { user: userData, loading } = useUser();
 
-  const {
-    query: { id }
-  } = useRouter();
+  const {id} = useParams();
 
   const coverData = userData?.coverPhotoURL
     ? { src: userData.coverPhotoURL, alt: userData.name }

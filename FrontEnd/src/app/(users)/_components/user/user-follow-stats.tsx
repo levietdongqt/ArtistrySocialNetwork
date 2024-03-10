@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
+'use client'
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 import { NumberStats } from '../content/number-stats';
 import type { User } from '../../../../models/user';
 
@@ -39,8 +39,8 @@ export function UserFollowStats({
   );
 
   const {
-    query: { id }
-  } = useRouter();
+    id
+  } = useParams();
 
   const userPath = `/user/${id as string}`;
 

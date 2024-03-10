@@ -59,7 +59,7 @@ export function Sidebar() {
   const { open, openModal, closeModal } = useModal();
 
   /*const username = user?.username as string;*/
-  const username = "HahaHa";
+  const username = "123";
 
   return (
     <header

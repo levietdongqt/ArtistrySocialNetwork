@@ -1,3 +1,4 @@
+'use client'
 import { AnimatePresence } from 'framer-motion';
 import { UserLayout, ProtectedLayout } from '../../_components/layout/common-layout';
 import { MainLayout } from '../../_components/layout/main-layout';
@@ -36,7 +37,7 @@ export default function UserLikes(): JSX.Element {
                                   <AnimatePresence mode='popLayout'>
                                       {/*{data.map((content:any) => (*/}
                                           {/*<Content {...content} key={content.id} />*/}
-                                          <Content key={'1'} />
+                                          <Content  />
                                       {/*))}*/}
                                   </AnimatePresence>
                               )}

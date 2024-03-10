@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
+'use client'
 import { useState, useEffect, useMemo } from 'react';
 import cn from 'clsx';
 import { ViewTweetStats } from '../view/view-tweet-stats';

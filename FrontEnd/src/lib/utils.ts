@@ -1,3 +1,4 @@
+'use client'
 import type { SyntheticEvent } from 'react';
 import type { MotionProps } from 'framer-motion';
 

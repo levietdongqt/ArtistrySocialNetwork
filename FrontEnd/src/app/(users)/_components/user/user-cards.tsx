@@ -1,3 +1,4 @@
+'use client'
 import cn from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { StatsEmpty } from '../content/stats-empty';
@@ -66,8 +67,8 @@ export function UserCards({
       ) : (
         <AnimatePresence mode='popLayout'>
           {data?.length ? (
-            data.map((userData) => (
-              <motion.div layout='position' key={'1'} {...variants}>
+            data.map((userData,index) => (
+              <motion.div layout='position' key={index} {...variants}>
                 <UserCard follow={follow} modal={modal} />
               </motion.div>
             ))
