@@ -1,4 +1,5 @@
-import { useRouter } from 'next/router';
+'use client'
+import { useParams,usePathname } from 'next/navigation';
 import { doc } from 'firebase/firestore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useDocument } from '@lib/hooks/useDocument';
@@ -14,11 +15,9 @@ export const variants: Variants = {
 };
 
 export function UserHeader(): JSX.Element {
-  const {
-    pathname,
-    query: { id }
-  } = useRouter();
 
+  const pathname = usePathname();
+  const {id} = useParams();
   const { user, loading } = useUser();
 
   const userId = user ? user.id : null;

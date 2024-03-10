@@ -5,6 +5,8 @@ import { ToolTip } from '@components/ui/tooltip';
 import { MobileSidebar } from '../sidebar/mobile-sidebar';
 import type { ReactNode } from 'react';
 import type { IconName } from '@components/ui/hero-icon';
+import React from "react";
+import {SearchBar} from "../aside/search-bar";
 
 type HomeHeaderProps = {
   tip?: string;
@@ -16,6 +18,7 @@ type HomeHeaderProps = {
   useActionButton?: boolean;
   useMobileSidebar?: boolean;
   action?: () => void;
+  search?: string;
 };
 
 export function MainHeader({
@@ -27,7 +30,7 @@ export function MainHeader({
   disableSticky,
   useActionButton,
   useMobileSidebar,
-  action
+  action, search
 }: HomeHeaderProps): JSX.Element {
   return (
     <header
@@ -58,6 +61,24 @@ export function MainHeader({
           </h2>
         </div>
       )}
+      {
+        search && (
+            <>
+              <SearchBar />
+              <Button
+                  className='dark-bg-tab group relative p-2 hover:bg-light-primary/10 active:bg-light-primary/20
+                     dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20'
+                  onClick={() => {}}
+              >
+                <HeroIcon
+                    className='h-5 w-5'
+                    iconName={iconName ?? 'EllipsisHorizontalIcon'}
+                />
+                <ToolTip tip={tip ?? 'settings'} />
+              </Button>
+            </>
+          )
+      }
       {children}
     </header>
   );

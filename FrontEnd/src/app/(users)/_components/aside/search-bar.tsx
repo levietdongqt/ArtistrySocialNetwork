@@ -35,7 +35,7 @@ export function SearchBar(): JSX.Element {
 
   return (
     <form
-      className='hover-animation sticky top-0 z-10 -my-2 bg-main-background py-2'
+      className='hover-animation sticky top-0 z-10 -my-2 bg-main-background py-2 w-full'
       onSubmit={handleSubmit}
     >
       <label

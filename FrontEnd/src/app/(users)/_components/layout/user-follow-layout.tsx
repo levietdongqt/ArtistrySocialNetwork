@@ -1,3 +1,4 @@
+'use client'
 import { motion } from 'framer-motion';
 import { useUser } from '../../../../context/user-context';
 import { Loading } from '@components/ui/loading';

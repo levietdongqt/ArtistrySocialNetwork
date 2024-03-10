@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link';
 import cn from 'clsx';
 import { motion } from 'framer-motion';
@@ -73,7 +74,7 @@ export function AsideTrends({ inTrendsPage }: AsideTrendsProps): JSX.Element {
                 </p>
                 <p className='font-bold'>{name}</p>
                 <p className='text-sm text-light-secondary dark:text-dark-secondary'>
-                  {formatNumber(tweet_volume)} tweets
+                  {formatNumber(tweet_volume)} posts
                 </p>
 
             </Link>

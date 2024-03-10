@@ -1,4 +1,4 @@
-
+'use client'
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../../context/auth-context';
@@ -97,7 +97,7 @@ export function UpdateUsername() {
         onClick={openModal}
       >
         <HeroIcon className='h-5 w-5' iconName='SparklesIcon' />
-        <ToolTip tip='Top tweets' />
+        <ToolTip tip='Top posts' />
       </Button>
     </>
   );

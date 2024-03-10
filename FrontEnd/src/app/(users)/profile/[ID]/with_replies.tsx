@@ -1,3 +1,4 @@
+'use client'
 import { AnimatePresence } from 'framer-motion';
 import { UserLayout, ProtectedLayout } from '../../_components/layout/common-layout';
 import { MainLayout } from '../../_components/layout/main-layout';
