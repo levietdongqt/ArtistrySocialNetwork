@@ -1,7 +1,0 @@
-spring:
-  config:
-    import: optional:configserver:http://localhost:8088
-  application:
-    name: auth-service
-
-
