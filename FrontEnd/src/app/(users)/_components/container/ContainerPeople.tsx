@@ -6,10 +6,8 @@ import {variants} from "../aside/aside-trends";
 import {UserCard} from "../user/user-card";
 import {MainHeader} from "../home/main-header";
 import {useRouter} from "next/navigation";
-import {SearchNav} from "../search/search-nav";
 
-
-const ContainerSearch = () => {
+const ContainerPeople = () => {
     /*const user = UseUser([]);*/
     /*const { data, loading, LoadMore } = useInfiniteScroll(
             user,
@@ -21,8 +19,7 @@ const ContainerSearch = () => {
     const loading = false;
     return (
         <>
-            <MainHeader useActionButton action={back} search={'hahaha'} />
-            <SearchNav/>
+            <MainHeader useActionButton title='Studio' action={back} />
             <section>
                 {loading ? (
                     <Loading className='mt-5' />
@@ -39,13 +36,10 @@ const ContainerSearch = () => {
                         {/*<LoadMore />*/}
                     </>
                 )}
-                {
-
-                }
             </section>
         </>
 
     );
 };
 
-export default ContainerSearch;
+export default ContainerPeople;
