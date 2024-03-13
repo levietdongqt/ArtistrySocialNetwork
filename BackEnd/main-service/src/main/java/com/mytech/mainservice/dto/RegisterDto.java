@@ -25,6 +25,7 @@ public  class RegisterDto implements Serializable {
     private static final long serialVersionUID = 0L;
     private String email;
     private   String password;
+    private List<String> roles;
 
 
 }

@@ -1,9 +1,6 @@
 package com.mytech.mainservice.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -20,8 +17,6 @@ import java.time.LocalDateTime;
 @Table(name = "sessions")
 public class Session implements Serializable {
     @Id
-    @Size(max = 100)
-    @Column(name = "id", nullable = false, length = 100)
     private long id;
 
     @Size(max = 100)
@@ -30,12 +25,10 @@ public class Session implements Serializable {
     private String refreshToken;
 
     @Size(max = 100)
-    @NotNull
     @Column(name = "user_Agent", nullable = false, length = 100)
     private String userAgent;
 
     @Size(max = 100)
-    @NotNull
     @Column(name = "client_Ip", nullable = false, length = 100)
     private String clientIp;
 
@@ -50,5 +43,9 @@ public class Session implements Serializable {
     @NotNull
     @Column(name = "created_At", nullable = false)
     private LocalDateTime createdAt;
+
+    @ManyToOne()
+    @JoinColumn(name = "user_Id")
+    private User user;
 
 }

@@ -23,7 +23,7 @@ public class UserService implements IUserService {
             System.out.println("ID: " + user.getId());
         });
         try {
-            Optional<User> user = userRepository.findById(UUID.fromString(userId));
+            Optional<User> user = userRepository.findById(userId);
             if (user.isPresent()) {
                 return user.get();
             }

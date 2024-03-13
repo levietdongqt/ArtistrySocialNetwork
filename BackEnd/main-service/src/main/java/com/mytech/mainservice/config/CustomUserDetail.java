@@ -4,6 +4,7 @@ import com.mytech.mainservice.model.Role;
 import com.mytech.mainservice.model.User;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,10 +13,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class CustomUserDetail implements UserDetails {
 
-    private String usename;
-    private String password;
+    private final String usename;
+    private final String password;
 
     @Getter
     @Setter
@@ -30,9 +32,13 @@ public class CustomUserDetail implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        this.roles.forEach(item -> log.debug(item.getName().toString()));
+
         return this.roles.stream().
-                map(item -> new SimpleGrantedAuthority(item.getName().toString()))
-                .collect(Collectors.toList());
+                map(item ->{
+                    log.debug(item.getName().toString());
+                  return  new SimpleGrantedAuthority(item.getName().toString());
+                } ).collect(Collectors.toList());
     }
 
     @Override

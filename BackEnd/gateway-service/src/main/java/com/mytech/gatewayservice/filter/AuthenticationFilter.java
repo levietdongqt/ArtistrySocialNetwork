@@ -1,13 +1,12 @@
 package com.mytech.gatewayservice.filter;
 
-import com.mytech.gatewayservice.service.AuthService;
+import com.mytech.gatewayservice.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 @Component
 @Slf4j
@@ -17,7 +16,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     private RouteValidator validator;
 
     @Autowired
-    private AuthService authService;
+    private JwtService jwtService;
 
     public AuthenticationFilter() {
         super(Config.class);
@@ -39,7 +38,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     authHeader = authHeader.substring(7);
                 }
                 try {
-                    authService.validateToken(authHeader);
+                    jwtService.validateToken(authHeader);
                 }
                 catch (Exception e) {
                     log.error("Invalid authorization header");
