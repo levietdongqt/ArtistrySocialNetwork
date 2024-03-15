@@ -10,7 +10,6 @@ type ButtonProps = ComponentPropsWithRef<'button'> & {
 // eslint-disable-next-line react/display-name
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, loading, disabled, children, ...rest }, ref) => {
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     const isDisabled = loading || disabled;
 
     return (
