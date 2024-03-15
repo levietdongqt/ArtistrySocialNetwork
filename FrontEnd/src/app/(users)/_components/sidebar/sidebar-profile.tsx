@@ -15,7 +15,7 @@ import { UserUsername } from '../user/user-username';
 import { variants } from './more-settings';
 
 export function SidebarProfile(): JSX.Element {
-  const {  signOut } = useAuth();
+  // const {  signOut } = useAuth();
   const { open, openModal, closeModal } = useModal();
 
   /*const { name, username, verified, photoURL } = user as User;*/
@@ -33,7 +33,8 @@ export function SidebarProfile(): JSX.Element {
           title='Log out of Social?'
           description='You can always log back in at any time. If you just want to switch accounts, you can do that by adding an existing account.'
           mainBtnLabel='Log out'
-          action={signOut}
+          // action={signOut}
+          action={() =>{}}
           closeModal={closeModal}
         />
       </Modal>

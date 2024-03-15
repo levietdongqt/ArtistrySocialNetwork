@@ -19,7 +19,8 @@ const Icons = {
   FeatherIcon,
   SpinnerIcon,
   TriangleIcon,
-  ArrowUpIcon
+  ArrowUpIcon,
+  FaceBookIcon
 };
 
 export function CustomIcon({
@@ -40,7 +41,14 @@ function GameIcon({ className }: IconProps): JSX.Element {
       </svg>
   );
 }
-
+function FaceBookIcon({ className }: IconProps): JSX.Element {
+  return (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" id="facebook" className={cn('fill-current', className)}>
+        <path fill="#1976D2" fill-rule="evenodd" d="M12 5.5H9v-2a1 1 0 0 1 1-1h1V0H9a3 3 0 0 0-3 3v2.5H4V8h2v8h3V8h2l1-2.5z" clip-rule="evenodd">
+        </path>
+      </svg>
+  );
+}
 function ArrowUpIcon({ className }: IconProps): JSX.Element {
   return (
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" id="dropup-arrow" className={cn( className)}>
