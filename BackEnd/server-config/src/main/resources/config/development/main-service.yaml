@@ -8,6 +8,13 @@ management:
 spring:
   application:
     name: main-service
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: https://securetoken.google.com/artistrysocialnetwork
+          jwk-set-uri: https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://socialweb.mysql.database.azure.com:3306/projectsem4
@@ -23,3 +30,21 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+env:
+  secret_token: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
+  firebaseConfig: |
+    {
+      "type": "service_account",
+      "project_id": "artistrysocialnetwork",
+      "private_key_id": "f02aac57d8c77d4c927042a8e3b775e80cabc742",
+      "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCV6oNgkNNzvb5v\ndbzs/9AavLjhC4p7YCzpOuN1xMeOk19IA+5lhVCE084+q4uS8F/MRwxQJei4EL/O\nFWwjdai4fshYGpaxs5H0FRHnNnKgL2DL+ifPkrYgPjO4uZDlciTURY8FbFJCnQUy\nFNP/9Scut2A8ON69najE4LAt0w4ws9ymevtefoK5qx9m9wqIF5TCY7l8/5aQwtMR\n5/rEH9fFt3xJDSU/aDjn/M1MATwgSCIM/Dp9TsCyveHHyfYtirCGm6LfVKP5XKpp\n4cPsvxxiyy1kmYXC6fE4MrCcB7//3l63c1QQskLvQIz95d+isOzCU+K6ciY0J0jq\njpRPOuzXAgMBAAECggEAAn5OBRMjkS88tZndtItkqK0u3f9VJEwrMw3ZrqHBN+vX\nj9kQ4/tdpXfoXD56Kc15qmocGFEpF7afmgvdKpHQZpElP+HhU79K1CZtj8zmBygC\nkiHs+5TTFqIyNgZQFKDbX/RwNoTgsV7vMTALfpxTNIG0RgwkGD9BCVU7WOfDuqec\noegQDP+Z8+/Ie8+S63R+hSGPgeLsW/f+IaaJelkwFh2SHgTGUzjARLysVCGORIig\nHAdzo/KVyJcbKX9jh/viYt2EadXL+bGesdm3Pw4RQCaf5L5OlE1GgFjv0tFWBLlR\ncJlpLNTSDjJp2+6Bbuw0OImOHuGKGibK79IQzuNWAQKBgQDRbxA5/Nru9qU8JG27\nWTW9iALrJm6Hmv3LFSOY4DSlT8xgMaRCwsDB8tjsTuhI1JdA/ixKnLPRvWZwWDAs\nhYUwHo0E3o3WnLbSR43GbD6hc+LDThC4RR69siEqryPbgLQ/NkMN9cZkU0ThavFI\nxpLo8IGSmwfCWTMeNakj+IjxVwKBgQC3P7VzoKnuDrXvkW/FyCZtKIJ56uYFWyXF\nXshYSbFRoEYugdPmtx30foxgkJ5CMDy0wABlcxs7P1lhUtFxftKvM/C5ZjAQpvWb\nMbuKtUWxXrtPdk+nxTneH1SnVV3TGlRcHli5IX+f5Z6my7TbGq0DLQAxBLiaanq4\n46Ie2i8wgQKBgQCqYTROOIrTxQv/tZMfyx+RJUlajFV3NHwr7vKauCucISMfTsNX\nHKE8J5iaBkeqmGjEkwLtYDZZ9z+TPetTDPyhfPk0cOnrImsI/vUz63O4XVKpmKS5\nhGHR6UxaMUl2lWoN0tMSVFQl4igzSpEop4N0xdRjtIPHdFHFzdngTZz62QKBgCV0\n7E4aRSHX9/BkNgijhNdDNIhfL21g2DOj0CfbyFb6/915xCqgu4rCY0dJyE+XNJFt\nvab/BE30AP0XxKACYGZXo5kB/kkpF4MFg2Qy8W/0AS2Y7WdJtS5mEROzK15/P0cl\nHNWat0+jy+4kLW+r4DmJ9UQPxvwpT7SDMxxDVOoBAoGAcO0jseOyGGMNoyIzaTLj\nrFfFMbmS6OJY45VZl4tLRATe20mZYjjSiZsVt8yMKCKtMh/4GeiJZ2Q5In5EETjR\nBGJltJmCuQlbLObv3OClaSIzliLOVWzMXhegv1r8jUOpsS/O56eVosHrF0IEJjtJ\nJ0nE4LOtwI+YKckt5cMDoiU=\n-----END PRIVATE KEY-----\n",
+      "client_email": "firebase-adminsdk-qczy2@artistrysocialnetwork.iam.gserviceaccount.com",
+      "client_id": "118371271166639966787",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-qczy2%40artistrysocialnetwork.iam.gserviceaccount.com",
+      "universe_domain": "googleapis.com"
+    }
+

@@ -1,5 +1,6 @@
 package com.mytech.mainservice.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.mytech.mainservice.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -8,12 +9,13 @@ import lombok.*;
 import java.io.Serializable;
 import java.util.List;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Getter
 @Setter
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "roles")
 public class Role implements Serializable {
     @Id
@@ -28,10 +30,7 @@ public class Role implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany
-    @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "role_Id"),
-            inverseJoinColumns = @JoinColumn(name = "user_Id"))
+    @JsonBackReference
+    @ManyToMany(mappedBy = "roles",fetch = FetchType.LAZY)
     private List<User> users;
 }

@@ -1,9 +1,11 @@
 package com.mytech.mainservice.config;
 
-import com.mytech.mainservice.model.Role;
+import com.mytech.mainservice.enums.UserStatus;
 import com.mytech.mainservice.model.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,27 +14,31 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class CustomUserDetail implements UserDetails {
 
-    private String usename;
-    private String password;
+    private final String usename;
+    private final String password;
+
+    @Getter
+    private final UserStatus status;
 
     @Getter
     @Setter
-    private List<Role> roles;
+    private List<SimpleGrantedAuthority> authorities;
 
     public CustomUserDetail(User credential) {
         this.usename = credential.getEmail();
         this.password = credential.getPassword();
-        this.roles = credential.getRoles();
+        this.authorities = credential.getRoles().stream().
+                map(item -> new SimpleGrantedAuthority(item.getName().toString())).toList();
+        this.status = credential.getStatus();
 
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().
-                map(item -> new SimpleGrantedAuthority(item.getName().toString()))
-                .collect(Collectors.toList());
+        return authorities;
     }
 
     @Override
@@ -62,7 +68,7 @@ public class CustomUserDetail implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return status == UserStatus.ACTIVED;
     }
 
 

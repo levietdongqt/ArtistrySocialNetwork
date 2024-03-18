@@ -1,5 +1,6 @@
 package com.mytech.mainservice.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mytech.mainservice.enums.AccentType;
 import com.mytech.mainservice.enums.Theme;
 import com.mytech.mainservice.enums.UserStatus;
@@ -26,7 +27,8 @@ import java.util.UUID;
 @Table(name = "users")
 public class User implements Serializable {
     @Id
-    private UUID id;
+    @Column(name = "id", columnDefinition = "VARCHAR(36)")
+    private String id = UUID.randomUUID().toString();
 
     @Size(max = 50)
     @Column(name = "full_name", length = 50)
@@ -70,7 +72,11 @@ public class User implements Serializable {
     @Column(name = "cover_image")
     private String coverImage;
 
-    @Column(name = "user_details")
+    @Size(max = 20)
+    @Column(name = "auth_provider")
+    private String authProvider;
+
+    @Column(name = "metadata")
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> userDetails;
 
@@ -114,10 +120,21 @@ public class User implements Serializable {
     @Column(name = "pinned_Post", length = 250)
     private String pinnedPost;
 
-    @ManyToMany(mappedBy ="users")
+    @JsonManagedReference
+    @ManyToMany( cascade =
+            {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
+            fetch = FetchType.EAGER
+                )
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_Id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private  List<Role> roles;
 
-    @ManyToMany(mappedBy ="savedByUser")
+    @ManyToMany()
+    @JoinTable(name = "saved_service",
+            joinColumns = @JoinColumn(name = "user_Id"),
+            inverseJoinColumns = @JoinColumn(name = "main_Service_Id"))
     private  List<MainService> savedMainServices;
 
     @OneToMany(mappedBy ="provider")
@@ -142,4 +159,7 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "provider")
     private List<WorkingTime> workingTimes;
+
+    @OneToMany(mappedBy = "user")
+    private List<Session> sessions;
 }

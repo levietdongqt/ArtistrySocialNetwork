@@ -64,10 +64,7 @@ public class MainService  implements Serializable {
     @Column(name = "update_Date")
     private LocalDateTime updateDate;
 
-    @ManyToMany
-    @JoinTable(name = "saved_service",
-            joinColumns = @JoinColumn(name = "main_Service_Id"),
-            inverseJoinColumns = @JoinColumn(name = "user_Id"))
+    @ManyToMany(mappedBy ="savedMainServices")
     private List<User> savedByUser;
 
     @ManyToMany

@@ -4,16 +4,16 @@ use projectsem4;
 
 CREATE TABLE IF NOT EXISTS roles (
 	id Bigint auto_increment,
-    name enum('ROLE_USER','ROLE_ADMIN','ROLE_PROVIDER','ROLE_STUDIO','ROLE_MAKEUP'),
+    name enum('ROLE_USER','ROLE_ADMIN','ROLE_PROVIDER','ROLE_STUDIO','ROLE_MAKEUP') unique,
     description varchar(255) CHARACTER SET utf8mb4,
     primary key(id) 
 );
 
 CREATE TABLE IF NOT EXISTS users (
-	id BINARY(16) DEFAULT (UUID_TO_BIN(UUID())),
+	id VARCHAR(36) DEFAULT (UUID()),
     full_name varchar(50) CHARACTER SET utf8mb4,
-    email varchar(50) CHARACTER SET utf8mb4 not null,
-    phone_number varchar(20) CHARACTER SET utf8mb4,
+    email varchar(50) CHARACTER SET utf8mb4 not null unique,
+    phone_number varchar(20) CHARACTER SET utf8mb4 unique,
     gender bit default 1,
     date_of_birth date,
     email_confirmed bit default 0,
@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS users (
 	location JSON,
     avatar varchar(255) CHARACTER SET utf8mb4,
     cover_image varchar(255) CHARACTER SET utf8mb4,
-    user_details JSON,
+    metadata JSON,
+    auth_provider varchar(20),
     priority_score float default 0,
     password varchar(128) CHARACTER SET utf8mb4,
     change_password boolean default 0,
@@ -41,10 +42,10 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS sessions(
 	id Bigint auto_increment,
-    user_Id BINARY(16) not null,
+    user_Id VARCHAR(36) not null,
     refresh_Token varchar(100) not null,
-    user_Agent varchar(100) not null,
-    client_Ip varchar(100) not null,
+    user_Agent varchar(100) null,
+    client_Ip varchar(100)  null,
     is_Blocked bit not null default(0),
     expires_At datetime not null,
     created_At datetime not null default now(),
@@ -53,7 +54,7 @@ CREATE TABLE IF NOT EXISTS sessions(
 );
 
 CREATE TABLE IF NOT EXISTS users_roles (
-	user_Id binary(16),
+	user_Id VARCHAR(36),
     role_Id Bigint,
     primary key(user_Id,role_Id),
     Foreign key(user_Id) references users(id),
@@ -62,8 +63,8 @@ CREATE TABLE IF NOT EXISTS users_roles (
 
 CREATE TABLE IF NOT EXISTS friendships (
 	id Bigint auto_increment,
-    from_User_Id binary(16) not null,
-    to_User_Id binary(16),
+    from_User_Id VARCHAR(36) not null,
+    to_User_Id VARCHAR(36),
     status ENUM('PENDING', 'ISFRIEND', 'FOLLOWING', 'BLOCKED') DEFAULT 'PENDING',
     primary key(id),
     foreign key(from_User_Id) references users(id),
@@ -72,8 +73,8 @@ CREATE TABLE IF NOT EXISTS friendships (
 
 CREATE TABLE IF NOT EXISTS reviews (
 	id Bigint auto_increment,
-    customer_User_Id binary(16),
-    provider_User_Id binary(16),
+    customer_User_Id VARCHAR(36),
+    provider_User_Id VARCHAR(36),
     review_Details Json,
     primary key(id),
     Foreign key(customer_User_Id) references users(id),
@@ -82,7 +83,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 
 CREATE TABLE IF NOT EXISTS extra_services (
 	id Bigint auto_increment,
-    user_Id binary(16),
+    user_Id VARCHAR(36),
     name varchar(100) CHARACTER SET utf8mb4,
     price double default 0,
     price_Type varchar(20) CHARACTER SET utf8mb4 not null,
@@ -97,7 +98,7 @@ CREATE TABLE IF NOT EXISTS extra_services (
 
 CREATE TABLE IF NOT EXISTS main_services (
 	id Bigint auto_increment,
-    user_Id binary(16),
+    user_Id VARCHAR(36),
     name varchar(100) CHARACTER SET utf8mb4,
     price double default 0,
     price_Type varchar(20) CHARACTER SET utf8mb4 not null,
@@ -122,7 +123,7 @@ CREATE TABLE Additional_Details (
 );
 
 CREATE TABLE Saved_Service(
-	user_Id BINARY(16),
+	user_Id VARCHAR(36),
     main_Service_Id Bigint,
     primary key(user_Id,main_Service_Id),
     foreign key(user_Id) references users(id),
@@ -150,7 +151,7 @@ CREATE TABLE IF NOT EXISTS promotion_details (
 
 CREATE TABLE IF NOT EXISTS working_time (
 	id Bigint auto_increment,
-    user_Id binary(16),
+    user_Id VARCHAR(36),
     start_Date datetime not null,
     end_Date datetime not null,
     working_Day varchar(20) CHARACTER SET utf8mb4,
@@ -161,8 +162,8 @@ CREATE TABLE IF NOT EXISTS working_time (
 
 CREATE TABLE IF NOT EXISTS orders (
 	id Bigint auto_increment,
-    customer_User_Id binary(16),
-    provider_User_Id binary(16),
+    customer_User_Id VARCHAR(36),
+    provider_User_Id VARCHAR(36),
 	main_Service_Id Bigint,
 	additional_Service Json,
     start_Date datetime not null,
@@ -192,4 +193,17 @@ Create Table template(
 
 CREATE INDEX fullNameIndex ON users(full_Name);
 CREATE INDEX statusIndex ON orders(status);
+CREATE INDEX refreshTokenIndex ON sessions(refresh_token);
 
+INSERT INTO `projectsem4`.`Users` 
+(`full_name`, `email`, `phone_number`, `gender`, `email_confirmed`, `phone_confirmed`, `password`)
+ VALUES ('Trần Thụ Huy', 'huy@gmail.com', '1234567891',b'1', b'1', b'1', '123'),
+ ('Lê Viết Đông', 'dong@gmail.com', '1234567892',b'1', b'1', b'1', '123');
+ 
+INSERT INTO `projectsem4`.`roles` (`name`, `description`) 
+VALUES
+ ('ROLE_ADMIN', 'This is role for admin page'),
+ ('ROLE_USER', 'This is role for normal user'),
+ ('ROLE_PROVIDER', 'This is role for service  provider'),
+('ROLE_STUDIO', 'This is role for studio provider'),
+ ('ROLE_MAKEUP', 'This is role for provider Makeup');
