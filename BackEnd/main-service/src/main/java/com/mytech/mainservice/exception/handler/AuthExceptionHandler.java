@@ -19,16 +19,18 @@ public class AuthExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> AuthExceptionHandle(RuntimeException exception){
+        log.error(Arrays.toString(exception.getStackTrace()));
             return ResponseEntity.badRequest().body(
                     ResponseObject.builder().
                             status(HttpStatus.BAD_REQUEST)
-                            .message(exception.getMessage() + "\n" + Arrays.toString(exception.getStackTrace()))
+                            .message(exception.getMessage())
                             .data(null).build());
     }
 
     @ExceptionHandler(UnAuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<?> AuthExceptionHandle2(UnAuthenticationException exception){
+        log.error(Arrays.toString(exception.getStackTrace()));
         return ResponseEntity.badRequest().body(
                 ResponseObject.builder().
                         status(HttpStatus.UNAUTHORIZED)

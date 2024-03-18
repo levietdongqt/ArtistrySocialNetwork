@@ -72,7 +72,11 @@ public class User implements Serializable {
     @Column(name = "cover_image")
     private String coverImage;
 
-    @Column(name = "user_details")
+    @Size(max = 20)
+    @Column(name = "auth_provider")
+    private String authProvider;
+
+    @Column(name = "metadata")
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> userDetails;
 

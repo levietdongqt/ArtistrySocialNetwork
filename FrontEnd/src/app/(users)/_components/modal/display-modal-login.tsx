@@ -4,26 +4,19 @@ import { InputAccentRadio } from '../input/input-accent-radio';
 import type { Theme, Accent } from '../../../../models/theme';
 import { CustomIcon } from '@components/ui/custom-icon';
 import { HeroIcon } from '@components/ui/hero-icon';
+import { useAuth } from 'context/auth-context';
 type DisplayModalProps = {
   closeModal: () => void;
 };
 
-const themes: Readonly<[Theme, string][]> = [
-  ['light', 'Default'],
-  ['dim', 'Dim'],
-  ['dark', 'Lights out']
-];
 
-const accentsColor: Readonly<Accent[]> = [
-  'blue',
-  'yellow',
-  'pink',
-  'purple',
-  'orange',
-  'green'
-];
 
 export function DisplayModalLogin({ closeModal }: DisplayModalProps): JSX.Element {
+  const {signInWithGoogle,signInWithFacebook} = useAuth();
+  const signInHande = () => {
+    console.log("Voo login goole")
+    signInWithGoogle();
+  }
   return (
       <div className="flex flex-col items-center gap-6">
           <CustomIcon
@@ -94,12 +87,12 @@ export function DisplayModalLogin({ closeModal }: DisplayModalProps): JSX.Elemen
 
                       <div className="mt-6 grid grid-cols-2 gap-3">
                           <div>
-                              <a href="#" className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                              <a onClick={signInWithFacebook} className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                                   <CustomIcon iconName={'FaceBookIcon'}/>
                               </a>
                           </div>
                           <div>
-                              <a href="/" className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                              <a onClick={signInWithGoogle} className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                                   <CustomIcon iconName={'GoogleIcon'} />
                               </a>
                           </div>

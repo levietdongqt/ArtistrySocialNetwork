@@ -12,20 +12,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class UserRoleConverter implements Converter<List<String>, List<Role>> {
+public class UserRoleConverter implements Converter<String, Role> {
     @Override
-    public List<Role> convert(MappingContext<List<String>, List<Role>> context) {
-        List<String> source = context.getSource();
-        if (source == null || source.isEmpty()) {
-            return null;
+    public Role convert(MappingContext<String, Role> context) {
+        try {
+            String source = context.getSource();
+            UserRole userRole = UserRole.valueOf(source.toUpperCase());
+            return Role.builder().name(userRole).build();
+        }catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Role name is not valid");
         }
-        if(Arrays.stream(UserRole.values()).toList().contains(source)){
-            throw new IllegalStateException("Role is not valid");
-        }
-        log.debug("CHECK lại enum contain USER_ROLE_CONVERTER");
-        return source.stream().map(
-                        item -> Role.builder().name(UserRole.valueOf(item.toUpperCase())).build())
-                .collect(Collectors.toList());
     }
 
 }

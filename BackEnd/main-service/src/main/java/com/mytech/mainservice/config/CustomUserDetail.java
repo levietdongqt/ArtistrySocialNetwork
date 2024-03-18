@@ -1,7 +1,8 @@
 package com.mytech.mainservice.config;
 
-import com.mytech.mainservice.model.Role;
+import com.mytech.mainservice.enums.UserStatus;
 import com.mytech.mainservice.model.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,25 +21,24 @@ public class CustomUserDetail implements UserDetails {
     private final String password;
 
     @Getter
+    private final UserStatus status;
+
+    @Getter
     @Setter
-    private List<Role> roles;
+    private List<SimpleGrantedAuthority> authorities;
 
     public CustomUserDetail(User credential) {
         this.usename = credential.getEmail();
         this.password = credential.getPassword();
-        this.roles = credential.getRoles();
+        this.authorities = credential.getRoles().stream().
+                map(item -> new SimpleGrantedAuthority(item.getName().toString())).toList();
+        this.status = credential.getStatus();
 
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        this.roles.forEach(item -> log.debug(item.getName().toString()));
-
-        return this.roles.stream().
-                map(item ->{
-                    log.debug(item.getName().toString());
-                  return  new SimpleGrantedAuthority(item.getName().toString());
-                } ).collect(Collectors.toList());
+        return authorities;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class CustomUserDetail implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return status == UserStatus.ACTIVED;
     }
 
 

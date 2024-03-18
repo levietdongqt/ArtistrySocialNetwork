@@ -1,10 +1,8 @@
 package com.mytech.mainservice.service.implement;
 
-import com.mytech.mainservice.dto.RegisterDto;
-import com.mytech.mainservice.enums.UserRole;
-import com.mytech.mainservice.enums.UserStatus;
+import com.google.firebase.auth.*;
+import com.mytech.mainservice.config.CustomUserDetail;
 import com.mytech.mainservice.helper.JwtService;
-import com.mytech.mainservice.model.Role;
 import com.mytech.mainservice.model.Session;
 import com.mytech.mainservice.model.User;
 import com.mytech.mainservice.exception.myException.UnAuthenticationException;
@@ -17,10 +15,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,29 +37,19 @@ public class AuthService implements IAuthService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtService jwtService;
-    @Override
-    @Transactional
-    public User createUser(RegisterDto userRegister) throws UnAuthenticationException {
 
-        boolean isExisted = userRepo.findByEmail(userRegister.getEmail()).isPresent();
-        if(isExisted){
-            throw new UnAuthenticationException(" Email already existed");
-        }
-        List<UserRole> userRoles = userRegister.getRoles().stream().map(item -> UserRole.valueOf(item.toUpperCase())).toList();
-        List<Role> roles = roleRepository.findByListName(userRoles);
-        User user = modelMapper.map(userRegister, User.class);
-        user.setCreateDate(LocalDateTime.now());
-        user.setStatus(UserStatus.PENDING);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(roles);
-        User savedUser = userRepo.save(user);
-        log.info("User added to this system");
-        return savedUser;
+    @Override
+    public String generateAccessToken(String username) {
+        return jwtService.generateAccessToken(username);
+    }
+
+    public String generateAccessToken(CustomUserDetail userDetail) {
+        return jwtService.generateAccessToken(userDetail);
     }
 
     @Override
-    public String generateToken(String username) {
-        return jwtService.generateToken(username);
+    public String generateAccessToken(User user) {
+        return jwtService.generateAccessToken(user);
     }
 
     @Override
@@ -75,6 +62,33 @@ public class AuthService implements IAuthService {
                 .user(user)
                 .build();
         return sessionRepo.save(session);
+    }
+    @Override
+    public Session generateSession(String username) {
+        User user = userRepo.findByEmail(username).orElse(null);
+        Session session = Session.builder()
+                .createdAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusDays(expireTimeToken))
+                .refreshToken(UUID.randomUUID().toString())
+                .isBlocked(false)
+                .user(user)
+                .build();
+        return sessionRepo.save(session);
+    }
+
+    @Override
+    public UserInfo firebaseHandler(String token) throws FirebaseAuthException {
+        FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
+        return Arrays.stream(FirebaseAuth.getInstance().getUser(decodedToken.getUid()).getProviderData()).findFirst().get();
+//        return User.builder()
+//                .id(UUID.randomUUID().toString())
+//                .email(userRecord.getEmail())
+//                .phoneNumber(userRecord.getPhoneNumber())
+//                .verified(true)
+//                .emailConfirmed(userRecord.getEmail() != null)
+//                .phoneConfirmed(userRecord.getPhoneNumber() != null)
+//                .build();
+
     }
 
     @Override

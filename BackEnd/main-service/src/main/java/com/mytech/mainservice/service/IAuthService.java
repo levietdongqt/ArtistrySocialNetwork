@@ -1,16 +1,22 @@
 package com.mytech.mainservice.service;
 
-import com.mytech.mainservice.dto.RegisterDto;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserInfo;
+import com.mytech.mainservice.config.CustomUserDetail;
 import com.mytech.mainservice.exception.myException.UnAuthenticationException;
 import com.mytech.mainservice.model.Session;
 import com.mytech.mainservice.model.User;
 
-import java.util.List;
-
 public interface IAuthService {
     public Session checkRefreshToken(String freshToken) throws UnAuthenticationException;
     public Session generateSession(User user);
-    public String generateToken(String username);
+    public Session generateSession(String userId);
 
-    public User createUser(RegisterDto userRegister) throws UnAuthenticationException;
+    public UserInfo firebaseHandler(String token) throws FirebaseAuthException;
+
+    public String generateAccessToken(String username);
+    public String generateAccessToken(CustomUserDetail user);
+
+    public String generateAccessToken(User user);
+
 }

@@ -24,6 +24,9 @@ type AuthContext = {
   loading: boolean;
   isAdmin: boolean;
   randomSeed: string;
+  signInWithGoogle: () => Promise<void>;
+  signInWithFacebook: () => Promise<void>;
+  signOut: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContext | null>(null);
@@ -124,22 +127,52 @@ export function AuthContextProvider({ children
     fetchUserData();
   }, []);
 
-  // const signInWithGoogle = async (): Promise<void> => {
-  //   try {
-  //     const provider = new GoogleAuthProvider();
-  //     await signInWithPopup(auth, provider);
-  //   } catch (error) {
-  //     setError(error as Error);
-  //   }
-  // };
-  //
-  // const signOut = async (): Promise<void> => {
-  //   try {
-  //     await signOutFirebase(auth);
-  //   } catch (error) {
-  //     setError(error as Error);
-  //   }
-  // };
+  const signInWithGoogle = async (): Promise<void> => {
+    try {
+      console.log("voo login");
+      const provider = new GoogleAuthProvider();
+      
+    const user =  await signInWithPopup(auth, provider);
+    console.log("INFO NE: ", user)
+    } catch (error) {
+      setError(error as Error);
+    }
+  };
+
+  const signInWithFacebook = async (): Promise<void> => {
+    console.log("voo login FACEBOOK");
+    var provider = new FacebookAuthProvider();
+    signInWithPopup(auth, provider)
+    .then((result) => {
+      // The signed-in user info.
+      const user = result.user;
+      console.log("FACEBOOK: ", user)
+      // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+      const credential = FacebookAuthProvider.credentialFromResult(result);
+      const accessToken = credential?.accessToken
+      // IdP data available using getAdditionalUserInfo(result)
+      // ...
+    })
+    .catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = FacebookAuthProvider.credentialFromError(error);
+  
+      // ...
+    });
+  };
+  
+  const signOut = async (): Promise<void> => {
+    try {
+      await signOutFirebase(auth);
+    } catch (error) {
+      setError(error as Error);
+    }
+  };
 
   const isAdmin = false;
   const randomSeed = useMemo(getRandomId, [1,2]);
@@ -150,6 +183,9 @@ export function AuthContextProvider({ children
     loading,
     isAdmin,
     randomSeed,
+    signInWithGoogle,
+    signOut,
+    signInWithFacebook
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev:emulators": "concurrently npm:dev npm:emulators",
+    "emulators": "firebase emulators:start --only firestore,auth,storage,functions",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
