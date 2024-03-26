@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8089
   servlet:
     context-path: /api/realtime
 
@@ -7,7 +7,9 @@ server:
 spring:
   application:
     name: realtime-service
-
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/post_test
 eureka:
   client:
     service-url:
