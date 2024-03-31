@@ -1,20 +1,32 @@
 package com.mytech.realtimeservice.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.mytech.realtimeservice.services.NotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
-@RestController
-@RequestMapping("/test1")
+@Controller
 public class TestController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestController.class);
+    @Autowired
+    private NotificationService notificationService;
 
-    @GetMapping("")
-    public String index() {
-        LOGGER.info("Logger successfully ");
-        return "Hello World from runtime service test1";
-    }
+
+//    @MessageMapping("/message")
+//    @SendTo("/topic/messages")
+//    public ResponseMessage sendMessage1(String message) throws InterruptedException {
+//        Thread.sleep(1000);
+//        System.out.println(message);
+//        notificationService.sendGlobalNotification();
+//        return  new ResponseMessage().builder().content(message).build();
+//    }
+
+//    @MessageMapping("/private-message")
+//    @SendToUser("/topic/private-messages")
+//    public ResponseMessage sendPrivateMessage(String message, Principal principal) throws InterruptedException {
+//        Thread.sleep(1000);
+//        System.out.println(message);
+//        notificationService.sendPrivateNotification(principal.getName());
+//        return  new ResponseMessage().builder().content("Sending private message to user " + principal.getName()+ ":" +message).build();
+//    }
+
 }

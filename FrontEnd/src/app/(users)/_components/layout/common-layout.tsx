@@ -83,3 +83,15 @@ export function PeopleLayout({ children }: LayoutProps): JSX.Element {
     </>
   );
 }
+
+export function NotificationLayout({ children }: LayoutProps): JSX.Element {
+  return (
+    <>
+      {children}
+      <Aside>
+        <AsideTrends />
+        <Suggestions />
+      </Aside>
+    </>
+  );
+}
