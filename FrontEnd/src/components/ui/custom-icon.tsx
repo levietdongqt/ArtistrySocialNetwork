@@ -20,7 +20,8 @@ const Icons = {
   SpinnerIcon,
   TriangleIcon,
   ArrowUpIcon,
-  FaceBookIcon
+  FaceBookIcon,
+  CloseIcon,
 };
 
 export function CustomIcon({
@@ -45,6 +46,14 @@ function FaceBookIcon({ className }: IconProps): JSX.Element {
   return (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" id="facebook" className={cn('fill-current', className)}>
         <path fill="#1976D2" fill-rule="evenodd" d="M12 5.5H9v-2a1 1 0 0 1 1-1h1V0H9a3 3 0 0 0-3 3v2.5H4V8h2v8h3V8h2l1-2.5z" clip-rule="evenodd">
+        </path>
+      </svg>
+  );
+}
+function CloseIcon({ className }: IconProps): JSX.Element {
+  return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" id="close" className={cn('fill-current', className)}>
+        <path fill="#000" d="M7.05 7.05a1 1 0 0 0 0 1.414L10.586 12 7.05 15.536a1 1 0 1 0 1.414 1.414L12 13.414l3.536 3.536a1 1 0 0 0 1.414-1.414L13.414 12l3.536-3.536a1 1 0 0 0-1.414-1.414L12 10.586 8.464 7.05a1 1 0 0 0-1.414 0Z">
         </path>
       </svg>
   );

@@ -24,7 +24,7 @@ function ContainerHome() {
                         <AnimatePresence mode='popLayout'>
                             {/*{data.map((content) => (*/}
                             {/*<Content {...content} key={content.id}/>*/}
-                            <Content modal parentTweet pinned={false}/>
+                            <Content parentTweet pinned={false} />
                             {/*  ))}*/}
                         </AnimatePresence>
                         {/* <LoadMore />*/}

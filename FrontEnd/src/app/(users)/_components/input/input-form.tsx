@@ -15,6 +15,7 @@ import type {
   ClipboardEvent
 } from 'react';
 import type { Variants } from 'framer-motion';
+import cn from "clsx";
 
 type InputFormProps = {
   modal?: boolean;
@@ -131,11 +132,10 @@ export function   InputForm({
         <div className='flex items-center gap-3'>
           <TextArea
             id={formId}
-            className='w-full min-w-0 resize-none bg-transparent text-xl outline-none
-                       placeholder:text-light-secondary dark:placeholder:text-dark-secondary'
+            className={cn(`w-full min-w-0 resize-none  bg-transparent text-xl outline-none placeholder:text-light-secondary dark:placeholder:text-dark-secondary`, reply ? 'h-[45px] !important' : '')}
             value={inputValue}
             placeholder={
-              reply || replyModal ? 'Trả lời....' : "Đăng gì đấy...."
+              reply || replyModal ? 'Viết bình luận' : "Bạn đang nghĩ gì thế....."
             }
             onBlur={handleShowHideNav(true)}
             minRows={loading ? 1 : modal && !isUploadingImages ? 3 : 1}
@@ -157,7 +157,7 @@ export function   InputForm({
         </div>
       </div>
       {children}
-        <motion.div
+      {isVisibilityShown && (<motion.div
           className='flex border-b border-light-border pb-2 dark:border-dark-border'
           {...fromBottom}
         >
@@ -169,7 +169,8 @@ export function   InputForm({
             <HeroIcon className='h-4 w-4' iconName='GlobeAmericasIcon' />
             <p className='font-bold'>Mọi người có thể reply</p>
           </button>
-        </motion.div>
+        </motion.div>)
+      }
     </div>
   );
 }

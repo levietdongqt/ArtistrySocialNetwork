@@ -5,7 +5,7 @@ import cn from 'clsx';
 import { ViewTweetStats } from '../view/view-tweet-stats';
 import { TweetOption } from './content-option';
 import { ContentShare } from './content-share';
-import type { Post } from '../../../../models/post';
+import type { Post } from '@models/post';
 
 type TweetStatsProps = Pick<
   Post,
@@ -68,6 +68,7 @@ export function ContentStats({
 
   const isStatsVisible = !!(totalReplies || totalTweets || totalLikes);
 
+
   return (
     <>
       {viewTweet && (
@@ -89,36 +90,21 @@ export function ContentStats({
           viewTweet ? 'justify-around py-2' : 'max-w-md justify-between'
         )}
       >
-        <TweetOption
-          className='hover:text-accent-blue focus-visible:text-accent-blue'
-          iconClassName='group-hover:bg-accent-blue/10 group-active:bg-accent-blue/20 
-                         group-focus-visible:bg-accent-blue/10 group-focus-visible:ring-accent-blue/80'
-          tip='Reply'
-          move={replyMove}
-          stats={currentReplies}
-          iconName='ChatBubbleOvalLeftIcon'
-          viewTweet={viewTweet}
-          onClick={openModal}
-          disabled={reply}
-        />
-        <TweetOption
-          className={cn(
-            'hover:text-accent-green focus-visible:text-accent-green',
-            tweetIsRetweeted && 'text-accent-green [&>i>svg]:[stroke-width:2px]'
-          )}
-          iconClassName='group-hover:bg-accent-green/10 group-active:bg-accent-green/20
-                         group-focus-visible:bg-accent-green/10 group-focus-visible:ring-accent-green/80'
-          tip={tweetIsRetweeted ? 'Undo Retweet' : 'Retweet'}
-          move={tweetMove}
-          stats={currentTweets}
-          iconName='ArrowPathRoundedSquareIcon'
-          viewTweet={viewTweet}
-          onClick={/*manageRetweet(
-            tweetIsRetweeted ? 'unretweet' : 'retweet',
-            userId,
-            tweetId
-          )*/() =>{}}
-        />
+        {
+           <TweetOption
+              className='hover:text-accent-blue focus-visible:text-accent-blue'
+              iconClassName='group-hover:bg-accent-blue/10 group-active:bg-accent-blue/20
+                       group-focus-visible:bg-accent-blue/10 group-focus-visible:ring-accent-blue/80'
+              tip='Reply'
+              move={replyMove}
+              stats={currentReplies}
+              iconName='ChatBubbleOvalLeftIcon'
+              viewTweet={viewTweet}
+              onClick={openModal}
+              disabled={reply}
+          />
+        }
+
         <TweetOption
           className={cn(
             'hover:text-accent-pink focus-visible:text-accent-pink',

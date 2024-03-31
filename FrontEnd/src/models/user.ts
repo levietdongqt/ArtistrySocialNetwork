@@ -1,5 +1,5 @@
 import type { Theme, Accent } from './theme';
-import type { Timestamp, FirestoreDataConverter } from 'firebase/firestore';
+import type { Timestamp } from 'firebase/firestore';
 
 export type User = {
   id: string;
@@ -33,12 +33,12 @@ export type EditableData = Extract<
 
 export type EditableUserData = Pick<User, EditableData>;
 
-export const userConverter: FirestoreDataConverter<User> = {
-  toFirestore(user) {
-    return { ...user };
-  },
-  fromFirestore(snapshot, options) {
-    const data = snapshot.data(options);
-    return { ...data } as User;
-  }
-};
+// export const userConverter: FirestoreDataConverter<User> = {
+//   toFirestore(user) {
+//     return { ...user };
+//   },
+//   fromFirestore(snapshot, options) {
+//     const data = snapshot.data(options);
+//     return { ...data } as User;
+//   }
+// };
