@@ -31,6 +31,8 @@ public class RealtimeServiceApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		postService.deleteAll();
+		notificationService.deleteAll();
 		Post post = postService.create(Post.builder().content("Hello").build());
 		notificationService.saveNotification(Notification.builder()
 				.status(false)
@@ -41,32 +43,25 @@ public class RealtimeServiceApplication implements CommandLineRunner {
 		Post post1 = postService.create(Post.builder().content("Hello").build());
 		notificationService.saveNotification(Notification.builder()
 				.status(false)
-				.userFrom(post.getUser())
+				.userFrom(post1.getUser())
 				.notificationType(NotificationType.COMMENT)
 				.createdDate(LocalDateTime.now())
 				.build());
 		Post post2 = postService.create(Post.builder().content("Hello").build());
 		notificationService.saveNotification(Notification.builder()
 				.status(false)
-				.userFrom(post.getUser())
+				.userFrom(post2.getUser())
 				.notificationType(NotificationType.COMMENT)
 				.createdDate(LocalDateTime.now())
 				.build());
 		Post post3 = postService.create(Post.builder().content("Hello").build());
 		notificationService.saveNotification(Notification.builder()
 				.status(false)
-				.userFrom(post.getUser())
+				.userFrom(post3.getUser())
 				.notificationType(NotificationType.COMMENT)
 				.createdDate(LocalDateTime.now())
 				.build());
-		notificationService.saveNotification(Notification.builder()
-				.status(false)
-				.userFrom(post.getUser())
-				.notificationType(NotificationType.COMMENT)
-				.createdDate(LocalDateTime.now())
-				.build());
-		List<Notification> notificationList = notificationService.getNotificationsByUserFromUserIdOrderByCreatedDateDesc(post.getUser());
-		System.out.println(notificationList);
+
 	}
 
 }

@@ -4,6 +4,7 @@ import com.mytech.realtimeservice.dto.ResponseMessage;
 import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.users.User;
 import com.mytech.realtimeservice.repositories.NotificationRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -13,8 +14,8 @@ import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class NotificationService {
-    @Autowired
     private NotificationRepository notificationRepository;
 
 
@@ -26,5 +27,8 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    public void deleteAll(){
+        notificationRepository.deleteAll();
+    }
 
 }

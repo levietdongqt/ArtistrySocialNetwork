@@ -34,4 +34,8 @@ public class PostService {
     public List<Post> findAll() {
         return postRepository.findAll();
     }
+
+    public void deleteAll() {
+        postRepository.deleteAll();
+    }
 }

@@ -37,6 +37,8 @@ public class Post {
 
     private int userReplies;
 
-    private Comments newComments;
+    private int totalLikes;
+
+    private int totalComments;
 
 }
