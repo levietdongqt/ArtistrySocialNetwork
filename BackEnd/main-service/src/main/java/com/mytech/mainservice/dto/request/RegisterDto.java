@@ -1,4 +1,4 @@
-package com.mytech.mainservice.dto;
+package com.mytech.mainservice.dto.request;
 
 import com.mytech.mainservice.model.User;
 import jakarta.validation.constraints.Email;

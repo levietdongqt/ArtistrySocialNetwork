@@ -9,7 +9,6 @@ import org.springframework.web.service.annotation.HttpExchange;
 public interface TestClient {
     @GetMapping("/api/realtime/test2")
     public String test1();
-
     @GetMapping("/test2")
     public String test2();
 }

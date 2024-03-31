@@ -56,12 +56,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private CustomUserDetail getUserDetail(String token, String username) {
-        List<String> roleNames = jwtService.extractRoles(token);
-        List<Role> roles = roleNames.stream().map(item -> mapper.map(item,Role.class)).toList();
-        User user = User.builder()
-                .email(username)
-                .roles(roles)
-                .build();
-        return new CustomUserDetail(user);
+        try {
+            List<String> roleNames = jwtService.extractRoles(token);
+            List<Role> roles = roleNames.stream().map(item -> mapper.map(item, Role.class)).toList();
+            User user = User.builder()
+                    .email(username)
+                    .roles(roles)
+                    .build();
+            return new CustomUserDetail(user);
+        } catch (RuntimeException e) {
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException("ROLE IS NOT FOUND");
+        }
+
     }
 }

@@ -10,6 +10,7 @@ import { SidebarLink } from './sidebar-link';
 import { MoreSettings } from './more-settings';
 import { SidebarProfile } from './sidebar-profile';
 import type { IconName } from '@components/ui/hero-icon';
+import {testHeader} from "../../../../services/main/auth-service";
 
 export type NavLink = {
   href: string;
@@ -60,7 +61,10 @@ export function Sidebar() {
 
   /*const username = user?.username as string;*/
   const username = "123";
-
+  const test = () => {
+    console.log("Voooooooooooooooo")
+    testHeader().then(value => console.log("OKEEEEEEEEEEEE"))
+  }
   return (
     <header
       id='sidebar'
@@ -106,7 +110,7 @@ export function Sidebar() {
             className='accent-tab absolute right-4 -translate-y-[72px] bg-main-accent text-lg font-bold text-white
                        outline-none transition hover:brightness-90 active:brightness-75 xs:static xs:translate-y-0
                        xs:hover:bg-main-accent/90 xs:active:bg-main-accent/75 xl:w-11/12'
-            onClick={openModal}
+            onClick={test}
           >
             <CustomIcon
               className='block h-6 w-6 xl:hidden'

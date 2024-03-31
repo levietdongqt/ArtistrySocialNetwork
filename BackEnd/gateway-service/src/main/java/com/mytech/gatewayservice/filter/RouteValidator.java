@@ -11,8 +11,7 @@ public class RouteValidator {
 
     // danh sach open api
     public static final List<String> openApiEndpoints = List.of(
-            "/api/main/auth/register",
-            "/api/main/auth/login",
+            "/api/main/auth",
             "/api/main/user/",
             "/api/main/test",
             "/api/main/test/get-runtime",
@@ -24,5 +23,6 @@ public class RouteValidator {
             request -> openApiEndpoints
                     .stream()
                     .noneMatch(uri -> request.getURI().getPath().contains(uri));
+
 
 }

@@ -5,6 +5,10 @@ export type User = {
   id: string;
   bio: string | null;
   name: string;
+  email: string | null;
+  phoneNumber: string | null;
+  avatarUrl: string | null;
+  roles: string[]
   theme: Theme | null;
   accent: Accent | null;
   website: string | null;

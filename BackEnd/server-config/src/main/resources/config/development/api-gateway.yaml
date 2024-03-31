@@ -22,6 +22,8 @@ spring:
           '[/**]':
             allowedOrigins:
               - "http://localhost:3000"
+            allowedHeaders: "*"
+            allowCredentials: true
             allowedMethods:
               - GET
               - POST

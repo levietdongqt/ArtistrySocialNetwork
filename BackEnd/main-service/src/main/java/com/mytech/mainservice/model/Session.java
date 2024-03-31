@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "sessions")
 public class Session implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Size(max = 100)
@@ -25,11 +26,11 @@ public class Session implements Serializable {
     private String refreshToken;
 
     @Size(max = 100)
-    @Column(name = "user_Agent", nullable = false, length = 100)
+    @Column(name = "user_Agent",  length = 100)
     private String userAgent;
 
     @Size(max = 100)
-    @Column(name = "client_Ip", nullable = false, length = 100)
+    @Column(name = "client_Ip",  length = 100)
     private String clientIp;
 
     @NotNull

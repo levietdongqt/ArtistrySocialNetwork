@@ -14,9 +14,6 @@ public interface IAuthService {
 
     public UserInfo firebaseHandler(String token) throws FirebaseAuthException;
 
-    public String generateAccessToken(String username);
-    public String generateAccessToken(CustomUserDetail user);
-
     public String generateAccessToken(User user);
 
 }

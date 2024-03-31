@@ -14,7 +14,6 @@ import java.util.List;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;

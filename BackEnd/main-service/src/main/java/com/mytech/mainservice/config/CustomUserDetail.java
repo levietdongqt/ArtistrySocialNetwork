@@ -1,6 +1,7 @@
 package com.mytech.mainservice.config;
 
 import com.mytech.mainservice.enums.UserStatus;
+import com.mytech.mainservice.model.Role;
 import com.mytech.mainservice.model.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,9 +22,8 @@ public class CustomUserDetail implements UserDetails {
     private final String password;
 
     @Getter
-    private final UserStatus status;
+    private final User user;
 
-    @Getter
     @Setter
     private List<SimpleGrantedAuthority> authorities;
 
@@ -32,8 +32,7 @@ public class CustomUserDetail implements UserDetails {
         this.password = credential.getPassword();
         this.authorities = credential.getRoles().stream().
                 map(item -> new SimpleGrantedAuthority(item.getName().toString())).toList();
-        this.status = credential.getStatus();
-
+        this.user = credential;
     }
 
     @Override
@@ -68,7 +67,7 @@ public class CustomUserDetail implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return status == UserStatus.ACTIVED;
+        return this.user.getStatus() == UserStatus.ACTIVED;
     }
 
 
