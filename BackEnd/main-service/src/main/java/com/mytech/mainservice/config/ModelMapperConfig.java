@@ -1,18 +1,20 @@
 package com.mytech.mainservice.config;
 
 import com.mytech.mainservice.converter.ClaimsTokenConverter;
-import com.mytech.mainservice.converter.UserRoleConverter;
+import com.mytech.mainservice.converter.RoletoStringConverter;
+import com.mytech.mainservice.converter.StringToRoleConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ConverterConfig {
+public class ModelMapperConfig {
 
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addConverter(new UserRoleConverter());
+        modelMapper.addConverter(new RoletoStringConverter());
+        modelMapper.addConverter(new StringToRoleConverter());
         modelMapper.addConverter(new ClaimsTokenConverter());
         return modelMapper;
     }

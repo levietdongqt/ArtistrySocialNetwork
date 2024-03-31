@@ -41,7 +41,6 @@ export function isValidUsername(
     return "Your username can only contain letters, numbers and '_'.";
   if (!/[a-z]/i.test(value)) return 'Include a non-number character.';
   if (value === username) return 'This is your current username.';
-
   return null;
 }
 

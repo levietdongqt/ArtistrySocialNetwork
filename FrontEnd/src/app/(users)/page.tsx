@@ -9,8 +9,6 @@ import ContainerHome from "./_components/container/ContainerHome";
 
 export default function Home(){
 
-
-
     const loading = false;
     return (
         <HomeLayout>
@@ -29,4 +27,3 @@ export default function Home(){
                 </HomeLayout>
     );
 }
-

@@ -38,14 +38,7 @@ public class AuthService implements IAuthService {
     @Autowired
     private JwtService jwtService;
 
-    @Override
-    public String generateAccessToken(String username) {
-        return jwtService.generateAccessToken(username);
-    }
 
-    public String generateAccessToken(CustomUserDetail userDetail) {
-        return jwtService.generateAccessToken(userDetail);
-    }
 
     @Override
     public String generateAccessToken(User user) {
@@ -99,7 +92,6 @@ public class AuthService implements IAuthService {
             if(isExpireToken(validSession)){
                 throw new UnAuthenticationException("Refresh token is not available, Please make a new sign in request");
             }
-            validSession.setRefreshToken(UUID.randomUUID().toString());
             validSession.setCreatedAt(LocalDateTime.now());
             validSession.setExpiresAt(LocalDateTime.now().plusDays(expireTimeToken));
             return sessionRepo.save(validSession);

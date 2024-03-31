@@ -44,6 +44,9 @@ public class AuthConfig {
                             .requestMatchers("/auth/**").permitAll()
                             .requestMatchers("/user/**").permitAll()
                             .requestMatchers("/test").permitAll()
+                            .requestMatchers("/hello2").permitAll()
+
+                            .requestMatchers("/hello").authenticated()
                             .anyRequest().authenticated();
                 })
                 .exceptionHandling(handler -> {

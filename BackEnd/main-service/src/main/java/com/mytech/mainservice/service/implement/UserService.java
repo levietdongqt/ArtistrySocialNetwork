@@ -1,8 +1,7 @@
 package com.mytech.mainservice.service.implement;
 
-import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserInfo;
-import com.mytech.mainservice.dto.RegisterDto;
+import com.mytech.mainservice.dto.request.RegisterDto;
 import com.mytech.mainservice.enums.UserRole;
 import com.mytech.mainservice.enums.UserStatus;
 import com.mytech.mainservice.exception.myException.UnAuthenticationException;
@@ -88,7 +87,6 @@ public class UserService implements IUserService {
 
     @Override
     public User createUser(UserInfo userInfo) throws UnAuthenticationException {
-        checkExistUser(userInfo);
         List<Role> roles = roleRepo.findByListName(List.of(UserRole.ROLE_USER));
         User user = User.builder()
                 .id(UUID.randomUUID().toString())
@@ -109,11 +107,12 @@ public class UserService implements IUserService {
         return savedUser;
     }
 
-    public void checkExistUser(UserInfo userInfo) throws UnAuthenticationException {
+    public User existUser(UserInfo userInfo) throws UnAuthenticationException {
         Optional<User> user = userRepo.findByEmailOrPhoneNumber(userInfo.getEmail(), userInfo.getPhoneNumber());
-        if (user.isPresent()) {
+        if (user.isPresent() && !user.get().getAuthProvider().equals(userInfo.getProviderId())) {
             log.error("User already exists");
             throw new UnAuthenticationException("Bạn đã đăng nhập trước đó bằng " + user.get().getAuthProvider() + " với cùng 1 email hoặc số điện thoại tương tự");
         }
+        return user.orElse(null);
     }
 }

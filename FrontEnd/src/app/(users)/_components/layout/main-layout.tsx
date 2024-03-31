@@ -1,7 +1,7 @@
 'use client';
 import { SWRConfig } from 'swr';
 import { Toaster } from 'react-hot-toast';
-import { fetchJSON } from '@lib/fetch';
+import { fetchJSON } from '@lib/config/SwrFetcherConfig';
 import { WindowContextProvider } from '../../../../context/window-context';
 import { Sidebar } from '../sidebar/sidebar';
 import type { DefaultToastOptions } from 'react-hot-toast';
