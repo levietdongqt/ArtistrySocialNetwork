@@ -5,6 +5,7 @@ import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.services.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,9 +21,11 @@ import java.util.List;
 @Slf4j
 public class PostController {
 
+    @Autowired
     private PostService postService;
 
 
+    @GetMapping
     public ResponseEntity<?> getPostList() {
         List<Post> posts = postService.findAll();
         log.info("PostList",posts);

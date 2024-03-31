@@ -16,11 +16,12 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class NotificationService {
+    @Autowired
     private NotificationRepository notificationRepository;
 
 
-    public List<Notification> getNotificationsByUserFromUserIdOrderByCreatedDateDesc(User userFrom) {
-        return notificationRepository.findByUserFromUserIdOrderByCreatedDateDesc(userFrom.getUserId());
+    public List<Notification> getNotificationsByUserFromUserIdOrderByCreatedDateDesc(String userFrom) {
+        return notificationRepository.findByUserFromUserIdOrderByCreatedDateDesc(userFrom);
     }
 
     public void saveNotification(Notification notification) {
@@ -30,5 +31,7 @@ public class NotificationService {
     public void deleteAll(){
         notificationRepository.deleteAll();
     }
+
+    public void
 
 }

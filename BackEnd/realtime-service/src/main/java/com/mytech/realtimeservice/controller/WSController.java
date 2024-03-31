@@ -31,4 +31,8 @@ public class WSController {
 //        notificationService.sendPrivateNotification(id);
     }
 
+    public void getUsersId() {
+
+    }
+
 }
