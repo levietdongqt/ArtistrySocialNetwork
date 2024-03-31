@@ -1,7 +1,6 @@
 package com.mytech.mainservice.controller;
 
 import com.mytech.mainservice.dto.ResponseObject;
-import com.mytech.mainservice.model.User;
 import com.mytech.mainservice.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

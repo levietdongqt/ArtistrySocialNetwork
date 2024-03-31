@@ -40,7 +40,7 @@ export function ThemeContextProvider({
 
 
   useEffect(() => {
-    setTheme("dark");
+    setTheme("light");
   }, []);
   useEffect(() => {
     setAccent("blue");

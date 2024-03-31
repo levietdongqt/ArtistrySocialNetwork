@@ -76,13 +76,6 @@ public class JwtService {
         return createToken(claims, userName);
     }
 
-    public String generateAccessToken(CustomUserDetail user) {
-        Map<String, Object> claims = new HashMap<>();
-        List<String> roleNames = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        claims.put("roles", roleNames);
-        claims.put("status",user.getStatus().toString());
-        return createToken(claims, user.getUsername());
-    }
 
     public String generateAccessToken(User user) {
         HashMap<String, Object> claims = new HashMap<>();
@@ -98,7 +91,7 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30000))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24*60))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
     private Key getSignKey() {

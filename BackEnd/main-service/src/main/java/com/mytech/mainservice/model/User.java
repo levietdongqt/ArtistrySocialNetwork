@@ -36,11 +36,11 @@ public class User implements Serializable {
 
     @Size(max = 50)
     @NotNull
-    @Column(name = "email", nullable = false, length = 50)
+    @Column(name = "email", unique = true, length = 50)
     private String email;
 
     @Size(max = 20)
-    @Column(name = "phone_number", length = 20)
+    @Column(name = "phone_number", unique = true, length = 20)
     private String phoneNumber;
 
     @Column(name = "gender")
