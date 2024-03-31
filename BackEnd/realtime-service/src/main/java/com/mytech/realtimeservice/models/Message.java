@@ -1,6 +1,6 @@
 package com.mytech.realtimeservice.models;
 
-import com.mytech.realtimeservice.models.enums.MessageType;
+import com.mytech.realtimeservice.enums.MessageType;
 import com.mytech.realtimeservice.models.messages.LikeMessage;
 import com.mytech.realtimeservice.models.messages.ParentMessage;
 import lombok.AllArgsConstructor;

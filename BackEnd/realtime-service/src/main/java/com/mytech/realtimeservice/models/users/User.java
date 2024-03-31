@@ -7,7 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User extends UserTemplate{
+public class User{
+    private String userId;
+    private String userName;
     private String avatar;
 }
 

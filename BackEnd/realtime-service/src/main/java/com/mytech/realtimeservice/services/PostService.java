@@ -18,17 +18,20 @@ public class PostService {
     private PostRepository postRepository;
 
     public Post create(Post post) {
-        User userPost1 = User.builder().userId("user1").build();
-        UserTag userTag2 = UserTag.builder().userId("user2").name("user2").build();
-        UserTag userTag3 = UserTag.builder().userId("user3").name("user3").build();
-        UserTag userTag4 = UserTag.builder().userId("user4").name("user4").build();
-        List<UserTag> userTags = new ArrayList<UserTag>();
+        User userPost1 = User.builder().userId("user1").userName("user2").build();
+        User userTag2 = User.builder().userId("user2").userName("user2").build();
+        User userTag3 = User.builder().userId("user3").userName("user3").build();
+        User userTag4 = User.builder().userId("user4").userName("user4").build();
+        List<User> userTags = new ArrayList<User>();
         userTags.add(userTag2);
         userTags.add(userTag3);
         userTags.add(userTag4);
 
         post.setTagUserPosts(userTags);
-        post.setUserPost(userPost1);
+        post.setUser(userPost1);
         return postRepository.save(post);
+    }
+    public List<Post> findAll() {
+        return postRepository.findAll();
     }
 }

@@ -22,13 +22,13 @@ public class WSController {
     public void sendMessage(@RequestBody Message message) {
         System.out.println(message.getMessageContent());
          socket.notifyFrontend(message.getMessageContent());
-        notificationService.sendGlobalNotification();
+//        notificationService.sendGlobalNotification();
     }
     @PostMapping("/send-private-message/{id}")
     public void sendPrivateMessage(@PathVariable final String id, @RequestBody Message message) {
         System.out.println(message.getMessageContent());
         socket.notifyUser(id,message.getMessageContent());
-        notificationService.sendPrivateNotification(id);
+//        notificationService.sendPrivateNotification(id);
     }
 
 }

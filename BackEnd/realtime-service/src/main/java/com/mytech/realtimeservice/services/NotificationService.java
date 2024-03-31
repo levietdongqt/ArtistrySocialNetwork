@@ -1,24 +1,30 @@
 package com.mytech.realtimeservice.services;
 
 import com.mytech.realtimeservice.dto.ResponseMessage;
+import com.mytech.realtimeservice.models.Notification;
+import com.mytech.realtimeservice.models.users.User;
+import com.mytech.realtimeservice.repositories.NotificationRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
+@Slf4j
 public class NotificationService {
     @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private NotificationRepository notificationRepository;
 
-    public void sendGlobalNotification(){
-        ResponseMessage responseMessage = new ResponseMessage("Global Notification");
-        System.out.println("sendGlobalNotification");
-        messagingTemplate.convertAndSend("/topic/global-notification", responseMessage);
-    }
-    public void sendPrivateNotification(final String userId){
 
-        System.out.println("sendPrivateNotification");
-        ResponseMessage responseMessage = new ResponseMessage("Private Notification");
-        messagingTemplate.convertAndSendToUser(userId,"/topic/private-notification", responseMessage);
+    public List<Notification> getNotificationsByUserFromUserIdOrderByCreatedDateDesc(User userFrom) {
+        return notificationRepository.findByUserFromUserIdOrderByCreatedDateDesc(userFrom.getUserId());
     }
+
+    public void saveNotification(Notification notification) {
+        notificationRepository.save(notification);
+    }
+
+
 }

@@ -1,6 +1,5 @@
 package com.mytech.realtimeservice.models;
 import com.mytech.realtimeservice.models.users.User;
-import com.mytech.realtimeservice.models.users.UserTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +20,7 @@ public class Post {
     @Id
     private String id;
 
-    private User userPost;
+    private User user;
     private String content;
     private LocalDateTime createdAt;
     private String createdBy;
@@ -30,15 +29,14 @@ public class Post {
 
     private boolean status;
 
-    private List<UserTemplate> tagUserPosts;
+    private List<User> tagUserPosts;
 
     private double priorityScore;
 
-    private List<UserTemplate> userPostLikes;
+    private List<User> userPostLikes;
 
     private int userReplies;
 
-    @DBRef
-    private List<PostLike> postLikes;
+    private Comments newComments;
 
 }

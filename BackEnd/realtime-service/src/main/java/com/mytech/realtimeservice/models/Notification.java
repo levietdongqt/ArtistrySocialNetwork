@@ -1,5 +1,6 @@
 package com.mytech.realtimeservice.models;
 
+import com.mytech.realtimeservice.enums.NotificationType;
 import com.mytech.realtimeservice.models.users.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +26,7 @@ public class Notification {
     private LocalDateTime createdDate;
 
     private boolean status;
+
+    private NotificationType notificationType;
 
 }
