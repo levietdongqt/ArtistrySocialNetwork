@@ -36,11 +36,10 @@ export function AuthContextProvider({ children }: AuthContextProviderProps): JSX
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const userDataCookie = getCookie("users");
     useEffect(() => {
         const manageUser = (): void => {
             try {
-                const userDataCookie = getCookie('users');
-                console.log("User: ", userDataCookie)
                 if (userDataCookie) {
                     setUser(JSON.parse(userDataCookie));
                 } else {

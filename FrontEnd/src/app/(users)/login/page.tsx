@@ -9,9 +9,7 @@ export default function Login(): JSX.Element {
     console.log("prevPage: " + prevPage)
     return (
         <AuthLayout>
-
             <div className='grid min-h-screen grid-rows-[1fr,auto]'>
-
                 <SEO
                     title='Social'
                     description='Login'

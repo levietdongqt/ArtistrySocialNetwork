@@ -14,11 +14,11 @@ export function AuthLayout({ children }: LayoutProps):JSX.Element {
   useEffect(() => {
     const checkLogin = async (): Promise<void> => {
       setPending(true);
-      if (user) {
-        await sleep(600);
+      if (!user) {
+        await sleep(500);
         void replace('/');
       } else if (!loading) {
-        await sleep(600);
+        await sleep(500);
         setPending(false);
       }
     };

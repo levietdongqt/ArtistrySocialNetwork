@@ -8,7 +8,8 @@ import {MyResponse} from "@models/responseObject";
 export async function setCookieHandler(props: AuthResponse) {
     setCookie("access_token", props?.accessToken, access_token_options)
     setCookie("refresh_token", props?.refreshToken,refresh_token_options)
-    setCookie("user", props?.user,{path: "/"})
+    setCookie("users", props?.user,{path: "/"})
+    console.log("Asdasd ",props?.user)
     console.log("SET COOKIE SUCCESS")
 }
 

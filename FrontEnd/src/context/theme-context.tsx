@@ -17,10 +17,11 @@ type ThemeContextProviderProps = {
   children: ReactNode;
 };
 
-function setInitialTheme(): Theme {
+function setInitialTheme(): Theme{
+  if (typeof window === 'undefined') return 'light';
   const savedTheme = localStorage.getItem('theme') as Theme | null;
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  return savedTheme ?? (prefersDark ? 'dark' : 'light');
+  return savedTheme ?? (prefersDark ? 'light' : 'dark');
 }
 
 function setInitialAccent(): Accent {
@@ -35,15 +36,14 @@ export function ThemeContextProvider({
   const [theme, setTheme] = useState<Theme>(setInitialTheme);
   const [accent, setAccent] = useState<Accent>(setInitialAccent);
   const { user } = useAuth();
-  const { id: userId, theme: userTheme, accent: userAccent } = user ?? {};
 
+  const { id: userId, theme: userTheme, accent: userAccent } = user ?? {};
   useEffect(() => {
     if (user && userTheme) setTheme(userTheme);
   }, [userId, userTheme]);
 
   useEffect(() => {
     if (user && userAccent) setAccent(userAccent);
-    console.log(userAccent);
   }, [userId, userAccent]);
 
   useEffect(() => {

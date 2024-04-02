@@ -16,6 +16,7 @@ function ContainerHome() {
        { marginBottom: 500 }
    );*/
     const {user} = useAuth();
+
     useEffect(() => {
         console.log("User ", user);
     }, []);

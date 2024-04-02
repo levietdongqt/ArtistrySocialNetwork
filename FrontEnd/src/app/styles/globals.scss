@@ -31,7 +31,7 @@
 
 #ring:nth-child(1) {
   border-bottom: 8px solid rgb(255, 141, 249);
-  animation: rotate1 3s linear infinite;
+  animation: rotate1 2s linear infinite;
 }
 
 @keyframes rotate1 {
@@ -46,7 +46,7 @@
 
 #ring:nth-child(2) {
   border-bottom: 8px solid rgb(255,65,106);
-  animation: rotate2 3s linear infinite;
+  animation: rotate2 2s linear infinite;
 }
 
 @keyframes rotate2 {
@@ -61,7 +61,7 @@
 
 #ring:nth-child(3) {
   border-bottom: 8px solid rgb(0,255,255);
-  animation: rotate3 3s linear infinite;
+  animation: rotate3 2s linear infinite;
 }
 
 @keyframes rotate3 {
@@ -76,7 +76,7 @@
 
 #ring:nth-child(4) {
   border-bottom: 8px solid rgb(252, 183, 55);
-  animation: rotate4 3s linear infinite;
+  animation: rotate4 2s linear infinite;
 }
 
 @keyframes rotate4 {
