@@ -1,5 +1,6 @@
 package com.mytech.realtimeservice.controller;
 
+import com.mytech.realtimeservice.dto.PostDTO;
 import com.mytech.realtimeservice.dto.ResponseObject;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.services.PostService;
@@ -9,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,6 +33,18 @@ public class PostController {
                         .status(HttpStatus.CREATED)
                         .message("Get post list OK")
                         .data(posts)
+                        .build()
+        );
+    }
+
+    @PostMapping
+    public ResponseEntity<?> savePost(@RequestBody PostDTO postDTO) {
+        Post savedPost = postService.create(postDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.CREATED)
+                        .message("Get post list OK")
+                        .data(savedPost)
                         .build()
         );
     }

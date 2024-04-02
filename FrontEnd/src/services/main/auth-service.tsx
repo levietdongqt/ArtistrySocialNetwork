@@ -141,4 +141,11 @@ function setCookieToken(data: MyResponse<any>) {
         httpOnly: true,
         expires: new Date(Date.now() + 60 * 1000),
     });
+    cookies().set('users',data.data.user, {
+        secure: true,
+        httpOnly: true,
+        expires: expireRefreshToken,
+    });
 }
+
+

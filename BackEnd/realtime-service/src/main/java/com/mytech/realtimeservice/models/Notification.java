@@ -27,6 +27,12 @@ public class Notification {
 
     private boolean status;
 
+    private boolean delivered;
+
+    private String message;
+
+    private String link;
+
     private NotificationType notificationType;
 
 }

@@ -6,9 +6,11 @@ import { UpdateUsername } from './_components/home/update-username';
 import { MainHeader } from './_components/home/main-header';
 import InputMobile from "./_components/input/InputMobile";
 import ContainerHome from "./_components/container/ContainerHome";
+import { cookies } from 'next/headers';
 
 export default function Home(){
-
+    var cookies2 = cookies().get("user");
+    console.log(cookies2);
     const loading = false;
     return (
         <HomeLayout>

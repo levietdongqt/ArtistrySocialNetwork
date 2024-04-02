@@ -1,12 +1,17 @@
 package com.mytech.realtimeservice.services;
 
+import com.mytech.realtimeservice.dto.PostDTO;
+import com.mytech.realtimeservice.enums.NotificationType;
+import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.users.User;
+import com.mytech.realtimeservice.repositories.NotificationRepository;
 import com.mytech.realtimeservice.repositories.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,19 +22,39 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
-    public Post create(Post post) {
-        User userPost1 = User.builder().userId("user1").userName("user2").build();
-        User userTag2 = User.builder().userId("user2").userName("user2").build();
-        User userTag3 = User.builder().userId("user3").userName("user3").build();
-        User userTag4 = User.builder().userId("user4").userName("user4").build();
-        List<User> userTags = new ArrayList<User>();
-        userTags.add(userTag2);
-        userTags.add(userTag3);
-        userTags.add(userTag4);
+    @Autowired
+    private NotificationRepository notificationRepository;
 
-        post.setTagUserPosts(userTags);
-        post.setUser(userPost1);
-        return postRepository.save(post);
+    @Autowired
+    private NotificationService notificationService;
+
+    public Post create(PostDTO postDTO) {
+        // Lưu bài post
+        Post post = Post.builder()
+                .user(User.builder()
+                        .userId(postDTO.getSendUserId())
+                        .userName(postDTO.getSendUserName())
+                        .avatar(postDTO.getSendUserAvatarUrl())
+                        .build())
+                .content(postDTO.getContent())
+                .createdAt(LocalDateTime.now())
+                .mediaUrl(postDTO.getMediaUrl())
+                .createdBy(postDTO.getSendUserId())
+                .build();
+        var createdPost = postRepository.save(post);
+        //Lấy ra danh sách bạn bè của chủ bài post, gọi từ main service
+        List<String> userIds = List.of("a125b897-1012-4e8c-ac64-60e3263f7252","b","c","d");
+        //Tạo ra các notification cho danh sách bạn bè này
+        List<Notification> notifications = new ArrayList<>();
+        User userTo = User.builder()
+                .userId(postDTO.getSendUserId())
+                .userName(postDTO.getSendUserName())
+                .avatar(postDTO.getSendUserAvatarUrl()).build();
+        for (String userId : userIds) {
+           var userFrom = User.builder().userId(userId).userName("ten ne").avatar("avatar").build();
+           notificationService.sendNotification(userFrom, userTo,"NORMAL",postDTO.getContent(),createdPost.getId());
+        }
+        return createdPost;
     }
     public List<Post> findAll() {
         return postRepository.findAll();

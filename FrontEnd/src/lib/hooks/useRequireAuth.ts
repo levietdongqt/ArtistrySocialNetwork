@@ -1,17 +1,17 @@
-
+'use client'
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { UseUser } from '@lib/hooks/useUser';
+import {useAuth} from "../../context/auth-context";
 
 
 export function useRequireAuth(redirectUrl?: string) {
-  const { data , loading } = UseUser();
+  const { user , loading } = useAuth();
   const { replace } = useRouter();
 
   useEffect(() => {
-    if (!loading && !data) void replace(redirectUrl ?? '/');
+    if (!loading && !user) void replace(redirectUrl ?? '/');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, loading]);
+  }, [user, loading]);
 
-  return data;
+  return user;
 }

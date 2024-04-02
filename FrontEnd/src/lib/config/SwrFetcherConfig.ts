@@ -23,7 +23,7 @@ export async function fetchJSON(
     }
 }
 
-export type fetcherParams = [url: string,mrthod:  Method | 'GET', body:  any | null,destination: ServiceDestination];
+export type fetcherParams = [url: string,method:  Method | 'GET', body:  any | null,destination: ServiceDestination];
 
 export async function fetcherWithToken(params: any): Promise<any> {
     const [ url, method, body, destination ] = params;

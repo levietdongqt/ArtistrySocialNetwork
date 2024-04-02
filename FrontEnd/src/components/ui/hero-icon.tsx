@@ -17,5 +17,5 @@ export function HeroIcon({
 }: HeroIconProps): JSX.Element {
   const Icon = solid ? SolidIcons[iconName] : OutlineIcons[iconName];
 
-  return <Icon className={className ?? 'h-6 w-6'} />;
+  return <Icon className={className ?? 'h-6 w-6'}/>;
 }
