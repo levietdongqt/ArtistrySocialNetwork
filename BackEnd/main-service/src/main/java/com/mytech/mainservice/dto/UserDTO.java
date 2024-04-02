@@ -37,7 +37,8 @@ public class UserDTO implements Serializable {
     private String password;
     private List<String> searchHistory;
     private List<String> roles;
-    private AccentType accent;;
+    private AccentType accent;
+    private Theme theme;
     private String bio;
     private boolean verified;
 

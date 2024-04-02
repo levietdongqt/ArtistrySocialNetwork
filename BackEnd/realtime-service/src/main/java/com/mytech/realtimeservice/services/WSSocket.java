@@ -31,7 +31,6 @@ public class WSSocket {
         messagingTemplate.convertAndSend("/topic/global-notification", responseMessage);
     }
     public void sendPrivateNotification(final String userId){
-
         System.out.println("sendPrivateNotification");
         ResponseMessage responseMessage = new ResponseMessage("Private Notification");
         messagingTemplate.convertAndSendToUser(userId,"/topic/private-notification", responseMessage);

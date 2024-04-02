@@ -147,4 +147,27 @@ export async function getNewToken(): Promise<MyResponse<any>> {
     }
 }
 
-
+function setCookieToken(data: MyResponse<any>) {
+    const expireAccessToken = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes in milliseconds
+    const expireRefreshToken = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // 2 day in milliseconds
+    cookies().set("access_token", data.data.accessToken, {
+        secure: true,
+        httpOnly: true,
+        expires: expireAccessToken,
+    })
+    cookies().set('refresh_token', data.data.refreshToken, {
+        secure: true,
+        httpOnly: true,
+        expires: expireRefreshToken,
+    });
+    cookies().set('cookieTest1', data.data.refreshToken, {
+        secure: true,
+        httpOnly: true,
+        expires: new Date(Date.now() + 60 * 1000),
+    });
+    cookies().set('user',data.data.user, {
+        secure: true,
+        httpOnly: true,
+        expires: expireRefreshToken,
+    });
+}

@@ -7,7 +7,6 @@ import {useAuth} from "../../context/auth-context";
 export function useRequireAuth(redirectUrl?: string) {
   const { user , loading } = useAuth();
   const { replace } = useRouter();
-
   useEffect(() => {
     if (!loading && !user) void replace(redirectUrl ?? '/');
     // eslint-disable-next-line react-hooks/exhaustive-deps

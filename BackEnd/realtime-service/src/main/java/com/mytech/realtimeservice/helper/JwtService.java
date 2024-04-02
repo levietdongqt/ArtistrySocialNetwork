@@ -24,7 +24,6 @@ import java.util.function.Function;
 public class JwtService {
     @Value("${env.SECRET_KEY}")
     private String SECRET;
-
     @Autowired
     private ModelMapper modelMapper;
 

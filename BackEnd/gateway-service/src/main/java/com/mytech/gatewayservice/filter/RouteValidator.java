@@ -15,7 +15,8 @@ public class RouteValidator {
             "/api/main/user/",
             "/api/main/test",
             "/api/main/test/get-runtime",
-            "/api/realtime/test1",
+            "/api/realtime/posts/",
+            "/api/realtime/test/",
             "/eureka"
     );
 

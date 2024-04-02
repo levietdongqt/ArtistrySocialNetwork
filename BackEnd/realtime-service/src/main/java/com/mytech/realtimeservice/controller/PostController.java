@@ -24,15 +24,14 @@ public class PostController {
     private PostService postService;
 
 
-    @GetMapping
+    @GetMapping("/get-posts")
     public ResponseEntity<?> getPostList() {
-        List<Post> posts = postService.findAll();
-        log.info("PostList",posts);
+        log.info("PostList ",postService.findAll());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
-                        .message("Get post list OK")
-                        .data(posts)
+                        .message("Get post list limit "  + " OK")
+                        .data(postService.findAll())
                         .build()
         );
     }

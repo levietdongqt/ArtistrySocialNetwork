@@ -1,13 +1,13 @@
 'use client'
 import { AnimatePresence } from 'framer-motion';
-import { UserLayout, ProtectedLayout } from '../../_components/layout/common-layout';
-import { MainLayout } from '../../_components/layout/main-layout';
-import { SEO } from '../../_components/common/seo';
-import { UserDataLayout } from '../../_components/layout/user-data-layout';
-import { UserHomeLayout } from '../../_components/layout/user-home-layout';
-import { Content } from '../../_components/content/content';
+import { UserLayout, ProtectedLayout } from '../../../_components/layout/common-layout';
+import { MainLayout } from '../../../_components/layout/main-layout';
+import { SEO } from '../../../_components/common/seo';
+import { UserDataLayout } from '../../../_components/layout/user-data-layout';
+import { UserHomeLayout } from '../../../_components/layout/user-home-layout';
+import { Content } from '../../../_components/content/content';
 import { Loading } from '@components/ui/loading';
-import { StatsEmpty } from '../../_components/content/stats-empty';
+import { StatsEmpty } from '../../../_components/content/stats-empty';
 
 
 
