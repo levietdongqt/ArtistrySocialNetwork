@@ -19,26 +19,18 @@ import java.util.List;
 public class Post {
     @Id
     private String id;
-
     private User user;
     private String content;
     private LocalDateTime createdAt;
     private String createdBy;
     private LocalDateTime updatedAt;
     private List<String> mediaUrl;
-
     private boolean status;
-
     private List<User> tagUserPosts;
-
     private double priorityScore;
-
     private List<User> userPostLikes;
-
     private int userReplies;
-
     private int totalLikes;
-
     private int totalComments;
 
 }

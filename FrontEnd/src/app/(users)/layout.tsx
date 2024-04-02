@@ -21,7 +21,6 @@ export default function RootLayout({
         <body>
         <AuthContextProvider>
             <ThemeContextProvider>
-
                 {
                     !isLogin ? (
                         <>

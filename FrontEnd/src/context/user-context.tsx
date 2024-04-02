@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
-import type { User } from '../models/user';
+import type { User } from '@models/user';
 
 type UserContext = {
   user: User | null;

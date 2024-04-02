@@ -206,17 +206,6 @@ const isAdmin = false;
         <motion.i className='h-1 animate-pulse bg-main-accent' {...variants} />
       )}
       {children}
-      {reply && visited && (
-        <motion.p
-          className='ml-[75px] -mb-2 mt-2 text-light-secondary dark:text-dark-secondary'
-          {...fromTop}
-        >
-          Replying to{' '}
-          <Link href={`/user/${parent?.username as string}`} className='custom-underline text-main-accent'>
-              {parent?.username as string}
-          </Link>
-        </motion.p>
-      )}
       <label
         className={cn(
           'hover-animation grid w-full grid-cols-[auto,1fr] gap-3 px-4 py-3',

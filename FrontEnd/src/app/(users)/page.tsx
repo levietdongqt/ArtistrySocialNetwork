@@ -1,3 +1,4 @@
+
 import { HomeLayout } from './_components/layout/common-layout';
 import { SEO } from './_components/common/seo';
 import { MainContainer } from './_components/home/main-container';
@@ -18,11 +19,11 @@ export default function Home(){
                             title='Trang chủ'
                             className='flex items-center justify-between'
                         >
-                            <UpdateUsername />
+                        <UpdateUsername />
                         </MainHeader>
                         <InputMobile />
                         <ContainerHome />
                     </MainContainer>
-                </HomeLayout>
+        </HomeLayout>
     );
 }

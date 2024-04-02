@@ -8,14 +8,13 @@ import type { LayoutProps } from './common-layout';
 
 export function AuthLayout({ children }: LayoutProps):JSX.Element {
   const [pending, setPending] = useState(true);
-
   const  {user, loading}  = useAuth();
   const { replace } = useRouter();
 
   useEffect(() => {
     const checkLogin = async (): Promise<void> => {
       setPending(true);
-      if (user) {
+      if (!user) {
         await sleep(500);
         void replace('/');
       } else if (!loading) {
@@ -23,9 +22,7 @@ export function AuthLayout({ children }: LayoutProps):JSX.Element {
         setPending(false);
       }
     };
-
     void checkLogin();
-
   }, [user, loading]);
 
   if (loading || pending) return <Placeholder />;

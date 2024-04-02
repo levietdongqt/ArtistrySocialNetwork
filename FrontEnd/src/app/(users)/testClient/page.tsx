@@ -1,4 +1,4 @@
-"use client"
+'use client'
 import {testAPI} from "../../../services/main/auth-service";
 import useSWR from "swr";
 import {fetcherParams, fetcherWithToken} from "@lib/config/SwrFetcherConfig";

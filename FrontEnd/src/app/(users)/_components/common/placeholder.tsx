@@ -10,10 +10,15 @@ export function Placeholder(): JSX.Element {
         image='/home.png'
       />
       <i>
-        <CustomIcon
-          className='h-20 w-20 text-[#1DA1F2]'
-          iconName='GameIcon'
-        />
+          <div id="page">
+              <div id="container">
+                  <div id="h3">loading</div>
+                  <div id="ring"></div>
+                  <div id="ring"></div>
+                  <div id="ring"></div>
+                  <div id="ring"></div>
+              </div>
+          </div>
       </i>
     </main>
   );

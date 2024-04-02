@@ -1,30 +1,22 @@
-import type { Timestamp, FirestoreDataConverter } from 'firebase/firestore';
 import type { ImagesPreview } from './file';
 import type { User } from './user';
 
 export type Post = {
   id: string;
-  text: string | null;
+  user: User;
+  content: string | null;
   images: ImagesPreview | null;
   parent: { id: string; username: string } | null;
-  userLikes: string[];
   createdBy: string;
-  createdAt: Timestamp;
-  updatedAt: Timestamp | null;
+  createdAt: string;
+  updatedAt: string | null;
+  status: boolean;
+  tagUserPosts: User[];
+  userPostLikes: User[];
+  priorityScore: number;
   userReplies: number;
-  userRetweets: string[];
+  totalLikes: number;
+  totalComments: number;
 };
 
 export type TweetWithUser = Post & { user: User };
-
-export const tweetConverter: FirestoreDataConverter<Post> = {
-  toFirestore(tweet) {
-    return { ...tweet };
-  },
-  fromFirestore(snapshot, options) {
-    const { id } = snapshot;
-    const data = snapshot.data(options);
-
-    return { id, ...data } as Post;
-  }
-};

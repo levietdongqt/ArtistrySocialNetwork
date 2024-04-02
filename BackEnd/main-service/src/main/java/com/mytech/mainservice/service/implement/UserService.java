@@ -1,6 +1,7 @@
 package com.mytech.mainservice.service.implement;
 
 import com.google.firebase.auth.UserInfo;
+import com.mytech.mainservice.dto.UserDTO;
 import com.mytech.mainservice.dto.request.RegisterDto;
 import com.mytech.mainservice.enums.UserRole;
 import com.mytech.mainservice.enums.UserStatus;
@@ -39,21 +40,19 @@ public class UserService implements IUserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public User getUserById(String userId) {
-        List<User> list = userRepo.findAll();
-        list.forEach(user -> {
-            System.out.println("ID: " + user.getId());
-        });
+    public UserDTO getUserById(String userId) {
         try {
             Optional<User> user = userRepo.findById(userId);
             if (user.isPresent()) {
-                return user.get();
+                UserDTO userDTO = modelMapper.map(user.get(), UserDTO.class);
+                return userDTO;
             }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
         throw new RuntimeException("User not found");
     }
+
 
     @Override
     @Transactional

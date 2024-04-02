@@ -17,13 +17,11 @@ type ThemeContextProviderProps = {
   children: ReactNode;
 };
 
-function setInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'dark';
-
+function setInitialTheme(): Theme{
+  if (typeof window === 'undefined') return 'light';
   const savedTheme = localStorage.getItem('theme') as Theme | null;
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  return savedTheme ?? (prefersDark ? 'dark' : 'light');
+  return savedTheme ?? (prefersDark ? 'light' : 'dark');
 }
 
 function setInitialAccent(): Accent {
@@ -37,83 +35,72 @@ export function ThemeContextProvider({
 }: ThemeContextProviderProps): JSX.Element {
   const [theme, setTheme] = useState<Theme>(setInitialTheme);
   const [accent, setAccent] = useState<Accent>(setInitialAccent);
+  const { user } = useAuth();
 
-
+  const { id: userId, theme: userTheme, accent: userAccent } = user ?? {};
   useEffect(() => {
-    setTheme("light");
-  }, []);
-  useEffect(() => {
-    setAccent("blue");
-  }, []);
-  /*const { user } = useAuth();
-  const { id: userId, theme: userTheme, accent: userAccent } = user ?? {};*/
-
-  /*useEffect(() => {
     if (user && userTheme) setTheme(userTheme);
-  }, [userId, userTheme]);*/
+  }, [userId, userTheme]);
 
-  /*useEffect(() => {
+  useEffect(() => {
     if (user && userAccent) setAccent(userAccent);
-  }, [userId, userAccent]);*/
+  }, [userId, userAccent]);
 
   useEffect(() => {
     const flipTheme = (theme: Theme): NodeJS.Timeout | undefined => {
       const root = document.documentElement;
-      const targetTheme = theme === 'dim' ? 'dark' : theme;
-
+      const targetTheme = theme.toLowerCase() === 'dim' ? 'dark' : theme;
       if (targetTheme === 'dark') root.classList.add('dark');
       else root.classList.remove('dark');
-
-      root.style.setProperty('--main-background', `var(--${theme}-background)`);
-
+      root.style.setProperty('--main-background', `var(--${theme.toLowerCase()}-background)`);
       root.style.setProperty(
         '--main-search-background',
-        `var(--${theme}-search-background)`
+        `var(--${theme.toLowerCase()}-search-background)`
       );
-
       root.style.setProperty(
         '--main-sidebar-background',
-        `var(--${theme}-sidebar-background)`
+        `var(--${theme.toLowerCase()}-sidebar-background)`
       );
-      localStorage.setItem('theme', theme);
-      /*if (user) {
-        localStorage.setItem('theme', theme);
-        return setTimeout(() => void updateUserTheme(user.id, { theme }), 500);
-      }*/
+      localStorage.setItem('theme', theme.toLowerCase());
 
+      // if (user) {
+      //   localStorage.setItem('theme', theme);
+      //   return setTimeout(() => {}, 500);
+      // }
       return undefined;
     };
 
     const timeoutId = flipTheme(theme);
     return () => clearTimeout(timeoutId);
-  }, [/*userId,*/ theme]);
+  }, [userId, theme]);
+
 
   useEffect(() => {
     const flipAccent = (accent: Accent): NodeJS.Timeout | undefined => {
       const root = document.documentElement;
 
-      root.style.setProperty('--main-accent', `var(--accent-${accent})`);
+      root.style.setProperty('--main-accent', `var(--accent-${accent.toLowerCase()})`);
 
-      localStorage.setItem('accent', accent);
-      /*if (user) {
-        localStorage.setItem('accent', accent);
-        return setTimeout(() => void updateUserTheme(user.id, { accent }), 500);
-      }*/
-
+      localStorage.setItem('accent', accent.toLowerCase());
+      
+      // if (user) {
+      //   localStorage.setItem('accent', accent);
+      //   return setTimeout(() => {}, 500);
+      // }
       return undefined;
     };
 
     const timeoutId = flipAccent(accent);
     return () => clearTimeout(timeoutId);
-  }, [/*userId,*/ accent]);
+  }, [userId, accent]);
 
   const changeTheme = ({
     target: { value }
-  }: ChangeEvent<HTMLInputElement>): void => setTheme(value as Theme);
+  }: ChangeEvent<HTMLInputElement>): void => setTheme(value.toLowerCase() as Theme);
 
   const changeAccent = ({
     target: { value }
-  }: ChangeEvent<HTMLInputElement>): void => setAccent(value as Accent);
+  }: ChangeEvent<HTMLInputElement>): void => setAccent(value.toLowerCase() as Accent);
 
   const value: ThemeContext = {
     theme,
