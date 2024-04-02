@@ -1,6 +1,8 @@
 package com.mytech.realtimeservice.services;
 
+import com.mytech.realtimeservice.client.FriendForeignClient;
 import com.mytech.realtimeservice.dto.PostDTO;
+import com.mytech.realtimeservice.dto.UserDTO;
 import com.mytech.realtimeservice.enums.NotificationType;
 import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.Post;
@@ -28,6 +30,9 @@ public class PostService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    FriendForeignClient friendForeignClient;
+
     public Post create(PostDTO postDTO) {
         // Lưu bài post
         Post post = Post.builder()
@@ -43,15 +48,16 @@ public class PostService {
                 .build();
         var createdPost = postRepository.save(post);
         //Lấy ra danh sách bạn bè của chủ bài post, gọi từ main service
-        List<String> userIds = List.of("a125b897-1012-4e8c-ac64-60e3263f7252","b","c","d");
+        //List<String> userIds = List.of("a125b897-1012-4e8c-ac64-60e3263f7252","b","c","d");
+        var friendForeignClientFriends = friendForeignClient.getFriends(postDTO.getSendUserId());
         //Tạo ra các notification cho danh sách bạn bè này
         List<Notification> notifications = new ArrayList<>();
         User userTo = User.builder()
                 .userId(postDTO.getSendUserId())
                 .userName(postDTO.getSendUserName())
                 .avatar(postDTO.getSendUserAvatarUrl()).build();
-        for (String userId : userIds) {
-           var userFrom = User.builder().userId(userId).userName("ten ne").avatar("avatar").build();
+        for (UserDTO userDTO : friendForeignClientFriends.getData()) {
+           var userFrom = User.builder().userId(userDTO.getId()).userName(userDTO.getFullName()).avatar(userDTO.getAvatar()).build();
            notificationService.sendNotification(userFrom, userTo,"NORMAL",postDTO.getContent(),createdPost.getId());
         }
         return createdPost;

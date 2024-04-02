@@ -14,10 +14,10 @@ const { Sider, Content } = Layout;
 const { Title } = Typography;
 
 export default function AllNotification() {
-  // const {user} = useAuth();
+  const {user} = useAuth();
   
 
-  // console.log("abcfgdfgdfgdfg",user);
+  console.log("abcfgdfgdfgdfg",user);
 
   const {
     data: data2,
