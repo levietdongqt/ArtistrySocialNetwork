@@ -45,7 +45,6 @@ public class AuthConfig {
                             .requestMatchers("/user/**").permitAll()
                             .requestMatchers("/test").permitAll()
                             .requestMatchers("/hello2").permitAll()
-
                             .requestMatchers("/hello").authenticated()
                             .anyRequest().authenticated();
                 })

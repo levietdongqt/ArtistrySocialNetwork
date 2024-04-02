@@ -21,15 +21,10 @@ public class Comments {
     @Id
     private String id;
     private String content;
-
     private LocalDateTime sentDate;
-
     private String postId;
-
     private User byUser;
-
     private List<CommentLike> commentLikes;
-
     private List<String> reply;
 
 }

@@ -35,7 +35,7 @@ public class AuthConfig {
                     authorze
                             .requestMatchers("/auth/**").permitAll()
                             .requestMatchers("/user/**").permitAll()
-                            .requestMatchers("/test/hello2").permitAll()
+                            .requestMatchers("/posts/**").permitAll()
                             .requestMatchers("/auth/hello").authenticated()
                             .anyRequest().authenticated();
                 })
