@@ -3,8 +3,8 @@ import { getDoc, doc, onSnapshot } from 'firebase/firestore';
 import { usersCollection } from '../../firebase/collections';
 import type { User } from '../../models/user';
 
-type UseCollection = {
-  data: [] | null;
+type UseCollection<T> = {
+  data: T[] | null;
   loading: boolean;
 };
 
@@ -52,18 +52,18 @@ export function useCollection<T>(
       setLoading(true);
     }
 
-    const populateUser = async (currentData: DataWithRef<T>): Promise<void> => {
-      const dataWithUser = await Promise.all(
-        currentData.map(async (currentData) => {
-          const user = (
-            await getDoc(doc(usersCollection, currentData.createdBy))
-          ).data();
-          return { ...currentData, user };
-        })
-      );
-      setData(dataWithUser);
-      setLoading(false);
-    };
+    // const populateUser = async (currentData: DataWithRef<T>): Promise<void> => {
+    //   const dataWithUser = await Promise.all(
+    //     currentData.map(async (currentData) => {
+    //       const user = (
+    //         await getDoc(doc(usersCollection, currentData.createdBy))
+    //       ).data();
+    //       return { ...currentData, user };
+    //     })
+    //   );
+    //   setData(dataWithUser);
+    //   setLoading(false);
+    // };
 
    /* const unsubscribe = onSnapshot(cachedQuery, (snapshot) => {
       const data = snapshot.docs.map((doc) =>

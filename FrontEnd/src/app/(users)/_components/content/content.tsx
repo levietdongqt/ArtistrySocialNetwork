@@ -5,7 +5,7 @@ import cn from 'clsx';
 import { useModal } from '@lib/hooks/useModal';
 import { delayScroll } from '@lib/utils';
 import { Modal } from '../modal/modal';
-import { TweetReplyModal } from '../modal/tweet-reply-modal';
+import { ContentReplyModal } from '../modal/content-reply-modal';
 import { ImagePreview } from '../input/image-preview';
 import { UserAvatar } from '../user/user-avatar';
 import { UserTooltip } from '../user/user-tooltip';
@@ -17,13 +17,16 @@ import { ContentStats } from './content-stats';
 import { ContentDate } from './content-date';
 import type { Variants } from 'framer-motion';
 import {Timestamp} from "firebase/firestore";
+import {User} from "@models/user";
+import {useAuth} from "../../../../context/auth-context";
+import {Post} from "@models/post";
 
 
-export type TweetProps = /*Content &*/ {
-  /*user: User;*/
+export type TweetProps = Post & {
+  user?: User;
   modal?: boolean;
   pinned?: boolean;
-  /*profile?: User | null;*/
+  profile?: User | null;
   parentTweet?: boolean;
 };
 
@@ -35,28 +38,26 @@ export const variants: Variants = {
 
 export function Content(tweet: TweetProps) {
 
-  /*const { id: ownerId, name, username, verified, photoURL } = tweetUserData;
-
-  const { user } = useAuth();
-
-
-  const tweetLink = `/content/${tweetId}`;
-
-  const userId = user?.id as string;
-
-  const isOwner = userId === createdBy;
-
-  const { id: parentId, username: parentUsername = username } = parent ?? {};*/
+  // const { id: ownerId, name, username, verified, photoURL } = tweetUserData;
+  //
+  // const { user } = useAuth();
+  //
+  //
+  // const userId = user?.id as string;
+  //
+  // const isOwner = userId === createdBy;
+  //
+  // const { id: parentId, username: parentUsername = username } = parent ?? {};
   const { open, openModal, closeModal } = useModal();
-
-  /*const {
-    id: profileId,
-    name: profileName,
-    username: profileUsername
-  } = profile ?? {};*/
-
-  /*const reply = !!parent;
-  const tweetIsRetweeted = userRetweets.includes(profileId ?? '');*/
+  //
+  // const {
+  //   id: profileId,
+  //   name: profileName,
+  //   username: profileUsername
+  // } = profile ?? {};
+  //
+  // const reply = !!parent;
+  // const tweetIsRetweeted = userRetweets.includes(profileId ?? '');
 
 
   const modal = false;
@@ -64,8 +65,8 @@ export function Content(tweet: TweetProps) {
   const reply = true;
   const pinned = false;
   const tweetIsRetweeted = true;
-const verified = false;
-const text = "verified";
+  const verified = false;
+  const text = "verified";
   const images = [{
     id: '1',
     src: 'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg',
@@ -89,9 +90,9 @@ const text = "verified";
         open={open}
         closeModal={closeModal}
       >
-        <TweetReplyModal tweet={tweet} closeModal={closeModal} />
+        <ContentReplyModal tweet={tweet} closeModal={closeModal} />
       </Modal>
-      <Link href={"tweetLink"} scroll={!reply} className={cn(
+      <div className={cn(
           `accent-tab hover-card relative flex flex-col 
              gap-y-4 px-4 py-3 outline-none duration-200`,
           parentTweet
@@ -204,7 +205,7 @@ const text = "verified";
               </div>
             </div>
           </div>
-      </Link>
+      </div>
     </motion.article>
   );
 }

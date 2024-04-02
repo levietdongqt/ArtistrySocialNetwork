@@ -39,7 +39,7 @@ export function MoreSettings(): JSX.Element {
             <Menu.Button className='group relative flex w-full py-1 outline-none'>
               <div
                 className={cn(
-                  `custom-button flex gap-4 text-xl transition group-hover:bg-light-primary/10 group-focus-visible:ring-2
+                  `custom-button flex gap-4 text-xl transition group-hover:bg-blue-400 group-focus-visible:ring-2
                    group-focus-visible:ring-[#878a8c] dark:group-hover:bg-dark-primary/10 dark:group-focus-visible:ring-white
                    xl:pr-5`,
                   open && 'bg-light-primary/10 dark:bg-dark-primary/10'
@@ -55,7 +55,7 @@ export function MoreSettings(): JSX.Element {
             <AnimatePresence>
               {open && (
                 <Menu.Items
-                  className='menu-container absolute -top-44 w-60 font-medium xl:w-11/12'
+                  className='menu-container absolute -top-44 w-60 font-medium xl:w-11/12 bg-white'
                   as={motion.div}
                   {...variants}
                   static

@@ -1,9 +1,11 @@
 package com.mytech.realtimeservice.services;
 
+import com.mytech.realtimeservice.dto.PostResponse;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.users.User;
 import com.mytech.realtimeservice.repositories.PostRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,9 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public Post create(Post post) {
         User userPost1 = User.builder().userId("user1").userName("user2").build();
         User userTag2 = User.builder().userId("user2").userName("user2").build();
@@ -29,10 +34,14 @@ public class PostService {
 
         post.setTagUserPosts(userTags);
         post.setUser(userPost1);
+        post.setCreatedBy(userPost1.getUserId());
         return postRepository.save(post);
     }
-    public List<Post> findAll() {
-        return postRepository.findAll();
+    public List<PostResponse> findAll() {
+        List<Post> posts = postRepository.findAll();
+        List<PostResponse> postResponses = new ArrayList<>();
+        postResponses = modelMapper.map(posts,postResponses.getClass());
+        return postResponses;
     }
 
     public void deleteAll() {

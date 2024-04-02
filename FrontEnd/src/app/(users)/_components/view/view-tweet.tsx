@@ -5,7 +5,7 @@ import cn from 'clsx';
 import { useAuth } from '../../../../context/auth-context';
 import { useModal } from '@lib/hooks/useModal';
 import { Modal } from '../modal/modal';
-import { TweetReplyModal } from '../modal/tweet-reply-modal';
+import { ContentReplyModal } from '../modal/content-reply-modal';
 import { ImagePreview } from '../input/image-preview';
 import { UserAvatar } from '../user/user-avatar';
 import { UserTooltip } from '../user/user-tooltip';
@@ -74,7 +74,7 @@ export function ViewTweet(tweet: ViewTweetProps): JSX.Element {
         open={open}
         closeModal={closeModal}
       >
-        <TweetReplyModal tweet={tweet} closeModal={closeModal} />
+        <ContentReplyModal tweet={tweet} closeModal={closeModal} />
       </Modal>
       <div className='flex flex-col gap-2'>
         {reply && (

@@ -1,13 +1,16 @@
-"use client"
+'use client'
 import {testAPI} from "../../../services/main/auth-service";
 import useSWR from "swr";
 import {fetcherParams, fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {ServiceDestination} from "@lib/enum/ServiceDestination";
 import {getTest} from "../../../services/main/clientRequest/testClient";
-
+import { getCookie, setCookie } from 'cookies-next'
 export default function Home() {
     // const {data: data, isLoading: isLoading, error: error} = useSWR('/auth/hello2')
-    const {data: data2, isLoading: isLoading2, error: error2} = useSWR(getTest(null), fetcherWithToken)
+    const {data: data2, isLoading: isLoading2, error: error2} = useSWR(getTest(null), fetcherWithToken);
+
+    var user = getCookie('user');
+    console.log("test user: ", user);
 
     if (isLoading2) {
         return (
@@ -20,14 +23,8 @@ export default function Home() {
         )
     }
     const test = () => {
-        testAPI().then(value => {
-            console.log("TEST FROM CLIENT");
-        }).catch(reason => {
-            console.log("ERROR FROM CLIENT");
-            console.log(reason);
-        }).finally(() => {
-            console.log("FINALLY FROM CLIENT");
-        })
+        const user = getCookie('user');
+        console.log("test user: ", user);
     }
     return (
         <>

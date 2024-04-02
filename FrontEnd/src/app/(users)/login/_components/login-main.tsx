@@ -14,7 +14,7 @@ import {useRouter} from "next/navigation";
 import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {deleteCookie, getCookie, setCookie} from 'cookies-next';
-import {setCookieHandler} from "@lib/helper/clientCookieHandle.";
+import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 
 
 export function LoginMain() {
@@ -39,7 +39,7 @@ export function LoginMain() {
         }).then(result => {
             console.log("Login Result: ",result)
             setCookieHandler(result.data);
-            router.back();
+            // router.back();
             return;
         })
             .catch(err => {

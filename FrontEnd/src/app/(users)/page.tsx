@@ -6,10 +6,13 @@ import { UpdateUsername } from './_components/home/update-username';
 import { MainHeader } from './_components/home/main-header';
 import InputMobile from "./_components/input/InputMobile";
 import ContainerHome from "./_components/container/ContainerHome";
+import { cookies } from "next/headers";
 
 export default function Home(){
 
-    const loading = false;
+    var cookies2 = cookies().get("user");
+    console.log("ABC", cookies2);
+
     return (
         <HomeLayout>
                     <MainContainer>
