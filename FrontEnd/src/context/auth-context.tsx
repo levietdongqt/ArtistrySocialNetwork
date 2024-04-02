@@ -13,7 +13,9 @@ import type {ReactNode} from 'react';
 import type {User as AuthUser} from 'firebase/auth';
 import type {User} from '@models/user';
 import {oauth2Service} from "../services/main/auth-service";
-import {setCookie} from "cookies-next";
+import {getCookie, setCookie} from "cookies-next";
+import {setCookieHandler} from "@lib/helper/clientCookieHandle";
+import {useRouter} from "next/navigation";
 
 type AuthContext = {
     user: User | null;
@@ -36,7 +38,7 @@ export function AuthContextProvider({
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState(true);
-
+    const router = useRouter();
     useEffect(() => {
         const fetchUserData = async () => {
             setLoading(false);
@@ -129,7 +131,7 @@ export function AuthContextProvider({
             const credential = await signInWithPopup(auth, provider);
             console.log("LOGIN GOOGLE: ", credential)
             const oauth2Response = await oauth2Service(await credential.user.getIdToken())
-            setCookie("access_token", oauth2Response.data.accessToken);
+            handleSuccessResponse(oauth2Response, router)
         } catch (error) {
             setError(error as Error);
         }
@@ -141,7 +143,7 @@ export function AuthContextProvider({
             const credential = await signInWithPopup(auth, provider);
             console.log("LOGIN FACEBOOK: ")
             const oauth2Response = await oauth2Service(await credential.user.getIdToken())
-            setCookie("access_token", oauth2Response.data.accessToken);
+            handleSuccessResponse(oauth2Response, router)
         } catch (error) {
             console.log(error)
         }
@@ -176,4 +178,11 @@ export function useAuth(): AuthContext {
     if (!context)
         throw new Error('useAuth must be used within an AuthContextProvider');
     return context;
+}
+
+async function handleSuccessResponse(oauth2Response: any, router: any) {
+    setCookieHandler(oauth2Response.data)
+    console.log("LOGIN GOOGLE SUCCESSFUL: ")
+    const prevPage = getCookie("prev_page")?.toString();
+    prevPage ? router.push(prevPage) : router.push("/")
 }

@@ -9,13 +9,22 @@ import {ServiceDestination} from "@lib/enum/ServiceDestination";
 // const getToken = () => 'your_token_here';
 
 export async function fetchJSON(
-    resource: string,
+    params: any
 ): Promise<any> {
     try {
-        const fullUrl = `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}${resource}`
-        console.log("Fetching JSON FROM Default SWR: ", fullUrl)
+        const [url, method, body, destination] = params;
+        console.log("Fetcher No token -  destination: ", destination)
+        var fullUrl = "";
+        if (destination === ServiceDestination.REALTIME) {
+            fullUrl = fullUrl.concat(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}`).concat(url);
+        }
+        else if (destination === ServiceDestination.MAIN) {
+            fullUrl = fullUrl.concat(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}`).concat(url);
+        }else{
+            throw new Error("Invalid service destination!! ")
+        }
         const response = await axios.get(fullUrl);
-        console.log("SWR", response)
+        console.log("SWR response", response)
         return response.data;
     } catch (e) {
         console.log(e)
@@ -23,12 +32,11 @@ export async function fetchJSON(
     }
 }
 
-export type fetcherParams = [url: string,mrthod:  Method | 'GET', body:  any | null,destination: ServiceDestination];
+export type fetcherParams = [url: string, method: Method | 'GET', body: any | null, destination: ServiceDestination];
 
 export async function fetcherWithToken(params: any): Promise<any> {
-    const [ url, method, body, destination ] = params;
-    console.log("Fetcher with token -  destination: ",destination)
-
+    const [url, method, body, destination] = params;
+    console.log("Fetcher with token -  destination: ", destination)
     try {
         var fullUrl = "";
         if (destination === ServiceDestination.REALTIME) {
@@ -37,13 +45,13 @@ export async function fetcherWithToken(params: any): Promise<any> {
         if (destination === ServiceDestination.MAIN) {
             fullUrl = fullUrl.concat(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}`).concat(url);
         }
-        console.log("Fetching JSON FROM SWR token: ", fullUrl)
-        const config : AxiosRequestConfig  = {
+        const config: AxiosRequestConfig = {
             data: body,
             url: fullUrl,
             method: method,
         };
         const response = await axiosWithToken(config);
+        console.log("SWR response", response)
         return response.data;
         // Xử lý response tại đây
     } catch (error) {
