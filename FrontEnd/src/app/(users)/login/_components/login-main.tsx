@@ -1,20 +1,20 @@
 'use client'
 import {useAuth} from '../../../../context/auth-context';
 import {CustomIcon} from '@components/ui/custom-icon';
-import {Button} from '@components/ui/button';
 import {useModal} from "@lib/hooks/useModal";
 import {Modal} from 'app/(users)/_components/modal/modal';
 import {DisplayModalLogin} from 'app/(users)/_components/modal/display-modal-login';
-import {TEInput, TERipple} from "tw-elements-react";
+import {TERipple} from "tw-elements-react";
 import {LeftSide} from './left-side';
 import {useFormik} from "formik";
 import LoginValidation from "@lib/validations/LoginValidation";
-import {loginService, testAPI, testHeader} from "../../../../services/main/auth-service";
+import {loginService, testHeader} from "../../../../services/main/auth-service";
 import {useRouter} from "next/navigation";
 import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {deleteCookie, getCookie, setCookie} from 'cookies-next';
+import {getCookie} from 'cookies-next';
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
+import {PrefetchKind} from "next/dist/client/components/router-reducer/router-reducer-types";
 
 
 export function LoginMain() {
@@ -39,20 +39,14 @@ export function LoginMain() {
         }).then(result => {
             console.log("Login Result: ",result)
             setCookieHandler(result.data);
-            // router.back();
+            const prevPage = getCookie("prev_page")?.toString();
+            prevPage? router.push(prevPage) : router.push("/")
             return;
         })
             .catch(err => {
                 console.log("ERROR LOGIN DONE")
                 console.log(err)
             });
-    }
-    const test = () => {
-        testHeader().then(value => {
-            console.log(value)
-        }).catch(err => {
-            console.log(err)
-        });
     }
     return (
         <main className="h-screen flex justify-center items-center">
@@ -139,7 +133,7 @@ export function LoginMain() {
                             <TERipple rippleColor="light" className="w-full">
                                 <a
                                     className="mb-3 flex w-full items-center justify-center rounded bg-info px-7 pb-2.5 pt-3 text-center text-sm font-medium uppercase leading-normal text-black shadow-[0_4px_9px_-4px_#54b4d3] transition duration-150 ease-in-out hover:bg-info-600 hover:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.3),0_4px_18px_0_rgba(84,180,211,0.2)] focus:bg-info-600 focus:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.3),0_4px_18px_0_rgba(84,180,211,0.2)] focus:outline-none focus:ring-0 active:bg-info-700 active:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.3),0_4px_18px_0_rgba(84,180,211,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(84,180,211,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.2),0_4px_18px_0_rgba(84,180,211,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.2),0_4px_18px_0_rgba(84,180,211,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(84,180,211,0.2),0_4px_18px_0_rgba(84,180,211,0.1)]"
-                                    onClick={test}
+                                    onClick={signInWithGoogle}
                                     role="button"
                                 >
                                     <CustomIcon iconName='GoogleIcon'/>
@@ -161,7 +155,7 @@ export function LoginMain() {
                             <TERipple rippleColor="light" className="w-full">
                                 <a
                                     className="mb-3 flex w-full items-center justify-center rounded bg-primary px-7 pb-2.5 pt-3 text-center text-sm font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] bg-[#3b5998]"
-                                    onClick={test}
+                                    // onClick={test}
                                     role="button"
                                 >
                                     {/* <!-- Facebook --> */}

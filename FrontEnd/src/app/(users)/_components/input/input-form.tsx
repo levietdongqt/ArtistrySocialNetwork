@@ -33,10 +33,10 @@ type InputFormProps = {
   handleFocus: () => void;
   discardTweet: () => void;
   handleChange: ({
-                   target: { value }
-                 }: ChangeEvent<HTMLTextAreaElement>) => void;
+    target: { value }
+  }: ChangeEvent<HTMLTextAreaElement>) => void;
   handleImageUpload: (
-      e: ChangeEvent<HTMLInputElement> | ClipboardEvent<HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement> | ClipboardEvent<HTMLTextAreaElement>
   ) => void;
 };
 
@@ -54,31 +54,31 @@ const variants: Variants[] = [
 export const [fromTop, fromBottom] = variants;
 
 export function   InputForm({
-                              modal,
-                              reply,
-                              formId,
-                              loading,
-                              visited,
-                              children,
-                              inputRef,
-                              replyModal,
-                              inputValue,
-                              isValidTweet,
-                              isUploadingImages,
-                              sendTweet,
-                              handleFocus,
-                              discardTweet,
-                              handleChange,
-                              handleImageUpload
-                            }: InputFormProps): JSX.Element {
+  modal,
+  reply,
+  formId,
+  loading,
+  visited,
+  children,
+  inputRef,
+  replyModal,
+  inputValue,
+  isValidTweet,
+  isUploadingImages,
+  sendTweet,
+  handleFocus,
+  discardTweet,
+  handleChange,
+  handleImageUpload
+}: InputFormProps): JSX.Element {
   const { open, openModal, closeModal } = useModal();
 
   useEffect(() => handleShowHideNav(true), []);
 
   const handleKeyboardShortcut = ({
-                                    key,
-                                    ctrlKey
-                                  }: KeyboardEvent<HTMLTextAreaElement>): void => {
+    key,
+    ctrlKey
+  }: KeyboardEvent<HTMLTextAreaElement>): void => {
     if (!modal && key === 'Escape')
       if (isValidTweet) {
         inputRef.current?.blur();
@@ -113,53 +113,53 @@ export function   InputForm({
   const isVisibilityShown = visited && !reply && !replyModal && !loading;
 
   return (
-      <div className='flex min-h-[48px] w-full flex-col justify-center gap-4'>
-        <Modal
-            modalClassName='max-w-xs bg-main-background w-full p-8 rounded-2xl'
-            open={open}
-            closeModal={closeModal}
-        >
-          <ActionModal
-              title='Discard Content?'
-              description='This can’t be undone and you’ll lose your draft.'
-              mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75'
-              mainBtnLabel='Discard'
-              action={handleClose}
-              closeModal={closeModal}
+    <div className='flex min-h-[48px] w-full flex-col justify-center gap-4'>
+      <Modal
+        modalClassName='max-w-xs bg-main-background w-full p-8 rounded-2xl'
+        open={open}
+        closeModal={closeModal}
+      >
+        <ActionModal
+          title='Discard Content?'
+          description='This can’t be undone and you’ll lose your draft.'
+          mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75'
+          mainBtnLabel='Discard'
+          action={handleClose}
+          closeModal={closeModal}
+        />
+      </Modal>
+      <div className='flex flex-col gap-6'>
+        <div className='flex items-center gap-3'>
+          <TextArea
+            id={formId}
+            className={cn(`w-full min-w-0 resize-none  bg-transparent text-xl outline-none placeholder:text-light-secondary dark:placeholder:text-dark-secondary`, reply ? 'h-[45px] !important' : '')}
+            value={inputValue}
+            placeholder={
+              reply || replyModal ? 'Viết bình luận' : "Bạn đang nghĩ gì thế....."
+            }
+            onBlur={handleShowHideNav(true)}
+            minRows={loading ? 1 : modal && !isUploadingImages ? 3 : 1}
+            maxRows={isUploadingImages ? 5 : 15}
+            onFocus={handleFormFocus}
+            onPaste={handleImageUpload}
+            onKeyUp={handleKeyboardShortcut}
+            onChange={handleChange}
+            ref={inputRef}
           />
-        </Modal>
-        <div className='flex flex-col gap-6'>
-          <div className='flex items-center gap-3'>
-            <TextArea
-                id={formId}
-                className={cn(`w-full min-w-0 resize-none  bg-transparent text-xl outline-none placeholder:text-light-secondary dark:placeholder:text-dark-secondary`, reply ? 'h-[45px] !important' : '')}
-                value={inputValue}
-                placeholder={
-                  reply || replyModal ? 'Viết bình luận' : "Bạn đang nghĩ gì thế....."
-                }
-                onBlur={handleShowHideNav(true)}
-                minRows={loading ? 1 : modal && !isUploadingImages ? 3 : 1}
-                maxRows={isUploadingImages ? 5 : 15}
-                onFocus={handleFormFocus}
-                onPaste={handleImageUpload}
-                onKeyUp={handleKeyboardShortcut}
-                onChange={handleChange}
-                ref={inputRef}
-            />
-            {reply && !visited && (
-                <Button
-                    className='cursor-pointer bg-main-accent px-4 py-1.5 font-bold text-white opacity-50'
-                    onClick={handleFocus}
-                >
-                  Reply
-                </Button>
-            )}
-          </div>
+          {reply && !visited && (
+            <Button
+              className='cursor-pointer bg-main-accent px-4 py-1.5 font-bold text-white opacity-50'
+              onClick={handleFocus}
+            >
+              Reply
+            </Button>
+          )}
         </div>
-        {children}
-        {isVisibilityShown && (<motion.div
-            className='flex border-b border-light-border pb-2 dark:border-dark-border'
-            {...fromBottom}
+      </div>
+      {children}
+      {isVisibilityShown && (<motion.div
+          className='flex border-b border-light-border pb-2 dark:border-dark-border'
+          {...fromBottom}
         >
           <button
               type='button'

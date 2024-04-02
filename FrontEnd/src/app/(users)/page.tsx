@@ -6,13 +6,10 @@ import { UpdateUsername } from './_components/home/update-username';
 import { MainHeader } from './_components/home/main-header';
 import InputMobile from "./_components/input/InputMobile";
 import ContainerHome from "./_components/container/ContainerHome";
-import { cookies } from "next/headers";
+import {getCookie} from "cookies-next";
 
 export default function Home(){
-
-    var cookies2 = cookies().get("user");
-    console.log("ABC", cookies2);
-
+    const loading = false;
     return (
         <HomeLayout>
                     <MainContainer>
@@ -22,11 +19,11 @@ export default function Home(){
                             title='Trang chủ'
                             className='flex items-center justify-between'
                         >
-                            <UpdateUsername />
+                        <UpdateUsername />
                         </MainHeader>
                         <InputMobile />
                         <ContainerHome />
                     </MainContainer>
-                </HomeLayout>
+        </HomeLayout>
     );
 }

@@ -1,6 +1,5 @@
 import type { Theme, Accent } from './theme';
-import type {  FirestoreDataConverter } from 'firebase/firestore';
-
+import type { Timestamp } from 'firebase/firestore';
 
 export type User = {
   id: string;

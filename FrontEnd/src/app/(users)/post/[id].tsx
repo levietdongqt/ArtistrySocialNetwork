@@ -4,12 +4,12 @@ import ContainerPostId from "../_components/container/ContainerPostId";
 
 export default function TweetId(): JSX.Element {
 
-    return (
-        <HomeLayout>
-            <MainContainer className='!pb-[1280px]'>
-                <ContainerPostId/>
-            </MainContainer>
-        </HomeLayout>
-    );
+  return (
+      <HomeLayout>
+          <MainContainer className='!pb-[1280px]'>
+            <ContainerPostId/>
+        </MainContainer>
+      </HomeLayout>
+  );
 }
 

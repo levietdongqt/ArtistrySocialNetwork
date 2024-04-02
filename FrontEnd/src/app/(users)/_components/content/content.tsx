@@ -17,7 +17,11 @@ import { ContentStats } from './content-stats';
 import { ContentDate } from './content-date';
 import type { Variants } from 'framer-motion';
 import {Timestamp} from "firebase/firestore";
+import {ViewContent} from "../view/view-content";
+import React from "react";
+import {Input} from "../input/input";
 import {User} from "@models/user";
+import {Loading} from "@components/ui/loading";
 import {useAuth} from "../../../../context/auth-context";
 import {Post} from "@models/post";
 
@@ -37,7 +41,7 @@ export const variants: Variants = {
 };
 
 export function Content(tweet: TweetProps) {
-
+    const modal1 = tweet.modal;
   // const { id: ownerId, name, username, verified, photoURL } = tweetUserData;
   //
   // const { user } = useAuth();
@@ -62,7 +66,7 @@ export function Content(tweet: TweetProps) {
 
   const modal = false;
   const parentTweet = false;
-  const reply = true;
+  const reply = false;
   const pinned = false;
   const tweetIsRetweeted = true;
   const verified = false;
@@ -75,10 +79,18 @@ export function Content(tweet: TweetProps) {
     id: '2',
     src: 'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg',
     alt: 'googlelogo_ssdssds'
+  },{
+    id: '3',
+    src: 'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg',
+    alt: 'googlelogo_ssdssdssdsdsd'
+  },{
+    id: '4',
+    src: 'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg',
+    alt: 'googlelogo_ssdssdssdsdsdsdsd'
   }];
   return (
     <motion.article
-      {...(!modal ? { ...variants, layout: 'position' } : {})}
+      {...(!modal1 ? { ...variants, layout: 'position' } : {})}
       animate={{
         ...variants.animate,
         /*...(parentTweet && { transition: { duration: 0.2 } })*/
@@ -101,111 +113,78 @@ export function Content(tweet: TweetProps) {
       )}
             onClick={delayScroll(200)}
       >
-          <div className='grid grid-cols-[auto,1fr] gap-x-3 gap-y-1'>
-            <AnimatePresence initial={false}>
-              {modal ? null : pinned ? (
-                <ContentStatus type='pin'>
-                  <p className='text-sm font-bold'>Pinned Tweet</p>
-                </ContentStatus>
-              ) : (
-                tweetIsRetweeted && (
-                  <ContentStatus type='tweet'>
-                    {/*<Link href={profileUsername as string} className='custom-underline truncate text-sm font-bold'>*/}
-                    <Link href={"haha"} className='custom-underline truncate text-sm font-bold'>
-                       {/* {userId === profileId ? 'You' : profileName} Retweeted*/}
-                      You
-                    </Link>
-                  </ContentStatus>
-                )
-              )}
-            </AnimatePresence>
-            <div className='flex flex-col items-center gap-2'>
-              {/*<UserTooltip avatar modal={modal} {...tweetUserData}>*/}
-              <UserTooltip avatar modal={modal}>
-                <UserAvatar src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"} alt={"name"} username={"username"} />
-              </UserTooltip>
-              {parentTweet && (
+        <div className='grid grid-cols-[auto,1fr] gap-x-3 gap-y-1'>
+          <div className='flex flex-col items-center gap-2'>
+            <UserTooltip avatar modal={modal1} >
+              <UserAvatar src={images[0].src} alt={'sdsdsdsd'} username={'username'} />
+            </UserTooltip>
+            {parentTweet && (
                 <i className='hover-animation h-full w-0.5 bg-light-line-reply dark:bg-dark-line-reply' />
-              )}
-            </div>
-            <div className='flex min-w-0 flex-col'>
-              <div className='flex justify-between gap-2 text-light-secondary dark:text-dark-secondary'>
-                <div className='flex gap-1 truncate xs:overflow-visible xs:whitespace-normal'>
-                 {/* <UserTooltip modal={modal} {...tweetUserData}>*/}
-                  <UserTooltip modal={modal}>
-                    <UserName
-                      name={"name"}
-                      username={"username"}
+            )}
+          </div>
+          <div className='flex min-w-0 flex-col'>
+            <div className='flex justify-between gap-2 text-light-secondary dark:text-dark-secondary'>
+              <div className='flex gap-1 truncate xs:overflow-visible xs:whitespace-normal'>
+                <UserTooltip modal={modal1}>
+                  <UserName
+                      name={'sdsdsd'}
+                      username={'username'}
                       verified={verified}
                       className='text-light-primary dark:text-dark-primary'
-                    />
-                  </UserTooltip>
-                  {/*<UserTooltip modal={modal} {...tweetUserData}>*/}
-                  <UserTooltip modal={modal}>
-                    <UserUsername username={"username"} />
-                  </UserTooltip>
-                  <ContentDate tweetLink={"tweetLink"} createdAt={Timestamp.now()} />
-                </div>
-                <div className='px-4'>
-                  {!modal && (
-                    <ContentAction
-                      isOwner={false}
-                      ownerId={"ownerId"}
-                      tweetId={"tweetId"}
-                      parentId={"parentId"}
-                      username={"username"}
-                      /*hasImages={!!images}*/
-                      hasImages={false}
-                      createdBy={"Time"}
-                    />
-                  )}
-                </div>
+                  />
+                </UserTooltip>
+                <UserTooltip modal={modal1}>
+                  <UserUsername username={'username'} />
+                </UserTooltip>
+                <ContentDate tweetLink={'tweetLink'} createdAt={Timestamp.now()} />
               </div>
-              {(reply || modal) && (
-                <p
-                  className={cn(
-                    'text-light-secondary dark:text-dark-secondary',
-                    modal && 'order-1 my-2'
-                  )}
-                >
-                  Replying to{' '}
-                  <Link href={`/user/${"parentUsername"}`} className='custom-underline text-main-accent'>
-                      @{"parentUsername"}
-                  </Link>
-                </p>
-              )}
-              {text && (
-                <p className='whitespace-pre-line break-words'>{text}</p>
-              )}
-              <div className='mt-1 flex flex-col gap-2'>
-                {images && (
-                  <ImagePreview
-                    tweet
-                    imagesPreview={images}
-                    previewCount={images.length}
-                  />
-                )}
-                {!modal && (
-                  <ContentStats
-                    reply={reply}
-                    userId={"userId"}
-                    /*isOwner={isOwner}*/
-                    isOwner={false}
-                    tweetId={"tweetId"}
-                    /*userLikes={userLikes}*/
-                    userLikes={["s","ss","sss"]}
-                    /*userReplies={userReplies}*/
-                    userReplies={2}
-                    /*userRetweets={userRetweets}*/
-                    userRetweets={["s","ss","sss"]}
-                    /*openModal={!parent ? openModal : undefined}*/
-                    openModal={openModal}
-                  />
+              <div className='px-4'>
+                {!modal1 && (
+                    <ContentAction
+                        //isOwner={isOwner}
+                        isOwner={true}
+                        //ownerId={ownerId}
+                        ownerId={'1'}
+                        //tweetId={tweetId}
+                        tweetId={'1'}
+                        parentId={'2'}
+                        //parentId={parentId}
+                        username={'username'}
+                        hasImages={!!images}
+                        createdBy={'createdBy'}
+                    />
                 )}
               </div>
             </div>
+            {text && (
+                <p className='whitespace-pre-line break-words'>{text}</p>
+            )}
+            <div className='mt-1 flex flex-col gap-2'>
+              {images && (
+                  <ImagePreview
+                      tweet
+                      imagesPreview={images}
+                      previewCount={images.length}
+                  />
+              )}
+                  <ContentStats
+                      reply={reply}
+                      userId={'userId'}
+                      isOwner={true}
+                     // isOwner={isOwner}
+                      tweetId={'tweetId'}
+                      userLikes={['userLikes', 'userLikes']}
+                      //userReplies={userReplies}
+                      userReplies={11}
+                      userRetweets={['userLikes', 'userLikes']}
+                      openModal={openModal ?? undefined}
+                      // openModal={openModal ?? undefined}
+                  />
+            </div>
           </div>
+        </div>
       </div>
+
     </motion.article>
   );
 }

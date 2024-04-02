@@ -4,27 +4,19 @@ import useSWR from "swr";
 import {fetcherParams, fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {ServiceDestination} from "@lib/enum/ServiceDestination";
 import {getTest} from "../../../services/main/clientRequest/testClient";
-import { getCookie, setCookie } from 'cookies-next'
+import {getCookie} from "cookies-next";
+import {useState} from "react";
+
 export default function Home() {
     // const {data: data, isLoading: isLoading, error: error} = useSWR('/auth/hello2')
-    const {data: data2, isLoading: isLoading2, error: error2} = useSWR(getTest(null), fetcherWithToken);
-
-    var user = getCookie('user');
-    console.log("test user: ", user);
-
-    if (isLoading2) {
-        return (
-            <div>Loading...</div>
-        )
-    }
-    if (error2) {
-        return (
-            <div>Error...</div>
-        )
-    }
+    const [call, setCall] = useState(false)
+    const {data: data2, isLoading: isLoading2, error: error2} = useSWR(call? getTest(null) : null, fetcherWithToken)
     const test = () => {
-        const user = getCookie('user');
-        console.log("test user: ", user);
+        console.log("User", getCookie('user'));
+        setCall(true)
+    }
+    if(error2){
+        return <div>Error: {error2.message}</div>
     }
     return (
         <>

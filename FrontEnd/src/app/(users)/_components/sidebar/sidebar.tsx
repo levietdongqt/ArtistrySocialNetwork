@@ -40,7 +40,7 @@ const navLinks: Readonly<NavLink[]> = [
   },
   {
     href: '/bookmarks',
-    linkName: 'Bookmarks',
+    linkName: 'Đã lưu',
     iconName: 'BookmarkIcon',
     canBeHidden: true
   },
@@ -119,7 +119,7 @@ export function Sidebar() {
             <p className='hidden xl:block'>Post</p>
           </Button>
         </section>
-        {/*{!isMobile && <SidebarProfile />}*/}
+        {!isMobile && <SidebarProfile />}
       </div>
     </header>
   );

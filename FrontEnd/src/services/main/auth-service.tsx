@@ -6,6 +6,9 @@ import {ConTentType} from "@lib/enum/ConTentType";
 import {User} from "../../models/user";
 import {AuthResponse} from "@models/authResponse";
 import {getServerSideHeaders} from "@lib/config/ServerHeaderConfig";
+import {access_token_options, refresh_token_options} from "@lib/config/TokenConfig";
+import {setCookieTokenSSR} from "@lib/helper/serverCookieHandle";
+import {getCookie} from "cookies-next";
 
 function delay(ms: number): Promise<void> {
     return new Promise<void>((resolve) => {
@@ -27,17 +30,17 @@ export async function loginService(values: any): Promise<MyResponse<AuthResponse
                 },
             })
         const data: MyResponse<AuthResponse> = await res.json();
-        console.log(data.message)
+        console.log(data)
         if (res.ok) {
-            setCookieToken(data);
+            setCookieTokenSSR(data);
             return data;
         } else {
             console.log(data.message)
-            throw new Error("Something went wrong in login server action")
+            throw new Error("Server error: " + res.statusText)
         }
     } catch (error) {
         console.log(error)
-        throw new Error("Something went wrong in login server action")
+        throw error
     }
 }
 
@@ -56,15 +59,15 @@ export async function oauth2Service(token: string): Promise<MyResponse<AuthRespo
         const data: MyResponse<AuthResponse> = await res.json();
         console.log(data.message)
         if (res.ok) {
-            setCookieToken(data);
+            setCookieTokenSSR(data);
             return data;
         } else {
             console.log(data.message)
-            throw new Error("Something went wrong in login server action")
+            throw new Error("Server error: " + res.statusText)
         }
     } catch (error) {
         console.log(error)
-        throw new Error("Something went wrong in login server action")
+        throw error
     }
 }
 
@@ -78,13 +81,13 @@ export async function testAPI(): Promise<any> {
                 headers: await getServerSideHeaders(true, ConTentType.JSON),
                 cache: "no-cache"
             })
+
         if (res.ok) {
-            const data = await res.text();
+            const data = await res.json();
             console.log(data)
             return data;
         } else {
-
-            console.log("SAI ROI")
+            console.log("SAI ROI", res.statusText, res.status)
             return null;
         }
     } catch (error) {
@@ -106,20 +109,41 @@ export async function testHeader(): Promise<any> {
     }
 }
 
-export async function refreshTokenHandler(refresh_token: string): Promise<MyResponse<any>> {
+// export async function getNewToken(refresh_token: string): Promise<MyResponse<any>> {
+//     try {
+//         console.log("GET NEW TOKEN...................");
+//         const value = await fetch(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/auth/refreshToken`, {
+//             body: JSON.stringify({"token": refresh_token}),
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//         })
+//         return await value.json();
+//     } catch (error) {
+//         console.log(error)
+//         throw new Error("Something went wrong in server action")
+//     }
+// }
+
+export async function getNewToken(): Promise<MyResponse<any>> {
     try {
-        console.log("GET NEW TOKEN...................");
-        const value = await fetch(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/auth/refreshToken`, {
-            body: JSON.stringify({"token": refresh_token}),
+        const refreshToken = getCookie("refresh_token", {cookies})?.toString();
+        if (!refreshToken) {
+            throw new Error("Refresh token is not found")
+        }
+        console.log("GET NEW TOKEN ....... ", refreshToken);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/auth/refreshToken`, {
+            body: JSON.stringify({"token": refreshToken}),
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
         })
-        return await value.json();
+        return await response.json();
     } catch (error) {
         console.log(error)
-        throw new Error("Something went wrong in server action")
+        throw error;
     }
 }
 

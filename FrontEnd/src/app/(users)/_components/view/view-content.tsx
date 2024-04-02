@@ -27,7 +27,7 @@ type ViewTweetProps =  {
   viewTweetRef?: RefObject<HTMLElement>;
 };
 
-export function ViewTweet(tweet: ViewTweetProps): JSX.Element {
+export function ViewContent(tweet: ViewTweetProps): JSX.Element {
   const {
     viewTweetRef,
     parentTweet,
@@ -43,8 +43,8 @@ export function ViewTweet(tweet: ViewTweetProps): JSX.Element {
 
  /* const isOwner = userId === createdBy;*/
 
-  const reply = !!parent;
-
+  // const reply = !!parent;
+  const reply = true;
   /*const { id: parentId, username: parentUsername = username } = parent ?? {};*/
   const text = "haha";
   const images = [{
@@ -91,7 +91,7 @@ export function ViewTweet(tweet: ViewTweetProps): JSX.Element {
               {/*<UserTooltip {...tweetUserData}>*/}
               <UserTooltip >
                 <UserName
-                  className='-mb-1'
+                  className='mb-1'
                   name={'name'}
                   username={'username'}
                   verified={false}
@@ -118,6 +118,7 @@ export function ViewTweet(tweet: ViewTweetProps): JSX.Element {
           </div>
         </div>
       </div>
+
       {reply && (
         <p className='text-light-secondary dark:text-dark-secondary'>
           Replying to{' '}
