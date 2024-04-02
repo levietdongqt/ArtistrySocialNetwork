@@ -102,11 +102,14 @@ public class AuthController {
 
     @PostMapping("/refreshToken")
     public ResponseEntity<?> freshToken(@RequestBody TokenDTO tokenDTO) throws UnAuthenticationException {
+
+
         Session session = authService.checkRefreshToken(tokenDTO.getToken());
         String newRefreshToken = session.getRefreshToken();
         String accessToken = authService.generateAccessToken(session.getUser());
         HashMap<String, String> response = new HashMap<String, String>();
         response.put("accessToken", accessToken);
+        response.put("refreshToken", tokenDTO.getToken());
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
@@ -123,12 +126,11 @@ public class AuthController {
         HashMap<String, String> response = new HashMap<String, String>();
         response.put("hello", "HELLO FROM MAIN AUTH CONTROLLER");
         return ResponseEntity.ok().body(
-                UserDTO.builder()
-                        .accent(AccentType.BLUE)
-                        .build()
+                response
         );
     }
 
+    @Secured("ROLE_ADMIN2")
     @GetMapping("/hello2")
     public ResponseEntity<?> hello2() {
         log.debug("Voo hello!!!!!!!!!!!!!!!!!!");

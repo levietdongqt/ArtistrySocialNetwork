@@ -1,11 +1,14 @@
 package com.mytech.mainservice.config;
 
+import com.mytech.mainservice.dto.ResponseObject;
 import com.mytech.mainservice.filter.JwtAuthFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -45,16 +48,21 @@ public class AuthConfig {
                             .requestMatchers("/user/**").permitAll()
                             .requestMatchers("/test").permitAll()
                             .requestMatchers("/hello2").permitAll()
-
+                            .requestMatchers("/exception/**").permitAll()
+                            .requestMatchers("/exception/status").permitAll()
+                            .requestMatchers("/exception/{status}").permitAll()
                             .requestMatchers("/hello").authenticated()
                             .anyRequest().authenticated();
                 })
                 .exceptionHandling(handler -> {
                     handler.authenticationEntryPoint((request, response, authException) -> {
-                        log.error(authException.getLocalizedMessage());
                         log.error(authException.getMessage());
+                        response.sendError(HttpStatus.UNAUTHORIZED.value());
                         //response.sendRedirect("/api/main/auth/error/true");
-
+                    }).accessDeniedHandler((request, response, accessDeniedException) -> {
+                        log.error(accessDeniedException.getMessage());
+                        response.sendError(HttpStatus.FORBIDDEN.value());
+                        //response.sendRedirect("/api/main/auth/error/true");
                     });
                 });
         return http.build();

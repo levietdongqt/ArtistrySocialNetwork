@@ -1,9 +1,9 @@
-"use server"
 import {testAPI, testHeader} from "../../../services/main/auth-service";
 
 export default async function Home() {
     const test = async () => {
-        testHeader().then(value => {
+        'use server'
+        testAPI().then(value => {
             console.log("TEST FROM SERVER");
         }).catch(reason => {
             console.log("ERROR FROM SERVER");
@@ -12,9 +12,10 @@ export default async function Home() {
             console.log("FINALLY FROM SERVER");
         })
     }
+    console.log("Vooo server testing")
     return (
         <>
-            <form action={testAPI}>
+            <form action={test}>
                 <button type="submit" >
                     CLICK HERE
                 </button>
