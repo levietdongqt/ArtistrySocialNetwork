@@ -1,4 +1,5 @@
 'use client'
+
 import {
     signInWithPopup,
     GoogleAuthProvider,
@@ -12,8 +13,10 @@ import type {ReactNode} from 'react';
 import type {User as AuthUser} from 'firebase/auth';
 import type {User} from '@models/user';
 import {oauth2Service} from "../services/main/auth-service";
-import {setCookie} from "cookies-next";
-import { getCookie } from 'cookies-next';
+import {getCookie, setCookie} from "cookies-next";
+import {setCookieHandler} from "@lib/helper/clientCookieHandle";
+import {useRouter} from "next/navigation";
+
 type AuthContext = {
     user: User | null;
     error: Error | null;
@@ -29,30 +32,97 @@ type AuthContextProviderProps = {
 };
 export const AuthContext = createContext<AuthContext | null>(null);
 
-export function AuthContextProvider({ children }: AuthContextProviderProps): JSX.Element {
+export function AuthContextProvider({
+                                        children
+                                    }: AuthContextProviderProps): JSX.Element {
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState(true);
-
+    const router = useRouter();
     useEffect(() => {
-        const manageUser = (): void => {
-            try {
-                const userDataCookie = getCookie('users');
-                console.log(userDataCookie);
-                if (userDataCookie) {
-                    setUser(JSON.parse(userDataCookie));
-                } else {
-                    setUser(null);
-                }
-                setLoading(false);
-            } catch (error) {
-
-                console.error("Đã xảy ra lỗi khi xử lý cookie:", error);
-                setError(error as Error);
-                setLoading(false);
-            }
-        };
-        manageUser();
+        const fetchUserData = async () => {
+            setLoading(false);
+        }
+        //   const manageUser = async (authUser: AuthUser): Promise<void> => {
+        //     const { uid, displayName, photoURL } = authUser;
+        //
+        //     const userSnapshot = await getDoc(doc(usersCollection, uid));
+        //
+        //     if (!userSnapshot.exists()) {
+        //       let available = false;
+        //       let randomUsername = '';
+        //
+        //       while (!available) {
+        //         const normalizeName = displayName?.replace(/\s/g, '').toLowerCase();
+        //         const randomInt = getRandomInt(1, 10_000);
+        //
+        //         randomUsername = `${normalizeName as string}${randomInt}`;
+        //
+        //         const randomUserSnapshot = await getDoc(
+        //             doc(usersCollection, randomUsername)
+        //         );
+        //
+        //         if (!randomUserSnapshot.exists()) available = true;
+        //       }
+        //
+        //       const userData: WithFieldValue<User> = {
+        //         id: uid,
+        //         bio: null,
+        //         name: displayName as string,
+        //         theme: null,
+        //         accent: null,
+        //         website: null,
+        //         location: null,
+        //         photoURL: photoURL ?? '/assets/twitter-avatar.jpg',
+        //         username: randomUsername,
+        //         verified: false,
+        //         following: [],
+        //         followers: [],
+        //         createdAt: serverTimestamp(),
+        //         updatedAt: null,
+        //         totalTweets: 0,
+        //         totalPhotos: 0,
+        //         pinnedTweet: null,
+        //         coverPhotoURL: null
+        //       };
+        //
+        //       const userStatsData: WithFieldValue<Stats> = {
+        //         likes: [],
+        //         tweets: [],
+        //         updatedAt: null
+        //       };
+        //       console.log("hahaha",userStatsData);
+        //       try {
+        //         await Promise.all([
+        //           setDoc(doc(usersCollection, uid), userData),
+        //           setDoc(doc(userStatsCollection(uid), 'stats'), userStatsData)
+        //         ]);
+        //
+        //         const newUser = (await getDoc(doc(usersCollection, uid))).data();
+        //         setUser(newUser as User);
+        //       } catch (error) {
+        //         setError(error as Error);
+        //       }
+        //     } else {
+        //       const userData = userSnapshot.data();
+        //       setUser(userData);
+        //     }
+        //
+        //     setLoading(false);
+        //   };
+        //
+        //   const handleUserAuth = (authUser: AuthUser | null): void => {
+        //     setLoading(true);
+        //
+        //     if (authUser) void manageUser(authUser);
+        //     else {
+        //       setUser(null);
+        //       setLoading(false);
+        //     }
+        //   };
+        //
+        //   onAuthStateChanged(auth, handleUserAuth);
+        fetchUserData();
     }, []);
 
     const signInWithGoogle = async (): Promise<void> => {
@@ -61,7 +131,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps): JSX
             const credential = await signInWithPopup(auth, provider);
             console.log("LOGIN GOOGLE: ", credential)
             const oauth2Response = await oauth2Service(await credential.user.getIdToken())
-            setCookie("access_token", oauth2Response.data.accessToken);
+            handleSuccessResponse(oauth2Response, router)
         } catch (error) {
             setError(error as Error);
         }
@@ -73,7 +143,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps): JSX
             const credential = await signInWithPopup(auth, provider);
             console.log("LOGIN FACEBOOK: ")
             const oauth2Response = await oauth2Service(await credential.user.getIdToken())
-            setCookie("access_token", oauth2Response.data.accessToken);
+            handleSuccessResponse(oauth2Response, router)
         } catch (error) {
             console.log(error)
         }
@@ -108,4 +178,11 @@ export function useAuth(): AuthContext {
     if (!context)
         throw new Error('useAuth must be used within an AuthContextProvider');
     return context;
+}
+
+async function handleSuccessResponse(oauth2Response: any, router: any) {
+    setCookieHandler(oauth2Response.data)
+    console.log("LOGIN GOOGLE SUCCESSFUL: ")
+    const prevPage = getCookie("prev_page")?.toString();
+    prevPage ? router.push(prevPage) : router.push("/")
 }
