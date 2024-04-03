@@ -8,8 +8,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #fff;
-
 }
 
 #container {
@@ -20,7 +18,7 @@
 }
 
 #h3 {
-  color: black; 
+  color: white;
 }
 
 #ring {
@@ -90,6 +88,7 @@
     transform: rotateX(70deg) rotateZ(630deg);
   }
 }
+
 @layer base {
   :root {
     --main-background: var(--dark-background);
