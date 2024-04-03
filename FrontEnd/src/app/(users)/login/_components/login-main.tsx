@@ -14,10 +14,9 @@ import {getCookie} from 'cookies-next';
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {PrefetchKind} from "next/dist/client/components/router-reducer/router-reducer-types";
 import {useEffect} from "react";
-import {loginService} from "../../../../../services/main/auth-service";
-import {useUser} from "../../../../../context/user-context";
-import {useAuth} from "../../../../../context/auth-context";
-
+import {loginService} from "../../../../services/main/auth-service";
+import {useAuth} from "../../../../context/auth-context";
+import {useUser} from "../../../../context/user-context";
 
 export function LoginMain() {
     const {open, openModal, closeModal} = useModal();

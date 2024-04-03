@@ -3,8 +3,9 @@ import {getCookie} from "cookies-next";
 import {cookies} from "next/headers";
 import LoginValidation from "@lib/validations/LoginValidation";
 import {ReactElement} from "react";
-import {SEO} from "../../_components/common/seo";
-import {AuthLayout} from "../../_components/layout/auth-layout";
+import {SEO} from "../_components/common/seo";
+import {AuthLayout} from "../_components/layout/auth-layout";
+
 
 export default async function Login() {
     const prevPage = getCookie("prev_page", {cookies})?.toString();

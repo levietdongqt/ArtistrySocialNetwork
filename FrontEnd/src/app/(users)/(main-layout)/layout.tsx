@@ -16,7 +16,7 @@ export default function RootLayout({
     // var params = usePathname();
     // var isLogin = params.includes("/login")
     return (
-        <MainLayout>
+        <MainLayout >
             {children}
         </MainLayout>
 

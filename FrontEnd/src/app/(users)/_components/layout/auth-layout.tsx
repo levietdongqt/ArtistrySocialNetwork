@@ -1,16 +1,14 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../../../context/auth-context';
 import { sleep } from '@lib/utils';
-import { Placeholder } from '../common/placeholder';
 import type { LayoutProps } from './common-layout';
-import {useAuth} from "../../../../context/auth-context";
 import {Placeholder} from "../common/placeholder";
+import {useUser} from "../../../../context/user-context";
 
 export function AuthLayout({ children }: LayoutProps): JSX.Element {
   const [pending, setPending] = useState(true);
-  const  {user, loading}  = useAuth();
+  const   user   = useUser();
   const { replace } = useRouter();
   console.log("user: " + user)
   useEffect(() => {

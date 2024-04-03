@@ -41,12 +41,12 @@ public class PostController {
     }
     @GetMapping("/get-posts/count")
     public ResponseEntity<?> countPostList () {
-        log.info("PostList ",postService.count());
+        log.info("PostList ",postService.getCountPost());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
                         .message("Get post list count OK")
-                        .data(postService.count())
+                        .data(postService.getCountPost())
                         .build()
         );
     }

@@ -18,6 +18,10 @@ import com.mytech.realtimeservice.repositories.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -81,11 +85,21 @@ public class PostService {
 
 
     }
-    public List<PostResponse> findAll() {
-        List<Post> posts = postRepository.findAll();
+    public List<PostResponse> findAll(int limit) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(0, limit, sort);
+        Page<Post> pagePosts = postRepository.findByOrderByCreatedAtDesc(pageable);
+        List<Post> posts = pagePosts.getContent();
+
         List<PostResponse> postResponses = new ArrayList<>();
-        postResponses = modelMapper.map(posts,postResponses.getClass());
+        for (Post post : posts) {
+            PostResponse postResponse = modelMapper.map(post, PostResponse.class);
+            postResponses.add(postResponse);
+        }
         return postResponses;
+    }
+    public long getCountPost(){
+        return postRepository.count();
     }
 
     public void deleteAll() {
