@@ -9,6 +9,7 @@ import useSWR from "swr";
 import { updateNotification } from "services/main/clientRequest/notificationsClient";
 import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
 import { useState } from "react";
+import { useUser } from "context/user-context";
 const { Title } = Typography;
 const { Text } = Typography;
 const notificationString: string[] = [
@@ -46,11 +47,12 @@ export default function NotificationCard({data} : NotificationCardParams){
   var specificDate = new Date(data.createdDate);
   var timeDifference = currentDate.getTime() - specificDate.getTime();
   var timeDifferenceInSeconds = formatElapsedTime(timeDifference);
+  const user = useUser();
   const {
     data: data2,
     isLoading: isLoading2,
     error: error2,
-  } = useSWR(shouldFetch ? updateNotification(data.id): null, fetcherWithToken);
+  } = useSWR(shouldFetch ? updateNotification(user.currentUser?.id as string): null, fetcherWithToken);
   
   return (
     <Link
