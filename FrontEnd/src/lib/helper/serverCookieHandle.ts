@@ -1,3 +1,4 @@
+'use server'
 import {MyResponse} from "@models/responseObject";
 import {cookies} from "next/headers";
 import {access_token_options, refresh_token_options} from "@lib/config/TokenConfig";
@@ -7,7 +8,6 @@ import {NextRequest, NextResponse} from "next/server";
 export async function setCookieTokenSSR(data: MyResponse<any>) {
 //     cookies().set("access_token", data.data.accessToken,access_token_options)
     console.log("SETTING COOKIE TOKEN")
-    await deleteCookieTokenSSR();
     setCookie('access_token', data.data.accessToken, {cookies, ...access_token_options});
     setCookie('refresh_token', data.data.refreshToken, {cookies, ...refresh_token_options});
     console.log("SET COOKIE SUCCESS")

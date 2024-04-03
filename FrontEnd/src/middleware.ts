@@ -4,7 +4,7 @@ import {jwtDecode, JwtPayload} from "jwt-decode";
 import process from "process";
 import {getNewToken} from "./services/main/auth-service";
 import {getCookie, setCookie} from "cookies-next";
-import {resetCookieTokenSSR, setCookieTokenSSR} from "@lib/helper/serverCookieHandle";
+import {resetCookieTokenSSR} from "@lib/helper/serverCookieHandle";
 import {access_token_options} from "@lib/config/TokenConfig";
 import {isTokenExpired} from "@lib/config/ServerHeaderConfig";
 
