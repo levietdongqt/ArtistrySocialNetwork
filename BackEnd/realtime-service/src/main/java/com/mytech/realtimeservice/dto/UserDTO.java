@@ -1,0 +1,26 @@
+package com.mytech.realtimeservice.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class UserDTO {
+    private String id;
+    private String fullName;
+    private String email;
+    private String phoneNumber;
+    private boolean gender;
+    private LocalDate dateOfBirth;
+    private String avatar;
+    private String coverImage;
+
+    //Đánh dấu là user sẽ được Tag vào bài viết
+    private boolean tag;
+}

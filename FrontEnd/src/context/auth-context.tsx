@@ -37,10 +37,9 @@ export function AuthContextProvider({ children }: AuthContextProviderProps): JSX
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     useEffect(() => {
-        const userDataCookie = getCookie("users");
-        const manageUser = (): void => {
 
-            console.log("ádasda ",userDataCookie);
+    const userDataCookie = getCookie("users");
+        const manageUser = (): void => {
             try {
                 if (userDataCookie) {
                     setUser(JSON.parse(userDataCookie));

@@ -1,13 +1,8 @@
 "use client"
 import axios from "axios";
-import {useRouter} from "next/navigation";
 import {getCookie, setCookie} from "cookies-next";
-import {jwtDecode, JwtPayload} from "jwt-decode";
-import process from "process";
-import {MyResponse} from "@models/responseObject";
 import {getNewToken} from "../../services/main/auth-service";
-import {resetCookieHandler, setCookieHandler} from "@lib/helper/clientCookieHandle";
-import {setCookieTokenSSR} from "@lib/helper/serverCookieHandle";
+import {resetCookieHandler} from "@lib/helper/clientCookieHandle";
 
 const axiosWithToken = axios.create();
 axiosWithToken.interceptors.request.use(

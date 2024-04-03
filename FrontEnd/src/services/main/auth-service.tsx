@@ -6,7 +6,6 @@ import {ConTentType} from "@lib/enum/ConTentType";
 import {User} from "../../models/user";
 import {AuthResponse} from "@models/authResponse";
 import {getServerSideHeaders} from "@lib/config/ServerHeaderConfig";
-import {access_token_options, refresh_token_options} from "@lib/config/TokenConfig";
 import {setCookieTokenSSR} from "@lib/helper/serverCookieHandle";
 import {getCookie} from "cookies-next";
 

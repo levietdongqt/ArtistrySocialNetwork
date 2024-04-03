@@ -8,7 +8,7 @@ import {MyResponse} from "@models/responseObject";
 export async function setCookieHandler(props: AuthResponse) {
     setCookie("access_token", props?.accessToken, access_token_options)
     setCookie("refresh_token", props?.refreshToken,refresh_token_options)
-    setCookie("users", props?.user,{path: "/"})
+    setCookie("users", props?.user,{path: "/",httpOnly: false,secure: false})
     console.log("Asdasd ",props?.user)
     console.log("SET COOKIE SUCCESS")
 }
@@ -21,5 +21,6 @@ export async function resetCookieHandler(props: MyResponse<any>) {
 export async function deleteCookieHandler() {
     deleteCookie("access_token")
     deleteCookie("refresh_token")
+    deleteCookie("user")
     console.log("DELETE COOKIE SUCCESS")
 }

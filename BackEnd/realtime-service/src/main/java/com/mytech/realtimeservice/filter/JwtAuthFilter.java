@@ -2,6 +2,7 @@ package com.mytech.realtimeservice.filter;
 
 
 import com.mytech.realtimeservice.configs.CustomUserDetail;
+import com.mytech.realtimeservice.helper.AuthService;
 import com.mytech.realtimeservice.helper.JwtService;
 import com.mytech.realtimeservice.models.feignClient.Role;
 import com.mytech.realtimeservice.models.feignClient.User;
@@ -10,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -21,7 +23,8 @@ import java.util.List;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
-
+    @Autowired
+    private AuthService authService;
     private final ModelMapper mapper;
     private final JwtService jwtService;
 
@@ -42,6 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (jwtService.validateToken(token)) {
+                authService.setAuthToken(token);
                 CustomUserDetail userDetails = getUserDetail(token, username);
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
