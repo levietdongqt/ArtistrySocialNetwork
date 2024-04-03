@@ -18,7 +18,7 @@ const {Title} = Typography;
 import {cookies} from "next/headers";
 
 export default function AllNotification() {
-    const user = useAuth();
+    const user = useUser();
 
 
     console.log("abcfgdfgdfgdfg", user);
@@ -27,7 +27,7 @@ export default function AllNotification() {
         data: data2,
         isLoading: isLoading2,
         error: error2,
-    } = useSWR(getAllNotifications("a125b897-1012-4e8c-ac64-60e3263f7252"), fetcherWithToken);
+    } = useSWR(getAllNotifications(user.currentUser?.id as string), fetcherWithToken);
     var today = new Date();
     today.setHours(0, 0, 0, 0);
     console.log("abc", data2);

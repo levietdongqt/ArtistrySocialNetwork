@@ -14,9 +14,11 @@ import {getCookie} from 'cookies-next';
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {PrefetchKind} from "next/dist/client/components/router-reducer/router-reducer-types";
 import {useEffect} from "react";
-import {loginService} from "../../../../services/main/auth-service";
-import {useAuth} from "../../../../context/auth-context";
-import {useUser} from "../../../../context/user-context";
+
+import { loginService } from 'services/main/auth-service';
+import { useUser } from 'context/user-context';
+import { useAuth } from 'context/auth-context';
+
 
 export function LoginMain() {
     const {open, openModal, closeModal} = useModal();
@@ -48,7 +50,7 @@ export function LoginMain() {
             console.log("Login Result: ", result)
             setCookieHandler(result.data);
             const prevPage = getCookie("prev_page")?.toString();
-            prevPage ? router.push(prevPage) : router.push("/")
+            prevPage ? router.push(prevPage) : router.push("/home")
             return;
         })
             .catch(err => {

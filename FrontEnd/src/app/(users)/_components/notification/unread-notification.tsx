@@ -7,14 +7,16 @@ import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
 import { Loading } from "@components/ui/loading";
 import { AnimatePresence } from "framer-motion";
 import { Error } from "@components/ui/error";
+import { useUser } from "context/user-context";
 const { Sider, Content } = Layout;
 
 export default function UnreadNotification() {
+  const user = useUser();
   const {
     data: data2,
     isLoading: isLoading2,
     error: error2,
-  } = useSWR(getUnreadNotifications(), fetcherWithToken);
+  } = useSWR(getUnreadNotifications(user.currentUser?.id as string), fetcherWithToken);
   console.log("abc", data2);
   console.log(isLoading2);
   console.log(error2);
