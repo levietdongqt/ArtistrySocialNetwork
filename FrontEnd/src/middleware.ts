@@ -40,7 +40,7 @@ const middleware = async (request: NextRequest) => {
 export {middleware};
 export const config = {
     matcher: [
-        '/',
+        '/home',
         // '/login',
         // '/testClient',
         "/testServer2",

@@ -10,6 +10,7 @@ import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
 import { Loading } from "@components/ui/loading";
 import { Error } from "@components/ui/error";
 import { useEffect, useState } from "react";
+import { useUser } from "context/user-context";
 
 type SidebarLinkProps = NavLink & {
   username?: string;
@@ -23,11 +24,12 @@ export function SidebarLink({
   disabled,
   canBeHidden,
 }: SidebarLinkProps) {
+  var user = useUser()
   const {
     data: data2,
     isLoading: isLoading2,
     error: error2,
-  } = useSWR(countUnreadNotifications(""), fetcherWithToken);
+  } = useSWR(countUnreadNotifications(user.currentUser?.id as string), fetcherWithToken);
   const [countNoti,setCountNoti] = useState(0);
   const [shouldFetch,setShouldFetch] = useState(false)
   const asPath = usePathname();
@@ -42,7 +44,7 @@ export function SidebarLink({
     data: data3,
     isLoading: isLoading3,
     error: error3,
-  } = useSWR(shouldFetch ? updateDeliveryNotification() : null, fetcherWithToken);
+  } = useSWR(shouldFetch ? updateDeliveryNotification(user.currentUser?.id as string) : null, fetcherWithToken);
 
   function handleClickSlidebar() {
     disabled ? preventBubbling() : undefined;
