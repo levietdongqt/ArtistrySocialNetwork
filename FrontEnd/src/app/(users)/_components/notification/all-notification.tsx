@@ -1,3 +1,4 @@
+'use client'
 import { Layout } from "antd";
 import { UserCard } from "../user/user-card";
 import { Typography } from "antd";
@@ -10,11 +11,12 @@ import { Error } from "@components/ui/error";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "context/auth-context";
 import { useUser } from "context/user-context";
+import { getCookie, getCookies } from "cookies-next";
 const { Sider, Content } = Layout;
 const { Title } = Typography;
-
+import { cookies } from "next/headers";
 export default function AllNotification() {
-  const {user} = useAuth();
+  const user = useAuth();
   
 
   console.log("abcfgdfgdfgdfg",user);

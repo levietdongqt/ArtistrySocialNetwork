@@ -27,7 +27,7 @@ export function SidebarLink({
     data: data2,
     isLoading: isLoading2,
     error: error2,
-  } = useSWR(countUnreadNotifications(), fetcherWithToken);
+  } = useSWR(countUnreadNotifications(""), fetcherWithToken);
   const [countNoti,setCountNoti] = useState(0);
   const [shouldFetch,setShouldFetch] = useState(false)
   const asPath = usePathname();

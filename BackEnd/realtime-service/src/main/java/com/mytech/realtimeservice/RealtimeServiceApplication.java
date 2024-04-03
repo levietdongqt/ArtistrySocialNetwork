@@ -4,6 +4,9 @@ import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.enums.NotificationType;
 import com.mytech.realtimeservice.models.users.User;
+import com.mytech.realtimeservice.repositories.CommentLikeRepository;
+import com.mytech.realtimeservice.repositories.CommentsRepository;
+import com.mytech.realtimeservice.repositories.PostLikeRepository;
 import com.mytech.realtimeservice.services.NotificationService;
 import com.mytech.realtimeservice.services.PostService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +31,15 @@ public class RealtimeServiceApplication implements CommandLineRunner {
 	@Autowired
 	private NotificationService notificationService;
 
+	@Autowired
+	private PostLikeRepository postLikeRepository;
+
+	@Autowired
+	private CommentsRepository commentsRepository;
+
+	@Autowired
+	private CommentLikeRepository commentLikeRep;
+
 	public static void main(String[] args) {
 		SpringApplication.run(RealtimeServiceApplication.class, args);
 	}
@@ -36,6 +48,9 @@ public class RealtimeServiceApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		postService.deleteAll();
 		notificationService.deleteAll();
+		postLikeRepository.deleteAll();
+		commentsRepository.deleteAll();
+		commentLikeRep.deleteAll();
 		User userTo1 = User.builder().userId("4dc47d13-ef4e-11ee-a0e1-00155d973fd0").userName("Phước Huỳnh").build();
 		User userFrom1 = User.builder().userId("a125b897-1012-4e8c-ac64-60e3263f7252").userName("Huy").build();
 

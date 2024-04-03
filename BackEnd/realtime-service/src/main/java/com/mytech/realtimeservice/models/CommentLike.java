@@ -15,9 +15,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostLike {
+public class CommentLike {
     @Id
     private String id;
+    private String commentId;
     private String postId;
 
     private User byUser;

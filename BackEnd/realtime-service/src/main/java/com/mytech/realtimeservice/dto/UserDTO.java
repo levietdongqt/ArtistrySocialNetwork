@@ -20,4 +20,7 @@ public class UserDTO {
     private LocalDate dateOfBirth;
     private String avatar;
     private String coverImage;
+
+    //Đánh dấu là user sẽ được Tag vào bài viết
+    private boolean tag;
 }

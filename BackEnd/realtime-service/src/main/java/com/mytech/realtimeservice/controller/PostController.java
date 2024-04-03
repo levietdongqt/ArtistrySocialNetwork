@@ -1,8 +1,9 @@
 package com.mytech.realtimeservice.controller;
 
-import com.mytech.realtimeservice.dto.PostDTO;
-import com.mytech.realtimeservice.dto.ResponseObject;
+import com.mytech.realtimeservice.dto.*;
+import com.mytech.realtimeservice.models.Comments;
 import com.mytech.realtimeservice.models.Post;
+import com.mytech.realtimeservice.services.CommentsService;
 import com.mytech.realtimeservice.services.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,9 @@ public class PostController {
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private CommentsService commentsService;
 
 
     @GetMapping("/get-posts")
@@ -44,6 +48,42 @@ public class PostController {
                         .status(HttpStatus.CREATED)
                         .message("Get post list OK")
                         .data(savedPost)
+                        .build()
+        );
+    }
+
+    @PostMapping("/likes")
+    public ResponseEntity<?> createPostLike(@RequestBody PostLikeDTO postLikeDTO){
+        Post post = postService.createPostLike(postLikeDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.CREATED)
+                        .message("Handler likes successfully, likes: " + post.getTotalLikes())
+                        .data(post)
+                        .build()
+        );
+    }
+
+    @PostMapping("/comments")
+    public ResponseEntity<?> createComment(@RequestBody CommentDTO commentDTO) {
+        Comments comments = commentsService.createComments(commentDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.CREATED)
+                        .message("Create comments successfully")
+                        .data(comments)
+                        .build()
+        );
+    }
+
+    @PostMapping("/comments/likes")
+    public ResponseEntity<?> createCommentLike(@RequestBody CommentLikeDTO commentLikeDTO){
+        Comments comments = commentsService.createCommentLike(commentLikeDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.CREATED)
+                        .message("Handler likes successfully, likes: " + comments.getTotalLikes())
+                        .data(comments)
                         .build()
         );
     }
