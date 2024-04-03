@@ -36,9 +36,9 @@ export function AuthContextProvider({ children }: AuthContextProviderProps): JSX
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
-    const userDataCookie = getCookie("users");
     useEffect(() => {
-        console.log("AuthContextProvider is running: " + userDataCookie)
+
+    const userDataCookie = getCookie("users");
         const manageUser = (): void => {
             try {
                 if (userDataCookie) {

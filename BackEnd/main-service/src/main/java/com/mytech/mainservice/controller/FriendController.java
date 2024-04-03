@@ -25,7 +25,7 @@ public class FriendController {
         return friend;
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+//    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{userId}")
     public ResponseEntity<ResponseObject> getFriends(@PathVariable String userId) {
         Set<UserDTO> friends = friendService.getFriends(userId);

@@ -21,6 +21,7 @@ export type NavLink = {
 };
 
 const navLinks: Readonly<NavLink[]> = [
+
     {
         href: '/',
         linkName: 'Trang chủ',
@@ -46,7 +47,7 @@ const navLinks: Readonly<NavLink[]> = [
     },
     {
         href: '/lists',
-        linkName: 'Lists',
+        linkName: 'Bạn bè',
         iconName: 'Bars3BottomLeftIcon',
         disabled: true,
         canBeHidden: true

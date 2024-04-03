@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -28,7 +29,7 @@ public class Post {
     private boolean status;
     private List<User> tagUserPosts;
     private double priorityScore;
-    private List<User> userPostLikes;
+    private List<User> userPostLikes = new ArrayList<>();
     private int userReplies;
     private int totalLikes;
     private int totalComments;

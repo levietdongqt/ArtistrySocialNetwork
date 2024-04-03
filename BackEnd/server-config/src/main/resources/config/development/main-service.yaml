@@ -25,6 +25,7 @@ spring:
     username: project
     password: Thuhuy@123
 
+
   jpa:
     hibernate:
       ddl-auto: validate

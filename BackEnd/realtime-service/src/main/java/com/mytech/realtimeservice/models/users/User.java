@@ -11,6 +11,7 @@ public class User{
     private String userId;
     private String userName;
     private String avatar;
+    private String icon;
 }
 
 
