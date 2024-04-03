@@ -24,6 +24,7 @@ import {User} from "@models/user";
 import {Loading} from "@components/ui/loading";
 import {useAuth} from "../../../../context/auth-context";
 import {Post} from "@models/post";
+import {ImagesPreview} from "@models/file";
 
 
 export type TweetProps = Post & {
@@ -41,37 +42,47 @@ export const variants: Variants = {
 };
 
 export function Content(tweet: TweetProps) {
-    const modal1 = tweet.modal;
-  // const { id: ownerId, name, username, verified, photoURL } = tweetUserData;
-  //
-  // const { user } = useAuth();
-  //
-  //
-  // const userId = user?.id as string;
-  //
-  // const isOwner = userId === createdBy;
-  //
-  // const { id: parentId, username: parentUsername = username } = parent ?? {};
+  const {
+    id:tweetId,
+    user: tweetUserData,
+    content,
+    images,
+    createdBy,
+    createdAt,
+    updatedAt,
+    status,
+    tagUserPosts,
+    userPostLikes,
+    priorityScore,
+    userReplies,
+    totalLikes,
+    totalComments,
+    modal,
+    profile,
+    parentTweet
+  } = tweet;
+  const { id: ownerId, fullName, verified, avatar } = tweetUserData;
+  const { user } = useAuth();
+  const userId = user?.id as string;
+  const isOwner = userId === createdBy;
   const { open, openModal, closeModal } = useModal();
-  //
-  // const {
-  //   id: profileId,
-  //   name: profileName,
-  //   username: profileUsername
-  // } = profile ?? {};
-  //
-  // const reply = !!parent;
+  const { id: parentId, fullName: parentUsername = fullName } = tweetUserData ?? {};
+  const {
+    id: profileId,
+    fullName: profileUsername
+  } = profile ?? {};
+
+  // const reply = !! parent;
   // const tweetIsRetweeted = userRetweets.includes(profileId ?? '');
+  // const modal = false;
+  // const parentTweet = false;
+  // const reply = false;
+  // const pinned = false;
+  // const tweetIsRetweeted = true;
+  // const verified = false;
+  // const text = "verified";
 
-
-  const modal = false;
-  const parentTweet = false;
-  const reply = false;
-  const pinned = false;
-  const tweetIsRetweeted = true;
-  const verified = false;
-  const text = "verified";
-  const images = [{
+  const images1 = [{
     id: '1',
     src: 'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg',
     alt: 'googlelogo_color_272x92dp'
@@ -90,10 +101,10 @@ export function Content(tweet: TweetProps) {
   }];
   return (
     <motion.article
-      {...(!modal1 ? { ...variants, layout: 'position' } : {})}
+      {...(!modal ? { ...variants, layout: 'position' } : {})}
       animate={{
         ...variants.animate,
-        /*...(parentTweet && { transition: { duration: 0.2 } })*/
+        ...(parentTweet && { transition: { duration: 0.2 } })
       }}
     >
       <Modal
@@ -115,8 +126,8 @@ export function Content(tweet: TweetProps) {
       >
         <div className='grid grid-cols-[auto,1fr] gap-x-3 gap-y-1'>
           <div className='flex flex-col items-center gap-2'>
-            <UserTooltip avatar modal={modal1} >
-              <UserAvatar src={images[0].src} alt={'sdsdsdsd'} username={'username'} />
+            <UserTooltip avatarCheck modal={modal} {...tweetUserData} >
+              <UserAvatar src={'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg'} alt={fullName} username={fullName} />
             </UserTooltip>
             {parentTweet && (
                 <i className='hover-animation h-full w-0.5 bg-light-line-reply dark:bg-dark-line-reply' />
@@ -125,61 +136,56 @@ export function Content(tweet: TweetProps) {
           <div className='flex min-w-0 flex-col'>
             <div className='flex justify-between gap-2 text-light-secondary dark:text-dark-secondary'>
               <div className='flex gap-1 truncate xs:overflow-visible xs:whitespace-normal'>
-                <UserTooltip modal={modal1}>
+                <UserTooltip modal={modal}>
                   <UserName
-                      name={'sdsdsd'}
-                      username={'username'}
+                      name={fullName}
+                      username={fullName}
                       verified={verified}
                       className='text-light-primary dark:text-dark-primary'
                   />
                 </UserTooltip>
-                <UserTooltip modal={modal1}>
-                  <UserUsername username={'username'} />
+                <UserTooltip modal={modal}>
+                  <UserUsername username={fullName} />
                 </UserTooltip>
-                <ContentDate tweetLink={'tweetLink'} createdAt={Timestamp.now()} />
+                <ContentDate tweetLink={'tweetLink'} createdAt={createdAt} />
               </div>
               <div className='px-4'>
-                {!modal1 && (
+                {!modal && (
                     <ContentAction
-                        //isOwner={isOwner}
-                        isOwner={true}
-                        //ownerId={ownerId}
-                        ownerId={'1'}
-                        //tweetId={tweetId}
-                        tweetId={'1'}
-                        parentId={'2'}
-                        //parentId={parentId}
-                        username={'username'}
+                        isOwner={isOwner}
+                        ownerId={ownerId}
+                        tweetId={tweetId}
+                        parentId={parentId}
+                        username={fullName}
                         hasImages={!!images}
-                        createdBy={'createdBy'}
+                        createdBy={createdBy}
                     />
                 )}
               </div>
             </div>
-            {text && (
-                <p className='whitespace-pre-line break-words'>{text}</p>
+            {content && (
+                <p className='whitespace-pre-line break-words'>{content}</p>
             )}
             <div className='mt-1 flex flex-col gap-2'>
-              {images && (
+              {images1 && (
                   <ImagePreview
                       tweet
-                      imagesPreview={images}
-                      previewCount={images.length}
+                      imagesPreview={images1}
+                      previewCount={images1.length}
                   />
               )}
-                  <ContentStats
-                      reply={reply}
-                      userId={'userId'}
-                      isOwner={true}
-                     // isOwner={isOwner}
-                      tweetId={'tweetId'}
-                      userLikes={['userLikes', 'userLikes']}
-                      //userReplies={userReplies}
-                      userReplies={11}
-                      userRetweets={['userLikes', 'userLikes']}
-                      openModal={openModal ?? undefined}
-                      // openModal={openModal ?? undefined}
-                  />
+              {
+                      <ContentStats
+                          userId={userId}
+                          isOwner={isOwner}
+                          tweetId={tweetId}
+                          userPostLikes={userPostLikes}
+                          tagUserPosts={tagUserPosts}
+                          userReplies={userReplies}
+                          openModal={openModal}
+                      />
+
+              }
             </div>
           </div>
         </div>

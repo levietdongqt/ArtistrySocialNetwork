@@ -1,17 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import cn from 'clsx';
 import { ViewTweetStats } from '../view/view-tweet-stats';
 import { TweetOption } from './content-option';
 import { ContentShare } from './content-share';
 import type { Post } from '@models/post';
+import {useModal} from "@lib/hooks/useModal";
+import {Modal} from "../modal/modal";
+import {ContentReplyModal} from "../modal/content-reply-modal";
 
 type TweetStatsProps = Pick<
   Post,
-  'userLikes' | 'userRetweets' | 'userReplies'
+  'userPostLikes' | 'userReplies' | 'tagUserPosts'
 > & {
-  reply?: boolean;
   userId: string;
   isOwner: boolean;
   tweetId: string;
@@ -20,26 +22,23 @@ type TweetStatsProps = Pick<
 };
 
 export function ContentStats({
-  reply,
   userId,
   isOwner,
   tweetId,
-  userLikes,
+  userPostLikes,
   viewTweet,
-  userRetweets,
+   tagUserPosts,
   userReplies: totalReplies,
-  openModal
+  openModal,
 }: TweetStatsProps): JSX.Element {
-  const totalLikes = userLikes.length;
-  const totalTweets = userRetweets.length;
-
+  const totalLikes = userPostLikes?.length;
+  const totalTweets = tagUserPosts?.length;
   const [{ currentReplies, currentTweets, currentLikes }, setCurrentStats] =
     useState({
       currentReplies: totalReplies,
       currentLikes: totalLikes,
       currentTweets: totalTweets
     });
-
   useEffect(() => {
     setCurrentStats({
       currentReplies: totalReplies,
@@ -47,6 +46,7 @@ export function ContentStats({
       currentTweets: totalTweets
     });
   }, [totalReplies, totalLikes, totalTweets]);
+
 
   const replyMove = useMemo(
     () => (totalReplies > currentReplies ? -25 : 25),
@@ -63,8 +63,8 @@ export function ContentStats({
     [totalTweets]
   );
 
-  const tweetIsLiked = userLikes.includes(userId);
-  const tweetIsRetweeted = userRetweets.includes(userId);
+  const tweetIsLiked = userPostLikes?.map((user) => user.id == userId);
+  const tweetIsPosts = tagUserPosts?.map((user) => user.id == userId);
 
   const isStatsVisible = !!(totalReplies || totalTweets || totalLikes);
 
@@ -74,10 +74,10 @@ export function ContentStats({
       {viewTweet && (
         <ViewTweetStats
           likeMove={likeMove}
-          userLikes={userLikes}
+          userLikes={userPostLikes}
           tweetMove={tweetMove}
           replyMove={replyMove}
-          userRetweets={userRetweets}
+          userRetweets={tagUserPosts}
           currentLikes={currentLikes}
           currentTweets={currentTweets}
           currentReplies={currentReplies}
@@ -90,21 +90,18 @@ export function ContentStats({
           viewTweet ? 'justify-around py-2' : 'max-w-md justify-between'
         )}
       >
-        {
-           <TweetOption
+        <TweetOption
               className='hover:text-accent-blue focus-visible:text-accent-blue'
               iconClassName='group-hover:bg-accent-blue/10 group-active:bg-accent-blue/20
                        group-focus-visible:bg-accent-blue/10 group-focus-visible:ring-accent-blue/80'
-              tip='Reply'
+              tip='Comments'
               move={replyMove}
               stats={currentReplies}
               iconName='ChatBubbleOvalLeftIcon'
               viewTweet={viewTweet}
               onClick={openModal}
-              disabled={reply}
+              disabled={open}
           />
-        }
-
         <TweetOption
           className={cn(
             'hover:text-accent-pink focus-visible:text-accent-pink',

@@ -1,81 +1,38 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+'use client';
+import {useCallback, useEffect, useState} from 'react';
+import {motion} from 'framer-motion';
+import useSWR, { SWRConfiguration } from "swr";
 
-import  { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { query, limit } from 'firebase/firestore';
-
+import {fetcherParams, fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import { Loading } from '@components/ui/loading';
-import { useCollection } from './useCollection';
-import type { UseCollectionOptions } from './useCollection';
-import type { Query, QueryConstraint } from 'firebase/firestore';
-import type { User } from '@models/user';
+import {getPostsCount} from "../../services/realtime/realtimeservice";
 
-type InfiniteScroll<T> = {
-  data: T[] | null;
-  loading: boolean;
-  LoadMore: () => JSX.Element;
-};
-
-type InfiniteScrollWithUser<T> = {
-  data: (T & { user: User })[] | null;
-  loading: boolean;
-  LoadMore: () => JSX.Element;
-};
-
-export function useInfiniteScroll<T>(
-    collection: Query<T>,
-    constraints: QueryConstraint[],
-    fetchOptions: UseCollectionOptions & { includeUser: true },
+export function useInfiniteScroll(
+    fetchPostsFunc: (limit: number) => fetcherParams,
     options?: { initialSize?: number; stepSize?: number; marginBottom?: number }
-): InfiniteScrollWithUser<T>;
-
-export function useInfiniteScroll<T>(
-    collection: Query<T>,
-    constraints: QueryConstraint[],
-    fetchOptions?: UseCollectionOptions,
-    options?: { initialSize?: number; stepSize?: number; marginBottom?: number }
-): InfiniteScroll<T>;
-
-export function useInfiniteScroll<T>(
-    collection: Query<T>,
-    queryConstraints?: QueryConstraint[],
-    fetchOptions?: UseCollectionOptions,
-    options?: { initialSize?: number; stepSize?: number; marginBottom?: number }
-): InfiniteScroll<T> | InfiniteScrollWithUser<T> {
+) {
   const { initialSize, stepSize, marginBottom } = options ?? {};
   const [tweetsLimit, setTweetsLimit] = useState(initialSize ?? 20);
   const [tweetsSize, setTweetsSize] = useState<number | null>(null);
   const [reachedLimit, setReachedLimit] = useState(false);
   const [loadMoreInView, setLoadMoreInView] = useState(false);
 
-  const { data, loading } = useCollection(
-      query(
-          collection,
-          ...[
-            ...(queryConstraints ?? []),
-            ...(!reachedLimit ? [limit(tweetsLimit)] : [])
-          ]
-      ),
-      fetchOptions
-  );
+    const fetchPosts = () => fetchPostsFunc(tweetsLimit);
+    const { data:value, isLoading } = useSWR(fetchPosts, fetcherWithToken);
+
+    const { data: countData } = useSWR(getPostsCount(), fetcherWithToken);
+
+  useEffect(() => {
+    setTweetsSize(countData?.data);
+  }, [countData?.data]);
 
   useEffect(() => {
     const checkLimit = tweetsSize ? tweetsLimit >= tweetsSize : false;
     setReachedLimit(checkLimit);
   }, [tweetsSize, tweetsLimit]);
-
-  useEffect(() => {
-    if (reachedLimit) return;
-
-    const setTweetsLength = async (): Promise<void> => {
-      const currentTweetsSize = await getCollectionCount(
-          query(collection, ...(queryConstraints ?? []))
-      );
-      setTweetsSize(currentTweetsSize);
-    };
-
-    void setTweetsLength();
-  }, [data?.length]);
+  console.log("TEST", tweetsLimit)
+  console.log("TEST2", tweetsSize)
+  console.log("TEST3", loadMoreInView)
 
   useEffect(() => {
     if (reachedLimit) return;
@@ -85,8 +42,7 @@ export function useInfiniteScroll<T>(
   const makeItInView = (): void => setLoadMoreInView(true);
   const makeItNotInView = (): void => setLoadMoreInView(false);
 
-  const isLoadMoreHidden =
-      reachedLimit && (data?.length ?? 0) >= (tweetsSize ?? 0);
+  const isLoadMoreHidden = reachedLimit && (value?.data.length ?? 0) >= (tweetsSize ?? 0);
 
   const LoadMore = useCallback(
       (): JSX.Element => (
@@ -102,5 +58,5 @@ export function useInfiniteScroll<T>(
       [isLoadMoreHidden]
   );
 
-  return { data, loading, LoadMore };
+  return { value, isLoading, LoadMore };
 }

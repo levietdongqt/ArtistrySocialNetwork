@@ -12,18 +12,18 @@ export default function Home(){
     const loading = false;
     return (
         <HomeLayout>
-                    <MainContainer>
-                        <SEO title='Home / Social' />
-                        <MainHeader
-                            useMobileSidebar
-                            title='Trang chủ'
-                            className='flex items-center justify-between'
-                        >
-                        <UpdateUsername />
-                        </MainHeader>
-                        <InputMobile />
-                        <ContainerHome />
-                    </MainContainer>
+            <MainContainer>
+                <SEO title='Home / Social' />
+                <MainHeader
+                    useMobileSidebar
+                    title='Trang chủ'
+                    className='flex items-center justify-between'
+                >
+                <UpdateUsername />
+                </MainHeader>
+                <InputMobile />
+                <ContainerHome />
+            </MainContainer>
         </HomeLayout>
     );
 }

@@ -23,13 +23,24 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/get-posts")
-    public ResponseEntity<?> getPostList() {
-        log.info("PostList ",postService.findAll());
+    public ResponseEntity<?> getPostList(@RequestParam("limit") int limit) {
+        log.info("PostList ",postService.findAll(limit));
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
-                        .message("Get post list limit "  + " OK")
-                        .data(postService.findAll())
+                        .message("Get post list limit " + limit  + " OK")
+                        .data(postService.findAll(limit))
+                        .build()
+        );
+    }
+    @GetMapping("/get-posts/count")
+    public ResponseEntity<?> countPostList () {
+        log.info("PostList ",postService.count());
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.CREATED)
+                        .message("Get post list count OK")
+                        .data(postService.count())
                         .build()
         );
     }

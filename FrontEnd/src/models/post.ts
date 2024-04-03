@@ -1,5 +1,6 @@
 import type { ImagesPreview } from './file';
 import type { User } from './user';
+import {Timestamp} from "firebase/firestore";
 
 export type Post = {
   id: string;
@@ -8,8 +9,8 @@ export type Post = {
   images: ImagesPreview | null;
   parent: { id: string; username: string } | null;
   createdBy: string;
-  createdAt: string;
-  updatedAt: string | null;
+  createdAt: Timestamp;
+  updatedAt: Timestamp | null;
   status: boolean;
   tagUserPosts: User[];
   userPostLikes: User[];

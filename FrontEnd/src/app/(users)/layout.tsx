@@ -7,6 +7,7 @@ import {MainLayout} from "./_components/layout/main-layout";
 import {ProtectedLayout} from "./_components/layout/common-layout";
 import {usePathname} from "next/navigation";
 import {Bounce, ToastContainer} from "react-toastify";
+import {getCookie} from "cookies-next";
 
 export default function RootLayout({
                                        children,

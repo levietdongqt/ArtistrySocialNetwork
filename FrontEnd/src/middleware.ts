@@ -40,6 +40,7 @@ const middleware = async (request: NextRequest) => {
 export {middleware};
 export const config = {
     matcher: [
+        '/',
         // '/login',
         // '/testClient',
         "/testServer2",
@@ -49,6 +50,7 @@ export const config = {
 }
 
 function redirectToLogin(req: NextRequest) {
+    // console.log("lot vao day khong ta");
     const loginUrl = new URL('/login', req.url);
     // Gửi thông tin trang trước thông qua query string
     const res = NextResponse.next({

@@ -1,20 +1,22 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../../../context/auth-context';
+
 import { sleep } from '@lib/utils';
-import { Placeholder } from '../common/placeholder';
+
 import type { LayoutProps } from './common-layout';
+import {useAuth} from "../../../../context/auth-context";
+import {Placeholder} from "../common/placeholder";
 
-export function AuthLayout({ children }: LayoutProps):JSX.Element {
+export function AuthLayout({ children }: LayoutProps): JSX.Element {
   const [pending, setPending] = useState(true);
-  const  {user, loading}  = useAuth();
-  const { replace } = useRouter();
 
+  const { user, loading } = useAuth();
+  const { replace } = useRouter();
   useEffect(() => {
     const checkLogin = async (): Promise<void> => {
       setPending(true);
-      if (!user) {
+      if (user) {
         await sleep(500);
         void replace('/');
       } else if (!loading) {
@@ -22,6 +24,7 @@ export function AuthLayout({ children }: LayoutProps):JSX.Element {
         setPending(false);
       }
     };
+
     void checkLogin();
   }, [user, loading]);
 

@@ -12,7 +12,7 @@ import type { ReactNode } from 'react';
 
 type UserTooltipProps =  {
   modal?: boolean;
-  avatar?: boolean;
+  avatarCheck?: boolean;
   children: ReactNode;
 };
 
@@ -20,7 +20,7 @@ type Stats = [string, string, number];
 
 export function UserTooltip({
   modal,
-  avatar,
+  avatarCheck,
   children,
 }: UserTooltipProps) {
   const { isMobile } = useWindow();
@@ -39,7 +39,7 @@ const coverPhotoURL = "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg";
     <div
       className={cn(
         'group relative self-start text-light-primary dark:text-dark-primary',
-        avatar ? '[&>div]:translate-y-2' : 'grid [&>div]:translate-y-7'
+        avatarCheck ? '[&>div]:translate-y-2' : 'grid [&>div]:translate-y-7'
       )}
     >
       {children}

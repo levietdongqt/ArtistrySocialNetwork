@@ -5,15 +5,16 @@ import { AsideTrends } from '../aside/aside-trends';
 import { Suggestions } from '../aside/suggestions';
 import { Placeholder } from '../common/placeholder';
 import type { ReactNode } from 'react';
-
+import {useAuth} from "../../../../context/auth-context";
 export type LayoutProps = {
   children: ReactNode;
 };
 
 export function ProtectedLayout({ children }: LayoutProps) {
-  const user = useRequireAuth();
+  const user = useAuth();
   if (!user) return <Placeholder />;
   return <>{children}</>;
+
 }
 
 export function HomeLayout({ children }: LayoutProps): JSX.Element {
