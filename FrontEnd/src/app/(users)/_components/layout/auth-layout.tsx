@@ -10,22 +10,23 @@ export function AuthLayout({ children }: LayoutProps):JSX.Element {
   const [pending, setPending] = useState(true);
   const  {user, loading}  = useAuth();
   const { replace } = useRouter();
-
+  console.log("user: " + user)
   useEffect(() => {
     const checkLogin = async (): Promise<void> => {
       setPending(true);
-      if (!user) {
+      if (user) {
         await sleep(500);
         void replace('/');
-      } else if (!loading) {
-        await sleep(500);
-        setPending(false);
       }
+      // else if (!loading) {
+      //   await sleep(500);
+      //   setPending(false);
+      // }
     };
     void checkLogin();
-  }, [user, loading]);
-
-  if (loading || pending) return <Placeholder />;
+  }, []);
+  // console.log(loading,pending)
+  // if (loading || pending) return <Placeholder />;
 
   return <>{children}</>;
 }

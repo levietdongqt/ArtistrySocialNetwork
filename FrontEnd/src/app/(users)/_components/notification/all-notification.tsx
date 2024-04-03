@@ -6,6 +6,7 @@ const { Sider, Content } = Layout;
 const { Title } = Typography;
 
 export default function AllNotification() {
+    console.log('HELLO FROM NOTIFICATION');
   return (
     <Layout>
       <Content style={{ background: "#fff", padding: "20px" }}>

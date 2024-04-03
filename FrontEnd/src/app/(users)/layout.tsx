@@ -7,33 +7,36 @@ import {MainLayout} from "./_components/layout/main-layout";
 import {ProtectedLayout} from "./_components/layout/common-layout";
 import {usePathname} from "next/navigation";
 import {Bounce, ToastContainer} from "react-toastify";
+import {UserContextProvider} from "../../context/user-context";
 
 export default function RootLayout({
                                        children,
                                    }: {
     children: React.ReactNode
 }) {
-    var params = usePathname();
-    var isLogin = params.includes("/login")
+    // var params = usePathname();
+    // var isLogin = params.includes("/login")
     return (
         <html lang="en">
         <AppHead/>
         <body>
-        <AuthContextProvider>
-            <ThemeContextProvider>
-                {
-                    !isLogin ? (
-                        <>
-                            <ProtectedLayout>
+        <UserContextProvider>
+            <AuthContextProvider>
+                <ThemeContextProvider>
+                    {/*{*/}
+                    {/*    !isLogin ? (*/}
+                    {/*        <>*/}
+                                {/*<ProtectedLayout>*/}
                                 <MainLayout>
                                     {children}
                                 </MainLayout>
-                            </ProtectedLayout>
-                        </>
-                    ) : (<>{children}</>)
-                }
-            </ThemeContextProvider>
-        </AuthContextProvider>
+                                {/*</ProtectedLayout>*/}
+                    {/*        </>*/}
+                    {/*    ) : (<>{children}</>)*/}
+                    {/*}*/}
+                </ThemeContextProvider>
+            </AuthContextProvider>
+        </UserContextProvider>
         <ToastContainer
             position="top-center"
             autoClose={3500}

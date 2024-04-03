@@ -1,31 +1,32 @@
-import { createContext, useContext } from 'react';
-import type { ReactNode } from 'react';
-import type { User } from '@models/user';
+'use client'
+import {createContext, useContext, useState} from 'react';
+import type {ReactNode} from 'react';
+import type {User} from '@models/user';
+import {getCookie} from "cookies-next";
 
 type UserContext = {
-  user: User | null;
-  loading: boolean;
+    currentUser: User | null;
+    setCurrentUser: (user: User) => void;
 };
 
 export const UserContext = createContext<UserContext | null>(null);
 
-type UserContextProviderProps = {
-  value: UserContext;
-  children: ReactNode;
-};
 
-export function UserContextProvider({
-  value,
-  children
-}: UserContextProviderProps): JSX.Element {
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+export function UserContextProvider({children}: any): JSX.Element {
+    const userCookies = getCookie('users')?.toString()
+    const user: User = userCookies ? JSON.parse(userCookies) : null;
+    console.log("UserContextProvider is running...", user)
+    const [currentUser, setCurrentUser] = useState(user);
+    const values = {
+        currentUser,
+        setCurrentUser,
+    }
+    return <UserContext.Provider value={values}>{children}</UserContext.Provider>;
 }
 
 export function useUser(): UserContext {
-  const context = useContext(UserContext);
-
-  if (!context)
-    throw new Error('useUser must be used within an UserContextProvider');
-
-  return context;
+    const context = useContext(UserContext);
+    if (!context)
+        throw new Error('useUser must be used within an UserContextProvider');
+    return context;
 }

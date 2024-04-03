@@ -15,11 +15,14 @@ import "react-toastify/dist/ReactToastify.css";
 import {getCookie} from 'cookies-next';
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {PrefetchKind} from "next/dist/client/components/router-reducer/router-reducer-types";
+import {useEffect} from "react";
+import {useUser} from "../../../../context/user-context";
 
 
 export function LoginMain() {
     const {open, openModal, closeModal} = useModal();
-    const {signInWithFacebook, signInWithGoogle} = useAuth();
+    const {signInWithFacebook, signInWithGoogle, user} = useAuth();
+    const {currentUser} = useUser()
     const router = useRouter();
     const {values, touched, handleSubmit, handleChange, errors, isValid, resetForm} = useFormik({
         initialValues: {
@@ -31,16 +34,22 @@ export function LoginMain() {
         },
         validationSchema: LoginValidation,
     });
+    useEffect(() => {
+        console.log('access_token', getCookie("access_token"))
+        console.log('user', getCookie("users"))
+        console.log('currentUser', currentUser)
+        router.push("login",{scroll: true})
+    }, []);
     const loginHandler = (values: {}) => {
         toast.promise(loginService(values), {
             pending: 'Đang đăng nhập .....',
             success: "Đăng nhập thành công!",
             error: 'Thông tin đăng nhập không hợp lệ'
         }).then(result => {
-            console.log("Login Result: ",result)
+            console.log("Login Result: ", result)
             setCookieHandler(result.data);
             const prevPage = getCookie("prev_page")?.toString();
-            prevPage? router.push(prevPage) : router.push("/")
+            prevPage ? router.push(prevPage) : router.push("/")
             return;
         })
             .catch(err => {
