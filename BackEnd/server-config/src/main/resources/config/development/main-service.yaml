@@ -18,8 +18,9 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/projectsem4
-    username: mario
-    password: Tiennam1
+    username: root
+    password: thuhuy123
+
 #    url: jdbc:mysql://socialweb.mysql.database.azure.com:3306/projectsem4
 #    useSSL: true
 #    username: project

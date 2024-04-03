@@ -1,6 +1,7 @@
 package com.mytech.realtimeservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
@@ -11,14 +12,18 @@ import java.io.Serializable;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseObject implements Serializable {
+public class ResponseObject<T> implements Serializable {
     private HttpStatus status;
     private String message;
-    private Object data;
+    private T data;
 
     @JsonGetter("status")
     public int getStatusValue() {
         return status.value(); // Trả về giá trị số của HttpStatus
+    }
+    @JsonSetter("status")
+    public void setStatusValue(int statusValue) {
+        this.status = HttpStatus.valueOf(statusValue);
     }
 
     @JsonGetter("stringStatus")
