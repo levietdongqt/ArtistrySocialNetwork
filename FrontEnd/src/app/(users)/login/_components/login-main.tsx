@@ -1,5 +1,4 @@
 'use client'
-import {useAuth} from '../../../../context/auth-context';
 import {CustomIcon} from '@components/ui/custom-icon';
 import {useModal} from "@lib/hooks/useModal";
 import {Modal} from 'app/(users)/_components/modal/modal';
@@ -8,7 +7,6 @@ import {TERipple} from "tw-elements-react";
 import {LeftSide} from './left-side';
 import {useFormik} from "formik";
 import LoginValidation from "@lib/validations/LoginValidation";
-import {loginService, testHeader} from "../../../../services/main/auth-service";
 import {useRouter} from "next/navigation";
 import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,7 +14,9 @@ import {getCookie} from 'cookies-next';
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {PrefetchKind} from "next/dist/client/components/router-reducer/router-reducer-types";
 import {useEffect} from "react";
-import {useUser} from "../../../../context/user-context";
+import {loginService} from "../../../../../services/main/auth-service";
+import {useUser} from "../../../../../context/user-context";
+import {useAuth} from "../../../../../context/auth-context";
 
 
 export function LoginMain() {
