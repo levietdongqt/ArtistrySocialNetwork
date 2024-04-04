@@ -4,12 +4,15 @@ import {cookies} from "next/headers";
 import {access_token_options, refresh_token_options} from "@lib/config/TokenConfig";
 import {deleteCookie, getCookies, setCookie} from "cookies-next";
 import {NextRequest, NextResponse} from "next/server";
+import {AuthResponse} from "../../models/authResponse";
 
-export async function setCookieTokenSSR(data: MyResponse<any>) {
+export async function setCookieTokenSSR(data: MyResponse<AuthResponse>) {
 //     cookies().set("access_token", data.data.accessToken,access_token_options)
     console.log("SETTING COOKIE TOKEN")
     setCookie('access_token', data.data.accessToken, {cookies, ...access_token_options});
     setCookie('refresh_token', data.data.refreshToken, {cookies, ...refresh_token_options});
+    console.log("Set cookie server",data.data.user)
+    setCookie('user', data.data.user, {cookies});
     console.log("SET COOKIE SUCCESS")
 }
 
@@ -26,5 +29,6 @@ export async function deleteCookieTokenSSR() {
     console.log("DELETING COOKIE TOKEN")
     deleteCookie('access_token', {cookies});
     deleteCookie('refresh_token', {cookies});
+    deleteCookie('user', {cookies});
     console.log("DELETING COOKIE SUCCESS")
 }

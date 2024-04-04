@@ -15,9 +15,10 @@ import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {PrefetchKind} from "next/dist/client/components/router-reducer/router-reducer-types";
 import {useEffect} from "react";
 
-import { loginService } from 'services/main/auth-service';
-import { useUser } from 'context/user-context';
-import { useAuth } from 'context/auth-context';
+import {loginService} from 'services/main/auth-service';
+import {useUser} from 'context/user-context';
+import {useAuth} from 'context/auth-context';
+import {setCookieTokenSSR} from "../../../../lib/helper/serverCookieHandle";
 
 
 export function LoginMain() {
@@ -39,7 +40,7 @@ export function LoginMain() {
         console.log('access_token', getCookie("access_token"))
         console.log('user', getCookie("users"))
         console.log('currentUser', currentUser)
-        router.push("login",{scroll: true})
+        router.push("login", {scroll: true})
     }, []);
     const loginHandler = (values: {}) => {
         toast.promise(loginService(values), {
@@ -48,9 +49,12 @@ export function LoginMain() {
             error: 'Thông tin đăng nhập không hợp lệ'
         }).then(result => {
             console.log("Login Result: ", result)
-            setCookieHandler(result.data);
-            const prevPage = getCookie("prev_page")?.toString();
-            prevPage ? router.push(prevPage) : router.push("/home")
+            setCookieHandler(result.data).then(value => {
+                const prevPage = getCookie("prev_page")?.toString();
+                console.log("prevPage: ", prevPage);
+                (prevPage && prevPage !== '/login') ? router.push(prevPage) : router.push("/home")
+                return
+            });
             return;
         })
             .catch(err => {

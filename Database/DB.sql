@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS main_services (
     Foreign key(user_Id) references users(id)
 );
 
-CREATE TABLE Additional_Details (
+CREATE TABLE additional_details (
 	main_service_Id Bigint,
     extra_service_Id Bigint,
     primary key(main_service_Id,extra_service_Id),
@@ -122,7 +122,7 @@ CREATE TABLE Additional_Details (
     foreign key(extra_service_Id) references extra_services(id)
 );
 
-CREATE TABLE Saved_Service(
+CREATE TABLE saved_service(
 	user_Id VARCHAR(36),
     main_Service_Id Bigint,
     primary key(user_Id,main_Service_Id),
@@ -145,7 +145,8 @@ CREATE TABLE IF NOT EXISTS promotion_details (
 	main_Service_Id Bigint,
     promotion_Id Bigint,
     Foreign key(main_Service_Id) references main_services(id),
-	Foreign key(promotion_Id) references promotions(id)
+	Foreign key(promotion_Id) references promotions(id),
+    primary key(main_Service_Id,promotion_Id)
 );
 
 
@@ -195,12 +196,11 @@ CREATE INDEX fullNameIndex ON users(full_Name);
 CREATE INDEX statusIndex ON orders(status);
 CREATE INDEX refreshTokenIndex ON sessions(refresh_token);
 
-INSERT INTO `projectsem4`.`Users` 
-(`full_name`, `email`, `phone_number`, `gender`, `email_confirmed`, `phone_confirmed`, `password`)
- VALUES ('Trần Thụ Huy', 'huy@gmail.com', '1234567891',b'1', b'1', b'1', '123'),
- ('Lê Viết Đông', 'dong@gmail.com', '1234567892',b'1', b'1', b'1', '123');
- 
-INSERT INTO `projectsem4`.`roles` (`name`, `description`) 
+INSERT INTO users
+(`full_name`, `email`, `phone_number`, `gender`, `email_confirmed`, `phone_confirmed`, `password`,`status`)
+ VALUES ('Trần Thụ Huy', 'huy@gmail.com', '1234567891',b'1', b'1', b'1', '123','ACTIVED'),
+ ('Lê Viết Đông', 'dong@gmail.com', '1234567892',b'1', b'1', b'1', '123','ACTIVED'); 
+INSERT INTO roles (`name`, `description`) 
 VALUES
  ('ROLE_ADMIN', 'This is role for admin page'),
  ('ROLE_USER', 'This is role for normal user'),
