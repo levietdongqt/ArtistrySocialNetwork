@@ -1,4 +1,3 @@
-'use server'
 import { HomeLayout } from '../../_components/layout/common-layout';
 import { SEO } from '../../_components/common/seo';
 import { MainContainer } from '../../_components/home/main-container';

@@ -13,9 +13,8 @@ export const UserContext = createContext<UserContext | null>(null);
 
 
 export function UserContextProvider({children}: any): JSX.Element {
-    const userCookies = getCookie('users')?.toString()
+    const userCookies = getCookie('user')?.toString()
     const user: User = userCookies ? JSON.parse(userCookies) : null;
-    console.log("UserContextProvider is running...", user)
     const [currentUser, setCurrentUser] = useState(user);
     const values = {
         currentUser,
