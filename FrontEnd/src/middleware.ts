@@ -41,7 +41,6 @@ export {middleware};
 export const config = {
     matcher: [
         '/home',
-        // '/login',
         // '/testClient',
         "/testServer2",
         '/api/post:path*',

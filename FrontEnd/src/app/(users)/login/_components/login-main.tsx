@@ -50,7 +50,7 @@ export function LoginMain() {
             console.log("Login Result: ", result)
             setCookieHandler(result.data);
             const prevPage = getCookie("prev_page")?.toString();
-            prevPage ? router.push(prevPage) : router.push("/home")
+            prevPage ? router.push(prevPage) : router.push("/")
             return;
         })
             .catch(err => {

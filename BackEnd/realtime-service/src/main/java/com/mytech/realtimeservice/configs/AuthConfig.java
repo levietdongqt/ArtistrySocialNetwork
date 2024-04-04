@@ -36,6 +36,7 @@ public class AuthConfig {
                             .requestMatchers("/auth/**").permitAll()
                             .requestMatchers("/user/**").permitAll()
                             .requestMatchers("/posts/**").permitAll()
+                            .requestMatchers("/ws/**").permitAll()
                             .requestMatchers("/auth/hello").authenticated()
                             .anyRequest().authenticated();
                 })

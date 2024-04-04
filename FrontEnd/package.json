@@ -12,6 +12,7 @@
     "@ant-design/icons": "^5.3.6",
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.1.1",
+    "@stomp/stompjs": "^7.0.0",
     "antd": "^5.13.1",
     "autoprefixer": "^10.4.17",
     "axios": "^1.6.8",
@@ -30,6 +31,7 @@
     "react-icons": "^5.0.1",
     "react-textarea-autosize": "^8.5.3",
     "react-toastify": "^10.0.1",
+    "sockjs-client": "^1.6.1",
     "swr": "^2.2.5",
     "tw-elements-react": "^1.0.0-alpha2",
     "yup": "^1.4.0"
