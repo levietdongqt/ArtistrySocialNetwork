@@ -17,14 +17,13 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/projectsem4
-    username: root
-    password: thuhuy123
-#    url: jdbc:mysql://socialweb.mysql.database.azure.com:3306/projectsem4
-#    useSSL: true
-#    username: project
-#    password: Thuhuy@123
-
+#    url: jdbc:mysql://localhost:3306/projectsem4
+#    username: root
+#    password: thuhuy123
+    url: jdbc:mysql://socialdb-artistrysocialnetwork.a.aivencloud.com:13508/projectsem4
+    useSSL: true
+    username: avnadmin
+    password: AVNS_KXx-W0Q-CbV9LAAh4HF
 
   jpa:
     hibernate:

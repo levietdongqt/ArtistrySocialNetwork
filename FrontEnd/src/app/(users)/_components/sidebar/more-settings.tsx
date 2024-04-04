@@ -12,6 +12,8 @@ import {MenuLink} from './menu-link';
 import type {Variants} from 'framer-motion';
 import {deleteCookieHandler} from "@lib/helper/clientCookieHandle";
 import {useAuth} from "../../../../context/auth-context";
+import {useRouter} from "next/navigation";
+import {deleteCookieTokenSSR} from "../../../../lib/helper/serverCookieHandle";
 
 export const variants: Variants = {
     initial: {opacity: 0, y: 50},
@@ -26,9 +28,13 @@ export const variants: Variants = {
 export function MoreSettings(): JSX.Element {
     const {open, openModal, closeModal} = useModal();
     const {signOut} = useAuth()
+    const router = useRouter();
     const handleSignOut = async () => {
-        await deleteCookieHandler();
+        // router.prefetch("/login")
+        console.log("SIGN OUT")
+        await deleteCookieTokenSSR();
         await signOut();
+        router.push("/login");
     }
     return (
         <>
@@ -73,7 +79,7 @@ export function MoreSettings(): JSX.Element {
                                                     'flex w-full cursor-not-allowed gap-3 rounded-t-md p-4 duration-200',
                                                     active && 'bg-main-sidebar-background'
                                                 )}
-                                                href='/login'
+                                                href='#'
                                                 onClick={handleSignOut}
                                             >
                                                 <HeroIcon iconName='Cog8ToothIcon'/>

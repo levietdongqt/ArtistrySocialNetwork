@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.6",
+    "@chatscope/chat-ui-kit-react": "^2.0.3",
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.1.1",
     "@stomp/stompjs": "^7.0.0",

@@ -1,11 +1,9 @@
 import {NextRequest, NextResponse} from "next/server";
 import {cookies} from "next/headers";
 import {jwtDecode, JwtPayload} from "jwt-decode";
-import process from "process";
 import {getNewToken} from "./services/main/auth-service";
 import {getCookie, setCookie} from "cookies-next";
 import {resetCookieTokenSSR} from "@lib/helper/serverCookieHandle";
-import {access_token_options} from "@lib/config/TokenConfig";
 import {isTokenExpired} from "@lib/config/ServerHeaderConfig";
 
 
@@ -13,14 +11,20 @@ import {isTokenExpired} from "@lib/config/ServerHeaderConfig";
 const middleware = async (request: NextRequest) => {
     console.log("middleware is running...... + " + Math.floor(Math.random() * 100));
     const response = NextResponse.next()
+    console.log("Request: ", request.nextUrl.pathname)
     const accessToken = getCookie('access_token', {cookies})?.toString();
-    console.log(`Access token: ${(accessToken)}`);
     if (!accessToken) {
+        if (request.nextUrl.pathname === "/login") {
+            return NextResponse.next();
+        }
         console.log("ACCESS_TOKEN IS NOT FOUND")
         return redirectToLogin(request);
     }
     const payload = jwtDecode<JwtPayload>(accessToken)
     if (!isTokenExpired(payload)) {
+        if (["/login", "/"].includes(request.nextUrl.pathname)) {
+            return redirectToHome(request)
+        }
         return response;
     }
     try {
@@ -41,6 +45,9 @@ export {middleware};
 export const config = {
     matcher: [
         '/home',
+        '/',
+        '/login',
+        // '/login',
         // '/testClient',
         "/testServer2",
         '/api/post:path*',
@@ -50,16 +57,27 @@ export const config = {
 
 function redirectToLogin(req: NextRequest) {
     const loginUrl = new URL('/login', req.url);
+    console.log("redirect To Login: ", req.nextUrl.pathname)
     // Gửi thông tin trang trước thông qua query string
     const res = NextResponse.next({
-        status: 301,// Mã trạng thái chuyển hướng vĩnh viễn
+        status: 307,// Mã trạng thái chuyển hướng vĩnh viễn
         headers: {
             Location: loginUrl.toString(),
         },
     });
-    console.log("In Redirect: ", req.nextUrl.pathname)
     setCookie("prev_page", req.nextUrl.pathname, {res, req, maxAge: 60 * 10, path: "/login"})
     return res;
+}
+
+function redirectToHome(req: NextRequest) {
+    const loginUrl = new URL('/home', req.url);
+    console.log("redirect To Home: ", req.nextUrl.pathname)
+    return NextResponse.next({
+        status: 307,// Mã trạng thái chuyển hướng vĩnh viễn
+        headers: {
+            Location: loginUrl.toString(),
+        },
+    });
 }
 
 
