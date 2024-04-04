@@ -1,4 +1,3 @@
-'use server'
 import { HomeLayout } from '../../_components/layout/common-layout';
 import { SEO } from '../../_components/common/seo';
 import { MainContainer } from '../../_components/home/main-container';
@@ -13,7 +12,6 @@ export default async function Home(){
     const loading = false;
     return (
         <HomeLayout>
-            <Link href={'/testClient'}>CLICK ME</Link>
                     <MainContainer>
                         <SEO title='Home / Social' />
                         <MainHeader
