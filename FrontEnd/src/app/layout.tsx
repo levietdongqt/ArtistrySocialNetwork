@@ -4,8 +4,6 @@ import {AppHead} from "./(users)/_components/common/app-head";
 import {UserContextProvider} from "../context/user-context";
 import {AuthContextProvider} from "../context/auth-context";
 import {ThemeContextProvider} from "../context/theme-context";
-import {Suspense} from "react";
-import Loading from "./loading";
 
 export default function RootLayout({
                                        children,
@@ -20,12 +18,9 @@ export default function RootLayout({
         <body>
         <UserContextProvider>
             <AuthContextProvider>
-                <Suspense fallback={<Loading/>}>
                     <ThemeContextProvider>
-                        {children}
+                            {children}
                     </ThemeContextProvider>
-                </Suspense>
-
             </AuthContextProvider>
         </UserContextProvider>
         <ToastContainer

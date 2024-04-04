@@ -1,12 +1,9 @@
 package com.mytech.realtimeservice.services;
 
 import com.mytech.realtimeservice.client.FriendForeignClient;
-import com.mytech.realtimeservice.dto.PostDTO;
-import com.mytech.realtimeservice.dto.PostLikeDTO;
-import com.mytech.realtimeservice.dto.UserDTO;
+import com.mytech.realtimeservice.dto.*;
 import com.mytech.realtimeservice.enums.NotificationType;
 import com.mytech.realtimeservice.models.Notification;
-import com.mytech.realtimeservice.dto.PostResponse;
 
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.PostLike;
@@ -27,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -41,7 +39,6 @@ public class PostService {
 
     @Autowired
     private FriendForeignClient friendForeignClient;
-
 
     @Autowired
     private PostLikeRepository postLikeRepository;
@@ -90,7 +87,6 @@ public class PostService {
         Pageable pageable = PageRequest.of(0, limit, sort);
         Page<Post> pagePosts = postRepository.findByOrderByCreatedAtDesc(pageable);
         List<Post> posts = pagePosts.getContent();
-
         List<PostResponse> postResponses = new ArrayList<>();
         for (Post post : posts) {
             PostResponse postResponse = modelMapper.map(post, PostResponse.class);

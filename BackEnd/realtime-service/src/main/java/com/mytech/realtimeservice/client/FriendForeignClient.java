@@ -13,4 +13,5 @@ import java.util.List;
 public interface FriendForeignClient {
     @GetMapping("/api/main/friends/{userId}")
     public ResponseObject<List<UserDTO>> getFriends(@PathVariable String userId);
+
 }

@@ -13,7 +13,6 @@ export default async function Home(){
     const loading = false;
     return (
         <HomeLayout>
-            <Link href={'/testClient'}>CLICK ME</Link>
                     <MainContainer>
                         <SEO title='Home / Social' />
                         <MainHeader

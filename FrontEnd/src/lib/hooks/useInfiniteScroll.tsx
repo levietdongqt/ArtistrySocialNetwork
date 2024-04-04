@@ -5,7 +5,8 @@ import useSWR, { SWRConfiguration } from "swr";
 
 import {fetcherParams, fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import { Loading } from '@components/ui/loading';
-import {getPostsCount} from "../../services/realtime/realtimeservice";
+import {getPostsCount} from "../../services/realtime/clientRequest/postClient";
+
 
 export function useInfiniteScroll(
     fetchPostsFunc: (limit: number) => fetcherParams,
@@ -17,26 +18,22 @@ export function useInfiniteScroll(
   const [reachedLimit, setReachedLimit] = useState(false);
   const [loadMoreInView, setLoadMoreInView] = useState(false);
 
-    const fetchPosts = () => fetchPostsFunc(tweetsLimit);
-    const { data:value, isLoading } = useSWR(fetchPosts, fetcherWithToken);
-
+  const fetchPosts = () => {
+    return fetchPostsFunc(tweetsLimit);
+  };
+  const { data:value, isLoading } = useSWR(fetchPosts, fetcherWithToken);
     const { data: countData } = useSWR(getPostsCount(), fetcherWithToken);
-
+    console.log("showw1 ",value);
   useEffect(() => {
     setTweetsSize(countData?.data);
   }, [countData?.data]);
-
   useEffect(() => {
     const checkLimit = tweetsSize ? tweetsLimit >= tweetsSize : false;
     setReachedLimit(checkLimit);
   }, [tweetsSize, tweetsLimit]);
-  console.log("TEST", tweetsLimit)
-  console.log("TEST2", tweetsSize)
-  console.log("TEST3", loadMoreInView)
-
   useEffect(() => {
     if (reachedLimit) return;
-    if (loadMoreInView) setTweetsLimit(tweetsLimit + (stepSize ?? 20));
+    if (loadMoreInView) setTweetsLimit(tweetsLimit + (stepSize ?? 10));
   }, [loadMoreInView]);
 
   const makeItInView = (): void => setLoadMoreInView(true);

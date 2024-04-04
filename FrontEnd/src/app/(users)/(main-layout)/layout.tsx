@@ -19,6 +19,5 @@ export default function RootLayout({
         <MainLayout >
             {children}
         </MainLayout>
-
     )
 }

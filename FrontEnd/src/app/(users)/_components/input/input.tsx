@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useState, useEffect, useRef, useId } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import cn from 'clsx';
-import { toast } from 'react-hot-toast';
+import {toast} from "react-toastify";
 import { useAuth } from '../../../../context/auth-context';
 import { sleep } from '@lib/utils';
 import { getImagesData } from '@lib/validation';
@@ -14,6 +14,14 @@ import { InputOptions } from './input-options';
 import type { ReactNode, FormEvent, ChangeEvent, ClipboardEvent } from 'react';
 import type { Variants } from 'framer-motion';
 import type { FilesWithId, ImagesPreview, ImageData } from '../../../../models/file';
+import {useUser} from "../../../../context/user-context";
+import {User} from "@models/user";
+import useSWR from "swr";
+import { fetcherWithToken } from '@lib/config/SwrFetcherConfig';
+import {postPosts} from "../../../../services/realtime/clientRequest/postClient";
+import {WithFieldValue} from "@firebase/firestore";
+import {uploadImages} from "../../../../firebase/utils";
+import {serverTimestamp} from "@firebase/database";
 
 type InputProps = {
   modal?: boolean;
@@ -43,56 +51,43 @@ export function Input({
   const [imagesPreview, setImagesPreview] = useState<ImagesPreview>([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isCreatePost, setIsCreatePost] = useState(false);
+  const [isPost, setIsPost] = useState({});
   const [visited, setVisited] = useState(false);
   const [selectedEmoji, setSelectedEmoji] = useState(null);
-  /*const { user, isAdmin } = useAuth();*/
-  /*const { name, username, photoURL } = user as User;*/
-
+  const {currentUser} = useUser();
+  const { fullName , avatar } = currentUser as User;
   const inputRef = useRef<HTMLTextAreaElement>(null);
-
   const previewCount = imagesPreview.length;
   const isUploadingImages = !!previewCount;
-const isAdmin = false;
+  const isAdmin = false;
   useEffect(
     () => {
       if (modal) inputRef.current?.focus();
       return cleanImage;
     },
-
     []
   );
+  const {data: value , isLoading,error} = useSWR(isCreatePost ? postPosts(isPost) : null,fetcherWithToken);
 
-  const sendTweet = async (): Promise<void> => {
+  const sendPost = async (): Promise<void> => {
     inputRef.current?.blur();
-
     setLoading(true);
-
     const isReplying = reply ?? replyModal;
-
-    /*const userId = user?.id as string;*/
-/*
-    const tweetData: WithFieldValue<Omit<Content, 'id'>> = {
-      text: inputValue.trim() || null,
-      parent: isReplying && parent ? parent : null,
-      images: await uploadImages(userId, selectedImages),
-      userLikes: [],
-      createdBy: userId,
-      createdAt: serverTimestamp(),
-      updatedAt: null,
-      userReplies: 0,
-      userRetweets: []
-    };*/
-
+    const userId = currentUser?.id as string;
+    const uploadedImagesData = await uploadImages(userId, selectedImages);
+    const postData = {
+      content: inputValue.trim() || null,
+      mediaUrl: uploadedImagesData  ? uploadedImagesData.map(imageObject => imageObject.src) : [],
+      sendUserId: userId,
+      sendUserName: fullName,
+      sendUserAvatarUrl: avatar,
+    };
+    setIsCreatePost(true);
+    setIsPost(postData);
+    console.log("show ", value)
     await sleep(500);
-
-   /* const [tweetRef] = await Promise.all([
-      addDoc(tweetsCollection, tweetData),
-      manageTotalTweets('increment', userId),
-      tweetData.images && manageTotalPhotos('increment', userId),
-      isReplying && manageReply('increment', parent?.id as string)
-    ]);*/
-
-    /*const { id: tweetId } = await getDoc(tweetRef);*/
+    const postId  = value?.data.id;
 
     if (!modal && !replyModal) {
       discardTweet();
@@ -100,17 +95,16 @@ const isAdmin = false;
     }
 
     if (closeModal) closeModal();
-
+  console.log("ádasdasd")
     toast.success(
       () => (
         <span className='flex gap-2'>
           Your Tweet was sent
-          <Link href={`/tweet/${"tweetId"}`} className='custom-underline font-bold'>
+          <Link href={`/post/${postId}`} className='custom-underline font-bold'>
             View
           </Link>
         </span>
       ),
-      { duration: 6000 }
     );
   };
   const handleEmojiClick = (emoji:any) => {
@@ -127,16 +121,12 @@ const isAdmin = false;
       const isPastingText = e.clipboardData.getData('text');
       if (isPastingText) return;
     }
-
     const files = isClipboardEvent ? e.clipboardData.files : e.target.files;
-
     const imagesData = getImagesData(files, previewCount);
-
     if (!imagesData) {
       toast.error('Please choose a GIF or photo up to 4');
       return;
     }
-
     const { imagesPreviewData, selectedImagesData } = imagesData;
 
     setImagesPreview([...imagesPreview, ...imagesPreviewData]);
@@ -177,7 +167,7 @@ const isAdmin = false;
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    void sendTweet();
+    void sendPost();
   };
 
   const handleFocus = (): void => setVisited(!loading);
@@ -231,7 +221,7 @@ const isAdmin = false;
             inputValue={inputValue}
             isValidTweet={isValidTweet}
             isUploadingImages={isUploadingImages}
-            sendTweet={sendTweet}
+            sendPost={sendPost}
             handleFocus={handleFocus}
             discardTweet={discardTweet}
             handleChange={handleChange}

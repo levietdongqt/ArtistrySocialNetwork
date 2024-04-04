@@ -18,7 +18,7 @@
 }
 
 #h3 {
-  color: white;
+  color: black;
 }
 
 #ring {
@@ -45,7 +45,7 @@
 }
 
 #ring:nth-child(2) {
-  border-bottom: 8px solid rgb(255,65,106);
+  border-bottom: 8px solid rgb(255, 65, 106);
   animation: rotate2 2s linear infinite;
 }
 
@@ -60,7 +60,7 @@
 }
 
 #ring:nth-child(3) {
-  border-bottom: 8px solid rgb(0,255,255);
+  border-bottom: 8px solid rgb(0, 255, 255);
   animation: rotate3 2s linear infinite;
 }
 

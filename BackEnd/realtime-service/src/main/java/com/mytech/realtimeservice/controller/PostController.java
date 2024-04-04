@@ -39,9 +39,9 @@ public class PostController {
                         .build()
         );
     }
-    @GetMapping("/get-posts/count")
+    @GetMapping("/count")
     public ResponseEntity<?> countPostList () {
-        log.info("PostList ",postService.getCountPost());
+        log.info("post count ",postService.getCountPost());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
@@ -51,8 +51,9 @@ public class PostController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/post-create")
     public ResponseEntity<?> savePost(@RequestBody PostDTO postDTO) {
+        log.info("post create ",postService.getCountPost());
         Post savedPost = postService.create(postDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseObject.builder()

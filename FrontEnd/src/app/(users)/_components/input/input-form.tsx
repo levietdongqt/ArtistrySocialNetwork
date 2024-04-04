@@ -1,4 +1,4 @@
-'use client'
+
 import { useEffect } from 'react';
 import TextArea from 'react-textarea-autosize';
 import { motion } from 'framer-motion';
@@ -29,7 +29,7 @@ type InputFormProps = {
   replyModal?: boolean;
   isValidTweet: boolean;
   isUploadingImages: boolean;
-  sendTweet: () => Promise<void>;
+  sendPost: () => Promise<void>;
   handleFocus: () => void;
   discardTweet: () => void;
   handleChange: ({
@@ -65,7 +65,7 @@ export function   InputForm({
   inputValue,
   isValidTweet,
   isUploadingImages,
-  sendTweet,
+  sendPost,
   handleFocus,
   discardTweet,
   handleChange,
@@ -84,7 +84,7 @@ export function   InputForm({
         inputRef.current?.blur();
         openModal();
       } else discardTweet();
-    else if (ctrlKey && key === 'Enter' && isValidTweet) void sendTweet();
+    else if (ctrlKey && key === 'Enter' && isValidTweet) void sendPost();
   };
 
   const handleShowHideNav = (blur?: boolean) => (): void => {
