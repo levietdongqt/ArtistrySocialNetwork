@@ -4,6 +4,7 @@ import {AppHead} from "./(users)/_components/common/app-head";
 import {UserContextProvider} from "../context/user-context";
 import {AuthContextProvider} from "../context/auth-context";
 import {ThemeContextProvider} from "../context/theme-context";
+import 'react-toastify/dist/ReactToastify.css';
 export default function RootLayout({
                                        children,
                                    }: {
@@ -24,7 +25,7 @@ export default function RootLayout({
         </UserContextProvider>
         <ToastContainer
             position="top-center"
-            autoClose={3500}
+            autoClose={3000}
             hideProgressBar={false}
             newestOnTop={false}
             closeOnClick
@@ -33,7 +34,8 @@ export default function RootLayout({
             draggable
             pauseOnHover
             theme="colored"
-            transition={Bounce}/>
+            transition= {Bounce}
+        />
         </body>
         </html>
     )

@@ -1,8 +1,8 @@
 'use client'
 import {CustomIcon} from '@components/ui/custom-icon';
 import {useModal} from "@lib/hooks/useModal";
-import {Modal} from 'app/(users)/_components/modal/modal';
-import {DisplayModalLogin} from 'app/(users)/_components/modal/display-modal-login';
+import {Modal} from '../../_components/modal/modal';
+import {DisplayModalLogin} from '../../_components/modal/display-modal-login';
 import {TERipple} from "tw-elements-react";
 import {LeftSide} from './left-side';
 import {useFormik} from "formik";
@@ -15,10 +15,9 @@ import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {PrefetchKind} from "next/dist/client/components/router-reducer/router-reducer-types";
 import {useEffect} from "react";
 
-import {loginService} from 'services/main/auth-service';
-import {useUser} from 'context/user-context';
-import {useAuth} from 'context/auth-context';
-import {setCookieTokenSSR} from "../../../../lib/helper/serverCookieHandle";
+import {loginService} from '../../../../services/main/auth-service';
+import {useUser} from '../../../../context/user-context';
+import {useAuth} from '../../../../context/auth-context';
 
 
 export function LoginMain() {
