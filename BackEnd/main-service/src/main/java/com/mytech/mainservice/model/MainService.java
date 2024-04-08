@@ -46,7 +46,7 @@ public class MainService  implements Serializable {
 
     @Column(name = "image_Url")
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<String> imageUrl;
+    private List<String> imageUrls;
 
     @Column(name = "description")
     private String description;
@@ -73,11 +73,9 @@ public class MainService  implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "extra_service_Id"))
     private List<ExtraService> extraServices;
 
-    @ManyToMany
-    @JoinTable(name = "promotion_details",
-            joinColumns = @JoinColumn(name = "main_Service_Id"),
-            inverseJoinColumns = @JoinColumn(name = "promotion_Id"))
-    private List<Promotion> promotions;
+    @ManyToOne
+    @JoinColumn(name = "promotion_Id")
+    private Promotion promotion;
 
     @ManyToOne
     @JoinColumn(name = "user_Id")

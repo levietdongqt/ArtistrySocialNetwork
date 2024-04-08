@@ -24,9 +24,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity
 @Slf4j
 public class AuthConfig {
     @Autowired
@@ -39,6 +41,7 @@ public class AuthConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http.csrf(AbstractHttpConfigurer::disable)
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
@@ -47,21 +50,19 @@ public class AuthConfig {
                             .requestMatchers("/auth/**").permitAll()
                             .requestMatchers("/user/**").permitAll()
                             .requestMatchers("/test").permitAll()
-                            .requestMatchers("/hello2").permitAll()
-                            .requestMatchers("/exception/**").permitAll()
-                            .requestMatchers("/exception/status").permitAll()
-                            .requestMatchers("/exception/{status}").permitAll()
+
+                            .requestMatchers("/main-service/get-all/**", "/main-service/get/**").permitAll()
                             .requestMatchers("/hello").authenticated()
                             .anyRequest().authenticated();
                 })
                 .exceptionHandling(handler -> {
                     handler.authenticationEntryPoint((request, response, authException) -> {
-                        log.error(authException.getMessage());
-                        response.sendError(HttpStatus.UNAUTHORIZED.value());
+                        log.error(HttpStatus.valueOf(response.getStatus()).toString());
+                        response.sendError(response.getStatus());
                         //response.sendRedirect("/api/main/auth/error/true");
                     }).accessDeniedHandler((request, response, accessDeniedException) -> {
                         log.error(accessDeniedException.getMessage());
-                        response.sendError(HttpStatus.FORBIDDEN.value());
+                        response.sendError(response.getStatus());
                         //response.sendRedirect("/api/main/auth/error/true");
                     });
                 });

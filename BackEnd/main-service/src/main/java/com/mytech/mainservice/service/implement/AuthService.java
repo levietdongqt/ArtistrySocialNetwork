@@ -24,7 +24,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class AuthService implements IAuthService {
-    private  final int expireTimeToken = 5;
+    private final int expireTimeToken = 5;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -32,13 +32,7 @@ public class AuthService implements IAuthService {
     @Autowired
     private ISessionRepository sessionRepo;
     @Autowired
-    private IRoleRepository roleRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
     private JwtService jwtService;
-
-
 
     @Override
     public String generateAccessToken(User user) {
@@ -56,6 +50,7 @@ public class AuthService implements IAuthService {
                 .build();
         return sessionRepo.save(session);
     }
+
     @Override
     public Session generateSession(String username) {
         User user = userRepo.findByEmail(username).orElse(null);
@@ -89,7 +84,7 @@ public class AuthService implements IAuthService {
         Optional<Session> session = sessionRepo.findByRefreshToken(refreshToken);
         if (session.isPresent()) {
             Session validSession = session.get();
-            if(isExpireToken(validSession)){
+            if (isExpireToken(validSession)) {
                 throw new UnAuthenticationException("Refresh token is not available, Please make a new sign in request");
             }
             validSession.setCreatedAt(LocalDateTime.now());

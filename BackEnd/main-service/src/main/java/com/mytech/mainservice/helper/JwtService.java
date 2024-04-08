@@ -9,6 +9,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
+import lombok.Setter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,9 +26,9 @@ import java.util.function.Function;
 public class JwtService {
     @Value("${env.secret_token}")
     private String SECRET;
-
     @Autowired
     private ModelMapper modelMapper;
+
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -40,9 +42,8 @@ public class JwtService {
         return extractClaim(token, claims -> claims.get("roles", List.class));
     }
 
-    public UserStatus extractUserStatus(String token) {
-        String stringStatus = extractClaim(token,claims -> claims.get("status",String.class));
-        return UserStatus.valueOf(stringStatus);
+    public String extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("id", String.class));
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -68,18 +69,13 @@ public class JwtService {
     }
 
 
-    public String generateAccessToken(String userName) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userName);
-    }
-
-
     public String generateAccessToken(User user) {
         HashMap<String, Object> claims = new HashMap<>();
         List<String> roleNames = user.getRoles().stream().map(role ->
-                        role.getName().toString()).toList();
+                role.getName().toString()).toList();
         claims.put("roles", roleNames);
-        claims.put("status",user.getStatus().toString());
+        claims.put("id", user.getId());
+        claims.put("status", user.getStatus().toString());
         return createToken(claims, user.getEmail());
     }
 
@@ -88,9 +84,10 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 *2))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60*24*60))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
+
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);

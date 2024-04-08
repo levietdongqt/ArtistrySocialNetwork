@@ -66,4 +66,8 @@ public class Order implements Serializable {
     @JoinColumn(name = "main_Service_Id")
     private MainService mainService;
 
+    @ManyToOne()
+    @JoinColumn(name = "promotion_Id")
+    private Promotion promotion;
+
 }

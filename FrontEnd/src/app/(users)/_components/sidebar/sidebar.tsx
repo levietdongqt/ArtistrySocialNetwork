@@ -34,7 +34,7 @@ const navLinks: Readonly<NavLink[]> = [
         disabled: false
     },
     {
-        href: '/messages',
+        href: '/message',
         linkName: 'Tin nhắn',
         iconName: 'EnvelopeIcon',
         disabled: true

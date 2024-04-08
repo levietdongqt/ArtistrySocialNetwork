@@ -2,7 +2,7 @@
 const colors = require("tailwindcss/colors");
 
 const defaultTheme = require('tailwindcss/defaultTheme');
-const {lightBlue,warmGray,trueGray,blueGray ,coolGray,...allOtherColors} = colors;
+const {lightBlue, warmGray, trueGray, blueGray, coolGray, ...allOtherColors} = colors;
 
 module.exports = {
     darkMode: 'class',
@@ -22,6 +22,9 @@ module.exports = {
             ...defaultTheme.screens
         },
         extend: {
+            backgroundSize: {
+                full: "100%",
+            },
             fontFamily: {
                 'twitter-chirp': ['TwitterChirp', 'sans-serif'],
                 'twitter-chirp-extended': ['TwitterChirpExtendedHeavy', 'sans-serif']
