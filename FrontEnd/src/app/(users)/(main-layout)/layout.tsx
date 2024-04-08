@@ -1,4 +1,3 @@
-import '../../styles/globals.scss'
 import {AuthContextProvider} from '../../../context/auth-context';
 import {ThemeContextProvider} from '../../../context/theme-context';
 import {AppHead} from '../_components/common/app-head';

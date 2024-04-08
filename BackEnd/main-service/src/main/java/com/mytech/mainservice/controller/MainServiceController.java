@@ -6,27 +6,49 @@ import com.mytech.mainservice.service.IMainService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
 @RestController
-@RequestMapping("/services")
+@RequestMapping("main-service")
 public class MainServiceController {
 
     @Autowired
     private IMainService2 mainService2;
 
-    @RequestMapping("/{userId}")
-    public ResponseEntity<?> test(@PathVariable("userId") String userId) {
+    @GetMapping("/get/{serviceId}")
+    public ResponseEntity<?> getById(@PathVariable("serviceId") long serviceId) {
+        MainServiceDTO mainServiceDTO = mainService2.getById(serviceId);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get Service successfully")
+                        .data(mainServiceDTO).build()
+        );
+    }
+
+    @GetMapping("/get-all/{userId}")
+    public ResponseEntity<?> getAllByUserId(@PathVariable("userId") String userId) {
         Set<MainServiceDTO> mainServiceDTOs = mainService2.getMainServices(userId);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
                         .message("Get Service successfully")
                         .data(mainServiceDTOs).build()
+        );
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#mainServiceDTO.provider.id) && hasRole('PROVIDER')")
+    @PostMapping("/create")
+    public ResponseEntity<?> createMainService(@RequestBody MainServiceDTO mainServiceDTO) {
+        mainService2.createMainService(mainServiceDTO);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.CREATED)
+                        .message("Create Service successfully")
+                        .data(null).build()
         );
     }
 }

@@ -11,6 +11,7 @@ import {toast} from "react-toastify";
 import {loginService} from "../../../../services/main/auth-service";
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {CustomIcon} from "@components/ui/custom-icon";
+import Link from "next/link";
 
 export function FormLogin() {
     const {signInWithFacebook, signInWithGoogle} = useAuth()
@@ -141,9 +142,9 @@ export function FormLogin() {
                 <div className="flex items-center justify-end">
                     <div className=" mt-3 mb-1 text-sm">
                         Bạn chưa có tài khoản? &nbsp;
-                        <a href="#" className=" text-blue-600 hover:text-blue-500">
+                        <Link href={"/register"} className=" text-blue-600 hover:text-blue-500">
                             Tạo mới ngay
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>

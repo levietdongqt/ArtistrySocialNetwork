@@ -3,7 +3,7 @@ import {cookies} from "next/headers";
 import {jwtDecode, JwtPayload} from "jwt-decode";
 import {getNewToken} from "./services/main/auth-service";
 import {getCookie, setCookie} from "cookies-next";
-import {resetCookieTokenSSR} from "@lib/helper/serverCookieHandle";
+import {deleteCookieTokenMiddleware, deleteCookieTokenSSR, resetCookieTokenSSR} from "@lib/helper/serverCookieHandle";
 import {isTokenExpired} from "@lib/config/ServerHeaderConfig";
 
 
@@ -34,7 +34,7 @@ const middleware = async (request: NextRequest) => {
         return isLogin ? NextResponse.next() : redirectToLogin(request);
     } catch (err) {
         console.log("ERROR: " + err)
-       return isLogin ? NextResponse.next() : redirectToLogin(request);
+        return isLogin ? NextResponse.next() : redirectToLogin(request);
     }
 };
 
@@ -54,7 +54,7 @@ export const config = {
 
 function redirectToLogin(req: NextRequest) {
     const loginUrl = new URL('/login', req.url);
-    console.log("redirect To Login: ", req.nextUrl.pathname)
+    console.log("redirect To Login from: ", req.nextUrl.pathname)
     // Gửi thông tin trang trước thông qua query string
     const res = NextResponse.next({
         status: 303,//
@@ -62,6 +62,7 @@ function redirectToLogin(req: NextRequest) {
             Location: loginUrl.toString(),
         },
     });
+    deleteCookieTokenMiddleware(req, res);
     setCookie("prev_page", req.nextUrl.pathname, {res, req, maxAge: 60 * 10, path: "/login"})
     return res;
 }
@@ -70,7 +71,7 @@ function redirectToHome(req: NextRequest) {
     const homeUrl = new URL('/home', req.url);
     console.log("redirect To Home: ", req.nextUrl.pathname)
     return NextResponse.next({
-        status: 303 ,
+        status: 303,
         headers: {
             Location: homeUrl.toString(),
         },

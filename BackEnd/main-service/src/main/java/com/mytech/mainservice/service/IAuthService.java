@@ -9,11 +9,15 @@ import com.mytech.mainservice.model.User;
 
 public interface IAuthService {
     public Session checkRefreshToken(String freshToken) throws UnAuthenticationException;
+
     public Session generateSession(User user);
+
     public Session generateSession(String userId);
 
     public UserInfo firebaseHandler(String token) throws FirebaseAuthException;
 
     public String generateAccessToken(User user);
+
+
 
 }

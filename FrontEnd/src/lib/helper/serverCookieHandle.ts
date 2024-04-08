@@ -11,7 +11,7 @@ export async function setCookieTokenSSR(data: MyResponse<AuthResponse>) {
     console.log("SETTING COOKIE TOKEN")
     setCookie('access_token', data.data.accessToken, {cookies, ...access_token_options});
     setCookie('refresh_token', data.data.refreshToken, {cookies, ...refresh_token_options});
-    console.log("Set cookie server",data.data.user)
+    console.log("Set cookie server", data.data.user)
     setCookie('user', data.data.user, {cookies});
     console.log("SET COOKIE SUCCESS")
 }
@@ -30,5 +30,14 @@ export async function deleteCookieTokenSSR() {
     deleteCookie('access_token', {cookies});
     deleteCookie('refresh_token', {cookies});
     deleteCookie('user', {cookies});
+    console.log("DELETING COOKIE SUCCESS")
+}
+
+export async function deleteCookieTokenMiddleware(req: NextRequest, res: NextResponse) {
+//     cookies().set("access_token", data.data.accessToken,access_token_options)
+    console.log("DELETING COOKIE TOKEN")
+    deleteCookie('access_token', {req,res});
+    deleteCookie('refresh_token', {req,res});
+    deleteCookie('user', {req,res});
     console.log("DELETING COOKIE SUCCESS")
 }
