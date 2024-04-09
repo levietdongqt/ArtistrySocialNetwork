@@ -15,7 +15,10 @@ public class PostDTO {
     private String content;
     private List<String> mediaUrl;
     private String sendUserId;
-    private String sendUserName;
+    private String sendFullName;
     private String sendUserAvatarUrl;
+    private String sendUserCoverImage;
+    private String sendUserBio;
+    private Boolean sendVerified = false;
     private List<UserDTO> userTags;
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface PostLikeRepository extends MongoRepository<PostLike,String> {
-    @Query("{ 'postId' : ?0, 'byUser.userId' : ?1 }")
+    @Query("{ 'postId' : ?0, 'byUser.id' : ?1 }")
     public PostLike GetByPostLikeByPostIdAndUserId(String postId, String userId);
 
 
