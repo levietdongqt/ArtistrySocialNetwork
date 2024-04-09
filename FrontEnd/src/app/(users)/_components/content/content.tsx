@@ -19,12 +19,12 @@ import type { Variants } from 'framer-motion';
 import {Timestamp} from "firebase/firestore";
 import {ViewContent} from "../view/view-content";
 import React from "react";
-import {Input} from "../input/input";
 import {User} from "@models/user";
 import {Loading} from "@components/ui/loading";
 import {useAuth} from "../../../../context/auth-context";
 import {Post} from "@models/post";
 import {ImagesPreview} from "@models/file";
+import {useUser} from "../../../../context/user-context";
 
 
 export type TweetProps = Post & {
@@ -33,6 +33,7 @@ export type TweetProps = Post & {
   pinned?: boolean;
   profile?: User | null;
   parentTweet?: boolean;
+  comment?: boolean;
 };
 
 export const variants: Variants = {
@@ -43,8 +44,8 @@ export const variants: Variants = {
 
 export function Content(tweet: TweetProps) {
   const {
-    id:tweetId,
-    user: tweetUserData,
+    id:postId,
+    user: postUserData,
     content,
     images,
     createdBy,
@@ -59,28 +60,21 @@ export function Content(tweet: TweetProps) {
     totalComments,
     modal,
     profile,
-    parentTweet
+    parentTweet,
+      comment
   } = tweet;
-  const { id: ownerId, fullName, verified, avatar } = tweetUserData;
-  const { user } = useAuth();
-  const userId = user?.id as string;
+  const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData;
+  console.log("show user ",ownerId)
+  const { currentUser } = useUser();
+  const userId = currentUser?.id as string;
   const isOwner = userId === createdBy;
   const { open, openModal, closeModal } = useModal();
-  const { id: parentId, fullName: parentUsername = fullName } = tweetUserData ?? {};
+  const { id: parentId, fullName: parentUsername = fullName } = postUserData ?? {};
+
   const {
     id: profileId,
     fullName: profileUsername
   } = profile ?? {};
-
-  // const reply = !! parent;
-  // const tweetIsRetweeted = userRetweets.includes(profileId ?? '');
-  // const modal = false;
-  // const parentTweet = false;
-  // const reply = false;
-  // const pinned = false;
-  // const tweetIsRetweeted = true;
-  // const verified = false;
-  // const text = "verified";
 
   const images1 = [{
     id: '1',
@@ -113,7 +107,7 @@ export function Content(tweet: TweetProps) {
         open={open}
         closeModal={closeModal}
       >
-        <ContentReplyModal tweet={tweet} closeModal={closeModal} />
+        <ContentReplyModal tweet={tweet} closeModal={closeModal}  />
       </Modal>
       <div className={cn(
           `accent-tab hover-card relative flex flex-col 
@@ -126,8 +120,8 @@ export function Content(tweet: TweetProps) {
       >
         <div className='grid grid-cols-[auto,1fr] gap-x-3 gap-y-1'>
           <div className='flex flex-col items-center gap-2'>
-            <UserTooltip avatarCheck modal={modal} {...tweetUserData} >
-              <UserAvatar src={'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg'} alt={fullName} username={fullName} />
+            <UserTooltip avatarCheck modal={modal} {...postUserData} >
+              <UserAvatar src={avatar} alt={fullName ?? 'Customer 1'} username={fullName ?? 'Customer 1'} />
             </UserTooltip>
             {parentTweet && (
                 <i className='hover-animation h-full w-0.5 bg-light-line-reply dark:bg-dark-line-reply' />
@@ -136,16 +130,16 @@ export function Content(tweet: TweetProps) {
           <div className='flex min-w-0 flex-col'>
             <div className='flex justify-between gap-2 text-light-secondary dark:text-dark-secondary'>
               <div className='flex gap-1 truncate xs:overflow-visible xs:whitespace-normal'>
-                <UserTooltip modal={modal}>
+                <UserTooltip modal={modal} {...postUserData}>
                   <UserName
-                      name={fullName}
+                      name={fullName ?? 'Customer 1'}
                       username={fullName}
                       verified={verified}
                       className='text-light-primary dark:text-dark-primary'
                   />
                 </UserTooltip>
-                <UserTooltip modal={modal}>
-                  <UserUsername username={fullName} />
+                <UserTooltip modal={modal} {...postUserData}>
+                  <UserUsername username={fullName ?? 'Customer 1'} />
                 </UserTooltip>
                 <ContentDate tweetLink={'tweetLink'} createdAt={createdAt} />
               </div>
@@ -154,7 +148,7 @@ export function Content(tweet: TweetProps) {
                     <ContentAction
                         isOwner={isOwner}
                         ownerId={ownerId}
-                        tweetId={tweetId}
+                        postId={postId}
                         parentId={parentId}
                         username={fullName}
                         hasImages={!!images}
@@ -174,23 +168,34 @@ export function Content(tweet: TweetProps) {
                       previewCount={images1.length}
                   />
               )}
-              {
-                      <ContentStats
-                          userId={userId}
-                          isOwner={isOwner}
-                          tweetId={tweetId}
-                          userPostLikes={userPostLikes}
-                          tagUserPosts={tagUserPosts}
-                          userReplies={userReplies}
-                          openModal={openModal}
-                      />
 
-              }
+              <ContentStats
+                  avatar={currentUser?.avatar as string}
+                  username={currentUser?.fullName as string}
+                  comment={comment}
+                  userId={userId}
+                  bio={currentUser?.bio as string}
+                  verified={currentUser?.verified}
+                  coverImage={currentUser?.coverImage as string}
+                  isOwner={isOwner}
+                  postId={postId}
+                  userPostLikes={userPostLikes}
+                  tagUserPosts={tagUserPosts}
+                  userReplies={userReplies}
+                  openModal={openModal}
+              />
             </div>
           </div>
         </div>
       </div>
+      <div className={'mt-10'}>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          Ab, ad! Aliquam
+          aspernatur
 
+        </p>
+      </div>
     </motion.article>
   );
 }

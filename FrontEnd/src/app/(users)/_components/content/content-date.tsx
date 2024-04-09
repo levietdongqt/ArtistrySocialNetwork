@@ -4,10 +4,11 @@ import { formatDate } from '@lib/date';
 import { ToolTip } from '@components/ui/tooltip';
 import {Timestamp} from "firebase/firestore";
 
+
 type TweetDateProps =  {
   tweetLink: string;
   viewTweet?: boolean;
-  createdAt: Timestamp;
+  createdAt: string;
 };
 
 export function ContentDate({
@@ -15,6 +16,7 @@ export function ContentDate({
   tweetLink,
   viewTweet
 }: TweetDateProps): JSX.Element {
+  const createdAtTimestamp = Timestamp.fromDate(new Date(createdAt));
   return (
     <div className={cn('flex gap-1', viewTweet && 'py-4')}>
       {!viewTweet && <i>·</i>}
@@ -23,14 +25,12 @@ export function ContentDate({
             'custom-underline peer whitespace-nowrap',
             viewTweet && 'text-light-secondary dark:text-dark-secondary'
         )}>
-            {/*{formatDate(createdAt, viewTweet ? 'full' : 'tweet')}*/}
-          {createdAt.toString()}
+            {formatDate(createdAtTimestamp, viewTweet ? 'full' : 'tweet')}
         </Link>
         <ToolTip
           className='translate-y-1 peer-focus:opacity-100 peer-focus-visible:visible
                      peer-focus-visible:delay-200'
-          // tip={formatDate(createdAt, 'full')}
-            tip={createdAt.toString()}
+          tip={formatDate(createdAtTimestamp, 'full')}
         />
       </div>
     </div>

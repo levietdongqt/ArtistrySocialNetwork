@@ -76,8 +76,8 @@ public class CommentsService {
         if (userTags != null ||  !userTags.isEmpty()) {
             for (User user : userTags) {
                 var userTag = User.builder()
-                        .userId(user.getUserId())
-                        .userName(user.getUserName())
+                        .id(user.getId())
+                        .fullName(user.getFullName())
                         .avatar(user.getAvatar())
                         .build();
 
@@ -114,7 +114,7 @@ public class CommentsService {
         List<User> users = comment.getCommentsLikes();
         deletedUser = users
                 .stream()
-                .filter(u -> u.getUserId().equals(userLike.getUserId()))
+                .filter(u -> u.getId().equals(userLike.getId()))
                 .findFirst()
                 .get();
         users.remove(deletedUser);
@@ -129,7 +129,7 @@ public class CommentsService {
             return null;
         }
         //Xóa comment like
-        var commentLike = commentLikeRepository.GetCommentLikeByCommentIdAndUserIdAndPostId(comment.getId(), commentLikeDTO.getByUser().getUserId(),comment.getPostId());
+        var commentLike = commentLikeRepository.GetCommentLikeByCommentIdAndUserIdAndPostId(comment.getId(), commentLikeDTO.getByUser().getId(),comment.getPostId());
         if (commentLike != null) {
             commentLikeRepository.delete(commentLike);
             commentUpdated = updateDislikeForComment(comment.getId(),commentLikeDTO.getByUser());
@@ -151,8 +151,8 @@ public class CommentsService {
         User userTo = comment.getByUser();
 
         User userFrom = User.builder()
-                .userId(commentLikeDTO.getByUser().getUserId())
-                .userName(commentLikeDTO.getByUser().getUserName())
+                .id(commentLikeDTO.getByUser().getId())
+                .fullName(commentLikeDTO.getByUser().getFullName())
                 .avatar(commentLikeDTO.getByUser().getAvatar())
                 .build();
         notificationService.sendNotification(userFrom, userTo,"LIKE","",comment.getId());

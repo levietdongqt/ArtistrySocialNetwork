@@ -28,9 +28,19 @@ export function ContentReplyModal({
                 modal
                 replyModal
                 closeModal={closeModal}
+                comment
             >
-                <Content modal parentTweet {...tweet} />
+                <Content modal comment={true} parentTweet {...tweet} />
+                <div className={'mt-10'}>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                        Ab, ad! Aliquam
+                        aspernatur
+
+                    </p>
+                </div>
             </Input>
+
         </>
   );
 }

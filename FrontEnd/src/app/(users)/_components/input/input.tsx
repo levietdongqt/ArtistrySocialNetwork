@@ -16,16 +16,15 @@ import type { Variants } from 'framer-motion';
 import type { FilesWithId, ImagesPreview, ImageData } from '../../../../models/file';
 import {useUser} from "../../../../context/user-context";
 import {User} from "@models/user";
-import useSWR from "swr";
-import { fetcherWithToken } from '@lib/config/SwrFetcherConfig';
-import {postPosts} from "../../../../services/realtime/clientRequest/postClient";
-import {WithFieldValue} from "@firebase/firestore";
+import useSWR, {mutate} from "swr";
+import {deletePosts1, postPosts, postPosts1} from "../../../../services/realtime/clientRequest/postClient";
 import {uploadImages} from "../../../../firebase/utils";
-import {serverTimestamp} from "@firebase/database";
+
 
 type InputProps = {
   modal?: boolean;
   reply?: boolean;
+  comment?: boolean;
   parent?: { id: string; username: string };
   disabled?: boolean;
   children?: ReactNode;
@@ -42,6 +41,7 @@ export function Input({
   modal,
   reply,
   parent,
+                        comment,
   disabled,
   children,
   replyModal,
@@ -51,12 +51,9 @@ export function Input({
   const [imagesPreview, setImagesPreview] = useState<ImagesPreview>([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isCreatePost, setIsCreatePost] = useState(false);
-  const [isPost, setIsPost] = useState({});
   const [visited, setVisited] = useState(false);
   const [selectedEmoji, setSelectedEmoji] = useState(null);
   const {currentUser} = useUser();
-  const { fullName , avatar } = currentUser as User;
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const previewCount = imagesPreview.length;
   const isUploadingImages = !!previewCount;
@@ -68,45 +65,43 @@ export function Input({
     },
     []
   );
-  const {data: value , isLoading,error} = useSWR(isCreatePost ? postPosts(isPost) : null,fetcherWithToken);
-
+  var toastfy = () => toast.success(
+      <span className='flex gap-2'>
+          Your Tweet was sent
+      </span>
+  );
   const sendPost = async (): Promise<void> => {
+    try {
     inputRef.current?.blur();
     setLoading(true);
-    const isReplying = reply ?? replyModal;
     const userId = currentUser?.id as string;
     const uploadedImagesData = await uploadImages(userId, selectedImages);
     const postData = {
       content: inputValue.trim() || null,
-      mediaUrl: uploadedImagesData  ? uploadedImagesData.map(imageObject => imageObject.src) : [],
-      sendUserId: userId,
-      sendUserName: fullName,
-      sendUserAvatarUrl: avatar,
+      mediaUrl: uploadedImagesData ? uploadedImagesData.map(imageObject => imageObject.src) : [],
+      sendUserId: userId || null,
+      sendFullName: currentUser?.fullName || null,
+      sendUserAvatarUrl: currentUser?.avatar || "",
+      sendUserCoverImage: currentUser?.coverImage || null,
+      sendUserBio: currentUser?.bio || null,
+      sendVerified: currentUser?.verified
     };
-    setIsCreatePost(true);
-    setIsPost(postData);
-    console.log("show ", value)
     await sleep(500);
-    const postId  = value?.data.id;
-
+    const newPost = await postPosts1(postData) // day là axios post
+    console.log("show test ", newPost)
+    await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/get-posts?limit=${20}&offset=${0}`, newPost, false);
+    toastfy()
     if (!modal && !replyModal) {
       discardTweet();
-      setLoading(false);
     }
-
-    if (closeModal) closeModal();
-  console.log("ádasdasd")
-    toast.success(
-      () => (
-        <span className='flex gap-2'>
-          Your Tweet was sent
-          <Link href={`/post/${postId}`} className='custom-underline font-bold'>
-            View
-          </Link>
-        </span>
-      ),
-    );
+  }catch (error) {
+    console.error("Failed to send post:", error);
+  }finally {
+      setLoading(false);
+      if (closeModal) closeModal();
+    }
   };
+
   const handleEmojiClick = (emoji:any) => {
     console.log(emoji.emoji);
     setSelectedEmoji(emoji.emoji);
@@ -213,6 +208,7 @@ export function Input({
           <InputForm
             modal={modal}
             reply={reply}
+            comment={comment}
             formId={formId}
             visited={visited}
             loading={loading}

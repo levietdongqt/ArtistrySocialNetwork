@@ -1,59 +1,59 @@
 'use client';
 import {useCallback, useEffect, useState} from 'react';
-import {motion} from 'framer-motion';
-import useSWR, { SWRConfiguration } from "swr";
-
+import useSWRInfinite from 'swr/infinite';
 import {fetcherParams, fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import { Loading } from '@components/ui/loading';
-import {getPostsCount} from "../../services/realtime/clientRequest/postClient";
+import { motion } from 'framer-motion';
 
+type InfiniteScrollResult = {
+    allData: any[]; // replace `any` with the type of data you are fetching
+    error: any; // replace `any` with the error type you expect
+    isLoadingInitialData: boolean;
+    isLoadingMore: boolean | undefined;
+    LoadMore: () => JSX.Element;
+    marginBottom: number;
+}
+const getKey = (fetchPostsFunc: (limit:number, offset:number) => fetcherParams, pageIndex:number, previousPageData:any, stepSize:number) => {
+    if (previousPageData && !previousPageData.length) return null;
+    return fetchPostsFunc(stepSize, pageIndex * stepSize);
+};
 
 export function useInfiniteScroll(
-    fetchPostsFunc: (limit: number) => fetcherParams,
-    options?: { initialSize?: number; stepSize?: number; marginBottom?: number }
-) {
-  const { initialSize, stepSize, marginBottom } = options ?? {};
-  const [tweetsLimit, setTweetsLimit] = useState(initialSize ?? 20);
-  const [tweetsSize, setTweetsSize] = useState<number | null>(null);
-  const [reachedLimit, setReachedLimit] = useState(false);
-  const [loadMoreInView, setLoadMoreInView] = useState(false);
+    fetchPostsFunc: (limit: number, offset: number) => fetcherParams,
+    stepSize: number = 20,
+    marginBottom: number = 1024
+) : InfiniteScrollResult {
+    const [loadMoreInView, setLoadMoreInView] = useState(false);
+    const { data, error, size, setSize } = useSWRInfinite(
+        (pageIndex, previousPageData) => getKey(fetchPostsFunc, pageIndex, previousPageData, stepSize),
+        fetcherWithToken, // Pass this fetcher function to useSWRInfinite
+    );
 
-  const fetchPosts = () => {
-    return fetchPostsFunc(tweetsLimit);
-  };
-  const { data:value, isLoading } = useSWR(fetchPosts, fetcherWithToken);
-    const { data: countData } = useSWR(getPostsCount(), fetcherWithToken);
-    console.log("showw1 ",value);
-  useEffect(() => {
-    setTweetsSize(countData?.data);
-  }, [countData?.data]);
-  useEffect(() => {
-    const checkLimit = tweetsSize ? tweetsLimit >= tweetsSize : false;
-    setReachedLimit(checkLimit);
-  }, [tweetsSize, tweetsLimit]);
-  useEffect(() => {
-    if (reachedLimit) return;
-    if (loadMoreInView) setTweetsLimit(tweetsLimit + (stepSize ?? 10));
-  }, [loadMoreInView]);
+    const allData = data ? [].concat(...data.map(value => value.data)) : [];
+    const isLoadingInitialData = !data && !error;
+    const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");
+    const isReachingEnd = isLoadingMore || (data && data[data.length - 1]?.length < stepSize);
 
-  const makeItInView = (): void => setLoadMoreInView(true);
-  const makeItNotInView = (): void => setLoadMoreInView(false);
+    const loadMore = useCallback(() => {
+        if (!isReachingEnd && !isLoadingMore) {
+            setSize(size + 1);
+        }
+    }, [isReachingEnd, isLoadingMore, size, setSize]);
 
-  const isLoadMoreHidden = reachedLimit && (value?.data.length ?? 0) >= (tweetsSize ?? 0);
+    useEffect(() => {
+        if (loadMoreInView) loadMore();
+    }, [loadMoreInView, loadMore]);
 
-  const LoadMore = useCallback(
-      (): JSX.Element => (
-          <motion.div
-              className={isLoadMoreHidden ? 'hidden' : 'block'}
-              viewport={{ margin: `0px 0px ${marginBottom ?? 1000}px` }}
-              onViewportEnter={makeItInView}
-              onViewportLeave={makeItNotInView}
-          >
-            <Loading className='mt-5' />
-          </motion.div>
-      ),
-      [isLoadMoreHidden]
-  );
+    const LoadMore = () => (
+        <motion.div
+            className={isReachingEnd ? 'hidden' : 'block'}
+            viewport={{ margin: `0px 0px ${marginBottom}px` }}
+            onViewportEnter={() => setLoadMoreInView(true)}
+            onViewportLeave={() => setLoadMoreInView(false)}
+        >
+            {isLoadingMore && <Loading className='mt-5' />}
+        </motion.div>
+    );
 
-  return { value, isLoading, LoadMore };
+    return {isLoadingMore: undefined, marginBottom: 0, allData, isLoadingInitialData, LoadMore, error };
 }

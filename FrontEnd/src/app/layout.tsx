@@ -4,6 +4,7 @@ import {AppHead} from "./(users)/_components/common/app-head";
 import {UserContextProvider} from "../context/user-context";
 import {AuthContextProvider} from "../context/auth-context";
 import {ThemeContextProvider} from "../context/theme-context";
+import {Placeholder} from "./(users)/_components/common/placeholder";
 export default function RootLayout({
                                        children,
                                    }: {

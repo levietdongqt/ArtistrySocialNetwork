@@ -8,26 +8,27 @@ import {useUser} from "../../../../context/user-context";
 
 export function AuthLayout({ children }: LayoutProps): JSX.Element {
   const [pending, setPending] = useState(true);
-  const   user   = useUser();
+  const [loading, setLoading] = useState(false);
+  const   {currentUser}   = useUser();
   const { replace } = useRouter();
-  console.log("user: " + user)
   useEffect(() => {
     const checkLogin = async (): Promise<void> => {
       setPending(true);
-      if (user) {
+      if (currentUser) {
+        setLoading(true);
         await sleep(500);
         void replace('/home');
       }
-      // else if (!loading) {
-      //   await sleep(500);
-      //   setPending(false);
-      // }
+      else if (!loading) {
+        await sleep(500);
+        setPending(false);
+      }
     };
 
     void checkLogin();
-  }, []);
-  // console.log(loading,pending)
-  // if (loading || pending) return <Placeholder />;
+  }, [currentUser,loading]);
+  console.log("show login ", loading, pending);
+  if (loading || pending) return <Placeholder />;
 
   return <>{children}</>;
 }

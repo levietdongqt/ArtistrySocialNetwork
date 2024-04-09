@@ -8,7 +8,7 @@ import { NumberStats } from '../content/number-stats';
 import { UserCards } from '../user/user-cards';
 import type { Post } from '../../../../models/post';
 
-type viewTweetStats = Pick<Post, 'userRetweets' | 'userLikes'> & {
+type viewTweetStats = Pick<Post, 'tagUserPosts' | 'userPostLikes'> & {
   likeMove: number;
   tweetMove: number;
   replyMove: number;
@@ -24,10 +24,10 @@ type Stats = [string, StatsType | null, number, number];
 
 export function ViewTweetStats({
   likeMove,
-  userLikes,
+   userPostLikes,
   tweetMove,
   replyMove,
-  userRetweets,
+  tagUserPosts,
   currentLikes,
   currentTweets,
   currentReplies,
@@ -36,12 +36,12 @@ export function ViewTweetStats({
   const [statsType, setStatsType] = useState<StatsType | null>(null);
 
   const { open, openModal, closeModal } = useModal();
-  const loading = false;
- /* const { data, loading } = useArrayDocument(
-    statsType ? (statsType === 'likes' ? userLikes : userRetweets) : [],
-    usersCollection,
-    { disabled: !statsType }
-  );*/
+    const loading = false;
+  // const { data, loading } = useArrayDocument(
+  //   statsType ? (statsType === 'likes' ? userPostLikes ) : [],
+  //   usersCollection,
+  //   { disabled: !statsType }
+  // );
 
   const handleOpen = (type: StatsType) => (): void => {
     setStatsType(type);

@@ -1,5 +1,5 @@
 'use client'
-import { useMemo } from 'react';
+import {useMemo, useState} from 'react';
 import { useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { Popover } from '@headlessui/react';
@@ -18,6 +18,10 @@ import { CustomIcon } from '@components/ui/custom-icon';
 import type { Variants } from 'framer-motion';
 import type { Post } from '../../../../models/post';
 import type { User } from '../../../../models/user';
+import {useUser} from "../../../../context/user-context";
+import useSWR from "swr";
+import {deletePosts, deletePosts1} from "../../../../services/realtime/clientRequest/postClient";
+import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 
 export const variants: Variants = {
   initial: { opacity: 0, y: -25 },
@@ -32,7 +36,7 @@ export const variants: Variants = {
 type TweetActionsProps = Pick<Post, 'createdBy'> & {
   isOwner: boolean;
   ownerId: string;
-  tweetId: string;
+  postId: string;
   username: string;
   parentId?: string;
   hasImages: boolean;
@@ -59,15 +63,16 @@ const pinModalData: Readonly<PinModalData[]> = [
 export function ContentAction({
   isOwner,
   ownerId,
-  tweetId,
+  postId,
   parentId,
   username,
   hasImages,
   viewTweet,
   createdBy
 }: TweetActionsProps): JSX.Element {
-  /*const { user, isAdmin } = useAuth();*/
+  const { currentUser } = useUser();
   const { push } = useRouter();
+  const userId = currentUser?.id as string;
 
   const {
     open: removeOpen,
@@ -80,69 +85,59 @@ export function ContentAction({
     openModal: pinOpenModal,
     closeModal: pinCloseModal
   } = useModal();
-
-  /*const { id: userId, following, pinnedTweet } = user as User;*/
-
-  /*const isInAdminControl = isAdmin && !isOwner;*/
-  /*const tweetIsPinned = pinnedTweet === tweetId;*/
-
- /* const handleRemove = async (): Promise<void> => {
+  // const isInAdminControl = isAdmin && !isOwner;
+  // const postIsPinned = pinnedTweet === postId;
+ const handleRemove = async (): Promise<void> => {
     if (viewTweet)
       if (parentId) {
-        const parentSnapshot = await getDoc(doc(tweetsCollection, parentId));
-        if (parentSnapshot.exists()) {
-          await push(`/content/${parentId}`, undefined);
-          delayScroll(200)();
-          await sleep(50);
-        } else await push('/home');
-      } else await push('/home');
-
+        // const parentSnapshot = await getDoc(doc(tweetsCollection, parentId));
+        // if (parentSnapshot.exists()) {
+        //   await push(`/content/${parentId}`, undefined);
+        //   delayScroll(200)();
+        //   await sleep(50);
+        // } else await push('/home');
+      } else await push('/home')
     await Promise.all([
-      removeTweet(tweetId),
-      manageTotalTweets('decrement', ownerId),
-      hasImages && manageTotalPhotos('decrement', createdBy),
-      parentId && manageReply('decrement', parentId)
+      deletePosts1(postId)
+      // manageTotalTweets('decrement', ownerId),
+      // hasImages && manageTotalPhotos('decrement', createdBy),
+      // parentId && manageReply('decrement', parentId)
     ]);
-
-    /!*toast.success(
-      `${isInAdminControl ? `@${username}'s` : 'Your'} Content was deleted`
-    );
-*!/
-    removeCloseModal();
-  };*/
-
-  /*const handlePin = async (): Promise<void> => {
-    await managePinnedTweet(tweetIsPinned ? 'unpin' : 'pin', userId, tweetId);
     toast.success(
-      `Your content was ${tweetIsPinned ? 'unpinned' : 'pinned'} to your profile`
+      `bài viết bạn đã xóa`
     );
-    pinCloseModal();
-  };*/
+    removeCloseModal();
+  };
 
-  /*const handleFollow =
-    (closeMenu: () => void, ...args: Parameters<typeof manageFollow>) =>
-    async (): Promise<void> => {
-      const [type] = args;
+  // const handleFollow =
+  //   (closeMenu: () => void, ...args: Parameters<typeof manageFollow>) =>
+  //   async (): Promise<void> => {
+  //     const [type] = args;
+  //
+  //     closeMenu();
+  //     /*await manageFollow(...args);*/
+  //
+  //     toast.success(
+  //       `You ${type === 'follow' ? 'followed' : 'unfollowed'} @${username}`
+  //     );
+  //   };
 
-      closeMenu();
-      /!*await manageFollow(...args);*!/
-
-      toast.success(
-        `You ${type === 'follow' ? 'followed' : 'unfollowed'} @${username}`
-      );
-    };*/
-
-/*  const userIsFollowed = following.includes(createdBy);
-
-  const currentPinModalData = useMemo(
-    () => pinModalData[+tweetIsPinned],
-
-    [pinOpen]
-  );*/
+  // const userIsFollowed = following.includes(createdBy);
+  // const currentPinModalData = useMemo(
+  //   () => pinModalData[+tweetIsPinned],
+  //
+  //   [pinOpen]
+  // );
 const  isInAdminControl = false;
 const  isAdmin = true;
 const  tweetIsPinned = false;
 const  userIsFollowed = false;
+  let currentPinModalData = {
+    title: 'Pin Content to from profile?',
+    description:
+      'This will appear at the top of your profile and replace any previously pinned Content.',
+    mainBtnLabel: 'Pin'
+  };
   return (
     <>
       <Modal
@@ -151,17 +146,13 @@ const  userIsFollowed = false;
         closeModal={removeCloseModal}
       >
         <ActionModal
-          title='Delete Content?'
-          description={`This can’t be undone and it will be removed from ${
-            isInAdminControl ? `@${username}'s` : 'your'
-          } profile, the timeline of any accounts that follow ${
-            isInAdminControl ? `@${username}` : 'you'
-          }, and from Twitter search results.`}
+          title='Xóa bài viết'
+          description={`Bạn muốn xóa bài viết ngày không`}
           mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75 accent-tab
                             focus-visible:bg-accent-red/90'
           mainBtnLabel='Delete'
           focusOnMainBtn
-          action={/*handleRemove*/() => {}}
+          action={handleRemove}
           closeModal={removeCloseModal}
         />
       </Modal>
@@ -173,14 +164,14 @@ const  userIsFollowed = false;
         <div>
           <p>Hello</p>
         </div>
-       {/* <ActionModal
+        <ActionModal
           {...currentPinModalData}
           mainBtnClassName='bg-light-primary hover:bg-light-primary/90 active:bg-light-primary/80 dark:text-light-primary
                             dark:bg-light-border dark:hover:bg-light-border/90 dark:active:bg-light-border/75'
           focusOnMainBtn
-          action={handlePin() =>{}}
+          action={/*handlePin*/() =>{}}
           closeModal={pinCloseModal}
-        />*/}
+        />
       </Modal>
       <Popover>
         {({ open, close }): JSX.Element => (

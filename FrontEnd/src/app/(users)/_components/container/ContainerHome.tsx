@@ -10,29 +10,29 @@ import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
 import { Error } from '@components/ui/error';
 import useSWR from "swr";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
-function ContainerHome() {
-    const { value, isLoading, LoadMore } = useInfiniteScroll(
-        getPostsLimit,
-        { marginBottom: 500 }
-    );
+import {Post} from "@models/post";
 
+function ContainerHome() {
+    const { allData, isLoadingInitialData, LoadMore } = useInfiniteScroll(
+        getPostsLimit,
+    );
     return (
-            <section className='mt-0.5 xs:mt-0'>
-                {isLoading ? (
-                    <Loading className='mt-5' />
-                ) : !value ? (
-                        <Error message='Something went wrong' />
-                    ) : (
-                    <>
-                        <AnimatePresence mode='popLayout'>
-                        {value?.data.map((content: any) => (
+        <section className='mt-0.5 xs:mt-0'>
+            {isLoadingInitialData ? (
+                <Loading className='mt-5' />
+            ) : allData?.length === 0 ? (
+                <Error message='Something went wrong' />
+            ) : (
+                <>
+                    <AnimatePresence mode='popLayout'>
+                        {allData?.map((content) => (
                             <Content {...content} key={content.id}/>
                         ))}
-                        </AnimatePresence>
-                        <LoadMore />
-                    </>
-                )}
-            </section>
+                    </AnimatePresence>
+                    <LoadMore />
+                </>
+            )}
+        </section>
     );
 }
 

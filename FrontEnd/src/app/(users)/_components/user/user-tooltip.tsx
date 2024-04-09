@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link';
 import cn from 'clsx';
 import { useWindow } from '../../../../context/window-context';
@@ -8,9 +9,19 @@ import { UserName } from './user-name';
 import { UserFollowing } from './user-following';
 import { UserUsername } from './user-username';
 import type { ReactNode } from 'react';
+import {User} from "@models/user";
+import {useEffect} from "react";
 
 
-type UserTooltipProps =  {
+type UserTooltipProps = Pick<
+    User,
+    | 'id'
+    | 'bio'
+    | 'fullName'
+    | 'verified'
+    | 'avatar'
+    | 'coverImage'
+> & {
   modal?: boolean;
   avatarCheck?: boolean;
   children: ReactNode;
@@ -19,22 +30,27 @@ type UserTooltipProps =  {
 type Stats = [string, string, number];
 
 export function UserTooltip({
-  modal,
+                              id,
+                              bio,
+                              fullName,
+                              modal,
+                              avatar,
+                              verified,
+                              children,
+                              coverImage,
   avatarCheck,
-  children,
-}: UserTooltipProps) {
+}: UserTooltipProps):JSX.Element {
   const { isMobile } = useWindow();
-  const verified = false;
+  'use client'
   if (isMobile || modal) return <>{children}</>;
-
-  const userLink = `/user/${"username"}`;
+  const userLink = `/profile/${id}`;
 
   const allStats: Readonly<Stats[]> = [
     ['following', 'Following', /*following.length*/2],
     ['followers', 'Followers', /*followers.length*/2]
   ];
-const coverPhotoURL = "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg";
-  const bio = "ádasdasd";
+
+
   return (
     <div
       className={cn(
@@ -51,16 +67,18 @@ const coverPhotoURL = "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg";
         <div className='flex flex-col gap-3 p-4'>
           <div className='flex flex-col gap-2'>
             <div className='-mx-4 -mt-4'>
-              {coverPhotoURL ? (
+              {coverImage ? (
                 <Link href={userLink} className='blur-picture'>
+                  <div className='blur-picture'>
                     <NextImage
                       useSkeleton
                       className='relative h-24'
                       imgClassName='rounded-t-2xl'
-                      src={coverPhotoURL}
-                      alt={"name"}
-                      layout='fill'
+                      src={coverImage ?? "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
+                      alt={fullName}
+                      layout={"fill"}
                     />
+                  </div>
                 </Link>
               ) : (
                 <div className='h-16 rounded-t-2xl bg-light-line-reply dark:bg-dark-line-reply' />
@@ -72,24 +90,24 @@ const coverPhotoURL = "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg";
                   className='absolute -translate-y-1/2 bg-main-background p-1 
                              hover:brightness-100 [&>figure>span]:[transition:200ms]
                              [&:hover>figure>span]:brightness-75'
-                  src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
-                  alt={"name"}
+                  src={avatar ?? "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
+                  alt={fullName}
                   size={64}
-                  username={"username"}
+                  username={fullName}
                 />
               </div>
-              <FollowButton userTargetId={"id"} userTargetUsername={"username"} />
+              <FollowButton userTargetId={id} userTargetUsername={fullName} />
             </div>
             <div>
               <UserName
                 className='-mb-1 text-lg'
-                name={"name"}
-                username={"username"}
+                name={fullName}
+                username={fullName}
                 verified={verified}
               />
               <div className='flex items-center gap-1 text-light-secondary dark:text-dark-secondary'>
-                <UserUsername username={"username"} />
-                <UserFollowing userTargetId={"id"} />
+                <UserUsername username={fullName} />
+                <UserFollowing userTargetId={id} />
               </div>
             </div>
           </div>

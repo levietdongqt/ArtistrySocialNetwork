@@ -15,13 +15,10 @@ export type LayoutProps = {
 };
 
 export function ProtectedLayout({ children }: LayoutProps) {
-  const {data: data3, isLoading: loading} = useSWR(getPostsCount,fetcherWithToken);
-    console.log("show " , loading)
+
   return <>
-      {loading ?
-      <Placeholder /> :
       {children}
-      }</>;
+      </>;
 }
 
 export function HomeLayout({ children }: LayoutProps): JSX.Element {

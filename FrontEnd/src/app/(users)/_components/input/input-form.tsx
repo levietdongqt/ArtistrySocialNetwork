@@ -16,11 +16,13 @@ import type {
 } from 'react';
 import type { Variants } from 'framer-motion';
 import cn from "clsx";
+import {toast} from "react-toastify";
 
 type InputFormProps = {
   modal?: boolean;
   formId: string;
   loading: boolean;
+  comment?: boolean;
   visited: boolean;
   reply?: boolean;
   children: ReactNode;
@@ -57,6 +59,7 @@ export function   InputForm({
   modal,
   reply,
   formId,
+                              comment,
   loading,
   visited,
   children,
@@ -84,7 +87,7 @@ export function   InputForm({
         inputRef.current?.blur();
         openModal();
       } else discardTweet();
-    else if (ctrlKey && key === 'Enter' && isValidTweet) void sendPost();
+    else if (ctrlKey && key === 'Enter' && isValidTweet) {void sendPost();};
   };
 
   const handleShowHideNav = (blur?: boolean) => (): void => {
@@ -132,7 +135,7 @@ export function   InputForm({
         <div className='flex items-center gap-3'>
           <TextArea
             id={formId}
-            className={cn(`w-full min-w-0 resize-none  bg-transparent text-xl outline-none placeholder:text-light-secondary dark:placeholder:text-dark-secondary`, reply ? 'h-[45px] !important' : '')}
+            className={cn(`w-full min-w-0 resize-none  bg-transparent text-xl outline-none placeholder:text-light-secondary dark:placeholder:text-dark-secondary`, comment ? 'h-[45px] !important' : '')}
             value={inputValue}
             placeholder={
               reply || replyModal ? 'Viết bình luận' : "Bạn đang nghĩ gì thế....."
