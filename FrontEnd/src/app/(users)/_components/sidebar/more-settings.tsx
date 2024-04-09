@@ -10,7 +10,6 @@ import {HeroIcon} from '@components/ui/hero-icon';
 import {Button} from '@components/ui/button';
 import {MenuLink} from './menu-link';
 import type {Variants} from 'framer-motion';
-import {deleteCookieHandler} from "@lib/helper/clientCookieHandle";
 import {useAuth} from "../../../../context/auth-context";
 import {useRouter} from "next/navigation";
 import {deleteCookieTokenSSR} from "../../../../lib/helper/serverCookieHandle";

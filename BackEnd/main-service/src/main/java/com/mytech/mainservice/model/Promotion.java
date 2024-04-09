@@ -45,7 +45,10 @@ public class Promotion implements Serializable {
     @Column(name = "status")
     private boolean status = true;
 
-    @ManyToMany(mappedBy = "promotions")
+    @OneToMany(mappedBy = "promotion")
     private List<MainService> mainServices;
+
+    @OneToMany(mappedBy = "promotion")
+    private List<Order> orders;
 
 }

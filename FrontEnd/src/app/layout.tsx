@@ -1,10 +1,14 @@
 import './styles/globals.scss'
+import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
+import 'react-toastify/dist/ReactToastify.css';
+
 import {Bounce, ToastContainer} from "react-toastify";
 import {AppHead} from "./(users)/_components/common/app-head";
 import {UserContextProvider} from "../context/user-context";
 import {AuthContextProvider} from "../context/auth-context";
 import {ThemeContextProvider} from "../context/theme-context";
-import {Placeholder} from "./(users)/_components/common/placeholder";
+import {CustomIcon} from "@components/ui/custom-icon";
+import {ChatAlert} from "@components/chat-box/chat-alert";
 export default function RootLayout({
                                        children,
                                    }: {
@@ -18,14 +22,14 @@ export default function RootLayout({
         <body>
         <UserContextProvider>
             <AuthContextProvider>
-                    <ThemeContextProvider>
-                            {children}
-                    </ThemeContextProvider>
+                <ThemeContextProvider>
+                    {children}
+                </ThemeContextProvider>
             </AuthContextProvider>
         </UserContextProvider>
         <ToastContainer
             position="top-center"
-            autoClose={3500}
+            autoClose={3000}
             hideProgressBar={false}
             newestOnTop={false}
             closeOnClick
@@ -34,7 +38,9 @@ export default function RootLayout({
             draggable
             pauseOnHover
             theme="colored"
-            transition={Bounce}/>
+            transition={Bounce}
+        />
+       <ChatAlert />
         </body>
         </html>
     )

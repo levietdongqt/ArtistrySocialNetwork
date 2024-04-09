@@ -6,14 +6,14 @@ import {ServiceDestination} from "@lib/enum/ServiceDestination";
 import {getTest} from "../../../services/main/clientRequest/testClient";
 import {getCookie} from "cookies-next";
 import {useState} from "react";
+import {toast} from "react-toastify";
 
 export default function Page() {
     // const {data: data, isLoading: isLoading, error: error} = useSWR('/auth/hello2')
     const [call, setCall] = useState(false)
     const {data: data2, isLoading: isLoading2, error: error2} = useSWR(call? getTest(null) : null, fetcherWithToken)
     const test = () => {
-        console.log("User", getCookie('user'));
-        setCall(true)
+        toast.success("Hello")
     }
     if(error2){
         return <div>Error: {error2.message}</div>
