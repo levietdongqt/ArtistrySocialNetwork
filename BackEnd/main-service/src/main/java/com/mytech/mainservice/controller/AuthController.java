@@ -1,7 +1,6 @@
 package com.mytech.mainservice.controller;
 
 
-import com.google.api.client.json.Json;
 import com.google.firebase.auth.*;
 import com.mytech.mainservice.config.CustomUserDetail;
 import com.mytech.mainservice.dto.UserDTO;
@@ -10,11 +9,8 @@ import com.mytech.mainservice.dto.request.LoginDTO;
 import com.mytech.mainservice.dto.request.RegisterDto;
 import com.mytech.mainservice.dto.ResponseObject;
 import com.mytech.mainservice.dto.request.TokenDTO;
-import com.mytech.mainservice.enums.AccentType;
-import com.mytech.mainservice.enums.UserRole;
 import com.mytech.mainservice.exception.myException.UnAuthenticationException;
 import com.mytech.mainservice.helper.JwtService;
-import com.mytech.mainservice.model.Role;
 import com.mytech.mainservice.model.Session;
 import com.mytech.mainservice.model.User;
 import com.mytech.mainservice.service.IAuthService;
@@ -24,7 +20,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -57,7 +52,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) throws UnAuthenticationException {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginDTO.getEmail(), loginDTO.getPassword()));
+                        loginDTO.email(), loginDTO.password()));
         if (authenticate.isAuthenticated()) {
             CustomUserDetail userDetail = (CustomUserDetail) authenticate.getPrincipal();
             HashMap<String, Object> response = getAuthResponse(userDetail.getUser());
@@ -89,7 +84,7 @@ public class AuthController {
     @PostMapping("/register/oauth2")
     public ResponseEntity<?> oauth2Handle(@RequestBody TokenDTO tokenDTO) throws FirebaseAuthException, UnAuthenticationException {
         HashMap<String, Object> response = new HashMap<String, Object>();
-        UserInfo userInfo = authService.firebaseHandler(tokenDTO.getToken());
+        UserInfo userInfo = authService.firebaseHandler(tokenDTO.token());
         User exisUser = userService.existUser(userInfo);
         if (exisUser == null) {
             User savedUser = userService.createUser(userInfo);
@@ -110,12 +105,12 @@ public class AuthController {
     public ResponseEntity<?> freshToken(@RequestBody TokenDTO tokenDTO) throws UnAuthenticationException {
 
 
-        Session session = authService.checkRefreshToken(tokenDTO.getToken());
+        Session session = authService.checkRefreshToken(tokenDTO.token());
         String newRefreshToken = session.getRefreshToken();
         String accessToken = authService.generateAccessToken(session.getUser());
         HashMap<String, String> response = new HashMap<String, String>();
         response.put("accessToken", accessToken);
-        response.put("refreshToken", tokenDTO.getToken());
+        response.put("refreshToken", tokenDTO.token());
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)

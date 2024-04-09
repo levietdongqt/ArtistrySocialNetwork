@@ -11,10 +11,10 @@ import lombok.Value;
 import java.io.Serializable;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class LoginDTO {
-    private String email;
-    private String password;
+
+public record LoginDTO (
+        String email,
+        String password
+) {
+
 }

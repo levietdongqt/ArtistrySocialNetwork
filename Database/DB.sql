@@ -100,6 +100,7 @@ CREATE TABLE IF NOT EXISTS extra_services (
     price double default 0,
     price_Type varchar(20) CHARACTER SET utf8mb4 not null,
     description TEXT,
+	image_Url JSON,
     status bit default(1),
     create_Date datetime,
     create_By varchar(50) CHARACTER SET utf8mb4,
