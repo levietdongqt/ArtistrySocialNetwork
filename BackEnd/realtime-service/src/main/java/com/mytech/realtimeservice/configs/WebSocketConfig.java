@@ -24,7 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         log.info("Registering endpoint");
-        registry.addEndpoint("api/realtime/socket.io")
+        registry.addEndpoint("/socket.io")
                 .setAllowedOrigins("http://localhost:3000")
                 .withSockJS(); // Đăng ký WebSocket endpoint tại "/ws" với SockJS
     }

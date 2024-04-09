@@ -32,7 +32,7 @@ public class AuthConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf
                         // ignore our stomp endpoints since they are protected using Stomp headers
-                        .ignoringRequestMatchers("api/realtime/socket.io/**").disable()
+                       .disable()
                 )
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorze -> {
@@ -41,7 +41,6 @@ public class AuthConfig {
                             .requestMatchers("/user/**").permitAll()
                             .requestMatchers("/posts/**").permitAll()
                             .requestMatchers("/socket.io/**").permitAll()
-                            .requestMatchers("/api/realtime/socket.io/**").permitAll()
                             .requestMatchers("/auth/hello").authenticated()
                             .anyRequest().authenticated();
                 })

@@ -26,7 +26,7 @@ export const SocketProvider = ({ children }: any) => {
       return;
     }
   
-    const socket = new SockJS('http://localhost:8060/api/realtime/socket.io');
+    const socket = new SockJS('http://localhost:8062/api/realtime/socket.io');
     const client = over(socket);
   
     client.connect({ Authorization: `Bearer ${accessToken}`}, () => {

@@ -12,4 +12,5 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Builder
 @Document(indexName = IndexCreated.INDEX_SERVICE)
 public class ServiceELS {
+    private String id;
 }

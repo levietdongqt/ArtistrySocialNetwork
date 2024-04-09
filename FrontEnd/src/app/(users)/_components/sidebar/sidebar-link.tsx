@@ -1,3 +1,4 @@
+
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import cn from "clsx";
@@ -24,8 +25,9 @@ export function SidebarLink({
   disabled,
   canBeHidden,
 }: SidebarLinkProps) {
+  
   var user = useUser()
-  console.log("user",user);
+  
   const {
     data: data2,
     isLoading: isLoading2,
@@ -40,7 +42,8 @@ export function SidebarLink({
     if (data2 && data2.data) {
       setCountNoti(data2.data);
     }
-  }, [data2]);
+    console.log("user",user);
+  }, [data2,user]);
   const {
     data: data3,
     isLoading: isLoading3,

@@ -20,6 +20,7 @@ public class RouteValidator {
             "/api/realtime/posts/",
             "/api/realtime/test/",
             "/api/realtime/socket.io/",
+            "/socket.io/",
             "/eureka"
     );
 
