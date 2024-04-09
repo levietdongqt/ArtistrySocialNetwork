@@ -128,8 +128,8 @@ export function ContentStats({
       )}
       <div
         className={cn(
-          'flex text-light-secondary inner:outline-none dark:text-dark-secondary',
-          viewTweet ? 'justify-around py-2' : 'max-w-md justify-between'
+          'flex text-light-secondary inner:outline-none dark:text-dark-secondary ',
+          viewTweet ? 'justify-around py-2' : 'max-w justify-between'
         )}
       >
         { comment ? null : <TweetOption

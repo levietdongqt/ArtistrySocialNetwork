@@ -99,6 +99,17 @@ public class PostController {
         );
     }
 
+    @GetMapping("/comments/{PostId}")
+    public ResponseEntity<?> getPostComments(@RequestParam String PostId) {
+        List<Comments> comments = commentsService.getCommentsByPostId(PostId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get comments list OK")
+                        .data(comments)
+                        .build()
+        );
+    }
     @PostMapping("/comments")
     public ResponseEntity<?> createComment(@RequestBody CommentDTO commentDTO) {
         Comments comments = commentsService.createComments(commentDTO);

@@ -116,6 +116,7 @@ public class PostService {
         return postRepository.findById(id).orElse(null);
     }
 
+
     //Set tag thành true nếu như id trùng id của  List<UserDTO> trả từ main (tối ưu sau)
     public void setTagForUsers(List<UserDTO> users,List<UserDTO> userTags) {
         users.forEach(userDTO -> {
@@ -179,7 +180,8 @@ public class PostService {
         }
         boolean alreadyLiked = post.getUserPostLikes()
                 .stream()
-                .anyMatch(like -> postLikeDTO.getByUser().getId().equals(like.getId()));
+                .anyMatch(like ->  postLikeDTO.getByUser().getId().equals(like.getId()));
+        System.out.println(postLikeDTO.getByUser().getId());
         if(alreadyLiked){
             return post;
         }

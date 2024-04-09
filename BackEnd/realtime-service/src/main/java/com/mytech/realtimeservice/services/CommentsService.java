@@ -34,6 +34,9 @@ public class CommentsService {
     @Autowired
     private CommentLikeRepository commentLikeRepository;
 
+    public List<Comments> getCommentsByPostId(String postId) {
+        return commentsRepository.findCommentsByPostId(postId);
+    }
     public Comments createComments(CommentDTO commentDTO) {
         var post = postService.findById(commentDTO.getPostId());
         if (post == null) {

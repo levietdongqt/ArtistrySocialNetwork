@@ -177,7 +177,7 @@ export function Content(tweet: TweetProps) {
                   bio={currentUser?.bio as string}
                   verified={currentUser?.verified}
                   coverImage={currentUser?.coverImage as string}
-                  isOwner={isOwner}
+                  isOwner={!isOwner}
                   postId={postId}
                   userPostLikes={userPostLikes}
                   tagUserPosts={tagUserPosts}
@@ -188,14 +188,7 @@ export function Content(tweet: TweetProps) {
           </div>
         </div>
       </div>
-      <div className={'mt-10'}>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-          Ab, ad! Aliquam
-          aspernatur
 
-        </p>
-      </div>
     </motion.article>
   );
 }
