@@ -3,9 +3,7 @@ package com.mytech.realtimeservice.controller;
 import com.mytech.realtimeservice.dto.*;
 import com.mytech.realtimeservice.models.Comments;
 import com.mytech.realtimeservice.models.Post;
-import com.mytech.realtimeservice.models.elasticsearch.PostELS;
 import com.mytech.realtimeservice.services.CommentsService;
-import com.mytech.realtimeservice.services.PostELSService;
 import com.mytech.realtimeservice.services.PostService;
 import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,8 +27,6 @@ public class PostController {
     @Autowired
     private CommentsService commentsService;
 
-    @Autowired
-    private PostELSService postELSService;
 
 
 
@@ -95,16 +90,16 @@ public class PostController {
         );
     }
 
-    @GetMapping("/els")
-    public ResponseEntity<?> searchPosts(@PathParam("q") String q) {
-        List<PostELS> postELSList = postELSService.testPostELS(q);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseObject.builder()
-                        .status(HttpStatus.OK)
-                        .message("Handler get successfully")
-                        .data(postELSList)
-                        .build()
-        );
-    }
+//    @GetMapping("/suggests")
+//    public ResponseEntity<?> searchSuggestPosts(@PathParam("q") String q) {
+//        List<PostELS> postELSList = postELSService.testPostELS(q);
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                ResponseObject.builder()
+//                        .status(HttpStatus.OK)
+//                        .message("Handler get successfully")
+//                        .data(postELSList)
+//                        .build()
+//        );
+//    }
 
 }

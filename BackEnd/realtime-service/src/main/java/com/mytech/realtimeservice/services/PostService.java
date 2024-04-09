@@ -1,12 +1,9 @@
 package com.mytech.realtimeservice.services;
 
 import com.mytech.realtimeservice.client.FriendForeignClient;
-import com.mytech.realtimeservice.converter.ConverterObject;
 import com.mytech.realtimeservice.dto.PostDTO;
 import com.mytech.realtimeservice.dto.PostLikeDTO;
 import com.mytech.realtimeservice.dto.UserDTO;
-import com.mytech.realtimeservice.enums.NotificationType;
-import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.dto.PostResponse;
 
 import com.mytech.realtimeservice.models.Post;
@@ -40,8 +37,6 @@ public class PostService {
     private PostLikeRepository postLikeRepository;
 
     @Autowired
-    private PostELSRepository postELSRepository;
-    @Autowired
     private ModelMapper modelMapper;
 
     public Post create(PostDTO postDTO) {
@@ -59,8 +54,6 @@ public class PostService {
                 .build();
         var createdPost = postRepository.save(post);
         //Lưu vào ELS
-        var ESLpost =  ConverterObject.convertPostToPostELS(createdPost);
-        postELSRepository.save(ESLpost);
         //Lấy ra danh sách bạn bè của chủ bài post, gọi từ main service
         var friendForeignClientFriends = friendForeignClient.getFriends(postDTO.getSendUserId());
         //Nếu như có userTags

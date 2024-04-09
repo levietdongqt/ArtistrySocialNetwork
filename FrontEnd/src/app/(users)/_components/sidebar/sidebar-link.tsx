@@ -25,6 +25,7 @@ export function SidebarLink({
   canBeHidden,
 }: SidebarLinkProps) {
   var user = useUser()
+  console.log("user",user);
   const {
     data: data2,
     isLoading: isLoading2,

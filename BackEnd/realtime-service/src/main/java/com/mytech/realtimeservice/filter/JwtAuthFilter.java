@@ -25,7 +25,9 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private AuthService authService;
+    @Autowired
     private final ModelMapper mapper;
+    @Autowired
     private final JwtService jwtService;
 
     public JwtAuthFilter(JwtService jwtService, ModelMapper mapper) {
@@ -38,7 +40,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         var s = request.getServletPath();
        if(request.getServletPath().contains("socket.io")){
            filterChain.doFilter(request, response);
-           return;
+            return;
        }
         String authHeader = request.getHeader("Authorization");
         String token = null;

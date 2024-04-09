@@ -1,4 +1,4 @@
-package com.mytech.realtimeservice.configs;
+package com.mytech.mainservice.config;
 
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
