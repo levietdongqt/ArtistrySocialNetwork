@@ -1,6 +1,7 @@
 package com.mytech.realtimeservice.services;
 
 import com.mytech.realtimeservice.client.FriendForeignClient;
+import com.mytech.realtimeservice.converter.ConverterObject;
 import com.mytech.realtimeservice.dto.PostDTO;
 import com.mytech.realtimeservice.dto.PostLikeDTO;
 import com.mytech.realtimeservice.dto.UserDTO;
@@ -11,10 +12,7 @@ import com.mytech.realtimeservice.dto.PostResponse;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.PostLike;
 import com.mytech.realtimeservice.models.users.User;
-import com.mytech.realtimeservice.repositories.CommentsRepository;
-import com.mytech.realtimeservice.repositories.NotificationRepository;
-import com.mytech.realtimeservice.repositories.PostLikeRepository;
-import com.mytech.realtimeservice.repositories.PostRepository;
+import com.mytech.realtimeservice.repositories.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +39,9 @@ public class PostService {
 
     @Autowired
     private PostLikeRepository postLikeRepository;
+
+    @Autowired
+    private PostELSRepository postELSRepository;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -58,6 +59,9 @@ public class PostService {
                 .createdBy(postDTO.getSendUserId())
                 .build();
         var createdPost = postRepository.save(post);
+        //Lưu vào ELS
+        var ESLpost =  ConverterObject.convertPostToPostELS(createdPost);
+        postELSRepository.save(ESLpost);
         //Lấy ra danh sách bạn bè của chủ bài post, gọi từ main service
         var friendForeignClientFriends = friendForeignClient.getFriends(postDTO.getSendUserId());
         //Nếu như có userTags

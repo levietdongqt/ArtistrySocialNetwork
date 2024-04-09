@@ -7,7 +7,9 @@ import { ProtectedLayout } from "../_components/layout/common-layout";
 import { usePathname } from "next/navigation";
 import { Bounce, ToastContainer } from "react-toastify";
 import { UserContextProvider } from "../../../context/user-context";
-import { WebSocketProvider } from "context/websocket-context";
+import { SocketProvider } from "context/websocket-context1";
+
+
 
 export default function RootLayout({
   children,
@@ -17,8 +19,8 @@ export default function RootLayout({
   // var params = usePathname();
   // var isLogin = params.includes("/login")
   return (
-    <WebSocketProvider>
+    <SocketProvider>
       <MainLayout>{children}</MainLayout>
-    </WebSocketProvider>
+    </SocketProvider>
   );
 }

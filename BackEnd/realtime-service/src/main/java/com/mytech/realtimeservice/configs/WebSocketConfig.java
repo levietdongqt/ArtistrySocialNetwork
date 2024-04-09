@@ -1,5 +1,6 @@
 package com.mytech.realtimeservice.configs;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -9,6 +10,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
+@Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Value("${env.CLIENT_URL}")
@@ -21,9 +23,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
-                .setAllowedOrigins(clientUrl)
-                .setHandshakeHandler(new UserHandshakeHandler())
+        log.info("Registering endpoint");
+        registry.addEndpoint("/api/realtime/socket.io")
                 .withSockJS(); // Đăng ký WebSocket endpoint tại "/ws" với SockJS
     }
 }

@@ -17,6 +17,7 @@ public class RouteValidator {
             "/api/main/test/get-runtime",
             "/api/realtime/posts/",
             "/api/realtime/test/",
+            "/api/realtime/socket.io/",
             "/eureka"
     );
 

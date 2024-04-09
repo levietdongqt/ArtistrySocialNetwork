@@ -7,11 +7,11 @@ import { UserCard } from "../user/user-card";
 import { MainHeader } from "../home/main-header";
 import { useRouter } from "next/navigation";
 import NotificationMain from "../notification/notification-main";
-import { useWebsocket } from "context/websocket-context";
+import { useSocket } from "context/websocket-context";
 
 const ContainerNotification = () => {
-  const {isConnected} = useWebsocket();
-  console.log(isConnected);
+  const {socket} = useSocket();
+  console.log(socket);
   // useEffect(() => {
   //   if (isConnected) {
   //     console.log(

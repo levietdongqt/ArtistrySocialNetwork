@@ -29,6 +29,7 @@ spring:
               - POST
               - DELETE
               - PUT
+              - OPTIONS
       routes:
         - id: main-service
           uri: lb://main-service

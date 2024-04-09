@@ -1,95 +1,81 @@
-"use client"
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Client } from '@stomp/stompjs';
-import { getCookie } from 'cookies-next';
+"use client";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { Socket, io } from "socket.io-client";
+import { getCookie } from "cookies-next";
 
-type WBContextType = {
-  client: Client | null;
-  setClient: (client: Client | null) => void;
-  isConnected: boolean;
-  setIsConnected: (isConnected: boolean) => void;
+type SocketContextType = {
+  socket: Socket | null;
+  setSocket: (socket: Socket | null) => void;
   messages: any[];
   setMessages: (messages: any[]) => void;
 };
 
-export const WebSocketContext = createContext<WBContextType | undefined>(undefined);
+export const SocketContext = createContext<SocketContextType | undefined>(
+  undefined
+);
 
-export const WebSocketProvider = ({children}: any) => {
-  const [client, setClient] = useState<Client | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
+export const SocketProvider = ({ children }: any) => {
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [messages, setMessages] = useState<any[]>([]);
-  console.log("config websocket context lan 1")
+
   useEffect(() => {
-    const client = new Client({
-      brokerURL: 'ws://localhost:8060/api/realtime/ws',
-      reconnectDelay: 1000,
-      connectHeaders: {
-        'Authorization': `Bearer ${getCookie('access_token')?.toString()}`
-      },
-      debug: function (str) {
-        console.log(str);
+    const accessToken = getCookie("access_token");
+    console.log("Access token:");
+    if (!accessToken) {
+      console.log("Access token not found");
+      return;
+    }
 
-      },
+    const socket = io("http://localhost:8080", {
+      // rejectUnauthorized: true,
+      transports:["websocket"],
+      // //withCredentials: true,
+      // extraHeaders: {
+      //   Authorization: `Bearer ${accessToken}`,
+      // },
     });
-    console.log("config websocket context lan 3")
-    client.onConnect = function (frame) {
-      console.log("onConnect","true")
-      setIsConnected(true);
-    };
 
-    client.onDisconnect = function (frame) {
-      console.log("onConnect","false")
-      setIsConnected(false);
-    };
+    socket.on("connect", () => {
+      console.log("Connected!");
+    });
 
-    client.onStompError = function (frame) {
-      console.log('Broker reported error: ' + frame.headers['message']);
-      console.log('Additional details: ' + frame.body);
-    };
-    
+    socket.on("disconnect", () => {
+      console.log("Disconnected!");
+    });
 
-    client.activate();
+    socket.on("connect_error", (error) => {
+      console.log("Connection Error: " + error.name + error.stack);
+    });
 
-    setClient(client);
-    console.log(client);
-    console.log(isConnected)
+    socket.on("/topic/messages", (message) => {
+      if (message) {
+        const newMessage = JSON.parse(message);
+        setMessages((previousMessages) => [...previousMessages, newMessage]);
+      }
+    });
+
+    setSocket(socket);
+    console.log(socket);
 
     return () => {
-      if(client) {
-        client.deactivate();
+      if (socket) {
+        socket.disconnect();
       }
-    }
+    };
   }, []);
-  
 
-  useEffect(() => {
-    if(client && isConnected) {
-      const subscription = client.subscribe('/topic/messages', (message) => {
-        // thêm vào message vào state khi nhận được
-        if (message.body) {
-            const newMessage = JSON.parse(message.body);
-            setMessages((previousMessages) => [...previousMessages, newMessage]);
-          }
-      });
-
-      // Unsubscribe khi unmount
-      return () => {
-        subscription.unsubscribe();
-      }
-    }
-  }, [client, isConnected]);
-
-  // Trả về Provider với value là client và status connect
   return (
-    <WebSocketContext.Provider value={{client,setClient, isConnected,setIsConnected, messages,setMessages }}>
+    <SocketContext.Provider
+      value={{ socket, setSocket, messages, setMessages }}
+    >
       {children}
-    </WebSocketContext.Provider>
+    </SocketContext.Provider>
   );
 };
 
-export function useWebsocket(): WBContextType {
-  const context = useContext(WebSocketContext);
+export function useSocket(): SocketContextType {
+  const context = useContext(SocketContext);
   if (!context)
-      throw new Error('useUser must be used within an UserContextProvider');
+    throw new Error("useSocket must be used within a SocketContextProvider");
   return context;
 }
