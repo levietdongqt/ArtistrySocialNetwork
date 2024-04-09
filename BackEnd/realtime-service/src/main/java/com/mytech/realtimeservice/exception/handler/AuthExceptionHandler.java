@@ -1,9 +1,12 @@
-package com.mytech.mainservice.exception.handler;
+package com.mytech.realtimeservice.exception.handler;
 
 
-import com.google.firebase.auth.FirebaseAuthException;
-import com.mytech.mainservice.dto.ResponseObject;
-import com.mytech.mainservice.exception.myException.*;
+
+import com.mytech.realtimeservice.dto.ResponseObject;
+import com.mytech.realtimeservice.exception.myException.InvalidPropertyException;
+import com.mytech.realtimeservice.exception.myException.NotFoundException;
+import com.mytech.realtimeservice.exception.myException.TokenExpiredException;
+import com.mytech.realtimeservice.exception.myException.UnAuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +14,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.Arrays;
 
 @RestControllerAdvice
 @Slf4j
@@ -67,17 +68,6 @@ public class AuthExceptionHandler {
     }
 
 
-    @ExceptionHandler(FirebaseAuthException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<?> firebaseAuthExceptionHandle(FirebaseAuthException exception) {
-        log.error(exception.toString());
-        log.error(exception.getMessage());
-        return ResponseEntity.badRequest().body(
-                ResponseObject.builder().
-                        status(HttpStatus.BAD_REQUEST)
-                        .message(exception.getMessage())
-                        .data(null).build());
-    }
 
     @ExceptionHandler(UnAuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)

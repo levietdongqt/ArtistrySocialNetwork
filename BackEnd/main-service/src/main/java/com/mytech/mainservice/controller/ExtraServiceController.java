@@ -1,8 +1,9 @@
 package com.mytech.mainservice.controller;
 
+import com.mytech.mainservice.dto.ExtraServiceDTO;
 import com.mytech.mainservice.dto.MainServiceDTO;
 import com.mytech.mainservice.dto.ResponseObject;
-import com.mytech.mainservice.service.IMainSerService;
+import com.mytech.mainservice.service.IExtraSerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,15 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 @RestController
-@RequestMapping("main-service")
-public class MainServiceController {
+@RequestMapping("extra-service")
+public class ExtraServiceController {
 
     @Autowired
-    private IMainSerService mainService2;
+    private IExtraSerService extraService;
 
     @GetMapping("/get/{serviceId}")
     public ResponseEntity<?> getById(@PathVariable("serviceId") long serviceId) {
-        MainServiceDTO mainServiceDTO = mainService2.getById(serviceId);
+        ExtraServiceDTO mainServiceDTO = extraService.getById(serviceId);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
@@ -31,7 +32,7 @@ public class MainServiceController {
 
     @GetMapping("/get-all/{userId}")
     public ResponseEntity<?> getAllByUserId(@PathVariable("userId") String userId) {
-        Set<MainServiceDTO> mainServiceDTOs = mainService2.getMainServices(userId);
+        Set<ExtraServiceDTO> mainServiceDTOs = extraService.getMainServices(userId);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
@@ -40,10 +41,10 @@ public class MainServiceController {
         );
     }
 
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#mainServiceDTO.provider.id) && hasRole('PROVIDER')")
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#extraServiceDTO.provider.id) && hasRole('PROVIDER')")
     @PostMapping("/create")
-    public ResponseEntity<?> createMainService(@RequestBody MainServiceDTO mainServiceDTO) {
-        mainService2.createMainService(mainServiceDTO);
+    public ResponseEntity<?> createMainService(@RequestBody ExtraServiceDTO extraServiceDTO) {
+        extraService.createExtraService(extraServiceDTO);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
@@ -55,7 +56,7 @@ public class MainServiceController {
     @PreAuthorize("hasRole('PROVIDER')")
     @PostMapping("/soft-delete/{serviceId}")
     public ResponseEntity<?> deleteMainService(@PathVariable Long serviceId) {
-        mainService2.deleteService(serviceId);
+        extraService.deleteService(serviceId);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
@@ -63,10 +64,10 @@ public class MainServiceController {
                         .data(null).build()
         );
     }
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#mainServiceDTO.provider.id) && hasRole('PROVIDER')")
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#extraServiceDTO.provider.id) && hasRole('PROVIDER')")
     @PutMapping("/update")
-    public ResponseEntity<?> updateMainService(@RequestBody MainServiceDTO mainServiceDTO) {
-        mainService2.updateService(mainServiceDTO);
+    public ResponseEntity<?> updateMainService(@RequestBody ExtraServiceDTO extraServiceDTO) {
+        extraService.updateService(extraServiceDTO);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)

@@ -58,11 +58,11 @@ public class UserService implements IUserService {
     @Transactional
     public User createUser(RegisterDto userRegister) throws UnAuthenticationException {
         try {
-            boolean isExisted = userRepo.findByEmail(userRegister.getEmail()).isPresent();
+            boolean isExisted = userRepo.findByEmail(userRegister.email()).isPresent();
             if (isExisted) {
                 throw new UnAuthenticationException(" Email already existed");
             }
-            List<UserRole> userRoles = userRegister.getRoles().stream().map(item -> UserRole.valueOf(item.toUpperCase())).toList();
+            List<UserRole> userRoles = userRegister.roles().stream().map(item -> UserRole.valueOf(item.toUpperCase())).toList();
             List<Role> roles = roleRepo.findByListName(userRoles);
 
             User user = modelMapper.map(userRegister, User.class);

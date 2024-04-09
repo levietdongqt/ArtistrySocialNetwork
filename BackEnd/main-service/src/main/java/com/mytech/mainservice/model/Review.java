@@ -1,11 +1,13 @@
 package com.mytech.mainservice.model;
 
+import com.mytech.mainservice.enums.ReviewDetailKey;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 @Builder
@@ -23,13 +25,13 @@ public class Review implements Serializable {
 
     @Column(name = "review_Details")
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> reviewDetails;
+    private Map<ReviewDetailKey, Object> reviewDetails;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_User_Id")
     private User customerUser;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "provider_User_Id")
     private User providerUser;
 

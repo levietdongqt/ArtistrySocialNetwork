@@ -2,10 +2,11 @@ package com.mytech.realtimeservice.filter;
 
 
 import com.mytech.realtimeservice.configs.CustomUserDetail;
-import com.mytech.realtimeservice.helper.AuthService;
 import com.mytech.realtimeservice.helper.JwtService;
+import com.mytech.realtimeservice.helper.JwtTokenHolder;
 import com.mytech.realtimeservice.models.feignClient.Role;
 import com.mytech.realtimeservice.models.feignClient.User;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,8 +25,8 @@ import java.util.List;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
-    private AuthService authService;
-    @Autowired
+
+    private JwtTokenHolder jwtTokenHolder;
     private final ModelMapper mapper;
     @Autowired
     private final JwtService jwtService;
@@ -37,27 +38,30 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        var s = request.getServletPath();
-       if(request.getServletPath().contains("socket.io")){
-           filterChain.doFilter(request, response);
-            return;
-       }
-        String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String username = null;
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            username = jwtService.extractUsername(token);
-        }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtService.validateToken(token)) {
-                authService.setAuthToken(token);
-                CustomUserDetail userDetails = getUserDetail(token, username);
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+        try {
+            String authHeader = request.getHeader("Authorization");
+            String token = null;
+            String username = null;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7);
+                username = jwtService.extractUsername(token);
             }
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (jwtService.validateToken(token)) {
+                    jwtTokenHolder.setCurrentToken(token);
+                    CustomUserDetail userDetails = getUserDetail(token, username);
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
+
+
+        } catch (ExpiredJwtException e) {
+            // Token đã hết hạn, trả về status 401
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token đã hết hạn");
+            return; // Dừng xử lý tiếp theo và trả về response ngay lập tức
         }
         filterChain.doFilter(request, response);
     }
