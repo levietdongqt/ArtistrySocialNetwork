@@ -43,6 +43,34 @@ export async function loginService(values: any): Promise<MyResponse<AuthResponse
     }
 }
 
+export async function registerService(values: any): Promise<MyResponse<AuthResponse>> {
+    try {
+        console.log("Voo ", values)
+        // console.log(headers)
+        const res = await fetch(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/auth/register`,
+            {
+                body: JSON.stringify(values),
+                method: 'POST',
+                cache: "no-cache",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+        const data: MyResponse<AuthResponse> = await res.json();
+        console.log(data)
+        if (res.ok) {
+            setCookieTokenSSR(data);
+            return data;
+        } else {
+            console.log(data.message)
+            throw new Error("Server error: " + res.statusText)
+        }
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
 export async function oauth2Service(token: string): Promise<MyResponse<AuthResponse>> {
     try {
         // console.log(headers)

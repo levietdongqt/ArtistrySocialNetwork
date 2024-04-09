@@ -1,6 +1,7 @@
 package com.mytech.mainservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
@@ -11,10 +12,11 @@ import java.io.Serializable;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseObject implements Serializable {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ResponseObject<T> implements Serializable {
     private HttpStatus status;
     private String message;
-    private Object data;
+    private T data;
 
     @JsonGetter("status")
     public int getStatusValue() {

@@ -33,7 +33,6 @@ export default function AllNotification() {
     console.log("abc", data2);
     console.log(isLoading2);
     console.log(error2);
-
     var notificationsTypeFriend =
         data2 &&
         data2.data.filter((value: any) => value.notificationType === "FRIEND");

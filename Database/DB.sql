@@ -81,6 +81,18 @@ CREATE TABLE IF NOT EXISTS reviews (
 	Foreign key(provider_User_Id) references users(id)
 );
 
+CREATE TABLE IF NOT EXISTS promotions (
+	id Bigint auto_increment,
+	name varchar(100) CHARACTER SET utf8mb4 not null,
+    discount_Percent float default 0,
+    start_Date datetime not null,
+    end_Date datetime not null,
+    description TEXT,
+    type enum('FOR_ORDER','FOR_SERVICE'),
+    status boolean default 1,
+    
+    primary key(id)
+);
 CREATE TABLE IF NOT EXISTS extra_services (
 	id Bigint auto_increment,
     user_Id VARCHAR(36),
@@ -92,8 +104,10 @@ CREATE TABLE IF NOT EXISTS extra_services (
     create_Date datetime,
     create_By varchar(50) CHARACTER SET utf8mb4,
     update_Date datetime,
+	promotion_Id bigint,
     primary key(id),
-    Foreign key(user_Id) references users(id)
+    Foreign key(user_Id) references users(id),
+    Foreign key(promotion_Id) references promotions(id)
 );
 
 CREATE TABLE IF NOT EXISTS main_services (
@@ -110,7 +124,9 @@ CREATE TABLE IF NOT EXISTS main_services (
     create_Date datetime,
     create_By varchar(50) CHARACTER SET utf8mb4,
     update_Date datetime,
+    promotion_Id bigint,
     primary key(id),
+    Foreign key(promotion_Id) references promotions(id),
     Foreign key(user_Id) references users(id)
 );
 
@@ -129,26 +145,6 @@ CREATE TABLE saved_service(
     foreign key(user_Id) references users(id),
     foreign key(main_Service_Id) references main_services(id)
 );
-
-CREATE TABLE IF NOT EXISTS promotions (
-	id Bigint auto_increment,
-	name varchar(100) CHARACTER SET utf8mb4 not null,
-    discount_Percent float default 0,
-    start_Date datetime not null,
-    end_Date datetime not null,
-    description TEXT,
-    status boolean default 1,
-    primary key(id)
-);
-
-CREATE TABLE IF NOT EXISTS promotion_details (
-	main_Service_Id Bigint,
-    promotion_Id Bigint,
-    Foreign key(main_Service_Id) references main_services(id),
-	Foreign key(promotion_Id) references promotions(id),
-    primary key(main_Service_Id,promotion_Id)
-);
-
 
 CREATE TABLE IF NOT EXISTS working_time (
 	id Bigint auto_increment,
@@ -173,9 +169,11 @@ CREATE TABLE IF NOT EXISTS orders (
     create_By varchar(50) CHARACTER SET utf8mb4,
     update_Date datetime,
     address varchar(255) CHARACTER SET utf8mb4,
+    promotion_Id bigint,
 	status ENUM('PENDING', 'ACTIVE', 'CANCELLING', 'CANCELLED') DEFAULT 'PENDING',
     primary key(id),
     Foreign key(customer_User_Id) references users(id),
+    Foreign key(promotion_Id) references promotions(id),
     Foreign key(provider_User_Id) references users(id),
     Foreign key(main_Service_Id) references main_services(id)
 );

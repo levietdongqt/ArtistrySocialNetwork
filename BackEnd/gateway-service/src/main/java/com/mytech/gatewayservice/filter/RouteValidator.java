@@ -12,6 +12,7 @@ public class RouteValidator {
     // danh sach open api
     public static final List<String> openApiEndpoints = List.of(
             "/api/main/auth",
+            "/api/main/main-service/get",
             "/api/main/user/",
             "/api/main/test",
             "/api/main/test/get-runtime",

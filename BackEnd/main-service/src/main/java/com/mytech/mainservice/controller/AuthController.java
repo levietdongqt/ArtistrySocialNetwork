@@ -5,6 +5,7 @@ import com.google.api.client.json.Json;
 import com.google.firebase.auth.*;
 import com.mytech.mainservice.config.CustomUserDetail;
 import com.mytech.mainservice.dto.UserDTO;
+import com.mytech.mainservice.dto.request.FriendDTO;
 import com.mytech.mainservice.dto.request.LoginDTO;
 import com.mytech.mainservice.dto.request.RegisterDto;
 import com.mytech.mainservice.dto.ResponseObject;
@@ -12,6 +13,7 @@ import com.mytech.mainservice.dto.request.TokenDTO;
 import com.mytech.mainservice.enums.AccentType;
 import com.mytech.mainservice.enums.UserRole;
 import com.mytech.mainservice.exception.myException.UnAuthenticationException;
+import com.mytech.mainservice.helper.JwtService;
 import com.mytech.mainservice.model.Role;
 import com.mytech.mainservice.model.Session;
 import com.mytech.mainservice.model.User;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,6 +48,9 @@ public class AuthController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    JwtService jwtService;
 
 
     @PostMapping("/login")
@@ -119,7 +125,7 @@ public class AuthController {
         );
     }
 
-    @Secured("ROLE_ADMIN")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/hello")
     public ResponseEntity<?> hello() {
         log.debug("Voo hello!!!!!!!!!!!!!!!!!!");
@@ -130,9 +136,10 @@ public class AuthController {
         );
     }
 
-    @Secured("ROLE_ADMIN2")
-    @GetMapping("/hello2")
-    public ResponseEntity<?> hello2() {
+    //    @PreAuthorize("#friendDTO.userId.equals(@jwtTokenHolder.getUserId()) && hasRole('ADMIN')")
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#friendDTO.userId) && hasRole('ADMIN')")
+    @PostMapping("/hello2")
+    public ResponseEntity<?> hello2(@RequestBody FriendDTO friendDTO) {
         log.debug("Voo hello!!!!!!!!!!!!!!!!!!");
         HashMap<String, String> response = new HashMap<String, String>();
         response.put("hello", "HELLO FROM MAIN AUTH CONTROLLER");

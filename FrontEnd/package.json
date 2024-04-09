@@ -11,6 +11,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.3.6",
     "@chatscope/chat-ui-kit-react": "^2.0.3",
+    "@chatscope/chat-ui-kit-styles": "^1.4.0",
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.1.1",
     "@stomp/stompjs": "^7.0.0",
@@ -19,7 +20,7 @@
     "axios": "^1.6.8",
     "clsx": "^2.1.0",
     "cookies-next": "^4.1.1",
-    "emoji-picker-react": "^4.8.0",
+    "emoji-picker-react": "^4.9.2",
     "firebase": "^10.6.0",
     "formik": "^2.4.5",
     "framer-motion": "^11.0.6",

@@ -29,7 +29,6 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
-
     @Autowired
     private NotificationService notificationService;
 
