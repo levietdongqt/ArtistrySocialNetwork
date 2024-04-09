@@ -19,20 +19,22 @@ import java.util.List;
 /**
  * DTO for {@link com.mytech.mainservice.model.MainService}
  */
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class MainServiceDTO implements Serializable {
-    long id;
-    @Size(max = 100)
-    String name;
-    double price;
-    String priceType;
-    float duration;
-    float restTime;
-    List<String> imageUrls;
-    String description;
-    String createBy;
-    LocalDateTime createDate;
-    List<ExtraServiceDTO> extraServiceDTOs = new ArrayList<>();
-    PromotionDTO promotionDTO;
-    UserDTO provider;
+    private long id;
+    private String name;
+    private double price;
+    private String priceType;
+    private float duration;
+    private float restTime;
+    private List<String> imageUrls;
+    private String description;
+    private String createBy;
+    private LocalDateTime createDate;
+    private List<ExtraServiceDTO> extraServiceDTOs;
+    private PromotionDTO promotionDTO;
+    private UserDTO provider;
 }

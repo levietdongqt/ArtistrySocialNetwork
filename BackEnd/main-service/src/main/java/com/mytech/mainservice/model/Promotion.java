@@ -1,5 +1,6 @@
 package com.mytech.mainservice.model;
 
+import com.mytech.mainservice.enums.PromotionType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -39,6 +40,10 @@ public class Promotion implements Serializable {
     @Column(name = "end_Date", nullable = false)
     private LocalDateTime endDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private PromotionType type;
+
     @Column(name = "description")
     private String description;
 
@@ -47,6 +52,9 @@ public class Promotion implements Serializable {
 
     @OneToMany(mappedBy = "promotion")
     private List<MainService> mainServices;
+
+    @OneToMany(mappedBy = "promotion")
+    private List<ExtraService> extraServices;
 
     @OneToMany(mappedBy = "promotion")
     private List<Order> orders;

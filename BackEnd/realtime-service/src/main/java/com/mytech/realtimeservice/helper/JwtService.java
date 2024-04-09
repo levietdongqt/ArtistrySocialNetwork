@@ -35,12 +35,16 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    public String extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("id", String.class));
+    }
+
     public List<String> extractRoles(String token) {
         return extractClaim(token, claims -> claims.get("roles", List.class));
     }
 
     public UserStatus extractUserStatus(String token) {
-        String stringStatus = extractClaim(token,claims -> claims.get("status",String.class));
+        String stringStatus = extractClaim(token, claims -> claims.get("status", String.class));
         return UserStatus.valueOf(stringStatus);
     }
 
@@ -76,9 +80,9 @@ public class JwtService {
     public String generateAccessToken(User user) {
         HashMap<String, Object> claims = new HashMap<>();
         List<String> roleNames = user.getRoles().stream().map(role ->
-                        role.getName().toString()).toList();
+                role.getName().toString()).toList();
         claims.put("roles", roleNames);
-        claims.put("status",user.getStatus().toString());
+        claims.put("status", user.getStatus().toString());
         return createToken(claims, user.getEmail());
     }
 
@@ -87,9 +91,10 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24*60))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24 * 60))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
+
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);

@@ -67,7 +67,7 @@ public class MainService  implements Serializable {
     @ManyToMany(mappedBy ="savedMainServices")
     private List<User> savedByUser;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(name = "additional_details",
             joinColumns = @JoinColumn(name = "main_service_Id"),
             inverseJoinColumns = @JoinColumn(name = "extra_service_Id"))
@@ -77,7 +77,7 @@ public class MainService  implements Serializable {
     @JoinColumn(name = "promotion_Id")
     private Promotion promotion;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_Id")
     private User provider;
 

@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Builder
@@ -122,8 +123,7 @@ public class User implements Serializable {
 
     @JsonManagedReference
     @ManyToMany( cascade =
-            {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
-            fetch = FetchType.EAGER
+            {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}
                 )
     @JoinTable(
             name = "users_roles",
@@ -157,9 +157,9 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "customerUser",fetch = FetchType.LAZY)
     private List<Review> selfReviews;
 
-    @OneToMany(mappedBy = "provider")
+    @OneToMany(mappedBy = "provider",fetch = FetchType.LAZY)
     private List<WorkingTime> workingTimes;
 
-    @OneToMany(mappedBy = "user")
-    private List<Session> sessions;
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    private Set<Session> sessions;
 }
