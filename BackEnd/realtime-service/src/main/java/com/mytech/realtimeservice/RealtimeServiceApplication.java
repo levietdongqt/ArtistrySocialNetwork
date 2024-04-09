@@ -1,12 +1,11 @@
 package com.mytech.realtimeservice;
 
-import com.mytech.realtimeservice.models.Notification;
+
 import com.mytech.realtimeservice.enums.NotificationType;
-import com.mytech.realtimeservice.models.elasticsearch.PostELS;
+import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.users.User;
 import com.mytech.realtimeservice.repositories.CommentLikeRepository;
 import com.mytech.realtimeservice.repositories.CommentsRepository;
-import com.mytech.realtimeservice.repositories.PostELSRepository;
 import com.mytech.realtimeservice.repositories.PostLikeRepository;
 import com.mytech.realtimeservice.services.NotificationService;
 import com.mytech.realtimeservice.services.PostService;
@@ -18,6 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,8 +42,8 @@ public class RealtimeServiceApplication implements CommandLineRunner {
 	@Autowired
 	private CommentLikeRepository commentLikeRep;
 
-	@Autowired
-	private PostELSRepository postELSRepository;
+//	@Autowired
+//	private PostELSRepository postELSRepository;
 
 
 
@@ -60,10 +60,10 @@ public class RealtimeServiceApplication implements CommandLineRunner {
 		commentsRepository.deleteAll();
 		commentLikeRep.deleteAll();
 		User userTo1 = User.builder().userId("4dc47d13-ef4e-11ee-a0e1-00155d973fd0").userName("Phước Huỳnh").build();
-		PostELS post = PostELS.builder().id("ab1").content("dff").user(userTo1).build();
-		postELSRepository.save(post);
-		List<PostELS> elss = postELSRepository.findByContent("zoo");
-		log.info("Searching",elss);
+//		PostELS post = PostELS.builder().id("ab1").content("dff").user(userTo1).build();
+//		postELSRepository.save(post);
+//		List<PostELS> elss = postELSRepository.findByContent("zoo");
+//		log.info("Searching",elss);
 
 		User userFrom1 = User.builder().userId("a125b897-1012-4e8c-ac64-60e3263f7252").userName("Huy").build();
 

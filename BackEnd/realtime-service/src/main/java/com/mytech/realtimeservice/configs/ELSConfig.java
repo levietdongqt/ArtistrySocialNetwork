@@ -10,7 +10,6 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import javax.net.ssl.SSLContext;
 
 @Configuration
-@EnableElasticsearchRepositories(basePackages = "com.mytech.realtimeservice.repositories")
 public class ELSConfig extends ElasticsearchConfiguration {
     @Override
     public ClientConfiguration clientConfiguration() {
