@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -35,6 +37,10 @@ public class ExtraService implements Serializable  {
     @Column(name = "price_Type", nullable = false, length = 20)
     private String priceType;
 
+    @Column(name = "image_Url")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<String> imageUrls;
+
     @Column(name = "description")
     private String description;
 
@@ -57,5 +63,9 @@ public class ExtraService implements Serializable  {
     @ManyToOne()
     @JoinColumn(name = "user_Id")
     private User provider;
+
+    @ManyToOne
+    @JoinColumn(name = "promotion_Id")
+    private Promotion promotion;
 
 }

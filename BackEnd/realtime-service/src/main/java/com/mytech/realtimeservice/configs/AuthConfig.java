@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -41,8 +42,12 @@ public class AuthConfig {
                 })
                 .exceptionHandling(handler -> {
                     handler.authenticationEntryPoint((request, response, authException) -> {
-                        log.error(authException.getLocalizedMessage());
-                        log.error(authException.getMessage());
+                        log.error(HttpStatus.valueOf(response.getStatus()).toString());
+                        response.sendError(response.getStatus());
+                        //response.sendRedirect("/api/main/auth/error/true");
+                    }).accessDeniedHandler((request, response, accessDeniedException) -> {
+                        log.error(accessDeniedException.getMessage());
+                        response.sendError(response.getStatus());
                         //response.sendRedirect("/api/main/auth/error/true");
                     });
                 });

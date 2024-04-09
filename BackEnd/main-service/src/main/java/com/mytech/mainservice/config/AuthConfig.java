@@ -52,6 +52,7 @@ public class AuthConfig {
                             .requestMatchers("/test").permitAll()
 
                             .requestMatchers("/main-service/get-all/**", "/main-service/get/**").permitAll()
+                            .requestMatchers("/extra-service/get-all/**", "/extra-service/get/**").permitAll()
                             .requestMatchers("/hello").authenticated()
                             .anyRequest().authenticated();
                 })

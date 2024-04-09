@@ -1,7 +1,8 @@
 package com.mytech.mainservice.dto;
 
+import com.mytech.mainservice.enums.PromotionType;
 import com.mytech.mainservice.model.MainService;
-import lombok.Value;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -11,14 +12,18 @@ import java.util.List;
 /**
  * DTO for {@link com.mytech.mainservice.model.Promotion}
  */
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class PromotionDTO implements Serializable {
-    long id;
-    String name;
-    float discountPercent;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
-    String description;
-    boolean status;
-    List<MainServiceDTO> mainServices;
+    private long id;
+    private String name;
+    private float discountPercent;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private String description;
+    private PromotionType type;
+    private boolean status;
+    private List<MainServiceDTO> mainServices;
 }
