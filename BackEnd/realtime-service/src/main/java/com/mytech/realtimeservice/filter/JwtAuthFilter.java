@@ -54,7 +54,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
 
-
         } catch (ExpiredJwtException e) {
             // Token đã hết hạn, trả về status 401
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token đã hết hạn");
