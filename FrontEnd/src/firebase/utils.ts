@@ -1,9 +1,6 @@
-
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import {storage } from './app';
-import type { FilesWithId, ImagesPreview } from '../models/file';
-
-
+import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage';
+import {storage} from './app';
+import type {FilesWithId, ImagesPreview} from '../models/file';
 
 /*export async function updateUserData(
   userId: string,
@@ -94,27 +91,21 @@ export async function uploadImages(
   files: FilesWithId
 ): Promise<ImagesPreview | null> {
   if (!files.length) return null;
-
-  const imagesPreview = await Promise.all(
-    files.map(async (file) => {
-      let src: string;
-
-      const { id, name: alt } = file;
-
-      const storageRef = ref(storage, `images/${userId}/${alt}`);
-
-      try {
-        src = await getDownloadURL(storageRef);
-      } catch {
-        await uploadBytesResumable(storageRef, file);
-        src = await getDownloadURL(storageRef);
-      }
-
-      return { id, src, alt };
-    })
+  console.log('Show Uploading images');
+    return await Promise.all(
+      files.map(async (file) => {
+          let src: string;
+          const {id, name: alt} = file;
+          const storageRef = ref(storage, `images/${userId}/${alt}`);
+          try {
+              src = await getDownloadURL(storageRef);
+          } catch {
+              await uploadBytesResumable(storageRef, file);
+              src = await getDownloadURL(storageRef);
+          }
+          return {id, src, alt};
+      })
   );
-
-  return imagesPreview;
 }
 
 /*
@@ -135,27 +126,27 @@ export async function manageReply(
 }
 */
 
-/*export async function manageTotalTweets(
-  type: 'increment' | 'decrement',
-  userId: string
-): Promise<void> {
-  const userRef = doc(usersCollection, userId);
-  await updateDoc(userRef, {
-    totalTweets: increment(type === 'increment' ? 1 : -1),
-    updatedAt: serverTimestamp()
-  });
-}*/
+// export async function manageTotalTweets(
+//   type: 'increment' | 'decrement',
+//   userId: string
+// ): Promise<void> {
+//   const userRef = doc(usersCollection, userId);
+//   await updateDoc(userRef, {
+//     totalTweets: increment(type === 'increment' ? 1 : -1),
+//     updatedAt: serverTimestamp()
+//   });
+// }
 
-/*export async function manageTotalPhotos(
-  type: 'increment' | 'decrement',
-  userId: string
-): Promise<void> {
-  const userRef = doc(usersCollection, userId);
-  await updateDoc(userRef, {
-    totalPhotos: increment(type === 'increment' ? 1 : -1),
-    updatedAt: serverTimestamp()
-  });
-}*/
+// export async function manageTotalPhotos(
+//   type: 'increment' | 'decrement',
+//   userId: string
+// ): Promise<void> {
+//   const userRef = doc(usersCollection, userId);
+//   await updateDoc(userRef, {
+//     totalPhotos: increment(type === 'increment' ? 1 : -1),
+//     updatedAt: serverTimestamp()
+//   });
+// }
 
 /*export function manageRetweet(
   type: 'retweet' | 'unretweet',

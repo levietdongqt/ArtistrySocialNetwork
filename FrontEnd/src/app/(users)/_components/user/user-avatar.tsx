@@ -20,13 +20,12 @@ export function UserAvatar({
   const pictureSize = size ?? 48;
 
   return (
-    <Link href={username ? `/user/${username}` : '#'} className={cn(
+    <Link href={username ? `/profile/${username}` : '#'} className={cn(
         'blur-picture flex self-start',
         !username && 'pointer-events-none',
         className
     )}
           tabIndex={username ? 0 : -1}>
-
         <NextImage
           useSkeleton
           imgClassName='rounded-full'

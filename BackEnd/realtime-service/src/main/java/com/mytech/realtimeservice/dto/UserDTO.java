@@ -16,10 +16,12 @@ public class UserDTO {
     private String fullName;
     private String email;
     private String phoneNumber;
+    private boolean verified = false;
     private boolean gender;
     private LocalDate dateOfBirth;
     private String avatar;
     private String coverImage;
+    private String bio;
 
     //Đánh dấu là user sẽ được Tag vào bài viết
     private boolean tag;

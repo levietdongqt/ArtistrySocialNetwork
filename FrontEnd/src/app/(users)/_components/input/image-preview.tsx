@@ -14,7 +14,7 @@ import type { MotionProps } from 'framer-motion';
 import type { ImagesPreview, ImageData } from '../../../../models/file';
 
 type ImagePreviewProps = {
-  tweet?: boolean;
+  post?: boolean;
   viewTweet?: boolean;
   previewCount: number;
   imagesPreview: ImagesPreview;
@@ -42,7 +42,7 @@ const postImageBorderRadius: Readonly<PostImageBorderRadius> = {
 };
 
 export function ImagePreview({
-  tweet,
+  post,
   viewTweet,
   previewCount,
   imagesPreview,
@@ -63,7 +63,7 @@ export function ImagePreview({
     setSelectedIndex(index);
     openModal();
   };
-
+  console.log("show",previewCount);
   const handleNextIndex = (type: 'prev' | 'next') => () => {
     const nextIndex =
       type === 'prev'
@@ -77,12 +77,12 @@ export function ImagePreview({
     setSelectedIndex(nextIndex);
   };
 
-  const isTweet = tweet ?? viewTweet;
+  const isTweet = post ?? viewTweet;
 
   return (
     <div
       className={cn(
-        'grid grid-cols-2 grid-rows-2 rounded-2xl',
+        'grid grid-cols-2 grid-rows-2 rounded-2xl overflow-y-auto',
         viewTweet
           ? 'h-[51vw] xs:h-[42vw] md:h-[305px]'
           : 'h-[42vw] xs:h-[37vw] md:h-[271px]',
@@ -91,7 +91,7 @@ export function ImagePreview({
     >
       <Modal
         modalClassName={cn(
-          'flex justify-center w-full items-center relative',
+          'flex justify-center w-full items-center relative ',
           isTweet && 'h-full'
         )}
         open={open}

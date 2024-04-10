@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import cn from 'clsx';
 import { useUser } from '../../../../context/user-context';
 import { useModal } from '@lib/hooks/useModal';

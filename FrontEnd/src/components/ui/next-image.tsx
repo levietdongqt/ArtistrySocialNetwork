@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import { useState } from 'react';
 import Image from 'next/image';
 import cn from 'clsx';
@@ -18,7 +18,17 @@ type NextImageProps = {
 /**
  *
  * @description Must set width and height, if not add layout='fill'
+ * @param src
+ * @param alt
+ * @param width
+ * @param height
+ * @param children
+ * @param className
  * @param useSkeleton add background with pulse animation, don't use it if image is transparent
+ * @param imgClassName
+ * @param previewCount
+ * @param blurClassName
+ * @param rest
  */
 export function NextImage({
   src,
@@ -36,7 +46,6 @@ export function NextImage({
   const [loading, setLoading] = useState(!!useSkeleton);
 
   const handleLoad = (): void => setLoading(false);
-
   return (
     <figure style={{ width }} className={className}>
       <Image

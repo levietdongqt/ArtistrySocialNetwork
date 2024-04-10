@@ -19,11 +19,12 @@ import type { Variants } from 'framer-motion';
 import {Timestamp} from "firebase/firestore";
 import {ViewContent} from "../view/view-content";
 import React from "react";
-import {Input} from "../input/input";
 import {User} from "@models/user";
 import {Loading} from "@components/ui/loading";
 import {useAuth} from "../../../../context/auth-context";
 import {Post} from "@models/post";
+import {ImagesPreview} from "@models/file";
+import {useUser} from "../../../../context/user-context";
 
 
 export type TweetProps = Post & {
@@ -32,6 +33,7 @@ export type TweetProps = Post & {
   pinned?: boolean;
   profile?: User | null;
   parentTweet?: boolean;
+  comment?: boolean;
 };
 
 export const variants: Variants = {
@@ -41,37 +43,40 @@ export const variants: Variants = {
 };
 
 export function Content(tweet: TweetProps) {
-    const modal1 = tweet.modal;
-  // const { id: ownerId, name, username, verified, photoURL } = tweetUserData;
-  //
-  // const { user } = useAuth();
-  //
-  //
-  // const userId = user?.id as string;
-  //
-  // const isOwner = userId === createdBy;
-  //
-  // const { id: parentId, username: parentUsername = username } = parent ?? {};
+  const {
+    id:postId,
+    user: postUserData,
+    content,
+    mediaUrl,
+    createdBy,
+    createdAt,
+    updatedAt,
+    status,
+    tagUserPosts,
+    userPostLikes,
+    priorityScore,
+    userReplies,
+    totalLikes,
+    totalComments,
+    modal,
+    profile,
+    parentTweet,
+      comment
+  } = tweet;
+  const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData;
+  console.log("show user ",ownerId)
+  const { currentUser } = useUser();
+  const userId = currentUser?.id as string;
+  const isOwner = userId === createdBy;
   const { open, openModal, closeModal } = useModal();
-  //
-  // const {
-  //   id: profileId,
-  //   name: profileName,
-  //   username: profileUsername
-  // } = profile ?? {};
-  //
-  // const reply = !!parent;
-  // const tweetIsRetweeted = userRetweets.includes(profileId ?? '');
+  const { id: parentId, fullName: parentUsername = fullName } = postUserData ?? {};
 
+  const {
+    id: profileId,
+    fullName: profileUsername
+  } = profile ?? {};
 
-  const modal = false;
-  const parentTweet = false;
-  const reply = false;
-  const pinned = false;
-  const tweetIsRetweeted = true;
-  const verified = false;
-  const text = "verified";
-  const images = [{
+  const images1 = [{
     id: '1',
     src: 'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg',
     alt: 'googlelogo_color_272x92dp'
@@ -90,33 +95,36 @@ export function Content(tweet: TweetProps) {
   }];
   return (
     <motion.article
-      {...(!modal1 ? { ...variants, layout: 'position' } : {})}
+      {...(!modal ? { ...variants, layout: 'position' } : {})}
       animate={{
         ...variants.animate,
-        /*...(parentTweet && { transition: { duration: 0.2 } })*/
+        ...(parentTweet && { transition: { duration: 0.2 } })
       }}
     >
       <Modal
         className='flex items-start justify-center'
-        modalClassName='bg-main-background rounded-2xl max-w-xl w-full my-8 overflow-hidden'
+        modalClassName='bg-main-background rounded-2xl max-w-2xl w-full my-8 overflow-y-auto scrollbar-thin scrollbar-webkit max-h-[700px] mx-4'
         open={open}
         closeModal={closeModal}
       >
-        <ContentReplyModal tweet={tweet} closeModal={closeModal} />
+        <ContentReplyModal tweet={tweet} closeModal={closeModal}  />
       </Modal>
       <div className={cn(
           `accent-tab hover-card relative flex flex-col 
              gap-y-4 px-4 py-3 outline-none duration-200`,
           parentTweet
               ? 'mt-0.5 pt-2.5 pb-0'
-              : 'border-b border-light-border dark:border-dark-border'
+              : 'border-b border-light-border dark:border-dark-border',
+          {
+            'border-b-[1.5px] border-gray-600 pb-5 mx-4' : comment
+          }
       )}
             onClick={delayScroll(200)}
       >
         <div className='grid grid-cols-[auto,1fr] gap-x-3 gap-y-1'>
           <div className='flex flex-col items-center gap-2'>
-            <UserTooltip avatar modal={modal1} >
-              <UserAvatar src={images[0].src} alt={'sdsdsdsd'} username={'username'} />
+            <UserTooltip avatarCheck modal={modal} {...postUserData} >
+              <UserAvatar src={avatar} alt={fullName ?? 'Customer 1'} username={fullName ?? 'Customer 1'} />
             </UserTooltip>
             {parentTweet && (
                 <i className='hover-animation h-full w-0.5 bg-light-line-reply dark:bg-dark-line-reply' />
@@ -125,61 +133,57 @@ export function Content(tweet: TweetProps) {
           <div className='flex min-w-0 flex-col'>
             <div className='flex justify-between gap-2 text-light-secondary dark:text-dark-secondary'>
               <div className='flex gap-1 truncate xs:overflow-visible xs:whitespace-normal'>
-                <UserTooltip modal={modal1}>
+                <UserTooltip modal={modal} {...postUserData}>
                   <UserName
-                      name={'sdsdsd'}
-                      username={'username'}
+                      name={fullName ?? 'Customer 1'}
+                      username={fullName}
                       verified={verified}
                       className='text-light-primary dark:text-dark-primary'
                   />
                 </UserTooltip>
-                <UserTooltip modal={modal1}>
-                  <UserUsername username={'username'} />
-                </UserTooltip>
-                <ContentDate tweetLink={'tweetLink'} createdAt={Timestamp.now()} />
+                <ContentDate tweetLink={'tweetLink'} createdAt={createdAt} />
               </div>
               <div className='px-4'>
-                {!modal1 && (
+                {!modal && (
                     <ContentAction
-                        //isOwner={isOwner}
-                        isOwner={true}
-                        //ownerId={ownerId}
-                        ownerId={'1'}
-                        //tweetId={tweetId}
-                        tweetId={'1'}
-                        parentId={'2'}
-                        //parentId={parentId}
-                        username={'username'}
-                        hasImages={!!images}
-                        createdBy={'createdBy'}
+                        isOwner={isOwner}
+                        ownerId={ownerId}
+                        postId={postId}
+                        parentId={parentId}
+                        username={fullName}
+                        hasImages={!!mediaUrl}
+                        createdBy={createdBy}
                     />
                 )}
               </div>
             </div>
-            {text && (
-                <p className='whitespace-pre-line break-words'>{text}</p>
+            {content && (
+                <p className='whitespace-pre-line break-words'>{content}</p>
             )}
             <div className='mt-1 flex flex-col gap-2'>
-              {images && (
+              {images1 && (
                   <ImagePreview
-                      tweet
-                      imagesPreview={images}
-                      previewCount={images.length}
+                      post
+                      imagesPreview={images1}
+                      previewCount={images1.length}
                   />
               )}
-                  <ContentStats
-                      reply={reply}
-                      userId={'userId'}
-                      isOwner={true}
-                     // isOwner={isOwner}
-                      tweetId={'tweetId'}
-                      userLikes={['userLikes', 'userLikes']}
-                      //userReplies={userReplies}
-                      userReplies={11}
-                      userRetweets={['userLikes', 'userLikes']}
-                      openModal={openModal ?? undefined}
-                      // openModal={openModal ?? undefined}
-                  />
+
+              <ContentStats
+                  avatar={currentUser?.avatar as string}
+                  username={currentUser?.fullName as string}
+                  comment={comment}
+                  userId={userId}
+                  bio={currentUser?.bio as string}
+                  verified={currentUser?.verified}
+                  coverImage={currentUser?.coverImage as string}
+                  isOwner={!isOwner}
+                  postId={postId}
+                  userPostLikes={userPostLikes}
+                  tagUserPosts={tagUserPosts}
+                  userReplies={userReplies}
+                  openModal={openModal}
+              />
             </div>
           </div>
         </div>

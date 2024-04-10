@@ -2,7 +2,7 @@
 import cn from 'clsx';
 import { Popover } from '@headlessui/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { preventBubbling } from '@lib/utils';
 import { siteURL } from '@lib/env';
 import { Button } from '@components/ui/button';
