@@ -53,6 +53,7 @@ export const config = {
 }
 
 function redirectToLogin(req: NextRequest) {
+    // console.log("lot vao day khong ta");
     const loginUrl = new URL('/login', req.url);
     console.log("redirect To Login from: ", req.nextUrl.pathname)
     // Gửi thông tin trang trước thông qua query string

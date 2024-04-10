@@ -1,106 +1,59 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
-import  { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { query, limit } from 'firebase/firestore';
-
+'use client';
+import {useCallback, useEffect, useState} from 'react';
+import useSWRInfinite from 'swr/infinite';
+import {fetcherParams, fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import { Loading } from '@components/ui/loading';
-import { useCollection } from './useCollection';
-import type { UseCollectionOptions } from './useCollection';
-import type { Query, QueryConstraint } from 'firebase/firestore';
-import type { User } from '@models/user';
+import { motion } from 'framer-motion';
 
-type InfiniteScroll<T> = {
-  data: T[] | null;
-  loading: boolean;
-  LoadMore: () => JSX.Element;
+type InfiniteScrollResult = {
+    allData: any[]; // replace `any` with the type of data you are fetching
+    error: any; // replace `any` with the error type you expect
+    isLoadingInitialData: boolean;
+    isLoadingMore: boolean | undefined;
+    LoadMore: () => JSX.Element;
+    marginBottom: number;
+}
+const getKey = (fetchPostsFunc: (limit:number, offset:number) => fetcherParams, pageIndex:number, previousPageData:any, stepSize:number) => {
+    if (previousPageData && !previousPageData.length) return null;
+    return fetchPostsFunc(stepSize, pageIndex * stepSize);
 };
 
-type InfiniteScrollWithUser<T> = {
-  data: (T & { user: User })[] | null;
-  loading: boolean;
-  LoadMore: () => JSX.Element;
-};
+export function useInfiniteScroll(
+    fetchPostsFunc: (limit: number, offset: number) => fetcherParams,
+    stepSize: number = 20,
+    marginBottom: number = 1024
+) : InfiniteScrollResult {
+    const [loadMoreInView, setLoadMoreInView] = useState(false);
+    const { data, error, size, setSize } = useSWRInfinite(
+        (pageIndex, previousPageData) => getKey(fetchPostsFunc, pageIndex, previousPageData, stepSize),
+        fetcherWithToken, // Pass this fetcher function to useSWRInfinite
+    );
 
-export function useInfiniteScroll<T>(
-    collection: Query<T>,
-    constraints: QueryConstraint[],
-    fetchOptions: UseCollectionOptions & { includeUser: true },
-    options?: { initialSize?: number; stepSize?: number; marginBottom?: number }
-): InfiniteScrollWithUser<T>;
+    const allData = data ? [].concat(...data.map(value => value.data)) : [];
+    const isLoadingInitialData = !data && !error;
+    const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");
+    const isReachingEnd = isLoadingMore || (data && data[data.length - 1]?.length < stepSize);
 
-export function useInfiniteScroll<T>(
-    collection: Query<T>,
-    constraints: QueryConstraint[],
-    fetchOptions?: UseCollectionOptions,
-    options?: { initialSize?: number; stepSize?: number; marginBottom?: number }
-): InfiniteScroll<T>;
+    const loadMore = useCallback(() => {
+        if (!isReachingEnd && !isLoadingMore) {
+            setSize(size + 1);
+        }
+    }, [isReachingEnd, isLoadingMore, size, setSize]);
 
-export function useInfiniteScroll<T>(
-    collection: Query<T>,
-    queryConstraints?: QueryConstraint[],
-    fetchOptions?: UseCollectionOptions,
-    options?: { initialSize?: number; stepSize?: number; marginBottom?: number }
-): InfiniteScroll<T> | InfiniteScrollWithUser<T> {
-  const { initialSize, stepSize, marginBottom } = options ?? {};
-  const [tweetsLimit, setTweetsLimit] = useState(initialSize ?? 20);
-  const [tweetsSize, setTweetsSize] = useState<number | null>(null);
-  const [reachedLimit, setReachedLimit] = useState(false);
-  const [loadMoreInView, setLoadMoreInView] = useState(false);
+    useEffect(() => {
+        if (loadMoreInView) loadMore();
+    }, [loadMoreInView, loadMore]);
 
-  const { data, loading } = useCollection(
-      query(
-          collection,
-          ...[
-            ...(queryConstraints ?? []),
-            ...(!reachedLimit ? [limit(tweetsLimit)] : [])
-          ]
-      ),
-      fetchOptions
-  );
+    const LoadMore = () => (
+        <motion.div
+            className={isReachingEnd ? 'hidden' : 'block'}
+            viewport={{ margin: `0px 0px ${marginBottom}px` }}
+            onViewportEnter={() => setLoadMoreInView(true)}
+            onViewportLeave={() => setLoadMoreInView(false)}
+        >
+            {isLoadingMore && <Loading className='mt-5' />}
+        </motion.div>
+    );
 
-  useEffect(() => {
-    const checkLimit = tweetsSize ? tweetsLimit >= tweetsSize : false;
-    setReachedLimit(checkLimit);
-  }, [tweetsSize, tweetsLimit]);
-
-  useEffect(() => {
-    if (reachedLimit) return;
-
-    const setTweetsLength = async (): Promise<void> => {
-      const currentTweetsSize = await getCollectionCount(
-          query(collection, ...(queryConstraints ?? []))
-      );
-      setTweetsSize(currentTweetsSize);
-    };
-
-    void setTweetsLength();
-  }, [data?.length]);
-
-  useEffect(() => {
-    if (reachedLimit) return;
-    if (loadMoreInView) setTweetsLimit(tweetsLimit + (stepSize ?? 20));
-  }, [loadMoreInView]);
-
-  const makeItInView = (): void => setLoadMoreInView(true);
-  const makeItNotInView = (): void => setLoadMoreInView(false);
-
-  const isLoadMoreHidden =
-      reachedLimit && (data?.length ?? 0) >= (tweetsSize ?? 0);
-
-  const LoadMore = useCallback(
-      (): JSX.Element => (
-          <motion.div
-              className={isLoadMoreHidden ? 'hidden' : 'block'}
-              viewport={{ margin: `0px 0px ${marginBottom ?? 1000}px` }}
-              onViewportEnter={makeItInView}
-              onViewportLeave={makeItNotInView}
-          >
-            <Loading className='mt-5' />
-          </motion.div>
-      ),
-      [isLoadMoreHidden]
-  );
-
-  return { data, loading, LoadMore };
+    return {isLoadingMore: undefined, marginBottom: 0, allData, isLoadingInitialData, LoadMore, error };
 }

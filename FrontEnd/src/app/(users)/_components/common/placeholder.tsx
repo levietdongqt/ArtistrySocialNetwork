@@ -1,5 +1,6 @@
-import { CustomIcon } from '@components/ui/custom-icon';
+'use client'
 import { SEO } from './seo';
+
 
 export function Placeholder(): JSX.Element {
   return (

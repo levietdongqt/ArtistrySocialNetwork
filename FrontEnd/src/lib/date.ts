@@ -18,7 +18,6 @@ export function formatDate(
   mode: 'tweet' | 'message' | 'full' | 'joined'
 ): string {
   const date = targetDate.toDate();
-
   if (mode === 'full') return getFullTime(date);
   if (mode === 'tweet') return getPostTime(date);
   if (mode === 'joined') return getJoinedTime(date);
@@ -115,15 +114,15 @@ function calculateRelativeTime(date: Date): string {
 }
 
 function isToday(date: Date): boolean {
-  return new Date().toDateString() === date.toDateString();
+  return new Date().toDateString() === date?.toDateString();
 }
 
 function isYesterday(date: Date): boolean {
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
-  return yesterday.toDateString() === date.toDateString();
+  return yesterday.toDateString() === date?.toDateString();
 }
 
 function isCurrentYear(date: Date): boolean {
-  return date.getFullYear() === new Date().getFullYear();
+  return date?.getFullYear() === new Date().getFullYear();
 }

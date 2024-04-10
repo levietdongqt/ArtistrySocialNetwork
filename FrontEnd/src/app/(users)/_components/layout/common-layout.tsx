@@ -1,20 +1,24 @@
 
-import { useRequireAuth } from '@lib/hooks/useRequireAuth';
 import { Aside } from '../aside/aside';
 import { AsideTrends } from '../aside/aside-trends';
 import { Suggestions } from '../aside/suggestions';
 import { Placeholder } from '../common/placeholder';
 import type { ReactNode } from 'react';
 import { useAuth } from 'context/auth-context';
+import {sleep} from "@lib/utils";
+import {getPostsCount} from "../../../../services/realtime/clientRequest/postClient";
+import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import useSWR from "swr";
 
 export type LayoutProps = {
   children: ReactNode;
 };
 
 export function ProtectedLayout({ children }: LayoutProps) {
-  const user = useRequireAuth();
-  // if (!user) return <Placeholder />;
-  return <>{children}</>;
+
+  return <>
+      {children}
+      </>;
 }
 
 export function HomeLayout({ children }: LayoutProps): JSX.Element {

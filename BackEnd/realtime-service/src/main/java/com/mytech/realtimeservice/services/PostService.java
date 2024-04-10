@@ -1,23 +1,20 @@
 package com.mytech.realtimeservice.services;
 
 import com.mytech.realtimeservice.client.FriendForeignClient;
-import com.mytech.realtimeservice.dto.PostDTO;
-import com.mytech.realtimeservice.dto.PostLikeDTO;
-import com.mytech.realtimeservice.dto.UserDTO;
-import com.mytech.realtimeservice.enums.NotificationType;
-import com.mytech.realtimeservice.models.Notification;
-import com.mytech.realtimeservice.dto.PostResponse;
+import com.mytech.realtimeservice.dto.*;
 
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.PostLike;
 import com.mytech.realtimeservice.models.users.User;
-import com.mytech.realtimeservice.repositories.CommentsRepository;
-import com.mytech.realtimeservice.repositories.NotificationRepository;
 import com.mytech.realtimeservice.repositories.PostLikeRepository;
 import com.mytech.realtimeservice.repositories.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,7 +34,6 @@ public class PostService {
     @Autowired
     private FriendForeignClient friendForeignClient;
 
-
     @Autowired
     private PostLikeRepository postLikeRepository;
     @Autowired
@@ -47,9 +43,12 @@ public class PostService {
         // Lưu bài post
         Post post = Post.builder()
                 .user(User.builder()
-                        .userId(postDTO.getSendUserId())
-                        .userName(postDTO.getSendUserName())
+                        .id(postDTO.getSendUserId())
+                        .fullName(postDTO.getSendFullName())
                         .avatar(postDTO.getSendUserAvatarUrl())
+                        .verified(postDTO.getSendVerified())
+                        .coverImage(postDTO.getSendUserCoverImage())
+                        .bio(postDTO.getSendUserBio())
                         .build())
                 .content(postDTO.getContent())
                 .createdAt(LocalDateTime.now())
@@ -65,11 +64,14 @@ public class PostService {
         }
         //Tạo ra các notification cho danh sách bạn bè này
         User userTo = User.builder()
-                .userId(postDTO.getSendUserId())
-                .userName(postDTO.getSendUserName())
-                .avatar(postDTO.getSendUserAvatarUrl()).build();
+                .id(postDTO.getSendUserId())
+                .fullName(postDTO.getSendFullName())
+                .avatar(postDTO.getSendUserAvatarUrl())
+                .coverImage(postDTO.getSendUserCoverImage())
+                .bio(postDTO.getSendUserBio())
+                .verified(postDTO.getSendVerified()).build();
         for (UserDTO userDTO : friendForeignClientFriends.getData()) {
-           var userFrom = User.builder().userId(userDTO.getId()).userName(userDTO.getFullName()).avatar(userDTO.getAvatar()).build();
+           var userFrom = User.builder().id(userDTO.getId()).fullName(userDTO.getFullName()).avatar(userDTO.getAvatar()).build();
            if (userDTO.isTag()) {
                notificationService.sendNotification(userFrom, userTo,"TAG",postDTO.getContent(),createdPost.getId());
            }else{
@@ -77,23 +79,43 @@ public class PostService {
            }
         }
         return createdPost;
-
-
     }
-    public List<PostResponse> findAll() {
-        List<Post> posts = postRepository.findAll();
+    public Boolean deletePost(String postId) {
+        boolean detected = false;
+        var post = postRepository.findById(postId);
+        if(post.isPresent()){
+            detected =  true;
+            postRepository.delete(post.get());
+        }
+        return detected;
+    }
+
+    public List<PostResponse> findAll(int limit, int offset) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        int pageIndex = offset / limit;
+        Pageable pageable = PageRequest.of(pageIndex, limit, sort);
+        Page<Post> pagePosts = postRepository.findByOrderByCreatedAtDesc(pageable);
+        List<Post> posts = pagePosts.getContent();
         List<PostResponse> postResponses = new ArrayList<>();
-        postResponses = modelMapper.map(posts,postResponses.getClass());
+        for (Post post : posts) {
+            PostResponse postResponse = modelMapper.map(post, PostResponse.class);
+            postResponses.add(postResponse);
+        }
         return postResponses;
     }
+    public long getCountPost(){
+        return postRepository.count();
+    }
 
-    public void deleteAll() {
+    public boolean deleteAll() {
         postRepository.deleteAll();
+        return true;
     }
 
     public Post findById(String id) {
-        return postRepository.findById(id).get();
+        return postRepository.findById(id).orElse(null);
     }
+
 
     //Set tag thành true nếu như id trùng id của  List<UserDTO> trả từ main (tối ưu sau)
     public void setTagForUsers(List<UserDTO> users,List<UserDTO> userTags) {
@@ -130,10 +152,13 @@ public class PostService {
         List<User> users = post.getUserPostLikes();
         deletedUser = users
                 .stream()
-                .filter(u -> u.getUserId().equals(userLike.getUserId()))
+                .filter(u -> u.getId().equals(userLike.getId()))
                 .findFirst()
-                .get();
-        users.remove(deletedUser);
+                .orElse(null);
+        System.out.println("user " + deletedUser);
+        if (deletedUser != null) {
+            users.remove(deletedUser);
+        }
         post.setUpdatedAt(LocalDateTime.now());
         return postRepository.save(post);
     }
@@ -143,18 +168,23 @@ public class PostService {
         //Kiểm tra xem phải đúng bài post cần tạo like không?
         Post postUpdated = null;
         var post = findById(postLikeDTO.getPostId());
-        if ( post== null){
+        if ( post == null){
             return null;
         }
-
         //Xóa postlike
-        var postLike = postLikeRepository.GetByPostLikeByPostIdAndUserId(post.getId(), postLikeDTO.getByUser().getUserId());
-        if (postLike!= null) {
+        var postLike = postLikeRepository.GetByPostLikeByPostIdAndUserId(post.getId(), postLikeDTO.getByUser().getId());
+        if (postLike != null) {
             postLikeRepository.delete(postLike);
             postUpdated = updateDislikeForPost(post.getId(),postLikeDTO.getByUser());
             return post;
         }
-
+        boolean alreadyLiked = post.getUserPostLikes()
+                .stream()
+                .anyMatch(like ->  postLikeDTO.getByUser().getId().equals(like.getId()));
+        System.out.println(postLikeDTO.getByUser().getId());
+        if(alreadyLiked){
+            return post;
+        }
         //Tạo 1 post like
         PostLike postLikeCreated = PostLike.builder()
                             .postId(postLikeDTO.getPostId())
@@ -167,10 +197,9 @@ public class PostService {
         postUpdated = updateLikeForPost(post.getId(),postLikeDTO.getByUser());
         //Tạo 1 notification;
         User userTo = post.getUser();
-
         User userFrom = User.builder()
-                .userId(postLikeDTO.getByUser().getUserId())
-                .userName(postLikeDTO.getByUser().getUserName())
+                .id(postLikeDTO.getByUser().getId())
+                .fullName(postLikeDTO.getByUser().getFullName())
                 .avatar(postLikeDTO.getByUser().getAvatar())
                 .build();
         notificationService.sendNotification(userFrom, userTo,"LIKE","",post.getId());
