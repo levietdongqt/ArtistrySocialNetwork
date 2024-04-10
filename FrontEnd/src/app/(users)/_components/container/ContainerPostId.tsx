@@ -19,32 +19,32 @@ const ContainerPostId = () => {
         back
     } = useRouter();
 
-    // const { data: tweetData, loading: tweetLoading } = useDocument(
-    //     doc(tweetsCollection, id as string),
-    //     { includeUser: true, allowNull: true }
-    // );
-    //
-    // const viewTweetRef = useRef<HTMLElement>(null);
-    //
-    // const { data: repliesData, loading: repliesLoading } = useCollection(
-    //     query(
-    //         tweetsCollection,
-    //         where('parent.id', '==', id),
-    //         orderBy('createdAt', 'desc')
-    //     ),
-    //     { includeUser: true, allowNull: true }
-    // );
-    //
-    // const { text, images } = tweetData ?? {};
+    const { data: tweetData, loading: tweetLoading } = useDocument(
+        doc(tweetsCollection, id as string),
+        { includeUser: true, allowNull: true }
+    );
 
-    // const imagesLength = images?.length ?? 0;
-    // const parentId = tweetData?.parent?.id;
-    //
-    // const pageTitle = tweetData
-    //     ? `${tweetData.user.name} on Twitter: "${text ?? ''}${
-    //         images ? ` (${imagesLength} image${isPlural(imagesLength)})` : ''
-    //     }" / Twitter`
-    //     : null;
+    const viewTweetRef = useRef<HTMLElement>(null);
+
+    const { data: repliesData, loading: repliesLoading } = useCollection(
+        query(
+            tweetsCollection,
+            where('parent.id', '==', id),
+            orderBy('createdAt', 'desc')
+        ),
+        { includeUser: true, allowNull: true }
+    );
+
+    const { text, images } = tweetData ?? {};
+
+    const imagesLength = images?.length ?? 0;
+    const parentId = tweetData?.parent?.id;
+
+    const pageTitle = tweetData
+        ? `${tweetData.user.name} on Twitter: "${text ?? ''}${
+            images ? ` (${imagesLength} image${isPlural(imagesLength)})` : ''
+        }" / Twitter`
+        : null;
 
     return (
         <>

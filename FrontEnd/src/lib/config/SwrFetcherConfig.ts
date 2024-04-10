@@ -24,6 +24,8 @@ export async function fetchJSON(
             throw new Error("Invalid service destination!! ")
         }
         const response = await axios.get(fullUrl);
+        console.log("SWR url", fullUrl)
+
         console.log("SWR response", response)
         return response.data;
     } catch (e) {

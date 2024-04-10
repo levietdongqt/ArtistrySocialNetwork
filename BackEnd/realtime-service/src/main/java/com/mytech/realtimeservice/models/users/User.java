@@ -8,10 +8,12 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class User{
-    private String userId;
-    private String userName;
+    private String id;
+    private String fullName;
     private String avatar;
-    private String icon;
+    private String coverImage;
+    private String bio;
+    private boolean verified;
 }
 
 

@@ -31,5 +31,4 @@ public class Comments {
     private List<User> tagUserComments = new ArrayList<>();
     private int totalLikes;
     private int totalReply;
-
 }

@@ -1,4 +1,4 @@
-'use client'
+
 import { useEffect } from 'react';
 import TextArea from 'react-textarea-autosize';
 import { motion } from 'framer-motion';
@@ -16,11 +16,13 @@ import type {
 } from 'react';
 import type { Variants } from 'framer-motion';
 import cn from "clsx";
+import {toast} from "react-toastify";
 
 type InputFormProps = {
   modal?: boolean;
   formId: string;
   loading: boolean;
+  comment?: boolean;
   visited: boolean;
   reply?: boolean;
   children: ReactNode;
@@ -29,7 +31,7 @@ type InputFormProps = {
   replyModal?: boolean;
   isValidTweet: boolean;
   isUploadingImages: boolean;
-  sendTweet: () => Promise<void>;
+  sendPost: () => Promise<void>;
   handleFocus: () => void;
   discardTweet: () => void;
   handleChange: ({
@@ -57,6 +59,7 @@ export function   InputForm({
   modal,
   reply,
   formId,
+                              comment,
   loading,
   visited,
   children,
@@ -65,16 +68,14 @@ export function   InputForm({
   inputValue,
   isValidTweet,
   isUploadingImages,
-  sendTweet,
+  sendPost,
   handleFocus,
   discardTweet,
   handleChange,
   handleImageUpload
 }: InputFormProps): JSX.Element {
   const { open, openModal, closeModal } = useModal();
-
   useEffect(() => handleShowHideNav(true), []);
-
   const handleKeyboardShortcut = ({
     key,
     ctrlKey
@@ -84,7 +85,7 @@ export function   InputForm({
         inputRef.current?.blur();
         openModal();
       } else discardTweet();
-    else if (ctrlKey && key === 'Enter' && isValidTweet) void sendTweet();
+    else if (ctrlKey && key === 'Enter' && isValidTweet) {void sendPost();};
   };
 
   const handleShowHideNav = (blur?: boolean) => (): void => {
@@ -113,7 +114,7 @@ export function   InputForm({
   const isVisibilityShown = visited && !reply && !replyModal && !loading;
 
   return (
-    <div className='flex min-h-[48px] w-full flex-col justify-center gap-4'>
+    <div className={cn(`flex min-h-[48px] w-full flex-col justify-center gap-4 `)} >
       <Modal
         modalClassName='max-w-xs bg-main-background w-full p-8 rounded-2xl'
         open={open}
@@ -132,14 +133,14 @@ export function   InputForm({
         <div className='flex items-center gap-3'>
           <TextArea
             id={formId}
-            className={cn(`w-full min-w-0 resize-none  bg-transparent text-xl outline-none placeholder:text-light-secondary dark:placeholder:text-dark-secondary`, reply ? 'h-[45px] !important' : '')}
+            className={cn(`w-full min-w-0 resize-none bg-transparent text-xl outline-none placeholder:text-light-secondary dark:placeholder:text-dark-secondary`)}
             value={inputValue}
             placeholder={
               reply || replyModal ? 'Viết bình luận' : "Bạn đang nghĩ gì thế....."
             }
             onBlur={handleShowHideNav(true)}
-            minRows={loading ? 1 : modal && !isUploadingImages ? 3 : 1}
-            maxRows={isUploadingImages ? 5 : 15}
+            minRows={comment ? 1 : (loading ? 1 : modal && !isUploadingImages ? 3 : 1) }
+            maxRows={comment ? isUploadingImages ? 5 : 20 : isUploadingImages ? 5 : 15}
             onFocus={handleFormFocus}
             onPaste={handleImageUpload}
             onKeyUp={handleKeyboardShortcut}

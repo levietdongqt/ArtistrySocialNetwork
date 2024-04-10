@@ -29,19 +29,54 @@ public class PostController {
 
 
     @GetMapping("/get-posts")
-    public ResponseEntity<?> getPostList() {
-        log.info("PostList ",postService.findAll());
+    public ResponseEntity<?> getPostList(@RequestParam("limit") int limit,@RequestParam("offset") int offset) {
+        log.info("Post List ");
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get post list limit " + limit + " va offset " + offset + " OK")
+                        .data(postService.findAll(limit,offset))
+                        .build()
+        );
+    }
+    @GetMapping("/count")
+    public ResponseEntity<?> countPostList () {
+        log.info("post count ");
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get post list count OK")
+                        .data(postService.getCountPost())
+                        .build()
+        );
+    }
+    @DeleteMapping("/deleteAll")
+    public ResponseEntity<?> deleteAllPostList () {
+        log.info("delete All post");
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Delete all post is OK")
+                        .data(postService.deleteAll() ? "success" : "fail")
+                        .build()
+        );
+    }
+    @DeleteMapping("/deleteById/{postId}")
+    public ResponseEntity<?> deleteByIdPost (@PathVariable String postId) {
+        log.info("delete post by id");
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
-                        .message("Get post list limit "  + " OK")
-                        .data(postService.findAll())
+                        .message("Delete post id is OK")
+                        .data(postService.deletePost(postId) ? "success" : "fail")
                         .build()
         );
     }
 
-    @PostMapping
+    @PostMapping("/post-create")
     public ResponseEntity<?> savePost(@RequestBody PostDTO postDTO) {
+        log.info("post create ",postService.getCountPost());
         Post savedPost = postService.create(postDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseObject.builder()
@@ -64,6 +99,17 @@ public class PostController {
         );
     }
 
+    @GetMapping("/comments/{PostId}")
+    public ResponseEntity<?> getPostComments(@PathVariable String PostId) {
+        List<Comments> comments = commentsService.getCommentsByPostId(PostId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get comments list OK")
+                        .data(comments)
+                        .build()
+        );
+    }
     @PostMapping("/comments")
     public ResponseEntity<?> createComment(@RequestBody CommentDTO commentDTO) {
         Comments comments = commentsService.createComments(commentDTO);

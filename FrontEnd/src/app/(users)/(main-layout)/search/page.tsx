@@ -1,6 +1,6 @@
-import {SearchLayout} from "../_components/layout/common-layout";
-import { MainContainer } from '../_components/home/main-container';
-import ContainerSearch from "../_components/container/ContainerSearch";
+import {SearchLayout} from "../../_components/layout/common-layout";
+import { MainContainer } from '../../_components/home/main-container';
+import ContainerSearch from "../../_components/container/ContainerSearch";
 interface SearchProps {
     query?: string;
 }
