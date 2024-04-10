@@ -6,17 +6,17 @@ import { ViewTweetStats } from '../view/view-tweet-stats';
 import { TweetOption } from './content-option';
 import { ContentShare } from './content-share';
 import type { Post } from '@models/post';
-
 import useSWR from "swr";
 import {likePosts} from "../../../../services/realtime/clientRequest/postClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+
 
 type PostStatsProps = Pick<
   Post,
   'userPostLikes' | 'userReplies' | 'tagUserPosts'
 > & {
   userId: string;
-  isOwner: boolean;
+  isOwner?: boolean;
   coverImage: string,
   username: string;
   avatar: string;
@@ -35,7 +35,7 @@ export function ContentStats({
   postId,
   userPostLikes,
   username, avatar,
-                               coverImage,bio,verified,
+ coverImage,bio,verified,
   icon,
   viewTweet,
    tagUserPosts,
@@ -54,7 +54,6 @@ export function ContentStats({
     });
   const [isStat, setIsStat] = useState({});
   const {data,mutate } = useSWR(likePosts(isStat),fetcherWithToken, { revalidateOnFocus: false });
-  console.log("showss ss " ,userPostLikes?.map(data => userId) );
   const handleLikes = async (type: 'Like' | 'Unlike'): Promise<void> => {
     const currentIsLiked = isLike;
     const nextIsLiked = type === 'Like';
@@ -74,7 +73,7 @@ export function ContentStats({
           verified: verified
         },
       };
-      console.log("show currentIsLiked ",userPostLikes?.map(data => userId))
+
       // Only call the API if the next state is different from the current state.
       if (currentIsLiked !== nextIsLiked) {
         setIsStat(dataLike); // This should be where you set up the payload for the API request.

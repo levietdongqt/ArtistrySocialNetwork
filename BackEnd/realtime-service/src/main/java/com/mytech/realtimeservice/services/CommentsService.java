@@ -35,13 +35,14 @@ public class CommentsService {
     private CommentLikeRepository commentLikeRepository;
 
     public List<Comments> getCommentsByPostId(String postId) {
-        return commentsRepository.findCommentsByPostId(postId);
+        return commentsRepository.findAllByPostId(postId);
     }
     public Comments createComments(CommentDTO commentDTO) {
         var post = postService.findById(commentDTO.getPostId());
         if (post == null) {
             return null;
         }
+        System.out.println(post);
         //Tạo 1 comments
         Comments comments = Comments.builder()
                 .postId(post.getId())
@@ -51,10 +52,11 @@ public class CommentsService {
                 .mediaUrl(commentDTO.getMediaUrl())
                 .tagUserComments(commentDTO.getUserTags())
                 .build();
+        System.out.println(comments);
         //Nếu nó là 1 comments đã tồn tại khác
         if (commentDTO.getCommentsId() != null ) {
             //Check xem id của comments đã tồn tại đó đúng hay chưa
-            var comment = commentsRepository.findById(commentDTO.getCommentsId()).get();
+            var comment = commentsRepository.findById(commentDTO.getCommentsId()).orElse(null);
             if (comment == null) {
                 return null;
             }
@@ -138,7 +140,12 @@ public class CommentsService {
             commentUpdated = updateDislikeForComment(comment.getId(),commentLikeDTO.getByUser());
             return commentUpdated;
         }
-
+        var alreadyLiked = comment.getCommentsLikes()
+                .stream()
+                .anyMatch(likes -> commentLikeDTO.getByUser().getId().equals(likes.getId()));
+        if(alreadyLiked) {
+            return commentUpdated;
+        }
         //Tạo 1 comment like
         CommentLike commentLikeCreated = CommentLike.builder()
                 .commentId(commentLikeDTO.getCommentId())

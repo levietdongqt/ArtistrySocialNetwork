@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface CommentsRepository extends MongoRepository<Comments,String> {
-    @Query(value = "{'postId': ?0}", sort = "{'sentDate': -1}")
-    List<Comments> findCommentsByPostId(String postId);
+    @Query(value = "{postId: ?0}", sort = "{sentDate: -1}")
+    List<Comments> findAllByPostId(String postId);
+
 }

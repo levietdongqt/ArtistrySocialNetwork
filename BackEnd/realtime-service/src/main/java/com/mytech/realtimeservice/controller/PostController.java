@@ -100,7 +100,7 @@ public class PostController {
     }
 
     @GetMapping("/comments/{PostId}")
-    public ResponseEntity<?> getPostComments(@RequestParam String PostId) {
+    public ResponseEntity<?> getPostComments(@PathVariable String PostId) {
         List<Comments> comments = commentsService.getCommentsByPostId(PostId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()

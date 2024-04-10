@@ -47,7 +47,7 @@ export function Content(tweet: TweetProps) {
     id:postId,
     user: postUserData,
     content,
-    images,
+    mediaUrl,
     createdBy,
     createdAt,
     updatedAt,
@@ -103,7 +103,7 @@ export function Content(tweet: TweetProps) {
     >
       <Modal
         className='flex items-start justify-center'
-        modalClassName='bg-main-background rounded-2xl max-w-xl w-full my-8 overflow-hidden'
+        modalClassName='bg-main-background rounded-2xl max-w-2xl w-full my-8 overflow-y-auto scrollbar-thin scrollbar-webkit max-h-[700px] mx-4'
         open={open}
         closeModal={closeModal}
       >
@@ -114,7 +114,10 @@ export function Content(tweet: TweetProps) {
              gap-y-4 px-4 py-3 outline-none duration-200`,
           parentTweet
               ? 'mt-0.5 pt-2.5 pb-0'
-              : 'border-b border-light-border dark:border-dark-border'
+              : 'border-b border-light-border dark:border-dark-border',
+          {
+            'border-b-[1.5px] border-gray-600 pb-5 mx-4' : comment
+          }
       )}
             onClick={delayScroll(200)}
       >
@@ -138,9 +141,6 @@ export function Content(tweet: TweetProps) {
                       className='text-light-primary dark:text-dark-primary'
                   />
                 </UserTooltip>
-                <UserTooltip modal={modal} {...postUserData}>
-                  <UserUsername username={fullName ?? 'Customer 1'} />
-                </UserTooltip>
                 <ContentDate tweetLink={'tweetLink'} createdAt={createdAt} />
               </div>
               <div className='px-4'>
@@ -151,7 +151,7 @@ export function Content(tweet: TweetProps) {
                         postId={postId}
                         parentId={parentId}
                         username={fullName}
-                        hasImages={!!images}
+                        hasImages={!!mediaUrl}
                         createdBy={createdBy}
                     />
                 )}
@@ -163,7 +163,7 @@ export function Content(tweet: TweetProps) {
             <div className='mt-1 flex flex-col gap-2'>
               {images1 && (
                   <ImagePreview
-                      tweet
+                      post
                       imagesPreview={images1}
                       previewCount={images1.length}
                   />

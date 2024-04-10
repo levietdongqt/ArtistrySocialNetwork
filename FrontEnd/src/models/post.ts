@@ -6,7 +6,7 @@ export type Post = {
   id: string;
   user: User  ;
   content: string | null;
-  images: ImagesPreview | null;
+  mediaUrl: ImagesPreview | null;
   parent: { id: string; username: string } | null;
   createdBy: string;
   createdAt: string;
