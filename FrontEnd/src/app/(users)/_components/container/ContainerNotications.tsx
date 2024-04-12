@@ -7,20 +7,10 @@ import { UserCard } from "../user/user-card";
 import { MainHeader } from "../home/main-header";
 import { useRouter } from "next/navigation";
 import NotificationMain from "../notification/notification-main";
-import { useSocket } from "context/websocket-context";
+import { useSocket } from "context/websocket-context1";
 
 const ContainerNotification = () => {
-  // const {socket} = useSocket();
-  // console.log(socket);
-  // useEffect(() => {
-  //   if (isConnected) {
-  //     console.log(
-  //       "Kết nối với server: ",
-  //       isConnected ? "Đã kết nối" : "Chưa kết nối"
-  //     );
-  //   }
-  // }, [isConnected]);
-
+  
   const loading = false;
   return (
     <>

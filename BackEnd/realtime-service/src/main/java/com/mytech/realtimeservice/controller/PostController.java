@@ -5,12 +5,14 @@ import com.mytech.realtimeservice.models.Comments;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.services.CommentsService;
 import com.mytech.realtimeservice.services.PostService;
+import com.mytech.realtimeservice.services.WSSocket;
 import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +31,6 @@ public class PostController {
 
 
 
-
     @GetMapping("/get-posts")
     public ResponseEntity<?> getPostList() {
         log.info("PostList ",postService.findAll());
@@ -42,6 +43,7 @@ public class PostController {
         );
     }
 
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#postDTO.sendUserId) && hasRole('USER')")
     @PostMapping
     public ResponseEntity<?> savePost(@RequestBody PostDTO postDTO) {
         Post savedPost = postService.create(postDTO);
@@ -54,6 +56,7 @@ public class PostController {
         );
     }
 
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#postLikeDTO.byUser.userId) && hasRole('USER')")
     @PostMapping("/likes")
     public ResponseEntity<?> createPostLike(@RequestBody PostLikeDTO postLikeDTO){
         Post post = postService.createPostLike(postLikeDTO);
@@ -66,6 +69,7 @@ public class PostController {
         );
     }
 
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#commentDTO.byUser.userId) && hasRole('USER')")
     @PostMapping("/comments")
     public ResponseEntity<?> createComment(@RequestBody CommentDTO commentDTO) {
         Comments comments = commentsService.createComments(commentDTO);
@@ -78,6 +82,7 @@ public class PostController {
         );
     }
 
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#commentLikeDTO.byUser.userId) && hasRole('USER')")
     @PostMapping("/comments/likes")
     public ResponseEntity<?> createCommentLike(@RequestBody CommentLikeDTO commentLikeDTO){
         Comments comments = commentsService.createCommentLike(commentLikeDTO);

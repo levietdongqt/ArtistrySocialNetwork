@@ -9,7 +9,7 @@ spring:
     name: realtime-service
   data:
     mongodb:
-      uri: mongodb://localhost:27017/post_test
+      uri: mongodb+srv://levietdongqt:AQLCAUH0uODgUg71@cluster0.rjasq9p.mongodb.net/realtimeDB
 eureka:
   client:
     service-url:

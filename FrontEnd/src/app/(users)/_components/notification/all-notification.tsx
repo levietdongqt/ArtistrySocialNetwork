@@ -50,7 +50,7 @@ export default function AllNotification() {
                 value.notificationType === "COMMENT" || value.notificationType === "TAG"
             ) {
                 var notificationDate = new Date(value.createdDate);
-                console.log(notificationDate.getTime(), "sdgfg")
+               
 
                 return notificationDate.setHours(0, 0, 0, 0) === today.getTime();
             }

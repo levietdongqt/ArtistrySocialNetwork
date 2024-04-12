@@ -1,11 +1,9 @@
 package com.mytech.realtimeservice.services;
 
 import com.mytech.realtimeservice.client.FriendForeignClient;
-import com.mytech.realtimeservice.dto.PostDTO;
-import com.mytech.realtimeservice.dto.PostLikeDTO;
-import com.mytech.realtimeservice.dto.UserDTO;
-import com.mytech.realtimeservice.dto.PostResponse;
+import com.mytech.realtimeservice.dto.*;
 
+import com.mytech.realtimeservice.exception.myException.NotFoundException;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.PostLike;
 import com.mytech.realtimeservice.models.users.User;
@@ -21,7 +19,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class PostService {
+public class PostService implements IPostService {
 
     @Autowired
     private PostRepository postRepository;
@@ -39,6 +37,9 @@ public class PostService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private WSSocket wsSocket;
+
     public Post create(PostDTO postDTO) {
         // Lưu bài post
         Post post = Post.builder()
@@ -54,6 +55,12 @@ public class PostService {
                 .build();
         var createdPost = postRepository.save(post);
         //Lưu vào ELS
+        PostELS postELS = PostELS.builder()
+                .id(createdPost.getId())
+                .content(createdPost.getContent())
+                .full_name(createdPost.getUser().getUserName())
+                .build();
+        friendForeignClient.savePostELS(postELS);
         //Lấy ra danh sách bạn bè của chủ bài post, gọi từ main service
         var friendForeignClientFriends = friendForeignClient.getFriends(postDTO.getSendUserId());
         //Nếu như có userTags
@@ -69,8 +76,10 @@ public class PostService {
            var userFrom = User.builder().userId(userDTO.getId()).userName(userDTO.getFullName()).avatar(userDTO.getAvatar()).build();
            if (userDTO.isTag()) {
                notificationService.sendNotification(userFrom, userTo,"TAG",postDTO.getContent(),createdPost.getId());
+               wsSocket.sendPrivateNotification(userFrom.getUserId());
            }else{
                notificationService.sendNotification(userFrom, userTo,"NORMAL",postDTO.getContent(),createdPost.getId());
+               wsSocket.sendPrivateNotification(userFrom.getUserId());
            }
         }
         return createdPost;
@@ -89,7 +98,11 @@ public class PostService {
     }
 
     public Post findById(String id) {
-        return postRepository.findById(id).get();
+        var postOptional =  postRepository.findById(id);
+        if (postOptional.isPresent()){
+            return postOptional.get();
+        }
+        throw  new NotFoundException("Post is not found");
     }
 
     //Set tag thành true nếu như id trùng id của  List<UserDTO> trả từ main (tối ưu sau)
@@ -105,9 +118,6 @@ public class PostService {
     //Service xử lý like cho 1 bài Post
     public Post updateLikeForPost(String postId,User userLike) {
         var post = findById(postId);
-        if (post == null) {
-            return null;
-        }
         post.setTotalLikes(post.getTotalLikes() + 1);
         List<User> users = post.getUserPostLikes();
         users.add(userLike);
@@ -120,9 +130,7 @@ public class PostService {
     public Post updateDislikeForPost(String postId,User userLike) {
         User deletedUser = null;
         var post = findById(postId);
-        if (post == null) {
-            return null;
-        }
+
         post.setTotalLikes(post.getTotalLikes() - 1);
         List<User> users = post.getUserPostLikes();
         deletedUser = users
@@ -140,10 +148,6 @@ public class PostService {
         //Kiểm tra xem phải đúng bài post cần tạo like không?
         Post postUpdated = null;
         var post = findById(postLikeDTO.getPostId());
-        if ( post== null){
-            return null;
-        }
-
         //Xóa postlike
         var postLike = postLikeRepository.GetByPostLikeByPostIdAndUserId(post.getId(), postLikeDTO.getByUser().getUserId());
         if (postLike!= null) {
@@ -176,9 +180,6 @@ public class PostService {
     //Xử lý comments cho 1 post
     public Post updateCommentsForPost(String postId) {
         var post = findById(postId);
-        if (post == null) {
-            return null;
-        }
         post.setTotalComments(post.getTotalComments() + 1);
         post.setUpdatedAt(LocalDateTime.now());
         return postRepository.save(post);

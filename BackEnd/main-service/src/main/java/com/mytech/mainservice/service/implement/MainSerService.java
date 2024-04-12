@@ -74,7 +74,7 @@ public class MainSerService implements IMainSerService {
         if (mainService.isEmpty()) {
             throw new NotFoundException("Not found main service ");
         }
-        if (isValidUser(mainService.get().getProvider().getId())) {
+        if (jwtTokenHolder.isValidUserId(mainService.get().getProvider().getId())) {
             mainService.get().setStatus(false);
             mainServiceRepo.save(mainService.get());
             return;

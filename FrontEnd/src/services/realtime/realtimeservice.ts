@@ -1,3 +1,4 @@
+'use server'
 import { getServerSideHeaders } from "@lib/config/ServerHeaderConfig";
 import { ConTentType } from "@lib/enum/ConTentType";
 import { Post } from "@models/post";
@@ -5,11 +6,11 @@ import { MyResponse } from "@models/responseObject";
 
 
 
-export async function postNotificationsAPI(): Promise<MyResponse<any>> {
+export async function postNotificationsAPI(userId: string): Promise<MyResponse<any>> {
     console.log("Testing........")
     try {
         // console.log(headers)
-        const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/notifications/count-notifications`,
+        const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/notifications/${userId}/change-delivery`,
             {
                 method: 'GET',
                 headers: await getServerSideHeaders(true, ConTentType.JSON),
