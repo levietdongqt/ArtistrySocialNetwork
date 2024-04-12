@@ -3,6 +3,7 @@ import { useState, useEffect, createContext, useContext } from 'react';
 import { useAuth } from './auth-context';
 import type { ReactNode, ChangeEvent } from 'react';
 import type { Theme, Accent } from '../models/theme';
+import {useUser} from "./user-context";
 
 type ThemeContext = {
   theme: Theme;
@@ -21,7 +22,7 @@ function setInitialTheme(): Theme{
   if (typeof window === 'undefined') return 'light';
   const savedTheme = localStorage.getItem('theme') as Theme | null;
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  return savedTheme ?? (prefersDark ? 'light' : 'light');
+  return savedTheme ?? (prefersDark ? 'light' : 'dark');
 }
 
 function setInitialAccent(): Accent {
@@ -35,7 +36,7 @@ export function ThemeContextProvider({
 }: ThemeContextProviderProps): JSX.Element {
   const [theme, setTheme] = useState<Theme>(setInitialTheme);
   const [accent, setAccent] = useState<Accent>(setInitialAccent);
-  const { user } = useAuth();
+  const { currentUser:user } = useUser();
 
   const { id: userId, theme: userTheme, accent: userAccent } = user ?? {};
   useEffect(() => {
@@ -63,10 +64,10 @@ export function ThemeContextProvider({
       );
       localStorage.setItem('theme', theme.toLowerCase());
 
-      // if (user) {
-      //   localStorage.setItem('theme', theme);
-      //   return setTimeout(() => {}, 500);
-      // }
+      if (user) {
+        localStorage.setItem('theme', theme);
+        return setTimeout(() => {}, 500);
+      }
       return undefined;
     };
 
@@ -83,10 +84,10 @@ export function ThemeContextProvider({
 
       localStorage.setItem('accent', accent.toLowerCase());
       
-      // if (user) {
-      //   localStorage.setItem('accent', accent);
-      //   return setTimeout(() => {}, 500);
-      // }
+      if (user) {
+        localStorage.setItem('accent', accent);
+        return setTimeout(() => {}, 500);
+      }
       return undefined;
     };
 

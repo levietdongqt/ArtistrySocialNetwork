@@ -35,11 +35,15 @@ public class CommentsService implements ICommentsService {
     @Autowired
     private CommentLikeRepository commentLikeRepository;
 
+    public List<Comments> getCommentsByPostId(String postId) {
+        return commentsRepository.findAllByPostId(postId);
+    }
     public Comments createComments(CommentDTO commentDTO) {
         var post = postService.findById(commentDTO.getPostId());
         if (post == null) {
             throw new NotFoundException("Post is not found");
         }
+        System.out.println(post);
         //Tạo 1 comments
         Comments comments = Comments.builder()
                 .postId(post.getId())
@@ -49,10 +53,11 @@ public class CommentsService implements ICommentsService {
                 .mediaUrl(commentDTO.getMediaUrl())
                 .tagUserComments(commentDTO.getUserTags())
                 .build();
+        System.out.println(comments);
         //Nếu nó là 1 comments đã tồn tại khác
         if (commentDTO.getCommentsId() != null ) {
             //Check xem id của comments đã tồn tại đó đúng hay chưa
-            var comment = commentsRepository.findById(commentDTO.getCommentsId()).get();
+            var comment = commentsRepository.findById(commentDTO.getCommentsId()).orElse(null);
             if (comment == null) {
                 throw new NotFoundException("Comment is not found");
             }
@@ -77,8 +82,8 @@ public class CommentsService implements ICommentsService {
         if (userTags != null ||  !userTags.isEmpty()) {
             for (User user : userTags) {
                 var userTag = User.builder()
-                        .userId(user.getUserId())
-                        .userName(user.getUserName())
+                        .id(user.getId())
+                        .fullName(user.getFullName())
                         .avatar(user.getAvatar())
                         .build();
 
@@ -113,7 +118,7 @@ public class CommentsService implements ICommentsService {
         List<User> users = comment.getCommentsLikes();
         deletedUser = users
                 .stream()
-                .filter(u -> u.getUserId().equals(userLike.getUserId()))
+                .filter(u -> u.getId().equals(userLike.getId()))
                 .findFirst()
                 .get();
         users.remove(deletedUser);
@@ -128,13 +133,18 @@ public class CommentsService implements ICommentsService {
             return null;
         }
         //Xóa comment like
-        var commentLike = commentLikeRepository.GetCommentLikeByCommentIdAndUserIdAndPostId(comment.getId(), commentLikeDTO.getByUser().getUserId(),comment.getPostId());
+        var commentLike = commentLikeRepository.GetCommentLikeByCommentIdAndUserIdAndPostId(comment.getId(), commentLikeDTO.getByUser().getId(),comment.getPostId());
         if (commentLike != null) {
             commentLikeRepository.delete(commentLike);
             commentUpdated = updateDislikeForComment(comment.getId(),commentLikeDTO.getByUser());
             return commentUpdated;
         }
-
+        var alreadyLiked = comment.getCommentsLikes()
+                .stream()
+                .anyMatch(likes -> commentLikeDTO.getByUser().getId().equals(likes.getId()));
+        if(alreadyLiked) {
+            return commentUpdated;
+        }
         //Tạo 1 comment like
         CommentLike commentLikeCreated = CommentLike.builder()
                 .commentId(commentLikeDTO.getCommentId())
@@ -150,8 +160,8 @@ public class CommentsService implements ICommentsService {
         User userTo = comment.getByUser();
 
         User userFrom = User.builder()
-                .userId(commentLikeDTO.getByUser().getUserId())
-                .userName(commentLikeDTO.getByUser().getUserName())
+                .id(commentLikeDTO.getByUser().getId())
+                .fullName(commentLikeDTO.getByUser().getFullName())
                 .avatar(commentLikeDTO.getByUser().getAvatar())
                 .build();
         notificationService.sendNotification(userFrom, userTo,"LIKE","",comment.getId());

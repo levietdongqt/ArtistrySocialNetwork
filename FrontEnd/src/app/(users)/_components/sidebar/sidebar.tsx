@@ -23,7 +23,7 @@ export type NavLink = {
 const navLinks: Readonly<NavLink[]> = [
 
     {
-        href: '/',
+        href: '/home',
         linkName: 'Trang chủ',
         iconName: 'HomeIcon'
     },
