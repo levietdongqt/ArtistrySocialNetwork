@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useAuth } from '../../../../context/auth-context';
+import { useAuth } from '../../../../context/oauth2-context';
 import { useModal } from '@lib/hooks/useModal';
 import { Button } from '@components/ui/button';
 import { UserAvatar } from '../user/user-avatar';

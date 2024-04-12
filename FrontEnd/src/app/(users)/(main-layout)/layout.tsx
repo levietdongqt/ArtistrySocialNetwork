@@ -1,4 +1,4 @@
-import {AuthContextProvider} from '../../../context/auth-context';
+import {AuthContextProvider} from '../../../context/oauth2-context';
 import {ThemeContextProvider} from '../../../context/theme-context';
 import {AppHead} from '../_components/common/app-head';
 import {MainLayout} from "../_components/layout/main-layout";
@@ -8,6 +8,7 @@ import {Bounce, ToastContainer} from "react-toastify";
 import {UserContextProvider} from "../../../context/user-context";
 import {Placeholder} from "../_components/common/placeholder";
 import {Suspense} from "react";
+import {ChatAlert} from "@components/chat-box/chat-alert";
 
 export default function RootLayout({
                                        children,
@@ -21,6 +22,7 @@ export default function RootLayout({
             <MainLayout >
                 {children}
             </MainLayout>
+            <ChatAlert />
         </>
 
     )

@@ -26,9 +26,6 @@ import java.util.function.Function;
 public class JwtService {
     @Value("${env.secret_token}")
     private String SECRET;
-    @Autowired
-    private ModelMapper modelMapper;
-
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -80,15 +77,16 @@ public class JwtService {
     }
 
     private String createToken(Map<String, Object> claims, String userName) {
+        int EXPIRE_TIME_TOKEN = 1000 * 60 * 60;
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_TIME_TOKEN))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
-    private Key getSignKey()  
+    private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }

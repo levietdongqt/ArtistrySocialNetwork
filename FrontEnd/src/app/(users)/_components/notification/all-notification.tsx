@@ -9,7 +9,7 @@ import {getAllNotifications} from "services/main/clientRequest/notificationsClie
 import {Loading} from "@components/ui/loading";
 import {Error} from "@components/ui/error";
 import {AnimatePresence} from "framer-motion";
-import {useAuth} from "context/auth-context";
+import {useAuth} from "../../../../context/oauth2-context";
 import {useUser} from "context/user-context";
 import {getCookie, getCookies} from "cookies-next";
 

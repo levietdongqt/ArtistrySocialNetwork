@@ -1,6 +1,6 @@
 'use client'
 import {useModal} from "@lib/hooks/useModal";
-import {useAuth} from "../../../../context/auth-context";
+import {useOAuth2} from "../../../../context/oauth2-context";
 import {useUser} from "../../../../context/user-context";
 import {useRouter} from "next/navigation";
 import {useFormik} from "formik";
@@ -14,7 +14,7 @@ import {CustomIcon} from "@components/ui/custom-icon";
 import Link from "next/link";
 
 export function FormLogin() {
-    const {signInWithFacebook, signInWithGoogle} = useAuth()
+    const {signInWithFacebook, signInWithGoogle} = useOAuth2()
     const router = useRouter();
     const {values, touched, handleSubmit, handleChange, errors, isValid, resetForm} = useFormik({
         initialValues: {
@@ -143,7 +143,7 @@ export function FormLogin() {
                     <div className=" mt-3 mb-1 text-sm">
                         Bạn chưa có tài khoản? &nbsp;
                         <Link href={"/register"} className=" text-blue-600 hover:text-blue-500">
-                            Tạo mới ngay
+                            Tạo mới bằng số điện thoại
                         </Link>
                     </div>
                 </div>

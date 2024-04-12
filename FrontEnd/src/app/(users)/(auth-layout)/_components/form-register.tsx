@@ -1,6 +1,6 @@
 'use client'
 import {useModal} from "@lib/hooks/useModal";
-import {useAuth} from "../../../../context/auth-context";
+import {useAuth} from "../../../../context/oauth2-context";
 import {useUser} from "../../../../context/user-context";
 import {useRouter} from "next/navigation";
 import {useFormik} from "formik";
@@ -128,12 +128,12 @@ export function FormRegister() {
                             className="block uppercase text-slate-600 text-xs font-bold mb-2"
                             htmlFor="grid-password"
                         >
-                            Email
+                            Số điên thoại
                         </label>
                         <input
                             type="text" id="email" name="email"
                             className="border-0 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                            placeholder="Email hoặc số điện thoại"
+                            placeholder="Số điện thoại"
                             onChange={handleChange}
                             value={values.email}
                         />
