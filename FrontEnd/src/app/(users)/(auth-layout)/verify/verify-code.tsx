@@ -10,7 +10,8 @@ import {verifyPhoneNumber} from "../../../../services/main/auth-service";
 interface verifyCodeParam {
     destination?: string;
 }
-export function VerifyCode({destination = "/login"} : verifyCodeParam) {
+
+export function VerifyCode({destination = "/login"}: verifyCodeParam) {
     const router = useRouter()
     const [secretCode, setSecretCode] = useState("")
     const [error, setError] = useState(false)
@@ -47,9 +48,10 @@ export function VerifyCode({destination = "/login"} : verifyCodeParam) {
                 success: "Xác thực thành công!",
                 error: "Mã xác thực không hợp lệ!"
             }).then(result => {
-               destination === "/login"? verifyPhoneNumber(result.user.phoneNumber!) : false
+                destination === "/login" ? verifyPhoneNumber(result.user.phoneNumber!) : false
                 console.log("Verification Result: ", result)
                 router.push(destination)
+                window.close()
                 return
             })
             return

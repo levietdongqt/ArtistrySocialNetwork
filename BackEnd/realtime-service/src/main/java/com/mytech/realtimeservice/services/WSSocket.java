@@ -8,8 +8,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class WSSocket {
+public class WSSocket implements IWSSocket{
 
+    @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
 

@@ -35,6 +35,7 @@ export function VerifyAccount({destination}: verifyAccountParam) {
                         phoneNumber: phoneNumberFinal,
                         destination: destination? destination : "/verify/continue"
                     })
+                    return
                 } else {
                     showErrorAlert(phoneNumberFinal)
                 }

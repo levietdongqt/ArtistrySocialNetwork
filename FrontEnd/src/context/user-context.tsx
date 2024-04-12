@@ -2,7 +2,7 @@
 import {createContext, useContext, useEffect, useState} from 'react';
 import type {ReactNode} from 'react';
 import type {User} from '@models/user';
-import {getCookie} from "cookies-next";
+import {getCookie, setCookie} from "cookies-next";
 
 type UserContext = {
     currentUser: User | null;
@@ -23,6 +23,7 @@ export function UserContextProvider({children}: any): JSX.Element {
         currentUser,
         setCurrentUser,
     }
+    setCookie("userId", currentUser?.id)
     return <UserContext.Provider value={values}>{children}</UserContext.Provider>;
 }
 

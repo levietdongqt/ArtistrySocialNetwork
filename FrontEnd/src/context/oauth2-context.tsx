@@ -96,6 +96,7 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
             'callback': async (response: any) => {
                 console.log("CAPCHA OK!");
                 console.log("Destination: " + destination)
+                router.prefetch(destination)
                 // reCAPTCHA solved, allow signInWithPhoneNumber.
                 sendVerifyCode(phoneNumber, destination)
                 callBack?.(); //

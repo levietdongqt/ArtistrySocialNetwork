@@ -4,13 +4,19 @@ import cn from "clsx";
 import { preventBubbling } from "@lib/utils";
 import { HeroIcon } from "@components/ui/hero-icon";
 import type { NavLink } from "./sidebar";
-import useSWR from "swr";
-import { countUnreadNotifications, updateDeliveryNotification } from "services/main/clientRequest/notificationsClient";
+import useSWR, { mutate } from "swr";
+import {
+  countUnreadNotifications,
+  updateDeliveryNotification,
+} from "services/main/clientRequest/notificationsClient";
 import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
 import { Loading } from "@components/ui/loading";
 import { Error } from "@components/ui/error";
 import { useEffect, useState } from "react";
 import { useUser } from "context/user-context";
+import { useSocket } from "context/websocket-context1";
+import { notification } from "antd";
+import { postNotificationsAPI } from "services/realtime/realtimeservice";
 
 type SidebarLinkProps = NavLink & {
   username?: string;
@@ -24,36 +30,63 @@ export function SidebarLink({
   disabled,
   canBeHidden,
 }: SidebarLinkProps) {
-  var user = useUser()
-  const {
-    data: data2,
-    isLoading: isLoading2,
-    error: error2,
-  } = useSWR(countUnreadNotifications(user.currentUser?.id as string), fetcherWithToken);
-  const [countNoti,setCountNoti] = useState(0);
-  const [shouldFetch,setShouldFetch] = useState(false)
+  var user = useUser();
+  const [countNoti, setCountNoti] = useState(0);
+  const [shouldFetch, setShouldFetch] = useState(false);
+  const [shouldFetchNotification, setShouldFetchNotification] = useState(true);
   const asPath = usePathname();
   const isActive = username ? asPath.includes(username) : asPath === href;
+  const { notificationMessages, setNotificationMessages } = useSocket();
+  //Xu lý show notifications
+  const {
+    data: notificationsData,
+    isLoading: isLoading,
+    error: error2,
+  } = useSWR(
+    shouldFetchNotification
+      ? countUnreadNotifications(user.currentUser?.id as string)
+      : null,
+    fetcherWithToken
+  );
+
+  console.log(notificationMessages);
+  useEffect(() => {
+    setShouldFetchNotification(true);
+    setNotificationMessages(null);
+    if (notificationsData && notificationMessages != null) {
+      setCountNoti(notificationsData.data); 
+    }
+  }, [notificationMessages]);
 
   useEffect(() => {
-    if (data2 && data2.data) {
-      setCountNoti(data2.data);
+    if (shouldFetchNotification) {
+      setShouldFetchNotification(false);
     }
-  }, [data2]);
-  const {
-    data: data3,
-    isLoading: isLoading3,
-    error: error3,
-  } = useSWR(shouldFetch ? updateDeliveryNotification(user.currentUser?.id as string) : null, fetcherWithToken);
+  }, [shouldFetchNotification]);
+
+  //Xử lý update delivery
+  const {} = useSWR(
+    shouldFetch
+      ? updateDeliveryNotification(user.currentUser?.id as string)
+      : null,
+    fetcherWithToken
+  );
 
   function handleClickSlidebar() {
-    disabled ? preventBubbling() : undefined;
-    setShouldFetch(true);
-    setCountNoti(0);
-
+    //disabled ? preventBubbling() : undefined;
+    if (!disabled) {
+      setShouldFetch(true);
+      setCountNoti(0);
+    }
+    // setShouldFetch(true);
+    // 
   }
+  useEffect(() => {
+    if (shouldFetch) {
+      setShouldFetch(false);
+    }
+  }, [shouldFetch]);
 
-  
   return (
     <Link
       href={href}
@@ -86,10 +119,13 @@ export function SidebarLink({
             iconName={iconName}
             solid={isActive}
           />
-          {(linkName ==="Thông báo" && isLoading2) ? (
+          {linkName === "Thông báo" && isLoading? (
+            
             <Loading className="mt-5" />
-          )  : (
-            linkName === "Thông báo" && countNoti != 0 && (
+          ) : (
+            
+            linkName === "Thông báo" &&
+            countNoti != 0 && (
               <span className="absolute top-0 left-0 bg-blue-500 text-white rounded-full px-1 py-0.5 text-xs">
                 {countNoti}
               </span>
