@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useAuth } from '../../../../context/auth-context';
+import { useAuth } from '../../../../context/oauth2-context';
 import { useModal } from '@lib/hooks/useModal';
 import { isValidUsername } from '@lib/validation';
 import { sleep } from '@lib/utils';

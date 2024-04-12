@@ -13,7 +13,7 @@ import java.util.List;
 
 
 public record LoginDTO (
-        String email,
+        String phoneNumber,
         String password
 ) {
 

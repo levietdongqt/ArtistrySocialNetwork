@@ -3,6 +3,7 @@ package com.mytech.mainservice.controller;
 import com.mytech.mainservice.dto.ResponseObject;
 import com.mytech.mainservice.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
 
     //Id có trong DB: 05ce9cd0-def3-11ee-b0db-6045bd58a1e3
     //truy cập: http://localhost:8060/api/main/user/get/05ce9cd0-def3-11ee-b0db-6045bd58a1e3

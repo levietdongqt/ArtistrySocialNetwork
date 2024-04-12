@@ -7,6 +7,11 @@ server:
 spring:
   application:
     name: realtime-service
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   data:
     mongodb:
       uri: mongodb+srv://levietdongqt:AQLCAUH0uODgUg71@cluster0.rjasq9p.mongodb.net/realtimeDB

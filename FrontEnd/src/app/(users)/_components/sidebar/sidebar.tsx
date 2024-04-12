@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import {useAuth} from '../../../../context/auth-context';
+import {useAuth} from '../../../../context/oauth2-context';
 import {useWindow} from '../../../../context/window-context';
 import {useModal} from '@lib/hooks/useModal';
 import {Modal} from '../modal/modal';

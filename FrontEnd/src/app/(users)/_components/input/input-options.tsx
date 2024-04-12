@@ -141,7 +141,7 @@ export function InputOptions({
         ))}
         {showEmojiPicker && (
             <motion.div ref={emojiPickerRef} className="absolute z-50 top-[194px] transform:translate-x-1 transition duration-300 ease-in-out}">
-              <CustomIcon iconName={"ArrowUpIcon"} className="absolute h-5 w-5 right-[184px] top-[-5px] z-[10]" />
+              <CustomIcon iconName={"ArrowUpIcon"} className="absolute h-5 w-5 right-[184px] top-[-11px] z-[10]" />
               <div className={'flex-shrink-1 filter:drop-shadow(rgb(51, 54, 57) 1px -1px 1px) '}>
                 <EmojiPicker
                     theme={Theme.DARK}

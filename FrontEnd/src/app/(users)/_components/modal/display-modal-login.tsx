@@ -4,7 +4,7 @@ import { InputAccentRadio } from '../input/input-accent-radio';
 import type { Theme, Accent } from '../../../../models/theme';
 import { CustomIcon } from '@components/ui/custom-icon';
 import { HeroIcon } from '@components/ui/hero-icon';
-import { useAuth } from 'context/auth-context';
+import { useOAuth2 } from '../../../../context/oauth2-context';
 type DisplayModalProps = {
   closeModal: () => void;
 };
@@ -12,7 +12,7 @@ type DisplayModalProps = {
 
 
 export function DisplayModalLogin({ closeModal }: DisplayModalProps): JSX.Element {
-  const {signInWithGoogle,signInWithFacebook} = useAuth();
+  const {signInWithGoogle,signInWithFacebook} = useOAuth2();
   const signInHande = () => {
     console.log("Voo login goole")
     signInWithGoogle();

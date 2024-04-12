@@ -4,7 +4,7 @@ import {Loading} from "@components/ui/loading";
 import {AnimatePresence} from "framer-motion";
 import {Content} from "../content/content";
 import {getCookie} from "cookies-next";
-import {useAuth} from "../../../../context/auth-context";
+import {useAuth} from "../../../../context/oauth2-context";
 import {getPostsLimit} from "../../../../services/realtime/clientRequest/postClient";
 import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
 import { Error } from '@components/ui/error';
