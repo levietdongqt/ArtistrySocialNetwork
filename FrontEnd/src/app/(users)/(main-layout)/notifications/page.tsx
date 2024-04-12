@@ -1,3 +1,4 @@
+"user client";
 import { NotificationLayout } from "../../_components/layout/common-layout";
 import { MainContainer } from "../../_components/home/main-container";
 import { SEO } from "../../_components/common/seo";

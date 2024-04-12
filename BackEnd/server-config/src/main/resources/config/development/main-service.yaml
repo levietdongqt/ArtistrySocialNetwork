@@ -18,12 +18,13 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://localhost:3306/projectsem4
-#    username: mario
-#    password: Tiennam1
+#    username: root
+#    password: thuhuy123
     url: jdbc:mysql://socialdb-artistrysocialnetwork.a.aivencloud.com:13508/projectsem4
     useSSL: true
     username: avnadmin
     password: AVNS_KXx-W0Q-CbV9LAAh4HF
+
   jpa:
     hibernate:
       ddl-auto: validate

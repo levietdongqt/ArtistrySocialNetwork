@@ -1,8 +1,8 @@
 package com.mytech.realtimeservice;
 
-import com.mytech.realtimeservice.models.Notification;
-import com.mytech.realtimeservice.models.Post;
+
 import com.mytech.realtimeservice.enums.NotificationType;
+import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.users.User;
 import com.mytech.realtimeservice.repositories.CommentLikeRepository;
 import com.mytech.realtimeservice.repositories.CommentsRepository;
@@ -16,6 +16,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +41,10 @@ public class RealtimeServiceApplication implements CommandLineRunner {
 	@Autowired
 	private CommentLikeRepository commentLikeRep;
 
+
+
+
+
 	public static void main(String[] args) {
 		SpringApplication.run(RealtimeServiceApplication.class, args);
 	}
@@ -51,10 +56,15 @@ public class RealtimeServiceApplication implements CommandLineRunner {
 		postLikeRepository.deleteAll();
 		commentsRepository.deleteAll();
 		commentLikeRep.deleteAll();
-		User userTo1 = User.builder().id("4dc47d13-ef4e-11ee-a0e1-00155d973fd0").fullName("Phước Huỳnh").bio("hahahahahaahhaa").build();
-		User userFrom1 = User.builder().id("a125b897-1012-4e8c-ac64-60e3263f7252").fullName("Huy").bio("hahahahahaahhaa").build();
-		User userTo2 = User.builder().id("4dc52467-ef4e-11ee-a0e1-00155d973fd0").fullName("Lê Viết Đông").bio("hahahahahaahhaa").build();
-		User userTo3 = User.builder().id("734399e4-9568-4a0b-8f98-194afce6e0f7").fullName("Nam Trần").bio("hahahahahaahhaa").build();
+		User userTo1 = User.builder().id("4dc47d13-ef4e-11ee-a0e1-00155d973fd0").fullName("Phước Huỳnh").build();
+
+		User userFrom1 = User.builder().id("d3cc9af4-9d38-44ee-8127-6efa4436fd70").fullName("Cao Tến Nam").build();
+
+		User userTo2 = User.builder().id("4dc52467-ef4e-11ee-a0e1-00155d973fd0").fullName("Lê Viết Đông").build();
+
+
+		User userTo3 = User.builder().id("734399e4-9568-4a0b-8f98-194afce6e0f7").fullName("Nam Trần").build();
+
 		notificationService.saveNotification(Notification.builder()
 				.status(false)
 				.userTo(userTo1)

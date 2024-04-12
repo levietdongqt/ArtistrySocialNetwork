@@ -30,13 +30,18 @@ public class AuthConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http.csrf(csrf -> csrf
+                        // ignore our stomp endpoints since they are protected using Stomp headers
+                       .disable()
+                )
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorze -> {
                     authorze
                             .requestMatchers("/auth/**").permitAll()
                             .requestMatchers("/user/**").permitAll()
-                            .requestMatchers("/posts/**").permitAll()
+                            .requestMatchers("/posts/get-posts").permitAll()
+                            .requestMatchers("/socket.io/**").permitAll()
+
                             .requestMatchers("/auth/hello").authenticated()
                             .anyRequest().authenticated();
                 })
