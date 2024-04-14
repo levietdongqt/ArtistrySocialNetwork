@@ -1,5 +1,6 @@
 package com.mytech.mainservice.repository;
 
+import com.mytech.mainservice.enums.FriendShipStatus;
 import com.mytech.mainservice.model.Friendship;
 import com.mytech.mainservice.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +20,10 @@ public interface IFriendshipRepository extends JpaRepository<Friendship, Long> {
     Set<User> getFriends2(@Param("userId") String userId);
 
     Optional<Friendship> findByFromUser_IdAndFriend_Id (String fromUserId, String friendId);
+
+    @Query("SELECT f.status FROM Friendship f " +
+            "WHERE (f.fromUser.id = :userTo and f.friend.id = :userId) " +
+            "or (f.fromUser.id = :userId and f.friend.id = :userTo)")
+    String getStatusFriend(@Param("userTo") String userTo, @Param("userId") String userId);
 
 }

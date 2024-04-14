@@ -7,15 +7,16 @@ import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.mytech.mainservice.config.ELSConfig;
+import com.mytech.mainservice.dto.FriendDTO;
+import com.mytech.mainservice.dto.MainServiceDTO;
 import com.mytech.mainservice.enums.FriendShipStatus;
 import com.mytech.mainservice.exception.myException.NotFoundException;
 import com.mytech.mainservice.model.elasticsearch.PostELS;
 import com.mytech.mainservice.model.elasticsearch.ServiceELS;
 import com.mytech.mainservice.model.elasticsearch.UserELS;
-import com.mytech.mainservice.repository.PostELSRepository;
-import com.mytech.mainservice.repository.ServiceELSRepository;
-import com.mytech.mainservice.repository.UserELSRepository;
+import com.mytech.mainservice.repository.*;
 import com.mytech.mainservice.service.IELSService;
+import com.mytech.mainservice.service.IFriendService;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -27,6 +28,7 @@ import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.scheduling.annotation.Async;
@@ -35,6 +37,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ELSService implements IELSService {
@@ -49,7 +53,16 @@ public class ELSService implements IELSService {
     private UserELSRepository userELSRepository;
 
     @Autowired
+    private IFriendshipRepository friendshipRepository;
+
+    @Autowired
+    private IMainServiceRepository mainServiceRepository;
+
+    @Autowired
     ELSConfig elsConfig;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     //Save service
     public void savePostELS(PostELS postELS) {
@@ -92,7 +105,7 @@ public class ELSService implements IELSService {
         if (userUserELSOptinal.isPresent()) {
             var userServiceELS = userUserELSOptinal.get();
             userServiceELS.setEmail(userELS.getEmail());
-            userServiceELS.setFull_name(userELS.getFull_name());
+            userServiceELS.setFullName(userELS.getFullName());
             userServiceELS.setRoles(userELS.getRoles());
             userServiceELS.setAvatar(userELS.getAvatar());
             userELSRepository.save(userServiceELS);
@@ -132,31 +145,15 @@ public class ELSService implements IELSService {
         throw  new NotFoundException("Not found userELS");
     }
 
-    public List<Object> searchAllWithFuzziness(String search){
-        List<Object> searchResult = new ArrayList<Object>();
-        var userELSList = userELSRepository.getUserELS(search);
-        var serviceELSList = serviceELSRepository.getServiceELS(search);
-        var postELSList = postELSRepository.getPostELS(search);
 
 
-        searchResult.addAll(userELSList);
-        searchResult.addAll(serviceELSList);
-        searchResult.addAll(postELSList);
-        if (searchResult.size()>10){
-            return searchResult.subList(0,9);
-        }
-        return searchResult;
-    }
 
     public List<Object> suggestsKeyword(String searchText) {
         RestClient restClient = RestClient.builder(
                 new HttpHost("localhost", 9200)).build();
 
-// Create the transport with a Jackson mapper
         ElasticsearchTransport transport = new RestClientTransport(
                 restClient, new JacksonJsonpMapper());
-
-// And create the API client
 
         var els =  elsConfig.elasticsearchClient(transport);
         SearchResponse<Object> search = null;
@@ -165,16 +162,49 @@ public class ELSService implements IELSService {
                             .index("user","post","service")
                             .query(q -> q.multiMatch(builder -> builder
                                     .query(searchText)
-                                    .fields("name","full_name","description","roles","content","email")
+                                    .fields("name^2","fullName","description^2","roles","content^2","email")
                                     .fuzziness("1"))),
                     Object.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return search.hits().hits().stream().map(objectHit -> objectHit.source()).toList();
-
-
-
     }
+
+    @Override
+    public List<FriendDTO> searchUserELS(String searchText, String userId) {
+        var listFriendDTO = new ArrayList<FriendDTO>();
+        var listUsersELS = userELSRepository.getUserELS(searchText);
+        if (listUsersELS.isEmpty()) {
+            return null;
+        }
+
+       for (UserELS user : listUsersELS) {
+           var friendDTO = FriendDTO.builder()
+                   .id(user.getId())
+                   .fullName(user.getFullName())
+                   .avatar(user.getAvatar())
+                   .roles(user.getRoles())
+                   .email(user.getEmail())
+                   .build();
+           var statusFriends = friendshipRepository.getStatusFriend(user.getId(),userId);
+           if (statusFriends!= null) {
+               friendDTO.setFriendShipStatus(statusFriends);
+           }else{
+               friendDTO.setFriendShipStatus("UNFRIEND");
+           }
+           listFriendDTO.add(friendDTO);
+       }
+
+       return listFriendDTO;
+    }
+
+    @Override
+    public Set<MainServiceDTO> searchMainServiceByKeyword(String keyword) {
+        return mainServiceRepository.searchMainServiceByKeyword(keyword).stream()
+                .map(mainService -> modelMapper.map(mainService, MainServiceDTO.class))
+                .collect(Collectors.toSet());
+    }
+
 
 }

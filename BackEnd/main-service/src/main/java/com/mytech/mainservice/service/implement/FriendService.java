@@ -51,7 +51,7 @@ public class FriendService implements IFriendService {
     public boolean acceptFriendRequest(String userId, String friendId) {
         Optional<Friendship> friendship = friendshipRepo.findByFromUser_IdAndFriend_Id(userId, friendId);
         if (friendship.isPresent()) {
-            friendship.get().setStatus(FriendShipStatus.IS_FRIEND);
+            friendship.get().setStatus(FriendShipStatus.ISFRIEND);
             friendshipRepo.save(friendship.get());
         }
         throw new RuntimeException("Friendship is not found");

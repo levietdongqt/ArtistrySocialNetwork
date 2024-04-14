@@ -122,8 +122,9 @@ public class PostService implements IPostService {
         return postRepository.count();
     }
 
-    public void deleteAll() {
+    public boolean deleteAll() {
         postRepository.deleteAll();
+        return true;
     }
 
     public Post findById(String id) {
@@ -222,6 +223,11 @@ public class PostService implements IPostService {
         post.setTotalComments(post.getTotalComments() + 1);
         post.setUpdatedAt(LocalDateTime.now());
         return postRepository.save(post);
+    }
+
+    public List<Post> getPostByKeyWord(String keyword){
+        var posts = postRepository.findByContentContainingIgnoreCaseOrUserFullNameContainingIgnoreCase(keyword,keyword);
+        return posts;
     }
 
 }

@@ -10,6 +10,7 @@ import { ThemeContextProvider } from "../context/theme-context";
 import { CustomIcon } from "@components/ui/custom-icon";
 import { ChatAlert } from "@components/chat-box/chat-alert";
 import { SocketProvider } from "context/websocket-context1";
+import { SearchContextProvider } from "context/search-context";
 export default function RootLayout({
   children,
 }: {
@@ -24,7 +25,9 @@ export default function RootLayout({
         <UserContextProvider>
           <SocketProvider>
             <AuthContextProvider>
+              <SearchContextProvider>
               <ThemeContextProvider>{children}</ThemeContextProvider>
+              </SearchContextProvider>
             </AuthContextProvider>
           </SocketProvider>
         </UserContextProvider>

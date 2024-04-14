@@ -1,10 +1,13 @@
 package com.mytech.mainservice.service;
 
+import com.mytech.mainservice.dto.FriendDTO;
+import com.mytech.mainservice.dto.MainServiceDTO;
 import com.mytech.mainservice.model.elasticsearch.PostELS;
 import com.mytech.mainservice.model.elasticsearch.ServiceELS;
 import com.mytech.mainservice.model.elasticsearch.UserELS;
 
 import java.util.List;
+import java.util.Set;
 
 public interface IELSService {
 
@@ -24,8 +27,11 @@ public interface IELSService {
 
     public void deleteUserELSById(String userELSId);
 
-    public List<Object> searchAllWithFuzziness(String search);
 
     public List<Object> suggestsKeyword(String searchText);
+
+    public List<FriendDTO> searchUserELS(String searchText, String userId);
+
+    public Set<MainServiceDTO> searchMainServiceByKeyword(String keyword);
 
 }

@@ -65,7 +65,7 @@ export function MainHeader({
         search && (
             <>
             
-              <SearchBar />
+             <SearchBar width='520px'/>
               <Button
                   className='dark-bg-tab group relative p-2 hover:bg-light-primary/10 active:bg-light-primary/20
                      dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20'

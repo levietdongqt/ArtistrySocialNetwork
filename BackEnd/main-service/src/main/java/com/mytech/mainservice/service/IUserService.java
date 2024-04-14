@@ -6,6 +6,8 @@ import com.mytech.mainservice.dto.request.RegisterDto;
 import com.mytech.mainservice.exception.myException.UnAuthenticationException;
 import com.mytech.mainservice.model.User;
 
+import java.util.List;
+
 public interface IUserService {
     public User existUser(UserInfo userInfo) throws UnAuthenticationException;
     public UserDTO getUserById(String userId);
@@ -14,4 +16,8 @@ public interface IUserService {
     String getRandomId();
 
     User createUser(UserInfo userInfo) throws UnAuthenticationException;
+
+    public void updateHistorySearch(String userId,String keyword);
+
+    public List<String> getHistorySearch(String userId);
 }

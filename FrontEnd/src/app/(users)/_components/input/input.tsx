@@ -85,6 +85,7 @@ export function Input({
         sendUserBio: currentUser?.bio || null,
         sendVerified: currentUser?.verified
       };
+      console.log("ssfsdf",postData);
       const newPost = await postPosts1(postData) // day là axios post
       await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/get-posts?limit=${20}&offset=${0}`, newPost, false);
     }else{

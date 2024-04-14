@@ -5,6 +5,7 @@ import com.mytech.mainservice.dto.UserDTO;
 import com.mytech.mainservice.dto.request.RegisterDto;
 import com.mytech.mainservice.enums.UserRole;
 import com.mytech.mainservice.enums.UserStatus;
+import com.mytech.mainservice.exception.myException.NotFoundException;
 import com.mytech.mainservice.exception.myException.UnAuthenticationException;
 import com.mytech.mainservice.model.Role;
 import com.mytech.mainservice.model.User;
@@ -19,9 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -106,6 +105,8 @@ public class UserService implements IUserService {
         return savedUser;
     }
 
+
+
     public User existUser(UserInfo userInfo) throws UnAuthenticationException {
         Optional<User> user = userRepo.findByEmailOrPhoneNumber(userInfo.getEmail(), userInfo.getPhoneNumber());
         if (user.isPresent() && !user.get().getAuthProvider().equals(userInfo.getProviderId())) {
@@ -114,4 +115,58 @@ public class UserService implements IUserService {
         }
         return user.orElse(null);
     }
+
+    @Override
+    public void updateHistorySearch(String userId, String keyword) {
+        var updatedUserOptional = userRepo.findById(userId);
+        if (updatedUserOptional.isPresent()){
+            var updatedUser = updatedUserOptional.get();
+            var listHistory = updatedUser.getSearchHistory();
+            if(listHistory == null){
+                listHistory = new LinkedList<>();
+            }
+            //Xóa phần tử bị trùng trong mảng
+            for(String history : listHistory){
+                if(history.equals(keyword)){
+                    listHistory.remove(history);
+                    break;
+                }
+            }
+            System.out.println(listHistory);
+            //Nếu size lớn hơn 10 thì xóa phần tử đầu
+            if (!listHistory.isEmpty()){
+                if (listHistory.size() >= 10) {
+                    listHistory.poll();
+                    listHistory.add(keyword);
+                }else {
+                    listHistory.add(keyword);
+                }
+                updatedUser.setSearchHistory(listHistory);
+                userRepo.save(updatedUser);
+                return;
+            }
+            listHistory.add(keyword);
+            updatedUser.setSearchHistory(listHistory);
+            userRepo.save(updatedUser);
+            return;
+        }
+        throw new NotFoundException("User not found");
+
+    }
+
+    @Override
+    public List<String> getHistorySearch(String userId) {
+        var userOptional = userRepo.findById(userId);
+        if (userOptional.isPresent()){
+            var user = userOptional.get();
+            var listHistory = user.getSearchHistory();
+            if(listHistory == null){
+                listHistory = new LinkedList<>();
+            }
+            return listHistory.stream().toList();
+        }
+        throw new NotFoundException("User not found");
+    }
+
+
 }

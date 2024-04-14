@@ -2,7 +2,7 @@
 import React, {useEffect} from 'react';
 import {Loading} from "@components/ui/loading";
 import {AnimatePresence} from "framer-motion";
-import {Content} from "../content/content";
+import {ContentPost} from "../content/content";
 import {getCookie} from "cookies-next";
 import {useAuth} from "../../../../context/auth-context";
 import {getPostsLimit} from "../../../../services/realtime/clientRequest/postClient";
@@ -16,6 +16,7 @@ function ContainerHome() {
     const { allData, isLoadingInitialData, LoadMore } = useInfiniteScroll(
         getPostsLimit,
     );
+    console.log("all",allData);
     return (
         <section className='mt-0.5 xs:mt-0'>
             {isLoadingInitialData ? (
@@ -26,7 +27,7 @@ function ContainerHome() {
                 <>
                     <AnimatePresence mode='popLayout'>
                         {allData?.map((content) => (
-                            <Content {...content} key={content.id}/>
+                            <ContentPost {...content} key={content.id}/>
                         ))}
                     </AnimatePresence>
                     <LoadMore />

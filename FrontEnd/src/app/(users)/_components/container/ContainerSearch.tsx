@@ -7,41 +7,22 @@ import {UserCard} from "../user/user-card";
 import {MainHeader} from "../home/main-header";
 import {useRouter} from "next/navigation";
 import {SearchNav} from "../search/search-nav";
+import SearchMain from '../search/search-main';
 
 
 const ContainerSearch = () => {
-    /*const user = UseUser([]);*/
-    /*const { data, loading, LoadMore } = useInfiniteScroll(
-            user,
-        { allowNull: true, preserve: true },
-        { marginBottom: 500 }
-    );*/
     const { back } = useRouter();
 
     const loading = false;
     return (
         <>
             <MainHeader useActionButton action={back} search={'hahaha'} />
-            <SearchNav/>
             <section>
-                {loading ? (
-                    <Loading className='mt-5' />
-                ) : /*!data ? (
-                        <Error message='Something went wrong' />
-                    ) : */(
                     <>
                         <motion.div className='mt-0.5' {...variants}>
-                            {/* {data?.map((userData:any) => (*/}
-                            {/*<UserCard {...userData} key={userData.id} follow />*/}
-                            <UserCard  follow />
-                            {/* ))}*/}
+                            <SearchMain></SearchMain>
                         </motion.div>
-                        {/*<LoadMore />*/}
                     </>
-                )}
-                {
-
-                }
             </section>
         </>
 

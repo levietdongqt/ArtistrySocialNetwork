@@ -6,6 +6,7 @@ import { UserName } from './user-name';
 import { UserFollowing } from './user-following';
 import { UserUsername } from './user-username';
 
+
 type UserCardProps =  {
   modal?: boolean;
   follow?: boolean;

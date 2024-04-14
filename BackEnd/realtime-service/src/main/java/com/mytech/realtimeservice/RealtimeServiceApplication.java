@@ -7,6 +7,7 @@ import com.mytech.realtimeservice.models.users.User;
 import com.mytech.realtimeservice.repositories.CommentLikeRepository;
 import com.mytech.realtimeservice.repositories.CommentsRepository;
 import com.mytech.realtimeservice.repositories.PostLikeRepository;
+import com.mytech.realtimeservice.repositories.PostRepository;
 import com.mytech.realtimeservice.services.NotificationService;
 import com.mytech.realtimeservice.services.PostService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,9 @@ public class RealtimeServiceApplication implements CommandLineRunner {
 
 	@Autowired
 	private CommentLikeRepository commentLikeRep;
+
+	@Autowired
+	private PostRepository postRepository;
 
 
 

@@ -10,6 +10,7 @@ import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -137,6 +138,18 @@ public class PostController {
                         .status(HttpStatus.CREATED)
                         .message("Handler likes successfully, likes: " + comments.getTotalLikes())
                         .data(comments)
+                        .build()
+        );
+    }
+
+    @GetMapping("/search-posts")
+    public ResponseEntity<?> getPostsByKeyWord(@Param("q") String q){
+        List<Post> posts = postService.getPostByKeyWord(q);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get post list OK")
+                        .data(posts)
                         .build()
         );
     }
