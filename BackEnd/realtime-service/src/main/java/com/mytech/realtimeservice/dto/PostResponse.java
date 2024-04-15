@@ -1,5 +1,6 @@
 package com.mytech.realtimeservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mytech.realtimeservice.models.users.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class PostResponse {
 
     private String id;

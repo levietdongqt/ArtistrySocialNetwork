@@ -21,12 +21,11 @@ type Firebase = {
 
 function initialize(): Firebase {
   const firebaseApp = initializeApp(getFirebaseConfig());
-
   const auth = getAuth(firebaseApp);
   const storage = getStorage(firebaseApp);
   const firestore = getFirestore(firebaseApp);
   const functions = getFunctions(firebaseApp);
-
+  console.log("show firebase ", storage);
   return { firebaseApp, auth, firestore, storage, functions };
 }
 
@@ -37,20 +36,21 @@ function connectToEmulator({
   functions,
   firebaseApp
 }: Firebase): Firebase {
+
   connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
   connectStorageEmulator(storage, 'localhost', 9199);
   connectFirestoreEmulator(firestore, 'localhost', 8080);
   connectFunctionsEmulator(functions, 'localhost', 5001);
 
-  return { firebaseApp, auth, firestore, storage, functions };
+
+  return { firebaseApp, auth, firestore, storage, functions }
 }
 
 export function getFirebase(): Firebase {
   const firebase = initialize();
-
   if (isUsingEmulator) return connectToEmulator(firebase);
 
   return firebase;
 }
 
-export const { firestore: db, auth, storage } = getFirebase();
+export const { firestore, auth, storage } = getFirebase();

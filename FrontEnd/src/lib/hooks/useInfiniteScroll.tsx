@@ -24,11 +24,12 @@ export function useInfiniteScroll(
     marginBottom: number = 1024
 ) : InfiniteScrollResult {
     const [loadMoreInView, setLoadMoreInView] = useState(false);
-    const { data, error, size, setSize } = useSWRInfinite(
+    const { data, error, size, setSize,mutate } = useSWRInfinite(
         (pageIndex, previousPageData) => getKey(fetchPostsFunc, pageIndex, previousPageData, stepSize),
-        fetcherWithToken, // Pass this fetcher function to useSWRInfinite
+        fetcherWithToken,{
+            refreshInterval:1000,
+        }
     );
-
     const allData = data ? [].concat(...data.map(value => value.data)) : [];
     const isLoadingInitialData = !data && !error;
     const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");

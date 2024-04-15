@@ -16,6 +16,7 @@ function ContainerHome() {
     const { allData, isLoadingInitialData, LoadMore } = useInfiniteScroll(
         getPostsLimit,
     );
+
     return (
         <section className='mt-0.5 xs:mt-0'>
             {isLoadingInitialData ? (

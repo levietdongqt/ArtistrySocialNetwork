@@ -10,23 +10,25 @@ import { HeroIcon } from '@components/ui/hero-icon';
 import { ToolTip } from '@components/ui/tooltip';
 import { variants } from './content-action';
 
-type TweetShareProps = {
+type PostShareProps = {
   userId: string;
-  tweetId: string;
+  postId: string;
   viewTweet?: boolean;
+  name?: string;
 };
 
 export function ContentShare({
   userId,
-  tweetId,
+                               name,
+  postId,
   viewTweet
-}: TweetShareProps): JSX.Element {
+}: PostShareProps): JSX.Element {
 
 
   const handleCopy = (closeMenu: () => void) => async (): Promise<void> => {
     closeMenu();
-    await navigator.clipboard.writeText(`${siteURL}/tweet/${tweetId}`);
-    toast.success('Copied to clipboard');
+    await navigator.clipboard.writeText(`${siteURL}/post/${postId}`);
+    toast.success('Đã copy to clipboard');
   };
 
  /* const tweetIsBookmarked = !!userBookmarks?.some(({ id }) => id === tweetId);*/
@@ -53,6 +55,7 @@ export function ContentShare({
               />
               {!open && <ToolTip tip='Share' />}
             </i>
+           {name}
           </Popover.Button>
           <AnimatePresence>
             {open && (
@@ -68,7 +71,7 @@ export function ContentShare({
                   onClick={preventBubbling(handleCopy(close))}
                 >
                   <HeroIcon iconName='LinkIcon' />
-                  Copy link to Tweet
+                  Copy đường dẫn post
                 </Popover.Button>
                 {!tweetIsBookmarked ? (
                   <Popover.Button

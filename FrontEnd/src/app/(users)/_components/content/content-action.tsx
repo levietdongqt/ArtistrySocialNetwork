@@ -19,9 +19,10 @@ import type { Variants } from 'framer-motion';
 import type { Post } from '../../../../models/post';
 import type { User } from '../../../../models/user';
 import {useUser} from "../../../../context/user-context";
-import useSWR from "swr";
-import {deletePosts, deletePosts1} from "../../../../services/realtime/clientRequest/postClient";
+import useSWR, {mutate} from "swr";
+import {deletePosts1} from "../../../../services/realtime/ServerAction/PostService";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import {deleteComment} from "../../../../services/realtime/ServerAction/CommentService";
 
 export const variants: Variants = {
   initial: { opacity: 0, y: -25 },
@@ -38,9 +39,10 @@ type TweetActionsProps = Pick<Post, 'createdBy'> & {
   ownerId: string;
   postId: string;
   username: string;
-  parentId?: string;
   hasImages: boolean;
   viewTweet?: boolean;
+  comment?: boolean;
+  commentId?: string;
 };
 
 type PinModalData = Record<'title' | 'description' | 'mainBtnLabel', string>;
@@ -64,11 +66,12 @@ export function ContentAction({
   isOwner,
   ownerId,
   postId,
-  parentId,
   username,
   hasImages,
   viewTweet,
-  createdBy
+  createdBy,comment,
+                                  commentId
+
 }: TweetActionsProps): JSX.Element {
   const { currentUser } = useUser();
   const { push } = useRouter();
@@ -88,25 +91,33 @@ export function ContentAction({
   // const isInAdminControl = isAdmin && !isOwner;
   // const postIsPinned = pinnedTweet === postId;
  const handleRemove = async (): Promise<void> => {
-    if (viewTweet)
-      if (parentId) {
-        // const parentSnapshot = await getDoc(doc(tweetsCollection, parentId));
-        // if (parentSnapshot.exists()) {
-        //   await push(`/content/${parentId}`, undefined);
-        //   delayScroll(200)();
-        //   await sleep(50);
-        // } else await push('/home');
-      } else await push('/home')
-    await Promise.all([
-      deletePosts1(postId)
-      // manageTotalTweets('decrement', ownerId),
-      // hasImages && manageTotalPhotos('decrement', createdBy),
-      // parentId && manageReply('decrement', parentId)
-    ]);
-    toast.success(
-      `bài viết bạn đã xóa`
-    );
-    removeCloseModal();
+    if(currentUser !== null){
+        if(!comment){
+            await Promise.all([
+                deletePosts1(postId)
+                // manageTotalTweets('decrement', ownerId),
+                // hasImages && manageTotalPhotos('decrement', createdBy),
+                // parentId && manageReply('decrement', parentId)
+            ]);
+            await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/get-posts?limit=${20}&offset=${0}`, null, false);
+            toast.success(
+                `bài viết bạn đã xóa`
+            );
+            removeCloseModal();
+        }else{
+            await Promise.all([
+                deleteComment(commentId as string)
+                // manageTotalTweets('decrement', ownerId),
+                // hasImages && manageTotalPhotos('decrement', createdBy),
+                // parentId && manageReply('decrement', parentId)
+            ]);
+            await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/get-posts?limit=${20}&offset=${0}`, null, false);
+            toast.success(
+                `bài viết bạn đã bình luận này`
+            );
+            removeCloseModal();
+        }
+    }
   };
 
   // const handleFollow =
@@ -147,7 +158,7 @@ const  userIsFollowed = false;
       >
         <ActionModal
           title='Xóa bài viết'
-          description={`Bạn muốn xóa bài viết ngày không`}
+          description={`Bạn muốn xóa ${comment ? 'bình luận' : 'bài viết'} ngày không`}
           mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75 accent-tab
                             focus-visible:bg-accent-red/90'
           mainBtnLabel='Delete'
@@ -197,8 +208,8 @@ const  userIsFollowed = false;
             <AnimatePresence>
               {open && (
                 <Popover.Panel
-                  className='menu-container group absolute top-[50px] right-2 whitespace-nowrap text-light-primary 
-                             dark:text-dark-primary'
+                  className={`menu-container group absolute top-[50px] right-2 whitespace-nowrap text-light-primary 
+                             dark:text-dark-primary`}
                   as={motion.div}
                   {...variants}
                   static

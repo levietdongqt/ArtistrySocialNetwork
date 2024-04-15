@@ -19,7 +19,6 @@ type ThemeContextProviderProps = {
 };
 
 function setInitialTheme(): Theme{
-  if (typeof window === 'undefined') return 'light';
   const savedTheme = localStorage.getItem('theme') as Theme | null;
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   return savedTheme ?? (prefersDark ? 'light' : 'dark');

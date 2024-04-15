@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends MongoRepository<Post,String> {
@@ -20,6 +21,8 @@ public interface PostRepository extends MongoRepository<Post,String> {
     @Query(value = "{'user.userId': ?0}")
     List<Post> findPostByUser(String userId);
 
+    @Query(value = "{'id': ?0}")
+    Optional<Post> findPostById(String postId);
     Page<Post> findByOrderByCreatedAtDesc(Pageable pageable);
 
     long count();

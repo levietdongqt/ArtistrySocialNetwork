@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,17 @@ public class PostController {
                         .build()
         );
     }
+    @GetMapping("/get-post/{postId}")
+    public ResponseEntity<?> getPostById(@PathVariable String postId) {
+        log.info("Post get by id " + postId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get post list OK")
+                        .data(postService.getPostById(postId))
+                        .build()
+        );
+    }
     @GetMapping("/count")
     public ResponseEntity<?> countPostList () {
         log.info("post count ");
@@ -53,7 +65,6 @@ public class PostController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<?> deleteAllPostList () {
         log.info("delete All post");
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
@@ -75,6 +86,7 @@ public class PostController {
     }
 
     @PostMapping("/post-create")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> savePost(@RequestBody PostDTO postDTO) {
         log.info("post create ",postService.getCountPost());
         Post savedPost = postService.create(postDTO);
@@ -101,12 +113,11 @@ public class PostController {
 
     @GetMapping("/comments/{PostId}")
     public ResponseEntity<?> getPostComments(@PathVariable String PostId) {
-        List<Comments> comments = commentsService.getCommentsByPostId(PostId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
                         .message("Get comments list OK")
-                        .data(comments)
+                        .data(commentsService.getCommentsByPostId(PostId))
                         .build()
         );
     }
@@ -121,7 +132,15 @@ public class PostController {
                         .build()
         );
     }
-
+    @DeleteMapping("/comments/delete/{commentId}")
+    public ResponseEntity<?> deleteCommentById(@PathVariable String commentId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.CREATED)
+                        .message("Create comments successfully")
+                        .data(commentsService.deleteCommentById(commentId) ? "success" : "fail")
+                        .build());
+    }
     @PostMapping("/comments/likes")
     public ResponseEntity<?> createCommentLike(@RequestBody CommentLikeDTO commentLikeDTO){
         Comments comments = commentsService.createCommentLike(commentLikeDTO);

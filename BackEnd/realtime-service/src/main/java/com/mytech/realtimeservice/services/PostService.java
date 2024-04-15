@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -89,7 +90,10 @@ public class PostService {
         }
         return detected;
     }
-
+    public Post getPostById(String postId) {
+        Optional<Post> post = postRepository.findById(postId);
+        return post.orElse(null);
+    }
     public List<PostResponse> findAll(int limit, int offset) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         int pageIndex = offset / limit;
@@ -181,7 +185,6 @@ public class PostService {
         boolean alreadyLiked = post.getUserPostLikes()
                 .stream()
                 .anyMatch(like ->  postLikeDTO.getByUser().getId().equals(like.getId()));
-        System.out.println(postLikeDTO.getByUser().getId());
         if(alreadyLiked){
             return post;
         }
@@ -212,6 +215,15 @@ public class PostService {
             return null;
         }
         post.setTotalComments(post.getTotalComments() + 1);
+        post.setUpdatedAt(LocalDateTime.now());
+        return postRepository.save(post);
+    }
+    public Post updateDeleteCommentForPost(String postId) {
+        var post = findById(postId);
+        if (post == null) {
+            return null;
+        }
+        post.setTotalComments(post.getTotalComments() - 1);
         post.setUpdatedAt(LocalDateTime.now());
         return postRepository.save(post);
     }

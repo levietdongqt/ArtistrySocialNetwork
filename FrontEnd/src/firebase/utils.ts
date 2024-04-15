@@ -1,6 +1,6 @@
 import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage';
 import {storage} from './app';
-import type {FilesWithId, ImagesPreview} from '../models/file';
+import type {FilesWithId, ImagesPreview} from '@models/file';
 
 /*export async function updateUserData(
   userId: string,
@@ -91,18 +91,21 @@ export async function uploadImages(
   files: FilesWithId
 ): Promise<ImagesPreview | null> {
   if (!files.length) return null;
-  console.log('Show Uploading images');
     return await Promise.all(
       files.map(async (file) => {
           let src: string;
           const {id, name: alt} = file;
           const storageRef = ref(storage, `images/${userId}/${alt}`);
+          console.log("show src iamge 23 ", uploadBytesResumable(storageRef, file));
           try {
               src = await getDownloadURL(storageRef);
+              console.log("show src iamge 23 ", src);
           } catch {
               await uploadBytesResumable(storageRef, file);
               src = await getDownloadURL(storageRef);
+              console.log("show src iamge 23 ", src);
           }
+          console.log("show src iamge ", src);
           return {id, src, alt};
       })
   );

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -35,7 +36,17 @@ public class CommentsService {
     private CommentLikeRepository commentLikeRepository;
 
     public List<Comments> getCommentsByPostId(String postId) {
+        System.out.println("Get comment by post id: " + postId);
         return commentsRepository.findAllByPostId(postId);
+    }
+    public Boolean deleteCommentById(String id){
+        Optional<Comments> comments = commentsRepository.findCommentsById(id);
+        if(comments.isPresent()){
+            commentsRepository.delete(comments.get());
+            postService.updateDeleteCommentForPost(comments.get().getPostId());
+            return true;
+        }
+        return false;
     }
     public Comments createComments(CommentDTO commentDTO) {
         var post = postService.findById(commentDTO.getPostId());
@@ -85,7 +96,6 @@ public class CommentsService {
                         .fullName(user.getFullName())
                         .avatar(user.getAvatar())
                         .build();
-
                 notificationService.sendNotification(userTag, userTo, "TAG", null, postId);
             }
         }
@@ -94,7 +104,7 @@ public class CommentsService {
 
     //Service xử lý like cho 1 Comment
     public Comments findCommentById(String id) {
-        return commentsRepository.findById(id).get();
+        return commentsRepository.findById(id).orElse(null);
     }
     public Comments updateLikeForComment(String commentId,User userLike) {
         var comment = findCommentById(commentId);
@@ -121,7 +131,10 @@ public class CommentsService {
                 .stream()
                 .filter(u -> u.getId().equals(userLike.getId()))
                 .findFirst()
-                .get();
+                .orElse(null);
+        if(deletedUser == null) {
+            return null;
+        }
         users.remove(deletedUser);
         comment.setUpdatedDate(LocalDateTime.now());
         return commentsRepository.save(comment);
@@ -157,9 +170,9 @@ public class CommentsService {
         commentLikeRepository.save(commentLikeCreated);
         //Update total commentlike
         commentUpdated = updateLikeForComment(comment.getId(),commentLikeDTO.getByUser());
+
         //Tạo 1 notification;
         User userTo = comment.getByUser();
-
         User userFrom = User.builder()
                 .id(commentLikeDTO.getByUser().getId())
                 .fullName(commentLikeDTO.getByUser().getFullName())

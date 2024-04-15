@@ -1,5 +1,5 @@
 const footerLinks = [
-  ['Terms of Service', '/terms'],
+  ['Terms of ServerAction', '/terms'],
   ['Privacy Policy', '/privacy'],
   ['Cookie Policy', '/cookie'],
   ['Accessibility', '/accessibility'],

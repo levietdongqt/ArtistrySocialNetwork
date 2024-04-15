@@ -15,9 +15,9 @@ import type { FilesWithId, ImagesPreview, ImageData } from '@models/file';
 import {useUser} from "../../../../context/user-context";
 
 import useSWR, {mutate} from "swr";
-import { postPosts1} from "../../../../services/realtime/clientRequest/postClient";
+import { postPosts1} from "../../../../services/realtime/ServerAction/PostService";
 import {uploadImages} from "../../../../firebase/utils";
-import {postComment} from "../../../../services/realtime/clientRequest/commentClient";
+import {postComment} from "../../../../services/realtime/ServerAction/CommentService";
 
 
 type InputProps = {
@@ -55,6 +55,7 @@ export function Input({
   const [visited, setVisited] = useState(false);
   const [selectedEmoji, setSelectedEmoji] = useState(null);
   const {currentUser} = useUser();
+
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const previewCount = imagesPreview.length;
   const isUploadingImages = !!previewCount;
@@ -73,11 +74,11 @@ export function Input({
     setLoading(true);
     const userId = currentUser?.id as string;
     const uploadedImagesData = await uploadImages(userId, selectedImages);
-    await sleep(500);
+  if(currentUser !== null){
     if(!comment){
       const postData = {
         content: inputValue.trim() || null,
-        mediaUrl: uploadedImagesData ? uploadedImagesData.map(imageObject => imageObject.src) : [],
+        mediaUrl: uploadedImagesData ? uploadedImagesData?.map(imageObject => imageObject.src) : [],
         sendUserId: userId || null,
         sendFullName: currentUser?.fullName || null,
         sendUserAvatarUrl: currentUser?.avatar || "",
@@ -85,6 +86,7 @@ export function Input({
         sendUserBio: currentUser?.bio || null,
         sendVerified: currentUser?.verified
       };
+      await sleep(200);
       const newPost = await postPosts1(postData) // day là axios post
       await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/get-posts?limit=${20}&offset=${0}`, newPost, false);
     }else{
@@ -94,26 +96,30 @@ export function Input({
         mediaUrl: uploadedImagesData ? uploadedImagesData.map(imageObject => imageObject.src) : [],
         byUser: {
           id: currentUser?.id as string,
-          fullNam: currentUser?.fullName as string || null,
-          avatar: currentUser?.avatar as string || null,
+          fullName: currentUser?.fullName as string || null,
+          avatar: currentUser?.avatar || null,
           coverImage: currentUser?.coverImage as string || null,
           bio: currentUser?.bio as string || null,
           verified: currentUser?.verified
         }
       };
+      await sleep(200);
       const  newComment = await postComment(commentData);
-      await mutate(newComment);
+      await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/comments/${postID}`, newComment, false);
     }
+  }else{
+    toast.error('bạn cần phải đăng nhập mới đăng bài');
+  }
     if (!modal && !replyModal) {
       discardTweet();
     }
   }catch (error) {
-    console.error("Failed to send post:", error);
+    console.log("gửi thất bại");
   }finally {
-      if(!comment){
+      if(!comment && currentUser != null){
         toast.success(
             <span className='flex gap-2'>
-          Your Tweet was sent
+          Đăng bài thành công
       </span>
         );
         setLoading(false);
@@ -125,7 +131,6 @@ export function Input({
   };
 
   const handleEmojiClick = (emoji:any) => {
-    console.log(emoji.emoji);
     setSelectedEmoji(emoji.emoji);
     setInputValue((prevInputValue) => prevInputValue + emoji.emoji);
   };
@@ -140,6 +145,7 @@ export function Input({
     }
     const files = isClipboardEvent ? e.clipboardData.files : e.target.files;
     const imagesData = getImagesData(files, previewCount);
+    console.log("show image",imagesData);
     if (!imagesData) {
       toast.error('Please choose a GIF or photo up to 4');
       return;

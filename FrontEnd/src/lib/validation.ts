@@ -78,11 +78,9 @@ export function getImagesData(
     src: URL.createObjectURL(image),
     alt: imagesId[index].name ?? image.name
   }));
-
   const selectedImagesData = rawImages.map((image, index) =>
     renameFile(image, imagesId[index].id, imagesId[index].name)
   );
-
   return { imagesPreviewData, selectedImagesData };
 }
 
