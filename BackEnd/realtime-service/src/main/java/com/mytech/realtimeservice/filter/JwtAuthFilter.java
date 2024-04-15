@@ -25,8 +25,10 @@ import java.util.List;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
+
     private JwtTokenHolder jwtTokenHolder;
     private final ModelMapper mapper;
+    @Autowired
     private final JwtService jwtService;
 
     public JwtAuthFilter(JwtService jwtService, ModelMapper mapper) {
@@ -36,6 +38,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
         try {
             String authHeader = request.getHeader("Authorization");
             String token = null;
@@ -53,7 +56,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-
 
         } catch (ExpiredJwtException e) {
             // Token đã hết hạn, trả về status 401

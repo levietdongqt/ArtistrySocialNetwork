@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect, createContext, useContext } from 'react';
-import { useAuth } from './auth-context';
 import type { ReactNode, ChangeEvent } from 'react';
 import type { Theme, Accent } from '../models/theme';
 import {useUser} from "./user-context";

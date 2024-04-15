@@ -1,6 +1,9 @@
 package com.mytech.realtimeservice.configs;
 
 import com.mytech.realtimeservice.controller.WSController;
+import com.mytech.realtimeservice.filter.JwtAuthFilter;
+import com.mytech.realtimeservice.helper.JwtService;
+import com.mytech.realtimeservice.helper.JwtTokenHolder;
 import com.sun.security.auth.UserPrincipal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Logger;
@@ -16,13 +19,22 @@ import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
+@Component
 public class UserHandshakeHandler extends DefaultHandshakeHandler {
-
     @Override
     protected Principal determineUser(
             ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        final String randomId = UUID.randomUUID().toString();
-        log.info("User with id '{}' opened ", randomId);
-        return new UserPrincipal(randomId);
+        System.out.println("Vo ne");
+
+
+        var token = request.getHeaders().get("cookie").get(0);
+        log.info("Access token",token);
+        String[] tokens = token.split(";");
+        String userId = tokens[3];
+        log.info("User with id '{}' opened ",userId);
+        String userIdNew = userId.substring(8);
+//        var bool = jwtService.validateToken(accessToken);
+      log.info("User with id '{}' opened ",userIdNew);
+        return new UserPrincipal(userIdNew);
     }
 }

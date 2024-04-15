@@ -59,6 +59,7 @@ public class AuthConfig {
                 .exceptionHandling(handler -> {
                     handler.authenticationEntryPoint((request, response, authException) -> {
                         log.error(HttpStatus.valueOf(response.getStatus()).toString());
+                        log.error(authException.getMessage());
                         response.sendError(response.getStatus());
                         //response.sendRedirect("/api/main/auth/error/true");
                     }).accessDeniedHandler((request, response, accessDeniedException) -> {

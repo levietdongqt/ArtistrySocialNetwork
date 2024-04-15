@@ -15,6 +15,8 @@ import { UserName } from '../user/user-name';
 import type { Variants } from 'framer-motion';
 import React, {useEffect, useMemo, useState} from "react";
 import {User} from "@models/user";
+import {Loading} from "@components/ui/loading";
+import {useAuth} from "../../../../context/oauth2-context";
 import {Comments} from "@models/comment";
 import {ImagesPreview} from "@models/file";
 import {useUser} from "../../../../context/user-context";

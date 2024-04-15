@@ -1,8 +1,8 @@
 'use client'
-import {createContext, useContext, useState} from 'react';
+import {createContext, useContext, useEffect, useState} from 'react';
 import type {ReactNode} from 'react';
 import type {User} from '@models/user';
-import {getCookie} from "cookies-next";
+import {getCookie, setCookie} from "cookies-next";
 
 type UserContext = {
     currentUser: User | null;
@@ -13,6 +13,9 @@ export const UserContext = createContext<UserContext | null>(null);
 
 
 export function UserContextProvider({children}: any): JSX.Element {
+    useEffect(() => {
+        console.log("UserContextProvider is running")
+    }, []);
     const userCookies = getCookie('user')?.toString()
     const user: User = userCookies ? JSON.parse(userCookies) : null;
     const [currentUser, setCurrentUser] = useState(user);
@@ -20,6 +23,7 @@ export function UserContextProvider({children}: any): JSX.Element {
         currentUser,
         setCurrentUser,
     }
+    setCookie("userId", currentUser?.id)
     return <UserContext.Provider value={values}>{children}</UserContext.Provider>;
 }
 

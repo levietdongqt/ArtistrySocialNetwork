@@ -13,6 +13,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.weaver.patterns.IToken;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +30,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final ModelMapper mapper;
     private final JwtService jwtService;
     private final JwtTokenHolder jwtTokenHolder;
-    private final RouteValidator routeValidator;
 
-    public JwtAuthFilter(JwtService jwtService, ModelMapper mapper, RouteValidator routeValidator, JwtTokenHolder jwtTokenHolder) {
+    public JwtAuthFilter(JwtService jwtService, ModelMapper mapper, JwtTokenHolder jwtTokenHolder) {
         this.jwtService = jwtService;
         this.mapper = mapper;
-        this.routeValidator = routeValidator;
         this.jwtTokenHolder = jwtTokenHolder;
     }
 

@@ -1,17 +1,17 @@
 'use client'
-import { useState, useEffect, useRef, useId } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import {useState, useEffect, useRef, useId} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 import cn from 'clsx';
 import {toast} from "react-toastify";
-import { sleep } from '@lib/utils';
-import { getImagesData } from '@lib/validation';
-import { UserAvatar } from '../user/user-avatar';
-import { InputForm, fromTop } from './input-form';
-import { ImagePreview } from './image-preview';
-import { InputOptions } from './input-options';
-import type { ReactNode, FormEvent, ChangeEvent, ClipboardEvent } from 'react';
-import type { Variants } from 'framer-motion';
-import type { FilesWithId, ImagesPreview, ImageData } from '@models/file';
+import {sleep} from '@lib/utils';
+import {getImagesData} from '@lib/validation';
+import {UserAvatar} from '../user/user-avatar';
+import {InputForm, fromTop} from './input-form';
+import {ImagePreview} from './image-preview';
+import {InputOptions} from './input-options';
+import type {ReactNode, FormEvent, ChangeEvent, ClipboardEvent} from 'react';
+import type {Variants} from 'framer-motion';
+import type {FilesWithId, ImagesPreview, ImageData} from '@models/file';
 import {useUser} from "../../../../context/user-context";
 
 import useSWR, {mutate} from "swr";
@@ -33,8 +33,8 @@ type InputProps = {
 };
 
 export const variants: Variants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 }
+    initial: {opacity: 0},
+    animate: {opacity: 1}
 };
 
 export function Input({

@@ -10,11 +10,11 @@ import {isTokenExpired} from "@lib/config/ServerHeaderConfig";
 // This function can be marked `async` if using `await` inside
 const middleware = async (request: NextRequest) => {
     console.log("middleware is running:  ", request.nextUrl.pathname);
-    const isLogin = request.nextUrl.pathname === "/login"
+    const isLoginOrRoot = ["/login", "/"].includes(request.nextUrl.pathname)
     const response = NextResponse.next()
     const accessToken = getCookie('access_token', {cookies})?.toString();
     if (!accessToken) {
-        if (isLogin) {
+        if (request.nextUrl.pathname === '/login') {
             return NextResponse.next();
         }
         console.log("ACCESS_TOKEN IS NOT FOUND")
@@ -22,19 +22,19 @@ const middleware = async (request: NextRequest) => {
     }
     const payload = jwtDecode<JwtPayload>(accessToken)
     if (!isTokenExpired(payload)) {
-        return ["/login", "/"].includes(request.nextUrl.pathname) ? redirectToHome(request) : response;
+        return ["/login", "/",].includes(request.nextUrl.pathname) ? redirectToHome(request) : response;
     }
     try {
         const result = await getNewToken();
         console.log(result.message)
         if (result && result.status === 200) {
             await resetCookieTokenSSR(result, request, response)
-            return isLogin ? redirectToHome(request) : response;
+            return isLoginOrRoot ? redirectToHome(request) : response;
         }
-        return isLogin ? NextResponse.next() : redirectToLogin(request);
+        return isLoginOrRoot ? NextResponse.next() : redirectToLogin(request);
     } catch (err) {
         console.log("ERROR: " + err)
-        return isLogin ? NextResponse.next() : redirectToLogin(request);
+        return isLoginOrRoot ? NextResponse.next() : redirectToLogin(request);
     }
 };
 
@@ -44,6 +44,7 @@ export const config = {
         '/home',
         '/',
         '/login',
+        '/notifications',
         // '/login',
         // '/testClient',
         "/testServer2",
@@ -71,12 +72,7 @@ function redirectToLogin(req: NextRequest) {
 function redirectToHome(req: NextRequest) {
     const homeUrl = new URL('/home', req.url);
     console.log("redirect To Home: ", req.nextUrl.pathname)
-    return NextResponse.next({
-        status: 303,
-        headers: {
-            Location: homeUrl.toString(),
-        },
-    });
+    return NextResponse.redirect(homeUrl)
 }
 
 

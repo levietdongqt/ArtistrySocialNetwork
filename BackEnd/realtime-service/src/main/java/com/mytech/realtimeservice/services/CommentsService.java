@@ -3,6 +3,7 @@ package com.mytech.realtimeservice.services;
 import com.mytech.realtimeservice.dto.CommentDTO;
 import com.mytech.realtimeservice.dto.CommentLikeDTO;
 import com.mytech.realtimeservice.dto.UserDTO;
+import com.mytech.realtimeservice.exception.myException.NotFoundException;
 import com.mytech.realtimeservice.models.CommentLike;
 import com.mytech.realtimeservice.models.Comments;
 import com.mytech.realtimeservice.models.Post;
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class CommentsService {
+public class CommentsService implements ICommentsService {
 
 
     @Autowired
@@ -51,7 +52,7 @@ public class CommentsService {
     public Comments createComments(CommentDTO commentDTO) {
         var post = postService.findById(commentDTO.getPostId());
         if (post == null) {
-            return null;
+            throw new NotFoundException("Post is not found");
         }
         System.out.println(post);
         //Tạo 1 comments
@@ -69,7 +70,7 @@ public class CommentsService {
             //Check xem id của comments đã tồn tại đó đúng hay chưa
             var comment = commentsRepository.findById(commentDTO.getCommentsId()).orElse(null);
             if (comment == null) {
-                return null;
+                throw new NotFoundException("Comment is not found");
             }
             comments.setCommentId(comment.getId());
             var createdComment = commentsRepository.save(comments);
@@ -104,13 +105,14 @@ public class CommentsService {
 
     //Service xử lý like cho 1 Comment
     public Comments findCommentById(String id) {
-        return commentsRepository.findById(id).orElse(null);
+        var commentsOptional =  commentsRepository.findById(id);
+        if (commentsOptional.isPresent()){
+            return commentsOptional.get();
+        }
+        throw new NotFoundException("Comment is not found");
     }
     public Comments updateLikeForComment(String commentId,User userLike) {
         var comment = findCommentById(commentId);
-        if (comment == null) {
-            return null;
-        }
         comment.setTotalLikes(comment.getTotalLikes() + 1);
         List<User> users = comment.getCommentsLikes();
         users.add(userLike);
@@ -122,19 +124,13 @@ public class CommentsService {
     public Comments updateDislikeForComment(String commentId,User userLike) {
         User deletedUser = null;
         var comment = findCommentById(commentId);
-        if (comment == null) {
-            return null;
-        }
         comment.setTotalLikes(comment.getTotalLikes() - 1);
         List<User> users = comment.getCommentsLikes();
         deletedUser = users
                 .stream()
                 .filter(u -> u.getId().equals(userLike.getId()))
                 .findFirst()
-                .orElse(null);
-        if(deletedUser == null) {
-            return null;
-        }
+                .get();
         users.remove(deletedUser);
         comment.setUpdatedDate(LocalDateTime.now());
         return commentsRepository.save(comment);

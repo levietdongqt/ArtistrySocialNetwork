@@ -6,7 +6,7 @@ import { Popover } from '@headlessui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import cn from 'clsx';
 import { toast } from 'react-toastify';
-import { useAuth } from '../../../../context/auth-context';
+import { useAuth } from '../../../../context/oauth2-context';
 import { useModal } from '@lib/hooks/useModal';
 import { delayScroll, preventBubbling, sleep } from '@lib/utils';
 import { Modal } from '../modal/modal';

@@ -2,6 +2,7 @@ package com.mytech.realtimeservice.services;
 
 import com.mytech.realtimeservice.dto.ResponseMessage;
 import com.mytech.realtimeservice.enums.NotificationType;
+import com.mytech.realtimeservice.exception.myException.NotFoundException;
 import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.users.User;
 import com.mytech.realtimeservice.repositories.NotificationRepository;
@@ -19,35 +20,36 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class NotificationService {
+public class NotificationService implements INotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
 
-    public List<Notification> getNotificationsByUserFromUserIdOrderByCreatedDateDesc(String userFrom) {
+    public Date getTimeForNotification(){
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -7); // Lấy ngày 7 ngày trước
         Date startDate = calendar.getTime();
+        return startDate;
+    }
+
+    public List<Notification> getNotificationsByUserFromUserIdOrderByCreatedDateDesc(String userFrom) {
+        Date startDate = getTimeForNotification();
         return notificationRepository.findByUserFromUserIdOrderByCreatedDateDesc(userFrom,startDate);
     }
 
     public List<Notification> getNotificationsByUserFromUserId(String userFrom) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -7); // Lấy ngày 7 ngày trước
-        Date startDate = calendar.getTime();
+        Date startDate = getTimeForNotification();
         return notificationRepository.findForNotificationsByUserFromId(userFrom,startDate);
     }
 
     public List<Notification> getNotificationsByDelivory(String userFrom) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -7); // Lấy ngày 7 ngày trước
-        Date startDate = calendar.getTime();
+        Date startDate = getTimeForNotification();
         return notificationRepository.findNotificationByDelivered(userFrom,startDate);
     }
 
     public Notification changeNotifStatusToRead(String notifID) {
         var notif = notificationRepository.findById(notifID)
-                .orElseThrow(() -> new RuntimeException("not found!"));
+                .orElseThrow(() -> new NotFoundException("not found!"));
         notif.setStatus(true);
         return notificationRepository.save(notif);
     }

@@ -5,13 +5,14 @@ import com.mytech.realtimeservice.models.Comments;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.services.CommentsService;
 import com.mytech.realtimeservice.services.PostService;
+import com.mytech.realtimeservice.services.WSSocket;
+import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class PostController {
 
     @Autowired
     private CommentsService commentsService;
+
 
 
     @GetMapping("/get-posts")
@@ -65,11 +67,12 @@ public class PostController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<?> deleteAllPostList () {
         log.info("delete All post");
+        postService.deleteAll();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
                         .message("Delete all post is OK")
-                        .data(postService.deleteAll() ? "success" : "fail")
+                        .data( "success")
                         .build()
         );
     }
@@ -85,8 +88,8 @@ public class PostController {
         );
     }
 
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#postDTO.sendUserId) && hasRole('USER')")
     @PostMapping("/post-create")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> savePost(@RequestBody PostDTO postDTO) {
         log.info("post create ",postService.getCountPost());
         Post savedPost = postService.create(postDTO);
@@ -99,6 +102,7 @@ public class PostController {
         );
     }
 
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#postLikeDTO.byUser.userId) && hasRole('USER')")
     @PostMapping("/likes")
     public ResponseEntity<?> createPostLike(@RequestBody PostLikeDTO postLikeDTO){
         Post post = postService.createPostLike(postLikeDTO);
@@ -111,13 +115,15 @@ public class PostController {
         );
     }
 
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#commentDTO.byUser.userId) && hasRole('USER')")
     @GetMapping("/comments/{PostId}")
     public ResponseEntity<?> getPostComments(@PathVariable String PostId) {
+        List<Comments> comments = commentsService.getCommentsByPostId(PostId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
                         .message("Get comments list OK")
-                        .data(commentsService.getCommentsByPostId(PostId))
+                        .data(comments)
                         .build()
         );
     }
@@ -132,6 +138,8 @@ public class PostController {
                         .build()
         );
     }
+
+
     @DeleteMapping("/comments/delete/{commentId}")
     public ResponseEntity<?> deleteCommentById(@PathVariable String commentId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -141,6 +149,8 @@ public class PostController {
                         .data(commentsService.deleteCommentById(commentId) ? "success" : "fail")
                         .build());
     }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#commentLikeDTO.byUser.userId) && hasRole('USER')")
     @PostMapping("/comments/likes")
     public ResponseEntity<?> createCommentLike(@RequestBody CommentLikeDTO commentLikeDTO){
         Comments comments = commentsService.createCommentLike(commentLikeDTO);
@@ -152,5 +162,17 @@ public class PostController {
                         .build()
         );
     }
+
+//    @GetMapping("/suggests")
+//    public ResponseEntity<?> searchSuggestPosts(@PathParam("q") String q) {
+//        List<PostELS> postELSList = postELSService.testPostELS(q);
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                ResponseObject.builder()
+//                        .status(HttpStatus.OK)
+//                        .message("Handler get successfully")
+//                        .data(postELSList)
+//                        .build()
+//        );
+//    }
 
 }
