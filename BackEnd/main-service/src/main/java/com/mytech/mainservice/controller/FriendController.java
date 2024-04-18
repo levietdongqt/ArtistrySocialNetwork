@@ -51,6 +51,18 @@ public class FriendController {
     }
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#friendDTO.userId()) && hasRole('USER')")
+    @PostMapping("/unAcceptFriend")
+    public ResponseEntity<?> unAcceptFriend(@RequestBody FriendDTO friendDTO) {
+        friendService.declineFriendRequest(friendDTO.userId(), friendDTO.friendId());
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Decline Friend successfully")
+                        .data(null)
+                        .build());
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#friendDTO.userId()) && hasRole('USER')")
     @PostMapping("/addFriend")
     public ResponseEntity<?> addFriend(@RequestBody FriendDTO friendDTO) {
         friendService.addFriend(friendDTO.userId(), friendDTO.friendId());
@@ -62,4 +74,43 @@ public class FriendController {
                         .build()
         );
     }
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#friendDTO.userId()) && hasRole('USER')")
+    @PostMapping("/removeFriend")
+    public ResponseEntity<?> removeFriend(@RequestBody FriendDTO friendDTO) {
+        friendService.deleteFriend(friendDTO.userId(), friendDTO.friendId());
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Remove Friend successfully")
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#friendDTO.userId()) && hasRole('USER')")
+    @PostMapping("/followFriend")
+    public ResponseEntity<?> followFriend(@RequestBody FriendDTO friendDTO) {
+        friendService.followingFriendRequest(friendDTO.userId(), friendDTO.friendId());
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Follow Friend successfully")
+                        .data(null)
+                        .build()
+        );
+    }
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#friendDTO.userId()) && hasRole('USER')")
+    @PostMapping("/unFollowFriend")
+    public ResponseEntity<?> unFollowFriend(@RequestBody FriendDTO friendDTO) {
+        friendService.unfollowingFriendRequest(friendDTO.userId(), friendDTO.friendId());
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("UnFollow Friend successfully")
+                        .data(null)
+                        .build()
+        );
+    }
+
+
 }

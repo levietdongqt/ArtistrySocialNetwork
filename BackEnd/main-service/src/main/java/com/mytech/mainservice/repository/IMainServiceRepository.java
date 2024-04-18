@@ -19,6 +19,11 @@ public interface IMainServiceRepository extends JpaRepository<MainService, Long>
     @Query("update MainService m set m = :service where m.id = :id")
     int update(@Param("service") MainService service,@Param("id") long id);
 
-    @Query("SELECT m FROM MainService m WHERE m.description LIKE %:keyword% OR m.name LIKE %:keyword% OR m.provider.fullName LIKE %:keyword%")
+    @Query("SELECT m " +
+            "FROM MainService m " +
+            "WHERE m.description " +
+            "LIKE %:keyword% OR m.name " +
+            "LIKE %:keyword% OR m.provider.fullName " +
+            "LIKE %:keyword% order by m.createDate desc ")
     Set<MainService> searchMainServiceByKeyword(@Param("keyword") String keyword);
 }

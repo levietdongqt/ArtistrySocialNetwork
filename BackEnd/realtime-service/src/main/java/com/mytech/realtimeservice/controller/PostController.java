@@ -92,7 +92,7 @@ public class PostController {
         );
     }
 
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#postLikeDTO.byUser.userId) && hasRole('USER')")
+    //@PreAuthorize("@jwtTokenHolder.isValidUserId(#postLikeDTO.byUser.userId) && hasRole('USER')")
     @PostMapping("/likes")
     public ResponseEntity<?> createPostLike(@RequestBody PostLikeDTO postLikeDTO){
         Post post = postService.createPostLike(postLikeDTO);
@@ -105,7 +105,7 @@ public class PostController {
         );
     }
 
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#commentDTO.byUser.userId) && hasRole('USER')")
+    //@PreAuthorize("@jwtTokenHolder.isValidUserId(#commentDTO.byUser.userId) && hasRole('USER')")
     @GetMapping("/comments/{PostId}")
     public ResponseEntity<?> getPostComments(@PathVariable String PostId) {
         List<Comments> comments = commentsService.getCommentsByPostId(PostId);

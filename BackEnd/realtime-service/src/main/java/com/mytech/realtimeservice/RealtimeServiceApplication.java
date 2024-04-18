@@ -17,6 +17,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ import java.util.List;
 @EnableDiscoveryClient
 @EnableFeignClients
 @Slf4j
+@EnableAsync(proxyTargetClass = true)
 public class RealtimeServiceApplication implements CommandLineRunner {
 
 	@Autowired

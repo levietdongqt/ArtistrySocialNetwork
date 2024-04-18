@@ -1,37 +1,23 @@
 package com.mytech.mainservice.service.implement;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import com.mytech.mainservice.client.NotificationForeignClient;
 import com.mytech.mainservice.config.ELSConfig;
 import com.mytech.mainservice.dto.FriendDTO;
 import com.mytech.mainservice.dto.MainServiceDTO;
-import com.mytech.mainservice.enums.FriendShipStatus;
 import com.mytech.mainservice.exception.myException.NotFoundException;
 import com.mytech.mainservice.model.elasticsearch.PostELS;
 import com.mytech.mainservice.model.elasticsearch.ServiceELS;
 import com.mytech.mainservice.model.elasticsearch.UserELS;
 import com.mytech.mainservice.repository.*;
 import com.mytech.mainservice.service.IELSService;
-import com.mytech.mainservice.service.IFriendService;
 import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.nio.entity.NStringEntity;
-import org.apache.http.util.EntityUtils;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.client.ClientConfiguration;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -57,6 +43,9 @@ public class ELSService implements IELSService {
 
     @Autowired
     private IMainServiceRepository mainServiceRepository;
+
+    @Autowired
+    private NotificationForeignClient postForeignClient;
 
     @Autowired
     ELSConfig elsConfig;
@@ -186,6 +175,7 @@ public class ELSService implements IELSService {
                    .avatar(user.getAvatar())
                    .roles(user.getRoles())
                    .email(user.getEmail())
+                   .type("user")
                    .build();
            var statusFriends = friendshipRepository.getStatusFriend(user.getId(),userId);
            if (statusFriends!= null) {
@@ -205,6 +195,7 @@ public class ELSService implements IELSService {
                 .map(mainService -> modelMapper.map(mainService, MainServiceDTO.class))
                 .collect(Collectors.toSet());
     }
+
 
 
 }

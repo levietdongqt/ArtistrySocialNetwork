@@ -25,5 +25,7 @@ public class UserELS {
     private String email;
     private String fullName;
     private String avatar;
+    private String coverImage;
+    private String bio;
     private List<String> roles;
 }

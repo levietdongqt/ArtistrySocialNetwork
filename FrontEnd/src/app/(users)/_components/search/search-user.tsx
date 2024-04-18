@@ -11,6 +11,8 @@ import { Loading } from "@components/ui/loading";
 import { AnimatePresence } from "framer-motion";
 import { Error } from "@components/ui/error";
 import { SearchServiceCard } from "./search-service-card";
+import { useEffect } from "react";
+
 
 
 
@@ -21,7 +23,7 @@ export default function SearchUser() {
         data: data,
         isLoading: isLoading,
         error: error,
-    } = useSWR(getUserSearch(currentUser?.id as string,searchText), fetcherWithToken);
+    } = useSWR(getUserSearch(currentUser?.id as string,searchText)  , fetcherWithToken);
     return (
         <Layout>
       <Content style={{ background: "#fff", padding: "20px" }}>

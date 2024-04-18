@@ -12,4 +12,9 @@ public interface IFriendService {
     void blockFriend(String userId, String friendId);
     void unblockFriend(String userId, String friendId);
     Set<UserDTO> getFriends(String userId);
+
+    void followingFriendRequest(String userId, String friendId);
+
+    void unfollowingFriendRequest(String userId, String friendId);
+
 }

@@ -19,7 +19,6 @@ import { Error } from "@components/ui/error";
 import debounce from "lodash.debounce";
 import _ from "lodash";
 import { useUser } from "context/user-context";
-import { json } from "stream/consumers";
 import { parseStringToJson } from "@lib/helper/convertTime";
 import { useSearch } from "context/search-context";
 
@@ -27,8 +26,8 @@ interface SearchBarProps {
   width: string;
 }
 export function SearchBar({ width }: SearchBarProps): JSX.Element {
-  const {searchText,setSearchText} = useSearch();
-  
+  const { searchText, setSearchText } = useSearch();
+
   const [inputValue, setInputValue] = useState(searchText || "");
   const [shouldFetch, setShouldFetch] = useState(searchText ? true : false);
   const [shouldGetFetch, setShouldGetFetch] = useState(false);
@@ -39,18 +38,17 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { currentUser, setCurrentUser } = useUser();
-  
-  const {
-    data: dataHistory,
-    isLoading: isLoadingHistory
-  } = useSWR(
-    shouldGetFetch ? getHistorySearch(currentUser ? currentUser?.id as string : ""): null,
+
+  const { data: dataHistory, isLoading: isLoadingHistory } = useSWR(
+    shouldGetFetch
+      ? getHistorySearch(currentUser ? (currentUser?.id as string) : "")
+      : null,
     fetcherWithToken,
     {
       revalidateOnFocus: false,
     }
   );
-  
+
   var objectArray = dataHistory && parseStringToJson(dataHistory.data);
   const {
     data: data,
@@ -115,10 +113,6 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
     }
   }, [shouldGetFetch]);
 
-
-
-
-
   const clearInputValue = (focus?: boolean) => (): void => {
     if (focus) inputRef.current?.focus();
     else inputRef.current?.blur();
@@ -133,28 +127,63 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
 
   const handleChangeAfter = () => {
     setShouldGetFetch(true);
-  }
+  };
 
-  
-  const content =(inputValue == "" &&
+  const content = (inputValue == "" &&
     objectArray &&
-    objectArray.toReversed().map((value:any) => (
+    objectArray.toReversed().map((value: any) => (
       <Link
-        href={`/search?q=${value.id}`}
+        href={
+          value.keyword
+            ? `/search?q=${value.keyword}`
+            : value.type === "user"
+            ? `/user/${value.id}`
+            : value.type === "post"
+            ? `/post/${value.id}`
+            : value.type === "service"
+            ? `/service/${value.id}`
+            : ``
+        }
         className="accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4 py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5"
         onClick={() => {
           setLink(value);
           setClickLink(true);
           setShouldUpdatedFetch(true);
+          if (value.keyword) {
+            setSearchText(value.keyword);
+          }
         }}
       >
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center">
-            <HeroIcon
-              className="h-5 w-5 text-light-secondary transition-colors 
-                       group-focus-within:text-main-accent dark:text-dark-secondary"
-              iconName="ArchiveBoxIcon"
-            />
+            {
+               value.keyword
+               ?  <HeroIcon
+               className="h-5 w-5 text-light-secondary transition-colors 
+                        group-focus-within:text-main-accent dark:text-dark-secondary"
+               iconName="MagnifyingGlassIcon"
+             />
+               : value.type === "user"
+               ?  <HeroIcon
+               className="h-5 w-5 text-light-secondary transition-colors 
+                        group-focus-within:text-main-accent dark:text-dark-secondary"
+               iconName="ArrowTrendingUpIcon"
+             />
+               : value.type === "post"
+               ?  <HeroIcon
+               className="h-5 w-5 text-light-secondary transition-colors 
+                        group-focus-within:text-main-accent dark:text-dark-secondary"
+               iconName="ArrowDownOnSquareStackIcon"
+             />
+               : value.type === "service"
+               ?  <HeroIcon
+               className="h-5 w-5 text-light-secondary transition-colors 
+                        group-focus-within:text-main-accent dark:text-dark-secondary"
+               iconName="MagnifyingGlassIcon"
+             />
+               : ``
+            }
+           
             <div className="flex flex-col justify-center ml-3">
               <h5 className="text">
                 {value.keyword ||
@@ -183,7 +212,7 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
         data?.data.map((value: any) =>
           value.type == "user" ? (
             <Link
-              href={`/search?q=${value.id}`}
+              href={`/user/${value.id}`}
               className="accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4 py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5"
               onClick={() => {
                 setLink(value);
@@ -194,11 +223,11 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center">
                   <button>
-                  <HeroIcon
-                    className="h-5 w-5 text-light-secondary transition-colors 
+                    <HeroIcon
+                      className="h-5 w-5 text-light-secondary transition-colors 
                        group-focus-within:text-main-accent dark:text-dark-secondary"
-                    iconName="ArrowTrendingUpIcon"
-                  />
+                      iconName="ArrowTrendingUpIcon"
+                    />
                   </button>
                   <div className="flex flex-col justify-center ml-3">
                     <h3 className="text-lg font-bold">{value.fullName}</h3>
@@ -219,7 +248,7 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
             </Link>
           ) : value.type === "service" ? (
             <Link
-              href={`/search?q=${value.id}`}
+              href={`/service/${value.id}`}
               className="accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4 py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5"
               onClick={() => {
                 setLink(value);
@@ -244,7 +273,7 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
             </Link>
           ) : (
             <Link
-              href={`/search?q=${value.id}`}
+              href={`/posts/${value.id}`}
               className="accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4 py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5"
               onClick={() => {
                 setLink(value);
@@ -280,10 +309,10 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
     >
       <Popover
         content={content}
-        trigger="click" 
+        trigger="click"
         afterOpenChange={handleChangeAfter}
-        overlayStyle={{ width: width}}
-        autoAdjustOverflow={true} 
+        overlayStyle={{ width: width }}
+        autoAdjustOverflow={true}
       >
         <label
           className="group flex items-center justify-between gap-4 rounded-full

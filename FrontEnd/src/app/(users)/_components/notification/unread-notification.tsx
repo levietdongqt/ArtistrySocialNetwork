@@ -8,18 +8,28 @@ import { Loading } from "@components/ui/loading";
 import { AnimatePresence } from "framer-motion";
 import { Error } from "@components/ui/error";
 import { useUser } from "context/user-context";
+import { useEffect, useState } from "react";
+import { useNotification } from "context/notification-context";
+import { HeroIcon } from "@components/ui/hero-icon";
 const { Sider, Content } = Layout;
 
 export default function UnreadNotification() {
   const user = useUser();
+  const {notificationsContent} = useNotification();
+  const [dataUnread,setDataUnread] = useState<any>([]);
   const {
     data: data2,
     isLoading: isLoading2,
     error: error2,
   } = useSWR(getUnreadNotifications(user.currentUser?.id as string), fetcherWithToken);
-  console.log("abc", data2);
-  console.log(isLoading2);
-  console.log(error2);
+
+  useEffect(()=>{
+    setDataUnread(data2?.data);
+  },[data2])
+
+  useEffect(()=>{
+    setDataUnread([notificationsContent,...dataUnread]);
+  },[notificationsContent])
 
   return (
     <Layout>
@@ -32,11 +42,20 @@ export default function UnreadNotification() {
           <>
             <AnimatePresence mode="popLayout">
               {
-            data2.data.map((item: any, index : number) => {
+            dataUnread.map((item: any, index : number) => {
               return (
                 <NotificationCard key={index} data={item}/>
               )
             })
+          }
+          {
+            dataUnread.length===0 && (
+              <div className="text-center">
+                <HeroIcon
+                iconName="BellAlertIcon" className="mx-auto w-20"></HeroIcon>
+                <p className="text-gray-500 text-lg">Bạn không có thông báo nào </p>
+              </div>
+            )
           }
             </AnimatePresence>
             {/* <LoadMore />*/}

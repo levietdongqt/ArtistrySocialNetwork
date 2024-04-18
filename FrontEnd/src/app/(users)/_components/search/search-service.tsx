@@ -8,6 +8,7 @@ import useSWR from "swr";
 import { Error } from "@components/ui/error";
 import { AnimatePresence } from "framer-motion";
 import { SearchServiceCard } from "./search-service-card";
+import { useEffect } from "react";
 
 
 export default function SearchService() {

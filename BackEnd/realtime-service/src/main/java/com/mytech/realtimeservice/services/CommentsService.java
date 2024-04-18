@@ -87,10 +87,10 @@ public class CommentsService implements ICommentsService {
                         .avatar(user.getAvatar())
                         .build();
 
-                notificationService.sendNotification(userTag, userTo, "TAG", null, postId);
+                notificationService.sendNotification(userTag, userTo, "TAG", "đã đính kèm bạn vào bình luận của họ", postId);
             }
         }
-        notificationService.sendNotification(userFrom, userTo,"COMMENT",null,postId);
+        notificationService.sendNotification(userFrom, userTo,"COMMENT","đã bình luận bài viết của bạn",postId);
     }
 
     //Service xử lý like cho 1 Comment
@@ -164,7 +164,7 @@ public class CommentsService implements ICommentsService {
                 .fullName(commentLikeDTO.getByUser().getFullName())
                 .avatar(commentLikeDTO.getByUser().getAvatar())
                 .build();
-        notificationService.sendNotification(userFrom, userTo,"LIKE","",comment.getId());
+        notificationService.sendNotification(userFrom, userTo,"LIKE","đã thích bình luận của bạn",comment.getId());
         return commentUpdated;
     }
 }

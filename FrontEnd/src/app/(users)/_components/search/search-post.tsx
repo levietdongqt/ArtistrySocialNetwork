@@ -8,15 +8,19 @@ import useSWR from "swr";
 import { Error } from "@components/ui/error";
 import { AnimatePresence } from "framer-motion";
 import {ContentPost} from "../content/content";
+import { useEffect } from "react";
 
 
 export default function SearchUser() {
-  const {searchText} = useSearch();
+  const {searchText,setDataUserSearch} = useSearch();
   const {
       data: data,
       isLoading: isLoading,
       error: error,
   } = useSWR(getPostSearch(searchText), fetcherWithToken);
+  useEffect(() => {
+    setDataUserSearch([data?.data]);
+  },[data])
   return (
       <Layout>
     <Content style={{ background: "#fff", padding: "20px" }}>

@@ -30,7 +30,7 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
         var token = request.getHeaders().get("cookie").get(0);
         log.info("Access token",token);
         String[] tokens = token.split(";");
-        String userId = tokens[4];
+        String userId = tokens[3];
         log.info("User with id '{}' opened ",userId);
         String userIdNew = userId.substring(8);
 //        var bool = jwtService.validateToken(accessToken);

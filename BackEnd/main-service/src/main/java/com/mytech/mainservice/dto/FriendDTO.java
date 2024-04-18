@@ -22,4 +22,5 @@ public class FriendDTO {
     private String avatar;
     private List<String> roles;
     private String friendShipStatus;
+    private String type = "user";
 }

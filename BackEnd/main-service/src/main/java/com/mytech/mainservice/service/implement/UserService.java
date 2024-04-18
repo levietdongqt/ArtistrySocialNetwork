@@ -9,8 +9,10 @@ import com.mytech.mainservice.exception.myException.NotFoundException;
 import com.mytech.mainservice.exception.myException.UnAuthenticationException;
 import com.mytech.mainservice.model.Role;
 import com.mytech.mainservice.model.User;
+import com.mytech.mainservice.model.elasticsearch.UserELS;
 import com.mytech.mainservice.repository.IRoleRepository;
 import com.mytech.mainservice.repository.IUserRepository;
+import com.mytech.mainservice.service.IELSService;
 import com.mytech.mainservice.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -37,6 +39,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IELSService elsService;
 
     @Override
     public UserDTO getUserById(String userId) {
@@ -102,6 +107,19 @@ public class UserService implements IUserService {
                 .build();
         User savedUser = userRepo.save(user);
         log.info("User added to this system");
+        //Save vào els search
+        //Lấy ra list roles
+        var vietnameseRoles = getVietnameseRolesFromRolesTable(savedUser.getRoles());
+        UserELS userELS = UserELS.builder()
+                .id(savedUser.getId())
+                .fullName(savedUser.getFullName())
+                .avatar(savedUser.getAvatar())
+                .coverImage(savedUser.getCoverImage())
+                .email(savedUser.getEmail())
+                .bio(savedUser.getBio())
+                .roles(vietnameseRoles).build();
+        elsService.saveUserELS(userELS);
+        log.info("Save to els search successfully");
         return savedUser;
     }
 
@@ -166,6 +184,30 @@ public class UserService implements IUserService {
             return listHistory.stream().toList();
         }
         throw new NotFoundException("User not found");
+    }
+
+    public List<String> getVietnameseRolesFromRolesTable(List<Role> roles) {
+        List<String> vietnameseRoles = new ArrayList<>();
+        for (Role role : roles) {
+            switch (role.getName()){
+                case ROLE_ADMIN:
+                    vietnameseRoles.add("Quản trị viên");
+                    break;
+                case ROLE_USER:
+                    vietnameseRoles.add("Người dùng");
+                    break;
+                case ROLE_PROVIDER:
+                    vietnameseRoles.add("Nhà cung cấp");
+                    break;
+                case ROLE_STUDIO:
+                    vietnameseRoles.add("Studio");
+                    break;
+                case ROLE_MAKEUP:
+                    vietnameseRoles.add("Makeup");
+                    break;
+            }
+        }
+        return vietnameseRoles;
     }
 
 

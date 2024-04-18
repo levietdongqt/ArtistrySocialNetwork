@@ -3,13 +3,15 @@ import { Tabs } from "antd";
 import SearchUser from "./search-user";
 import SearchPost from "./search-post";
 import SearchService from "./search-service";
+import SearchAll from "./search-all";
+import { useSearch } from "context/search-context";
 const { TabPane } = Tabs;
 
 const items = [
   {
-    label: "Tất Cả",
+    label: "Xu hướng",
     key: "all",
-    children: <div>Tất cả nè</div>, // Truyền component vào children
+    children: <SearchAll/>, // Truyền component vào children
   },
   {
     label: "Người dùng",
@@ -31,7 +33,7 @@ const items = [
 export default function SearchMain() {
   return (
     <>
-  <Tabs className="flex flex-col h-full justify-center">
+  <Tabs className="flex flex-col h-full justify-center" defaultActiveKey="service">
     {items.map((item) => (
       <TabPane
         key={item.key}
