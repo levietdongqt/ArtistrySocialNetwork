@@ -2,6 +2,7 @@ package com.mytech.mainservice.service.implement;
 
 import com.google.firebase.auth.UserInfo;
 import com.mytech.mainservice.dto.UserDTO;
+import com.mytech.mainservice.dto.request.LoginDTO;
 import com.mytech.mainservice.dto.request.RegisterDto;
 import com.mytech.mainservice.enums.UserRole;
 import com.mytech.mainservice.enums.UserStatus;
@@ -17,6 +18,8 @@ import com.mytech.mainservice.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,27 +62,24 @@ public class UserService implements IUserService {
 
 
     @Override
-    @Transactional
     public User createUser(RegisterDto userRegister) throws UnAuthenticationException {
-        try {
-            boolean isExisted = userRepo.findByEmail(userRegister.email()).isPresent();
-            if (isExisted) {
-                throw new UnAuthenticationException(" Email already existed");
-            }
-            List<UserRole> userRoles = userRegister.roles().stream().map(item -> UserRole.valueOf(item.toUpperCase())).toList();
-            List<Role> roles = roleRepo.findByListName(userRoles);
-
-            User user = modelMapper.map(userRegister, User.class);
-            user.setCreateDate(LocalDateTime.now());
-            user.setStatus(UserStatus.PENDING);
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRoles(roles);
-            User savedUser = userRepo.save(user);
-            log.info("User added to this system");
-            return savedUser;
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Role name is not valid");
+        boolean isExisted = userRepo.findByEmail(userRegister.phoneNumber()).isPresent();
+        if (isExisted) {
+            throw new UnAuthenticationException(" Email already existed");
         }
+        List<Role> roles = roleRepo.findByListName(userRegister.roles());
+        User user = User.builder()
+                .id(UUID.randomUUID().toString())
+                .fullName(userRegister.fullName())
+                .phoneNumber(userRegister.phoneNumber())
+                .password(passwordEncoder.encode(userRegister.password()))
+                .roles(roles)
+                .status(UserStatus.PENDING)
+                .createDate(LocalDateTime.now())
+                .build();
+        User savedUser = userRepo.save(user);
+        log.info("User added to this system");
+        return savedUser;
     }
 
 
@@ -124,6 +124,32 @@ public class UserService implements IUserService {
     }
 
 
+    @Override
+    public User getUserByPhoneNumber(String phoneNumber) {
+        Optional<User> user = userRepo.findByPhoneNumber(phoneNumber);
+        return user.orElse(null);
+    }
+
+    @Override
+    public void verifyPhone(String phoneNumber) {
+        Optional<User> user = userRepo.findByPhoneNumber(phoneNumber);
+        if (user.isPresent()) {
+            user.get().setPhoneConfirmed(true);
+            user.get().setStatus(UserStatus.ACTIVED);
+            userRepo.save(user.get());
+        }
+        throw new NotFoundException("User not found");
+    }
+    @Override
+    public void changePass(LoginDTO data) {
+        Optional<User> user = userRepo.findByPhoneNumber(data.phoneNumber());
+        if (user.isPresent()) {
+            user.get().setPassword(passwordEncoder.encode(data.password()));
+            userRepo.save(user.get());
+            return;
+        }
+        throw new NotFoundException("User not found");
+    }
 
     public User existUser(UserInfo userInfo) throws UnAuthenticationException {
         Optional<User> user = userRepo.findByEmailOrPhoneNumber(userInfo.getEmail(), userInfo.getPhoneNumber());

@@ -29,7 +29,11 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
-            log.warn("Vô api roi nè........." + exchange.getRequest().getPath());
+            log.warn("Request from: " + exchange.getRequest().getPath());
+//            log.warn("IP: " + exchange.getRequest().getRemoteAddress());
+            String userAgent = exchange.getRequest().getHeaders().getFirst(HttpHeaders.USER_AGENT);
+            log.warn("User Agent: " + userAgent);
+            exchange.getRequest().getLocalAddress();
             if (validator.isSecured.test(exchange.getRequest())) {
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                     log.error("Missing authorization header");

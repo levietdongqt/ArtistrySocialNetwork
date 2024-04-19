@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS roles (
 CREATE TABLE IF NOT EXISTS users (
 	id VARCHAR(36) DEFAULT (UUID()),
     full_name varchar(50) CHARACTER SET utf8mb4,
-    email varchar(50) CHARACTER SET utf8mb4 not null unique,
+    email varchar(50) CHARACTER SET utf8mb4  null unique,
     phone_number varchar(20) CHARACTER SET utf8mb4 unique,
     gender bit default 1,
     date_of_birth date,
@@ -194,7 +194,6 @@ Create Table template(
 CREATE INDEX fullNameIndex ON users(full_Name);
 CREATE INDEX statusIndex ON orders(status);
 CREATE INDEX refreshTokenIndex ON sessions(refresh_token);
-
 INSERT INTO users
 (`full_name`, `email`, `phone_number`, `gender`, `email_confirmed`, `phone_confirmed`, `password`,`status`)
  VALUES ('Trần Thụ Huy', 'huy@gmail.com', '1234567891',b'1', b'1', b'1', '123','ACTIVED'),

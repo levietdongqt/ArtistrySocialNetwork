@@ -10,7 +10,7 @@ import {HeroIcon} from '@components/ui/hero-icon';
 import {Button} from '@components/ui/button';
 import {MenuLink} from './menu-link';
 import type {Variants} from 'framer-motion';
-import {useAuth} from "../../../../context/auth-context";
+import {useOAuth2} from "../../../../context/oauth2-context";
 import {useRouter} from "next/navigation";
 import {deleteCookieTokenSSR} from "../../../../lib/helper/serverCookieHandle";
 
@@ -26,13 +26,13 @@ export const variants: Variants = {
 
 export function MoreSettings(): JSX.Element {
     const {open, openModal, closeModal} = useModal();
-    const {signOut} = useAuth()
+    const {signOut} = useOAuth2()
     const router = useRouter();
     const handleSignOut = async () => {
         // router.prefetch("/login")
         console.log("SIGN OUT")
-        await deleteCookieTokenSSR();
-        await signOut();
+       await deleteCookieTokenSSR();
+       await signOut();
         router.push("/login");
     }
     return (

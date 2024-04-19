@@ -21,7 +21,7 @@ import {ViewContent} from "../view/view-content";
 import React from "react";
 import {User} from "@models/user";
 import {Loading} from "@components/ui/loading";
-import {useAuth} from "../../../../context/auth-context";
+import {useAuth} from "../../../../context/oauth2-context";
 import {Post} from "@models/post";
 import {ImagesPreview} from "@models/file";
 import {useUser} from "../../../../context/user-context";

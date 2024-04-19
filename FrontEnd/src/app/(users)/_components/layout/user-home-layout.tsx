@@ -1,7 +1,7 @@
 'use client'
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useAuth } from '../../../../context/auth-context';
+import { useAuth } from '../../../../context/oauth2-context';
 import { useUser } from '../../../../context/user-context';
 import { SEO } from '../common/seo';
 import { UserHomeCover } from '../user/user-home-cover';

@@ -1,7 +1,7 @@
 'use client'
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import {useAuth} from "../../context/auth-context";
+import {useAuth} from "../../context/oauth2-context";
 
 
 export function useRequireAuth(redirectUrl?: string) {

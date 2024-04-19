@@ -57,12 +57,12 @@ public class PostController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<?> deleteAllPostList () {
         log.info("delete All post");
-
+        postService.deleteAll();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
                         .message("Delete all post is OK")
-                        .data(postService.deleteAll() ? "success" : "fail")
+                        .data( "success")
                         .build()
         );
     }

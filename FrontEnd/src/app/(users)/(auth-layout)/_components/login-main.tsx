@@ -17,12 +17,12 @@ import {useEffect} from "react";
 
 import {loginService} from '../../../../services/main/auth-service';
 import {useUser} from '../../../../context/user-context';
-import {useAuth} from '../../../../context/auth-context';
+import {useOAuth2} from '../../../../context/oauth2-context';
 
 
 export function LoginMain() {
     const {open, openModal, closeModal} = useModal();
-    const {signInWithFacebook, signInWithGoogle, user} = useAuth();
+    const {signInWithFacebook, signInWithGoogle} = useOAuth2();
     const {currentUser} = useUser()
     const router = useRouter();
     const {values, touched, handleSubmit, handleChange, errors, isValid, resetForm} = useFormik({

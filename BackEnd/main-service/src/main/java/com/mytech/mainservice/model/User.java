@@ -33,7 +33,6 @@ public class User implements Serializable {
     private String fullName;
 
     @Size(max = 50)
-    @NotNull
     @Column(name = "email", unique = true, length = 50)
     private String email;
 

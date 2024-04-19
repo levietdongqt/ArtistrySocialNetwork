@@ -16,30 +16,27 @@ function delay(ms: number): Promise<void> {
 }
 
 export async function loginService(values: any): Promise<MyResponse<AuthResponse>> {
-    try {
-        console.log("Voo ", values)
-        // console.log(headers)
-        const res = await fetch(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/auth/login`,
-            {
-                body: JSON.stringify(values),
-                method: 'POST',
-                cache: "no-cache",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-            })
-        const data: MyResponse<AuthResponse> = await res.json();
-        console.log(data)
-        if (res.ok) {
-            setCookieTokenSSR(data);
-            return data;
-        } else {
-            console.log(data.message)
-            throw new Error("Server error: " + res.statusText)
-        }
-    } catch (error) {
-        console.log(error)
-        throw error
+    console.log("Voo ", values)
+    // console.log(headers)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/auth/login`,
+        {
+            body: JSON.stringify(values),
+            method: 'POST',
+            cache: "no-cache",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        })
+    const data: MyResponse<AuthResponse> = await res.json();
+    console.log(data)
+    if (res.ok) {
+        setCookieTokenSSR(data);
+        return data;
+    } else if (data.status === 401) {
+        return data;
+    } else {
+        console.log(data.message)
+        throw new Error("Server error: " + res.statusText)
     }
 }
 
@@ -59,8 +56,83 @@ export async function registerService(values: any): Promise<MyResponse<AuthRespo
         const data: MyResponse<AuthResponse> = await res.json();
         console.log(data)
         if (res.ok) {
-            setCookieTokenSSR(data);
+            // setCookieTokenSSR(data);
             return data;
+        } else {
+            console.log(data.message)
+            throw new Error("Server error: " + res.statusText)
+        }
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
+export async function verifyPhoneNumber(phoneNumber: string): Promise<boolean> {
+    try {// console.log(headers)
+        const res = await fetch(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/auth/verify/${phoneNumber}`,
+            {
+                body: null,
+                method: 'POST',
+                cache: "no-cache",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+        const data: any = await res.json();
+        console.log(data)
+        if (res.ok) {
+            return data.data;
+        } else {
+            console.log(data.message)
+            throw new Error("Server error: " + res.statusText)
+        }
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
+export async function changePassword(values: any): Promise<boolean> {
+    try {// console.log(headers)
+        const res = await fetch(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/auth/change-password`,
+            {
+                body: JSON.stringify(values),
+                method: 'POST',
+                cache: "no-cache",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+        const data: any = await res.json();
+        console.log(data)
+        if (res.ok) {
+            return data.data;
+        } else {
+            console.log(data.message)
+            throw new Error("Server error: " + res.statusText)
+        }
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
+export async function isExistAccount(phoneNumber: string): Promise<boolean> {
+    try {// console.log(headers)
+        const res = await fetch(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/auth/check-exist/${phoneNumber}`,
+            {
+                body: null,
+                method: 'POST',
+                cache: "no-cache",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+        const data: any = await res.json();
+        console.log(data)
+        if (res.ok) {
+            return data.data;
         } else {
             console.log(data.message)
             throw new Error("Server error: " + res.statusText)
@@ -192,7 +264,7 @@ function setCookieToken(data: MyResponse<any>) {
         httpOnly: true,
         expires: new Date(Date.now() + 60 * 1000),
     });
-    cookies().set('user',data.data.user, {
+    cookies().set('user', data.data.user, {
         secure: true,
         httpOnly: true,
         expires: expireRefreshToken,

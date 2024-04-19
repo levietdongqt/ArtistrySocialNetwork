@@ -3,10 +3,11 @@ import "./styles/globals.scss";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import "react-toastify/dist/ReactToastify.css";
 
+
 import { Bounce, ToastContainer } from "react-toastify";
 import { AppHead } from "./(users)/_components/common/app-head";
 import { UserContextProvider } from "../context/user-context";
-import { AuthContextProvider } from "../context/auth-context";
+import { AuthContextProvider } from "../context/oauth2-context";
 import { ThemeContextProvider } from "../context/theme-context";
 import { CustomIcon } from "@components/ui/custom-icon";
 import { ChatAlert } from "@components/chat-box/chat-alert";
@@ -51,7 +52,6 @@ export default function RootLayout({
           theme="colored"
           transition={Bounce}
         />
-        <ChatAlert />
       </body>
     </html>
   );
