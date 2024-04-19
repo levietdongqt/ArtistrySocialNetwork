@@ -20,3 +20,14 @@
     // // Trong trường hợp còn lại, trả về giây
     // return seconds + " giây";
 }
+
+export function parseStringToJson(array: string[]){
+    var object_array = [];
+    for (var i = 0; i < array.length; i++) {
+        // Chuyển đổi từng chuỗi JSON thành đối tượng JavaScript
+        var object = JSON.parse(array[i]);
+        // Thêm đối tượng vào mảng chứa các đối tượng
+        object_array.push(object);
+    }
+    return object_array
+}

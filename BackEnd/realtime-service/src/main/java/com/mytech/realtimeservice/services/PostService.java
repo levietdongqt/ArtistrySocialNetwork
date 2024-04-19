@@ -4,6 +4,7 @@ import com.mytech.realtimeservice.client.FriendForeignClient;
 import com.mytech.realtimeservice.dto.*;
 
 import com.mytech.realtimeservice.exception.myException.NotFoundException;
+import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.PostLike;
 import com.mytech.realtimeservice.models.users.User;
@@ -86,11 +87,9 @@ public class PostService implements IPostService {
         for (UserDTO userDTO : friendForeignClientFriends.getData()) {
            var userFrom = User.builder().id(userDTO.getId()).fullName(userDTO.getFullName()).avatar(userDTO.getAvatar()).build();
            if (userDTO.isTag()) {
-               notificationService.sendNotification(userFrom, userTo,"TAG",postDTO.getContent(),createdPost.getId());
-               wsSocket.sendPrivateNotification(userFrom.getId());
+               notificationService.sendNotification(userFrom, userTo,"TAG","đã đính kèm bạn vào bài posts của họ",createdPost.getId());
            }else{
-               notificationService.sendNotification(userFrom, userTo,"NORMAL",postDTO.getContent(),createdPost.getId());
-               wsSocket.sendPrivateNotification(userFrom.getId());
+               notificationService.sendNotification(userFrom, userTo,"NORMAL","đã tạo một bài post mới với nội dụng là: "+postDTO.getContent(),createdPost.getId());
            }
         }
         return createdPost;
@@ -101,6 +100,7 @@ public class PostService implements IPostService {
         if(post.isPresent()){
             detected =  true;
             postRepository.delete(post.get());
+            friendForeignClient.deletePostELS(post.get().getId());
         }
         return detected;
     }
@@ -122,8 +122,9 @@ public class PostService implements IPostService {
         return postRepository.count();
     }
 
-    public void deleteAll() {
+    public boolean deleteAll() {
         postRepository.deleteAll();
+        return true;
     }
 
     public Post findById(String id) {
@@ -213,7 +214,7 @@ public class PostService implements IPostService {
                 .fullName(postLikeDTO.getByUser().getFullName())
                 .avatar(postLikeDTO.getByUser().getAvatar())
                 .build();
-        notificationService.sendNotification(userFrom, userTo,"LIKE","",post.getId());
+        notificationService.sendNotification(userTo, userFrom,"LIKE","đã like bài viết của bạn",post.getId());
         return postUpdated;
     }
     //Xử lý comments cho 1 post
@@ -222,6 +223,11 @@ public class PostService implements IPostService {
         post.setTotalComments(post.getTotalComments() + 1);
         post.setUpdatedAt(LocalDateTime.now());
         return postRepository.save(post);
+    }
+
+    public List<Post> getPostByKeyWord(String keyword){
+        var posts = postRepository.findByContentContainingIgnoreCaseOrUserFullNameContainingIgnoreCase(keyword,keyword);
+        return posts;
     }
 
 }

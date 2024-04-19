@@ -14,22 +14,7 @@ export function FollowButton({
   userTargetId,
   userTargetUsername
 }: FollowButtonProps): JSX.Element | null {
-  /*const { user } = useAuth();*/
   const { open, openModal, closeModal } = useModal();
-
-  /*if (user?.id === userTargetId) return null;
-
-  const { id: userId, following } = user ?? {};*/
-
-  /*const handleFollow = (): Promise<void> =>
-    manageFollow('follow', userId as string, userTargetId);*/
-
- /* const handleUnfollow = async (): Promise<void> => {
-    await manageFollow('unfollow', userId as string, userTargetId);
-    closeModal();
-  };*/
-
- /* const userIsFollowed = !!following?.includes(userTargetId ?? '');*/
   const userIsFollowed = false;
   return (
     <>
@@ -61,7 +46,9 @@ export function FollowButton({
                      focus-visible:bg-light-primary/90 active:bg-light-border/75 dark:bg-light-border 
                      dark:text-light-primary dark:hover:bg-light-border/90 dark:focus-visible:bg-light-border/90 
                      dark:active:bg-light-border/75'
-          onClick={preventBubbling(/*handleFollow*/()=>{})}
+          onClick={preventBubbling(()=>{
+            
+          })}
         >
           Follow
         </Button>

@@ -3,6 +3,8 @@ package com.mytech.mainservice;
 import com.mytech.mainservice.model.elasticsearch.PostELS;
 import com.mytech.mainservice.model.elasticsearch.ServiceELS;
 import com.mytech.mainservice.model.elasticsearch.UserELS;
+import com.mytech.mainservice.repository.IFriendshipRepository;
+import com.mytech.mainservice.repository.PostELSRepository;
 import com.mytech.mainservice.repository.ServiceELSRepository;
 import com.mytech.mainservice.repository.UserELSRepository;
 import com.mytech.mainservice.service.implement.ELSService;
@@ -32,54 +34,61 @@ public class MainServiceApplication implements CommandLineRunner {
 
 	@Autowired
 	private ServiceELSRepository serviceELSRepository;
+
+	@Autowired
+	private PostELSRepository postELSRepository;
+
+	@Autowired
+	private IFriendshipRepository friendshipRepository;
 	public static void main(String[] args) {
 		SpringApplication.run(MainServiceApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
+		postELSRepository.deleteAll();
 		userELSRepository.deleteAll();
 		serviceELSRepository.deleteAll();
 		List<String> listsRoles = List.of("Nhà cung cấp","người dùng");
 		List<String> listsRoles2 = List.of("người dùng");
 		UserELS userELS = UserELS.builder()
 				.id("4c7bd754-f5bc-11ee-ba6a-02325a62a505")
-				.full_name("Trần Thụ Huy")
+				.fullName("Trần Thụ Huy")
 				.email("huy@gmail.com")
-				.avatar("avatar1.jpg")
+				.avatar("https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg")
 				.roles(listsRoles)
 				.build();
 		UserELS userELS1 = UserELS.builder()
 				.id("4c7be02b-f5bc-11ee-ba6a-02325a62a505")
-				.full_name("Lê Viết Đông")
+				.fullName("Lê Viết Đông")
 				.email("dong@gmail.com")
-				.avatar("avatar2.jpg")
+				.avatar("https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg")
 				.roles(listsRoles2)
 				.build();
 		UserELS userELS2 = UserELS.builder()
 				.id("d3cc9af4-9d38-44ee-8127-6efa4436fd70")
-				.full_name("Cao Tến Nam")
+				.fullName("Cao Tến Nam")
 				.email("test1@gmail.com")
 				.avatar("https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg")
 				.roles(listsRoles)
 				.build();
 		UserELS userELS3 = UserELS.builder()
 				.id("d3cc9af4-9d38-44ee-8127-6efa4436fd72")
-				.full_name("Cao Tến Nam")
+				.fullName("Cao Tến Nam")
 				.email("test1@gmail.com")
 				.avatar("https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg")
 				.roles(listsRoles)
 				.build();
 		UserELS userELS4 = UserELS.builder()
 				.id("d3cc9af4-9d38-44ee-8127-6efa4436fd73")
-				.full_name("Lê Hoàng Huy")
+				.fullName("Lê Hoàng Huy")
 				.email("test1@gmail.com")
 				.avatar("https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg")
 				.roles(listsRoles)
 				.build();
 		UserELS userELS5 = UserELS.builder()
 				.id("d3cc9af4-9d38-44ee-8127-6efa4436fd71")
-				.full_name("Lê Huy")
+				.fullName("Lê Huy")
 				.email("test1@gmail.com")
 				.avatar("https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg")
 				.roles(listsRoles)
@@ -112,11 +121,11 @@ public class MainServiceApplication implements CommandLineRunner {
 
 		PostELS postELS = PostELS.builder().id("d3cc9af4-9d38-44ee-8127-6efa4436fd7a")
 				.content("cần tìm studio giá rẻ")
-				.full_name("Huy Trần")
+				.fullName("Huy Trần")
 				.build();
 		PostELS postELS1 = PostELS.builder().id("d3cc9af4-9d38-44ee-8127-6efa4436fdna")
 				.content("cần thuê nhiếp ảnh")
-				.full_name("Hải Yến")
+				.fullName("Hải Yến")
 				.build();
 		elsService.savePostELS(postELS1);
 		elsService.savePostELS(postELS);

@@ -14,10 +14,7 @@ import org.hibernate.type.SqlTypes;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Builder
 @AllArgsConstructor
@@ -92,8 +89,7 @@ public class User implements Serializable {
 
     @Column(name = "search_history")
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<String> searchHistory;
-
+    private Queue<String> searchHistory;
     @Enumerated(EnumType.STRING)
     private Theme theme;
 

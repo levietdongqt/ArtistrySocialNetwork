@@ -1,6 +1,7 @@
 package com.mytech.realtimeservice.services;
 
 import com.mytech.realtimeservice.dto.ResponseMessage;
+import com.mytech.realtimeservice.models.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -14,26 +15,14 @@ public class WSSocket implements IWSSocket{
     private SimpMessagingTemplate messagingTemplate;
 
 
-    public void notifyFrontend(String message){
-        ResponseMessage responseMessage = new ResponseMessage(message);
-        sendGlobalNotification();
-        messagingTemplate.convertAndSend("/topic/messages",responseMessage);
-    }
 
-    public void notifyUser(final String id,String message){
-        ResponseMessage responseMessage = new ResponseMessage(message);
-        sendPrivateNotification(id);
-        messagingTemplate.convertAndSendToUser(id,"/topic/private-messages",responseMessage);
-    }
 
     public void sendGlobalNotification(){
         ResponseMessage responseMessage = new ResponseMessage("Global Notification");
-        System.out.println("sendGlobalNotification");
         messagingTemplate.convertAndSend("/topic/global-notification", responseMessage);
     }
-    public void sendPrivateNotification(final String userId){
+    public void sendPrivateNotification(final String userId,Notification notification){
         System.out.println("sendPrivateNotification");
-        ResponseMessage responseMessage = new ResponseMessage("Private Notification");
-        messagingTemplate.convertAndSendToUser(userId,"/topic/private-notification", responseMessage);
+        messagingTemplate.convertAndSendToUser(userId,"/topic/private-notification", notification);
     }
 }

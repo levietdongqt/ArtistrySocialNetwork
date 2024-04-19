@@ -1,12 +1,10 @@
-package com.mytech.realtimeservice.models;
-import com.mytech.realtimeservice.models.users.User;
+package com.mytech.mainservice.dto;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,25 +12,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Document
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Post implements Serializable {
-    @Id
+public class PostDTO implements Serializable {
     private String id;
-    private User user;
+    //private UserDTO user;
     private String content;
     private LocalDateTime createdAt;
     private String createdBy;
     private LocalDateTime updatedAt;
     private List<String> mediaUrl;
     private boolean status;
-    private List<User> tagUserPosts;
+//    private List<UserDTO> tagUserPosts;
     private double priorityScore;
-    private List<User> userPostLikes = new ArrayList<>();
+//    private List<UserDTO> userPostLikes;
     private int userReplies;
     private int totalLikes;
     private int totalComments;
-
+    private final String type = "post";
 }

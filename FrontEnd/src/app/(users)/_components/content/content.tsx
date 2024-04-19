@@ -42,7 +42,8 @@ export const variants: Variants = {
   exit: { opacity: 0, transition: { duration: 0.2 } }
 };
 
-export function Content(tweet: TweetProps) {
+export function ContentPost(tweet: TweetProps) {
+  console.log("tweet",tweet);
   const {
     id:postId,
     user: postUserData,
