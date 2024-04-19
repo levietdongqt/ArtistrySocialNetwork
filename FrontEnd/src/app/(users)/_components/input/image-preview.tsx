@@ -63,7 +63,6 @@ export function ImagePreview({
     setSelectedIndex(index);
     openModal();
   };
-  console.log("show",previewCount);
   const handleNextIndex = (type: 'prev' | 'next') => () => {
     const nextIndex =
       type === 'prev'

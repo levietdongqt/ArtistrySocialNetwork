@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import {useAuth} from '../../../../context/oauth2-context';
 import {useWindow} from '../../../../context/window-context';
 import {useModal} from '@lib/hooks/useModal';
 import {Modal} from '../modal/modal';
@@ -11,6 +10,9 @@ import {MoreSettings} from './more-settings';
 import {SidebarProfile} from './sidebar-profile';
 import type {IconName} from '@components/ui/hero-icon';
 import {testHeader} from "../../../../services/main/auth-service";
+import {useUser} from "../../../../context/user-context";
+import {LeftSidebar} from "@components/chat-box/left-sidebar";
+import {useState} from "react";
 
 export type NavLink = {
     href: string;
@@ -18,9 +20,10 @@ export type NavLink = {
     iconName: IconName;
     disabled?: boolean;
     canBeHidden?: boolean;
+    callBack? : () => void;
 };
 
-const navLinks: Readonly<NavLink[]> = [
+const navLinksTop: Readonly<NavLink[]> = [
 
     {
         href: '/home',
@@ -32,13 +35,9 @@ const navLinks: Readonly<NavLink[]> = [
         linkName: 'Thông báo',
         iconName: 'BellIcon',
         disabled: false
-    },
-    {
-        href: '/message',
-        linkName: 'Tin nhắn',
-        iconName: 'EnvelopeIcon',
-        disabled: true
-    },
+    }
+];
+const navLinksBot: Readonly<NavLink[]> = [
     {
         href: '/bookmarks',
         linkName: 'Đã lưu',
@@ -55,11 +54,13 @@ const navLinks: Readonly<NavLink[]> = [
 ];
 
 export function Sidebar() {
+    const [showChatBox, setShowChatBox] = useState(false);
 
     const {isMobile} = useWindow();
 
     const {open, openModal, closeModal} = useModal();
 
+    const {currentUser} = useUser()
     /*const username = user?.username as string;*/
     const username = "123";
     const test = () => {
@@ -96,7 +97,16 @@ export function Sidebar() {
                         </Link>
                     </h1>
                     <nav className='flex items-center justify-around xs:flex-col xs:justify-center xl:block'>
-                        {navLinks.map(({...linkData}) => (
+                        {navLinksTop.map(({...linkData}) => (
+                            <SidebarLink {...linkData} key={linkData.href}/>
+                        ))}
+                        <SidebarLink
+                            href={'#'}
+                            linkName='Tin nhắn'
+                            iconName='EnvelopeIcon'
+                            callBack={()=>setShowChatBox(prevState => !prevState)}
+                        />
+                        {navLinksBot.map(({...linkData}) => (
                             <SidebarLink {...linkData} key={linkData.href}/>
                         ))}
                         <SidebarLink
@@ -121,6 +131,19 @@ export function Sidebar() {
                     </Button>
                 </section>
                 {!isMobile && <SidebarProfile/>}
+            </div>
+            <div className="fixed bottom-10 right-5 mb-4 ml-4 p-2 rounded z-50">
+                {showChatBox && (
+                    <div className={''}>
+                        <LeftSidebar closeLeftSideBar={() => setShowChatBox(false)}/>
+                    </div>
+                )}
+                {/*<button className="fixed bottom-0 right-5 mb-4 ml-4 p-2  text-white rounded"*/}
+                {/*        onClick={() => {*/}
+                {/*            setShowChatBox(prevState => !prevState)*/}
+                {/*        }}>*/}
+                {/*    <CustomIcon iconName="MessageIcon"/>*/}
+                {/*</button>*/}
             </div>
         </header>
     );

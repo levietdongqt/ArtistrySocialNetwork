@@ -1,9 +1,15 @@
-import {MessageMain} from "@components/chat-box/message-main";
+
 import cn from "clsx";
+import dynamic from "next/dynamic";
 
 
-export default async function Message() {
+export default function Message() {
     const loading = false;
+    const MessageMain = dynamic(() =>
+            import ("@components/chat-box/message-main"), {
+            ssr: false
+        }
+    )
     return (
         <>
             <main
@@ -13,7 +19,9 @@ export default async function Message() {
                 )}
             >
                 <MessageMain/>
+
             </main>
+
 
         </>
 

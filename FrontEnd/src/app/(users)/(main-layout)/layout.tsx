@@ -22,7 +22,7 @@ export default function RootLayout({
             <MainLayout >
                 {children}
             </MainLayout>
-            <ChatAlert />
+            {/*<ChatAlert />*/}
         </>
 
     )

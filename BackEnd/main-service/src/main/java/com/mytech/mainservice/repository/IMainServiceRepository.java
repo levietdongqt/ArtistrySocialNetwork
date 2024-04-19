@@ -14,8 +14,8 @@ import java.util.Set;
 public interface IMainServiceRepository extends JpaRepository<MainService, Long> {
     Set<MainService> findMainServiceByProvider_IdAndStatus(String userId,boolean status);
 
-    @Transactional
-    @Modifying
-    @Query("update MainService m set m = :service where m.id = :id")
-    int update(@Param("service") MainService service,@Param("id") long id);
+//    @Transactional
+//    @Modifying
+//    @Query("update MainService m set m = :service where m.id = :id")
+//    int update(@Param("service") MainService service,@Param("id") long id);
 }

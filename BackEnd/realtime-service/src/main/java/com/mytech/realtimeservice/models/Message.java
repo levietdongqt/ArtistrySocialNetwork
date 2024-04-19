@@ -20,21 +20,15 @@ import java.time.LocalDateTime;
 public class Message {
     @Id
     private String id;
-
     private String conversationId;
-
-    private String senderUserId;
-
-    private String receiverUserId;
-
+    private String senderId;
+    private String receiverId;
     private String content;
-
     private MessageType type;
-
     private ParentMessage parentMessage;
-
     private LikeMessage likeMessage;
+    private LocalDateTime sendTime;
+    private boolean seen;
 
-    private LocalDateTime sentTime;
 
 }

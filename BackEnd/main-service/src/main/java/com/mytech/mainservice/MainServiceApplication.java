@@ -38,8 +38,8 @@ public class MainServiceApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		userELSRepository.deleteAll();
-		serviceELSRepository.deleteAll();
+//		userELSRepository.deleteAll();
+//		serviceELSRepository.deleteAll();
 		List<String> listsRoles = List.of("Nhà cung cấp","người dùng");
 		List<String> listsRoles2 = List.of("người dùng");
 		UserELS userELS = UserELS.builder()

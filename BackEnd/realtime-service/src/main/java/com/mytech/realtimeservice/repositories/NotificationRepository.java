@@ -18,4 +18,7 @@ public interface NotificationRepository extends MongoRepository<Notification,Str
 
     @Query(value = "{'userFrom.userId': ?0, 'delivered': false,'status': false, 'createdDate': {$gt: ?1}}", sort = "{'createdDate' : -1}")
     List<Notification> findNotificationByDelivered(String userFromId, Date startDate);
+
+    @Query(value = "{'userFrom.userId': ?0, 'delivered': false,'status': false, 'createdDate': {$gt: ?1}}", sort = "{'createdDate' : -1}",count = true)
+    long countNotificationByDelivered(String userFromId, Date startDate);
 }

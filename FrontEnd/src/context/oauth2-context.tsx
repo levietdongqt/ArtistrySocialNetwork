@@ -47,30 +47,33 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
     const [verifyResult, setVerifyResult] = useState(undefined)
     auth.languageCode = 'it';
     const signInWithGoogle = async (): Promise<void> => {
-        try {
-            const provider = new GoogleAuthProvider();
-            const credential = await signInWithPopup(auth, provider);
-            console.log("LOGIN GOOGLE: ", credential)
-            const oauth2Response = await oauth2Service(await credential.user.getIdToken())
-            handleSuccessResponse(oauth2Response, router)
-        } catch (error) {
-            console.log(error)
-            throw error
-        }
+        const provider = new GoogleAuthProvider();
+        await loginHandleTemplate(provider);
     };
 
     const signInWithFacebook = async (): Promise<void> => {
+        const provider = new FacebookAuthProvider();
+        await loginHandleTemplate(provider);
+    };
+
+    const loginHandleTemplate = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
         try {
-            const provider = new FacebookAuthProvider();
             const credential = await signInWithPopup(auth, provider);
             console.log("LOGIN FACEBOOK: ")
-            const oauth2Response = await oauth2Service(await credential.user.getIdToken())
-            handleSuccessResponse(oauth2Response, router)
+            toast.promise(oauth2Service(await credential.user.getIdToken()), {
+                pending: 'Đang đăng nhập .....',
+                success: "Đăng nhập thành công!",
+                error: 'Thông tin đăng nhập không hợp lệ'
+            }).then((oauth2Response) => {
+                handleSuccessResponse(oauth2Response, router)
+            })
+
         } catch (error) {
             console.log(error)
             throw error
         }
-    };
+    }
+
     const sendVerifyCode = async (phoneNumber: string, destination: string) => {
         signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier!)
             .then((confirmationResult) => {
@@ -90,6 +93,7 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
             throw error
         }
     };
+    
     const captchaVerifier = async ({phoneNumber, destination = "/verify/continue", callBack}: captchaVerifierParam) => {
         window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
             'size': 'normal',
@@ -98,7 +102,9 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
                 console.log("Destination: " + destination)
                 router.prefetch(destination)
                 // reCAPTCHA solved, allow signInWithPhoneNumber.
-                sendVerifyCode(phoneNumber, destination)
+                toast.promise(sendVerifyCode(phoneNumber, destination), {
+                    pending: "Đang xác thực.... ",
+                })
                 callBack?.(); //
             },
             'expired-callback': () => {
