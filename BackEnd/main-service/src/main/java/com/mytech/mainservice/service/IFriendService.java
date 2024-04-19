@@ -2,6 +2,7 @@ package com.mytech.mainservice.service;
 
 import com.mytech.mainservice.dto.UserDTO;
 
+import java.util.List;
 import java.util.Set;
 
 public interface IFriendService {
@@ -11,7 +12,11 @@ public interface IFriendService {
     void declineFriendRequest(String userId, String friendId);
     void blockFriend(String userId, String friendId);
     void unblockFriend(String userId, String friendId);
-    Set<UserDTO> getFriends(String userId);
+    List<UserDTO> getFollowedFriends(String userId);
+
+    List<UserDTO> getIsFriendFriends(String userId);
+
+    List<UserDTO> getPendingFriends(String userId);
 
     void followingFriendRequest(String userId, String friendId);
 

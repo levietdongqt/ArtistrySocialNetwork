@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -141,11 +142,48 @@ public class FriendService implements IFriendService {
     }
 
     @Override
-    public Set<UserDTO> getFriends(String userId) {
-        Set<User> friends = friendshipRepo.getFriends(userId);
-        return friends.stream()
-                .map(friend -> modelMapper.map(friend, UserDTO.class))
-                .collect(Collectors.toSet());
+    public List<UserDTO> getFollowedFriends(String userId) {
+        List<User> friends = FilterUserByStatus(userId,FriendShipStatus.FOLLOWING);
+        return friends
+                .stream()
+                .map(friend -> modelMapper.map(friend,UserDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDTO> getIsFriendFriends(String userId) {
+        List<User> friends = new ArrayList<User>();
+        //Lấy ra toàn bộ dữ liệu trong bảng friendship có chưa userId
+        List<Friendship> friendships = friendshipRepo.getAllFriendShipByUserId(userId);
+
+        //Lọc lại dữ liệu để lấy ra dữ liệu có status = ISFRIEND
+        List<Friendship> friendsWithStatusIsFriendship = friendships
+                .stream()
+                .filter(friendship -> checkStatusInFriendship(friendship,FriendShipStatus.ISFRIEND))
+                .toList();
+        //Add dữ liệu vào mảng
+        friendsWithStatusIsFriendship.forEach(friendship -> {
+            if (friendship.getFriend().getId().equals(userId)) {
+                var fromUser = friendship.getFromUser();
+                friends.add(fromUser);
+            }else{
+                var friend = friendship.getFriend();
+                friends.add(friend);
+            }
+        });
+        return friends
+                .stream()
+                .map(friend -> modelMapper.map(friend,UserDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDTO> getPendingFriends(String userId) {
+        List<User> friends = FilterUserByStatus(userId,FriendShipStatus.PENDING);
+        return friends
+                .stream()
+                .map(friend -> modelMapper.map(friend,UserDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -243,6 +281,18 @@ public class FriendService implements IFriendService {
             friendship.setStatus(status);
             friendshipRepo.save(friendship);
         }
+    }
+
+    private List<User> FilterUserByStatus(String userId,FriendShipStatus status) {
+        List<User> friends = new ArrayList<User>();
+        List<Friendship> friendships = friendshipRepo.getFriendShipByUserId(userId);
+        List<Friendship> friendshipWithPending = friendships
+                .stream()
+                .filter(friendship -> checkStatusInFriendship(friendship,status))
+                .collect(Collectors.toList());
+        friendshipWithPending.forEach(friendship -> friends.add(friendship.getFriend()));
+        return friends;
+
     }
 
     private void sendNotificationAfterAddFriendship(String userId, String friendId,String type,String message){

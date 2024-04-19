@@ -11,6 +11,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -25,13 +26,40 @@ public class FriendController {
     }
 
     //    @Secured({"ROLE_ADMIN", "ROLE_USER"})
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> getFriends(@PathVariable String userId) {
-        Set<UserDTO> friends = friendService.getFriends(userId);
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @GetMapping("/follow/{userId}")
+    public ResponseEntity<?> getFollowedFriends(@PathVariable String userId) {
+        List<UserDTO> friends = friendService.getFollowedFriends(userId);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Get Friends successfully")
+                        .message("Get followed Friends successfully")
+                        .data(friends)
+                        .build()
+        );
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @GetMapping("/is-friend/{userId}")
+    public ResponseEntity<?> getIsFriendedFriends(@PathVariable String userId) {
+        List<UserDTO> friends = friendService.getIsFriendFriends(userId);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get is friends Friends successfully")
+                        .data(friends)
+                        .build()
+        );
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @GetMapping("/pending/{userId}")
+    public ResponseEntity<?> getPendingFriends(@PathVariable String userId) {
+        List<UserDTO> friends = friendService.getPendingFriends(userId);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get pending Friends successfully")
                         .data(friends)
                         .build()
         );
