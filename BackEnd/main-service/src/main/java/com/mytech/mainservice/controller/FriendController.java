@@ -140,5 +140,18 @@ public class FriendController {
         );
     }
 
+//    @PreAuthorize("@jwtTokenHolder.isValidUserId(#friendDTO.userId()) && hasRole('USER')")
+    @PostMapping("/isFollow-isFriend")
+    public ResponseEntity<?> isFollowAndFriendFriend(@RequestBody FriendDTO friendDTO) {
+        var result = friendService.isFollowingAndIsFriend(friendDTO.userId(), friendDTO.friendId());
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Is following successfully")
+                        .data(result)
+                        .build()
+        );
+    }
+
 
 }

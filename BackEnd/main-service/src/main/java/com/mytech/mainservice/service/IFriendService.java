@@ -1,5 +1,6 @@
 package com.mytech.mainservice.service;
 
+import com.mytech.mainservice.dto.IsCheckDTO;
 import com.mytech.mainservice.dto.UserDTO;
 
 import java.util.List;
@@ -21,5 +22,7 @@ public interface IFriendService {
     void followingFriendRequest(String userId, String friendId);
 
     void unfollowingFriendRequest(String userId, String friendId);
+
+    IsCheckDTO isFollowingAndIsFriend(String userId, String friendId);
 
 }

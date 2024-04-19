@@ -1,6 +1,7 @@
 package com.mytech.mainservice.service.implement;
 
 import com.mytech.mainservice.client.NotificationForeignClient;
+import com.mytech.mainservice.dto.IsCheckDTO;
 import com.mytech.mainservice.dto.NotificationDTO;
 import com.mytech.mainservice.dto.UserDTO;
 import com.mytech.mainservice.enums.FriendShipStatus;
@@ -61,7 +62,6 @@ public class FriendService implements IFriendService {
         //Trường hợp 3: chi có lời mời ngược
         if(reverseFriend.isPresent()){
             handleIfFriendshipExisted(reverseFriend.get(),"Đã tồn tại lời mời từ "+ friendId + " đến "+userId);
-            return;
         }
         //Trường hợp 4 : chưa tồn tại tạo mới
         Friendship newFriendship = Friendship.builder()
@@ -80,7 +80,6 @@ public class FriendService implements IFriendService {
         if (friendship.isPresent()) {
             if(reverseFriend.isPresent()) {
                 handleDeleteFriendship(reverseFriend.get());
-                return;
             }
             handleDeleteFriendship(friendship.get());
             return;
@@ -235,6 +234,34 @@ public class FriendService implements IFriendService {
             return;
         }
         throw new RuntimeException("Chưa tồn tại quan hệ bạn bè");
+    }
+
+    @Override
+    public IsCheckDTO isFollowingAndIsFriend(String userId, String friendId) {
+        if(userId.equals(friendId)){
+            throw new RuntimeException("Không có quan hệ với chính mình");
+        }
+        boolean isFollowing = false;
+        boolean isFriend = false;
+        boolean isPending = false;
+        Optional<Friendship> friendship= friendshipRepo.findByFromUser_IdAndFriend_Id(userId, friendId);
+        if (friendship.isPresent()) {
+            var checkFollowingStatus = checkStatusInFriendship(friendship.get(),FriendShipStatus.FOLLOWING);
+            isFollowing = checkFollowingStatus;
+            var checkFriendStatus = checkStatusInFriendship(friendship.get(),FriendShipStatus.ISFRIEND);
+            isFriend = checkFriendStatus;
+            var checkPendingStatus = checkStatusInFriendship(friendship.get(),FriendShipStatus.PENDING);
+            isPending = checkPendingStatus;
+        }
+        if (isFriend) {
+            return IsCheckDTO.builder().isFriend(true).isFollow(isFollowing).isPending(isPending).build();
+        }
+        Optional<Friendship> reverseFriendship =  friendshipRepo.findByFromUser_IdAndFriend_Id(friendId, userId);
+        if (reverseFriendship.isPresent()) {
+            var checkFriendStatus = checkStatusInFriendship(reverseFriendship.get(),FriendShipStatus.ISFRIEND);
+            isFriend = checkFriendStatus;
+        }
+        return IsCheckDTO.builder().isFriend(isFriend).isFollow(isFollowing).isPending(isPending).build();
     }
 
     //Handler status friendships

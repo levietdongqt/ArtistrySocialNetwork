@@ -30,3 +30,16 @@ export enum AddFriendButtonType {
     OK = "Đồng ý",
     DENY = "Từ chối"
 }
+
+export enum FollowButtonType {
+    FOLLOW = "Đang theo dõi bạn",
+    UN_FOLLOW = "Không theo dõi bạn",
+    FOLLOW_BUTTON = "Theo dõi",
+    FRIEND = "Bạn bè",
+    FOLLOWING_BUTTON = "Đang Theo dõi",
+    UN_FOLLOW_BUTTON = "Bỏ theo dõi",  
+    ADD_FRIEND_BUTTON= "Kết bạn",
+    PENDING_BUTTON= "Đang chờ đồng ý",
+    FRIENDED_BUTTON = "Đang là bạn bè",
+    REMOVE_FRIEND_BUTTON ="Hủy kết bạn"
+}

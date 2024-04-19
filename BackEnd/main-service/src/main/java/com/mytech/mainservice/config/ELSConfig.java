@@ -23,7 +23,7 @@ public class ELSConfig extends ElasticsearchConfiguration {
         return ClientConfiguration.builder()
                 .connectedToLocalhost()
                 .usingSsl(buildSSLContext())
-                .withBasicAuth("elastic","vKOWR=cFGmthSBpOT8j*")
+                .withBasicAuth("elastic","JlqYg9P29w+Kmk29QdDa")
                 .build();
     }
 

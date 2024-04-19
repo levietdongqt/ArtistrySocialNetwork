@@ -34,11 +34,9 @@ export default function AllNotification() {
     });
 
     useEffect(()=>{
-        console.log("notificationsTypeFriendassd",notificationsContent);
         switch(notificationsContent?.notificationType){
             case "FRIEND":
                 setNotificationsTypeFriend([notificationsContent,...notificationsTypeFriend])
-                console.log("VO",notificationsTypeFriend);
                 break;
             case "NORMAL":
                 setNotificationsTypeNormal([notificationsContent,...notificationsTypeNormal])
@@ -46,7 +44,6 @@ export default function AllNotification() {
             case "TAG" || "LIKE" || "COMMENT" || "FOLLOWING" || "ACCEPT_FRIEND":
                 console.log("notificationsTypeFriend",notificationsTypeFriend);
                 setNotificationsToday([notificationsContent,...notificationsToday])
-                console.log("notificationsToday",notificationsToday);
                 break;
             default:
                 break;
@@ -60,8 +57,8 @@ export default function AllNotification() {
             data2.data.filter((value: any) => value.notificationType === "FRIEND"));
         setNotificationsTypeNormal( data2 &&
             data2.data.filter((value: any) => value.notificationType === "NORMAL"));
-            setNotificationsToday(data2 &&
-                data2.data.filter((value: any) => {
+        setNotificationsToday(data2 &&
+            data2.data.filter((value: any) => {
                     // Lọc ra các thông báo có notificationType là "Like" hoặc "Comment"
                     if (
                         value.notificationType === "LIKE" ||
@@ -72,7 +69,7 @@ export default function AllNotification() {
         
                         return notificationDate.setHours(0, 0, 0, 0) === today.getTime();
                     }
-                    return false; // Không phải là "Like" hoặc "Comment"
+                    return false;
                 }))
     },[data2])
 

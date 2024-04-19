@@ -103,7 +103,7 @@ export default function NotificationCard({ data }: NotificationCardParams) {
     >
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center">
-        <UserTooltip avatarCheck {...data?.userTo!}>
+        <UserTooltip avatarCheck={true} {...data?.userTo!}>
           <UserAvatar
             src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
             alt={"name"}
