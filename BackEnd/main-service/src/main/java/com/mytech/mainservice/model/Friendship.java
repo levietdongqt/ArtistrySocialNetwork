@@ -3,7 +3,6 @@ package com.mytech.mainservice.model;
 import com.mytech.mainservice.enums.FriendShipStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -22,6 +21,7 @@ public class Friendship implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private long id;
+
 
     @JdbcTypeCode(SqlTypes.JSON)
     private List<FriendShipStatus> status;

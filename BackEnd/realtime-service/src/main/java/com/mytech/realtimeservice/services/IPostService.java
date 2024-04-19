@@ -12,7 +12,7 @@ public interface IPostService {
     public Post create(PostDTO postDTO);
 
     public List<PostResponse> findAll(int limit, int offset);
-    public void deleteAll();
+    public boolean deleteAll();
     public Post findById(String id);
 
     public Post updateLikeForPost(String postId, User userLike);

@@ -27,7 +27,7 @@ export function Aside({ children }: AsideProps): JSX.Element | null {
                     </h2>
                 </div>
             ) : (
-                <SearchBar />
+                <SearchBar width='350px' />
             )}
             {children}
             <AsideFooter key={'footer'} />

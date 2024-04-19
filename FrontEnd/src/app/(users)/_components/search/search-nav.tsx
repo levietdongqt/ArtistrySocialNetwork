@@ -10,10 +10,10 @@ type UserNavProps = {
 
 const allNavs = [
   [
-    { name: 'Top', path: '' },
-    { name: 'latest', path: 'with_replies' },
-    { name: 'people', path: 'media' },
-    { name: 'studio', path: 'likes' }
+    { name: 'Tất cả', path: 'with_replies' },
+    { name: 'Người dùng', path: 'with_replies' },
+    { name: 'Dịch vụ', path: 'media' },
+    { name: 'Bài đăng', path: 'likes' }
   ],
   [
     { name: 'Following', path: 'following' },

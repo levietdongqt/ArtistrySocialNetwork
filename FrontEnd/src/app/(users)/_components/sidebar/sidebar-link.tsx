@@ -1,3 +1,4 @@
+"use client"
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import cn from "clsx";
@@ -14,9 +15,10 @@ import { Loading } from "@components/ui/loading";
 import { Error } from "@components/ui/error";
 import { useEffect, useState } from "react";
 import { useUser } from "context/user-context";
-import { useSocket } from "context/websocket-context1";
-import { notification } from "antd";
+import { Button, notification } from "antd";
 import { postNotificationsAPI } from "services/realtime/realtimeservice";
+import { useNotification } from "context/notification-context";
+
 
 type SidebarLinkProps = NavLink & {
   username?: string;
@@ -31,39 +33,28 @@ export function SidebarLink({
   canBeHidden,
 }: SidebarLinkProps) {
   var user = useUser();
-  const [countNoti, setCountNoti] = useState(0);
   const [shouldFetch, setShouldFetch] = useState(false);
-  const [shouldFetchNotification, setShouldFetchNotification] = useState(true);
   const asPath = usePathname();
   const isActive = username ? asPath.includes(username) : asPath === href;
-  const { notificationMessages, setNotificationMessages } = useSocket();
   //Xu lý show notifications
+  const {dataCount,setDataCount} = useNotification();
+
+
   const {
     data: notificationsData,
     isLoading: isLoading,
     error: error2,
   } = useSWR(
-    shouldFetchNotification
-      ? countUnreadNotifications(user.currentUser?.id as string)
-      : null,
-    fetcherWithToken
+      countUnreadNotifications(user.currentUser?.id as string),
+    fetcherWithToken,{
+      revalidateOnFocus: false,
+    }
   );
 
-  useEffect(() => {
-    setShouldFetchNotification(true);
-    setNotificationMessages(null);
-    if (notificationsData && notificationMessages != null) {
-      setCountNoti(notificationsData.data); 
-    }
-  }, [notificationMessages]);
+  useEffect(()=>{
+      setDataCount((prev) => notificationsData?.data);
+  },[notificationsData?.data])
 
-  useEffect(() => {
-    if (shouldFetchNotification) {
-      setShouldFetchNotification(false);
-    }
-  }, [shouldFetchNotification]);
-
-  //Xử lý update delivery
   const {} = useSWR(
     shouldFetch
       ? updateDeliveryNotification(user.currentUser?.id as string)
@@ -72,13 +63,10 @@ export function SidebarLink({
   );
 
   function handleClickSlidebar() {
-    //disabled ? preventBubbling() : undefined;
     if (!disabled) {
       setShouldFetch(true);
-      setCountNoti(0);
+      setDataCount((prev) => 0);
     }
-    // setShouldFetch(true);
-    // 
   }
   useEffect(() => {
     if (shouldFetch) {
@@ -123,15 +111,17 @@ export function SidebarLink({
           ) : (
             
             linkName === "Thông báo" &&
-            countNoti != 0 && (
+            dataCount != 0 && (
               <span className="absolute top-0 left-0 bg-blue-500 text-white rounded-full px-1 py-0.5 text-xs">
-                {countNoti}
+                {dataCount}
               </span>
             )
           )}
         </div>
         <p className="hidden xl:block">{linkName}</p>
       </div>
+
     </Link>
+
   );
 }

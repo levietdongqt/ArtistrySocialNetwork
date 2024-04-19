@@ -7,7 +7,6 @@ import { UserCard } from "../user/user-card";
 import { MainHeader } from "../home/main-header";
 import { useRouter } from "next/navigation";
 import NotificationMain from "../notification/notification-main";
-import { useSocket } from "context/websocket-context1";
 
 const ContainerNotification = () => {
   

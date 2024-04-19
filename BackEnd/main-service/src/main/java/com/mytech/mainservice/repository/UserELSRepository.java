@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface UserELSRepository extends ElasticsearchRepository<UserELS,String> {
 
-    @Query("{\"multi_match\": {\"query\": \"?0\", \"fields\": [\"full_name\",\"roles\",\"email\"], \"fuzziness\": \"1\"}}")
+    @Query("{\"multi_match\": {\"query\": \"?0\", \"fields\": [\"fullName\",\"roles\",\"email\"], \"fuzziness\": \"1\"}}")
     public List<UserELS> getUserELS(String search);
 }

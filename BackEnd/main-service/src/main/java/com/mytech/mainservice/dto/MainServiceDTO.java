@@ -37,4 +37,5 @@ public class MainServiceDTO implements Serializable {
     private List<ExtraServiceDTO> extraServiceDTOs;
     private PromotionDTO promotionDTO;
     private UserDTO provider;
+    private final String type = "service";
 }

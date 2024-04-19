@@ -10,8 +10,10 @@ import com.mytech.mainservice.exception.myException.NotFoundException;
 import com.mytech.mainservice.exception.myException.UnAuthenticationException;
 import com.mytech.mainservice.model.Role;
 import com.mytech.mainservice.model.User;
+import com.mytech.mainservice.model.elasticsearch.UserELS;
 import com.mytech.mainservice.repository.IRoleRepository;
 import com.mytech.mainservice.repository.IUserRepository;
+import com.mytech.mainservice.service.IELSService;
 import com.mytech.mainservice.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,9 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -42,6 +42,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IELSService elsService;
 
     @Override
     public UserDTO getUserById(String userId) {
@@ -104,8 +107,22 @@ public class UserService implements IUserService {
                 .build();
         User savedUser = userRepo.save(user);
         log.info("User added to this system");
+        //Save vào els search
+        //Lấy ra list roles
+        var vietnameseRoles = getVietnameseRolesFromRolesTable(savedUser.getRoles());
+        UserELS userELS = UserELS.builder()
+                .id(savedUser.getId())
+                .fullName(savedUser.getFullName())
+                .avatar(savedUser.getAvatar())
+                .coverImage(savedUser.getCoverImage())
+                .email(savedUser.getEmail())
+                .bio(savedUser.getBio())
+                .roles(vietnameseRoles).build();
+        elsService.saveUserELS(userELS);
+        log.info("Save to els search successfully");
         return savedUser;
     }
+
 
     @Override
     public User getUserByPhoneNumber(String phoneNumber) {
@@ -142,4 +159,82 @@ public class UserService implements IUserService {
         }
         return user.orElse(null);
     }
+
+    @Override
+    public void updateHistorySearch(String userId, String keyword) {
+        var updatedUserOptional = userRepo.findById(userId);
+        if (updatedUserOptional.isPresent()){
+            var updatedUser = updatedUserOptional.get();
+            var listHistory = updatedUser.getSearchHistory();
+            if(listHistory == null){
+                listHistory = new LinkedList<>();
+            }
+            //Xóa phần tử bị trùng trong mảng
+            for(String history : listHistory){
+                if(history.equals(keyword)){
+                    listHistory.remove(history);
+                    break;
+                }
+            }
+            System.out.println(listHistory);
+            //Nếu size lớn hơn 10 thì xóa phần tử đầu
+            if (!listHistory.isEmpty()){
+                if (listHistory.size() >= 10) {
+                    listHistory.poll();
+                    listHistory.add(keyword);
+                }else {
+                    listHistory.add(keyword);
+                }
+                updatedUser.setSearchHistory(listHistory);
+                userRepo.save(updatedUser);
+                return;
+            }
+            listHistory.add(keyword);
+            updatedUser.setSearchHistory(listHistory);
+            userRepo.save(updatedUser);
+            return;
+        }
+        throw new NotFoundException("User not found");
+
+    }
+
+    @Override
+    public List<String> getHistorySearch(String userId) {
+        var userOptional = userRepo.findById(userId);
+        if (userOptional.isPresent()){
+            var user = userOptional.get();
+            var listHistory = user.getSearchHistory();
+            if(listHistory == null){
+                listHistory = new LinkedList<>();
+            }
+            return listHistory.stream().toList();
+        }
+        throw new NotFoundException("User not found");
+    }
+
+    public List<String> getVietnameseRolesFromRolesTable(List<Role> roles) {
+        List<String> vietnameseRoles = new ArrayList<>();
+        for (Role role : roles) {
+            switch (role.getName()){
+                case ROLE_ADMIN:
+                    vietnameseRoles.add("Quản trị viên");
+                    break;
+                case ROLE_USER:
+                    vietnameseRoles.add("Người dùng");
+                    break;
+                case ROLE_PROVIDER:
+                    vietnameseRoles.add("Nhà cung cấp");
+                    break;
+                case ROLE_STUDIO:
+                    vietnameseRoles.add("Studio");
+                    break;
+                case ROLE_MAKEUP:
+                    vietnameseRoles.add("Makeup");
+                    break;
+            }
+        }
+        return vietnameseRoles;
+    }
+
+
 }

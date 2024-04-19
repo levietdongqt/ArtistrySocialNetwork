@@ -1,6 +1,7 @@
 package com.mytech.realtimeservice.controller;
 
 
+import com.mytech.realtimeservice.dto.NotificationDTO;
 import com.mytech.realtimeservice.dto.ResponseObject;
 import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.Post;
@@ -18,16 +19,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("notifications")
+@RequestMapping("/notifications")
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationController {
     @Autowired
     private NotificationService notificationService;
-
-    @Autowired
-    private PostService postService;
-
 
 
     @GetMapping("/{userId}")
@@ -44,7 +41,7 @@ public class NotificationController {
     }
 
     @GetMapping("/{userId}/all")
-    public ResponseEntity<?> getAddNotifications(@PathVariable String userId) {
+    public ResponseEntity<?> getAllNotifications(@PathVariable String userId) {
         List<Notification> notifications = notificationService.getNotificationsByUserFromUserId(userId);
         log.info("PostList",notifications);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -57,7 +54,7 @@ public class NotificationController {
     }
 
     @PutMapping("/update/{notifID}")
-    public ResponseEntity changeNotificationsStatusToRead(@PathVariable String notifID) {
+    public ResponseEntity<?> changeNotificationsStatusToRead(@PathVariable String notifID) {
         log.info("Notification changed",notifID);
         Notification notification = notificationService.changeNotifStatusToRead(notifID);
 
@@ -71,7 +68,7 @@ public class NotificationController {
     }
 
     @GetMapping("/{userId}/count-notifications")
-    public ResponseEntity countDeliveryNotifications(@PathVariable String userId) {
+    public ResponseEntity<?> countDeliveryNotifications(@PathVariable String userId) {
         int count = notificationService.CountNotificationsUnread(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
@@ -92,5 +89,14 @@ public class NotificationController {
                         .message("Updated delivery notifications ok")
                         .build()
         );
+    }
+    @PostMapping("/save-notifications")
+    public ResponseEntity<?> saveNotification(@RequestBody NotificationDTO notificationDTO) {
+        notificationService.sendNotification(notificationDTO.getUserFrom(),notificationDTO.getUserTo(),notificationDTO.getNotificationType(),notificationDTO.getMessage(),notificationDTO.getLink());
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Updated delivery notifications ok")
+                        .build());
     }
 }

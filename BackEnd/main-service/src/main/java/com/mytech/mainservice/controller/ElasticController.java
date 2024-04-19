@@ -3,6 +3,7 @@ package com.mytech.mainservice.controller;
 import com.mytech.mainservice.dto.ResponseObject;
 import com.mytech.mainservice.model.elasticsearch.PostELS;
 import com.mytech.mainservice.service.IELSService;
+import com.mytech.mainservice.service.IUserService;
 import com.mytech.mainservice.service.implement.ELSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +18,9 @@ public class ElasticController {
 
     @Autowired
     private IELSService elsService;
+
+    @Autowired
+    private IUserService userService;
 
     @PostMapping("/posts")
     public ResponseEntity<?> savePostELS(@RequestBody PostELS postELS){
@@ -51,6 +55,50 @@ public class ElasticController {
                         .data(result)
                         .build());
     }
+
+    @PutMapping("/{userId}/update-history")
+    public ResponseEntity<?> updateHistory(@PathVariable String userId,@RequestBody String searchText){
+        userService.updateHistorySearch(userId,searchText);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.CREATED)
+                        .message("Update History OK")
+                        .data(null)
+                        .build());
+    }
+    @GetMapping("/{userId}/get-history")
+    public ResponseEntity<?> getHistorySearch(@PathVariable String userId) {
+        var results = userService.getHistorySearch(userId);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get History Search OK")
+                        .data(results)
+                        .build());
+    }
+    @GetMapping("/{userId}/get-users")
+    public ResponseEntity<?> getUserSearch(@PathVariable String userId,@Param("q") String q) {
+        var results = elsService.searchUserELS(q, userId);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get User Search OK")
+                        .data(results)
+                        .build());
+    }
+
+    @GetMapping("/get-services")
+    public ResponseEntity<?> getServiceSearch(@Param("q")String q) {
+        var results = elsService.searchMainServiceByKeyword(q);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get Service Search OK")
+                        .data(results)
+                        .build());
+    }
+
+
 
 
 }

@@ -16,46 +16,66 @@ import {getCookie, getCookies} from "cookies-next";
 const {Sider, Content} = Layout;
 const {Title} = Typography;
 import {cookies} from "next/headers";
+import { useEffect, useRef, useState } from "react";
+import { useNotification } from "context/notification-context";
 
 export default function AllNotification() {
     const user = useUser();
-
-
-    console.log("abcfgdfgdfgdfg", user);
-
+    const {notificationsContent} = useNotification();
+    const [notificationsTypeFriend,setNotificationsTypeFriend] = useState<any>([])
+    const [notificationsTypeNormal,setNotificationsTypeNormal] = useState<any>([])
+    const [notificationsToday,setNotificationsToday]= useState<any>([]);
     const {
         data: data2,
         isLoading: isLoading2,
         error: error2,
-    } = useSWR(getAllNotifications(user.currentUser?.id as string), fetcherWithToken);
-    var today = new Date();
-    today.setHours(0, 0, 0, 0);
-    console.log("abc", data2);
-    console.log(isLoading2);
-    console.log(error2);
-    var notificationsTypeFriend =
-        data2 &&
-        data2.data.filter((value: any) => value.notificationType === "FRIEND");
+    } = useSWR(getAllNotifications(user.currentUser?.id as string), fetcherWithToken,{
+        revalidateOnFocus: false,
+    });
 
-    var notificationsTypeNormal =
-        data2 &&
-        data2.data.filter((value: any) => value.notificationType === "NORMAL");
+    useEffect(()=>{
+        console.log("notificationsTypeFriendassd",notificationsContent);
+        switch(notificationsContent?.notificationType){
+            case "FRIEND":
+                setNotificationsTypeFriend([notificationsContent,...notificationsTypeFriend])
+                console.log("VO",notificationsTypeFriend);
+                break;
+            case "NORMAL":
+                setNotificationsTypeNormal([notificationsContent,...notificationsTypeNormal])
+                break;
+            case "TAG" || "LIKE" || "COMMENT" || "FOLLOWING" || "ACCEPT_FRIEND":
+                console.log("notificationsTypeFriend",notificationsTypeFriend);
+                setNotificationsToday([notificationsContent,...notificationsToday])
+                console.log("notificationsToday",notificationsToday);
+                break;
+            default:
+                break;
+        }
+    },[notificationsContent])
 
-    var notificationsToday =
-        data2 &&
-        data2.data.filter((value: any) => {
-            // Lọc ra các thông báo có notificationType là "Like" hoặc "Comment"
-            if (
-                value.notificationType === "LIKE" ||
-                value.notificationType === "COMMENT" || value.notificationType === "TAG"
-            ) {
-                var notificationDate = new Date(value.createdDate);
-               
+    useEffect(()=>{
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        setNotificationsTypeFriend(data2 &&
+            data2.data.filter((value: any) => value.notificationType === "FRIEND"));
+        setNotificationsTypeNormal( data2 &&
+            data2.data.filter((value: any) => value.notificationType === "NORMAL"));
+            setNotificationsToday(data2 &&
+                data2.data.filter((value: any) => {
+                    // Lọc ra các thông báo có notificationType là "Like" hoặc "Comment"
+                    if (
+                        value.notificationType === "LIKE" ||
+                        value.notificationType === "COMMENT" || value.notificationType === "TAG" || value.notificationType === "FOLLOWING" || value.notificationType === "ACCEPT_FRIEND"
+                    ) {
+                        var notificationDate = new Date(value.createdDate);
+                       
+        
+                        return notificationDate.setHours(0, 0, 0, 0) === today.getTime();
+                    }
+                    return false; // Không phải là "Like" hoặc "Comment"
+                }))
+    },[data2])
 
-                return notificationDate.setHours(0, 0, 0, 0) === today.getTime();
-            }
-            return false; // Không phải là "Like" hoặc "Comment"
-        });
     return (
         <Layout>
             {isLoading2 ? (
@@ -72,7 +92,7 @@ export default function AllNotification() {
                             <AnimatePresence mode="popLayout">
                                 {notificationsToday &&
                                     notificationsToday.map((item: any, index: number) => {
-                                        return <NotificationCard key={index} data={item}/>;
+                                        return !item.status && <NotificationCard key={index} data={item}/>;
                                     })}
                             </AnimatePresence>
                             {/* <LoadMore />*/}
@@ -87,10 +107,9 @@ export default function AllNotification() {
                             <AnimatePresence mode="popLayout">
                                 {notificationsTypeFriend &&
                                     notificationsTypeFriend.map((item: any, index: number) => {
-                                        return <NotificationCard key={index} data={item}/>;
+                                        return !item.status && <NotificationCard key={index} data={item}/>;
                                     })}
                             </AnimatePresence>
-                            {/* <LoadMore />*/}
                         </>
                     </Content>
                     <Content style={{background: "#fff", padding: "20px"}}>
