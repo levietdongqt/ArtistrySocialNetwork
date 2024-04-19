@@ -3,15 +3,19 @@ package com.mytech.realtimeservice.controller;
 import com.mytech.realtimeservice.dto.*;
 import com.mytech.realtimeservice.models.Comments;
 import com.mytech.realtimeservice.models.Post;
-import com.mytech.realtimeservice.services.CommentsService;
-import com.mytech.realtimeservice.services.PostService;
-import com.mytech.realtimeservice.services.WSSocket;
+import com.mytech.realtimeservice.services.*;
+import com.netflix.eventbus.spi.Subscribe;
 import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +27,17 @@ import java.util.List;
 @Slf4j
 public class PostController {
 
-    @Autowired
-    private PostService postService;
 
     @Autowired
-    private CommentsService commentsService;
+    private final SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private IPostService postService;
 
+    @Autowired
+    private ICommentsService commentsService;
+
+    @Autowired
+    private IWSSocket socket;
 
 
     @GetMapping("/get-posts")
@@ -102,7 +111,19 @@ public class PostController {
         );
     }
 
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#postLikeDTO.byUser.userId) && hasRole('USER')")
+    @GetMapping("/postIds")
+    public ResponseEntity<?> getPostIds(@RequestParam List<String> ids){
+        List<PostResponse> responses = postService.findPostByIdInList(ids);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Handler list post successfully,")
+                        .data(responses)
+                        .build()
+        );
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#postLikeDTO.byUser.id) && hasRole('USER')")
     @PostMapping("/likes")
     public ResponseEntity<?> createPostLike(@RequestBody PostLikeDTO postLikeDTO){
         Post post = postService.createPostLike(postLikeDTO);
@@ -115,7 +136,7 @@ public class PostController {
         );
     }
 
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#commentDTO.byUser.userId) && hasRole('USER')")
+
     @GetMapping("/comments/{PostId}")
     public ResponseEntity<?> getPostComments(@PathVariable String PostId) {
         List<Comments> comments = commentsService.getCommentsByPostId(PostId);
@@ -127,6 +148,9 @@ public class PostController {
                         .build()
         );
     }
+
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#commentDTO.byUser.id) && hasRole('USER')")
     @PostMapping("/comments")
     public ResponseEntity<?> createComment(@RequestBody CommentDTO commentDTO) {
         Comments comments = commentsService.createComments(commentDTO);
@@ -150,7 +174,7 @@ public class PostController {
                         .build());
     }
 
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#commentLikeDTO.byUser.userId) && hasRole('USER')")
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#commentLikeDTO.byUser.id) && hasRole('USER')")
     @PostMapping("/comments/likes")
     public ResponseEntity<?> createCommentLike(@RequestBody CommentLikeDTO commentLikeDTO){
         Comments comments = commentsService.createCommentLike(commentLikeDTO);
@@ -162,6 +186,7 @@ public class PostController {
                         .build()
         );
     }
+
 
 //    @GetMapping("/suggests")
 //    public ResponseEntity<?> searchSuggestPosts(@PathParam("q") String q) {

@@ -27,7 +27,10 @@ export function useInfiniteScroll(
     const { data, error, size, setSize,mutate } = useSWRInfinite(
         (pageIndex, previousPageData) => getKey(fetchPostsFunc, pageIndex, previousPageData, stepSize),
         fetcherWithToken,{
-            refreshInterval:1000,
+            revalidateFirstPage: false,
+            revalidateAll: true,
+            keepPreviousData: true,
+            refreshInterval: 3000,
         }
     );
     const allData = data ? [].concat(...data.map(value => value.data)) : [];

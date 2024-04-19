@@ -49,7 +49,6 @@ export function SidebarLink({
     fetcherWithToken
   );
 
-  console.log(notificationMessages);
   useEffect(() => {
     setShouldFetchNotification(true);
     setNotificationMessages(null);
@@ -86,7 +85,6 @@ export function SidebarLink({
       setShouldFetch(false);
     }
   }, [shouldFetch]);
-
   return (
     <Link
       href={href}

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, createContext, useContext } from 'react';
 import type { ReactNode, ChangeEvent } from 'react';
-import type { Theme, Accent } from '../models/theme';
+import type { Theme, Accent } from '@models/theme';
 import {useUser} from "./user-context";
 
 type ThemeContext = {
@@ -18,9 +18,7 @@ type ThemeContextProviderProps = {
 };
 
 function setInitialTheme(): Theme{
-  const savedTheme = localStorage.getItem('theme') as Theme | null;
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  return savedTheme ?? (prefersDark ? 'light' : 'dark');
+  return 'light';
 }
 
 function setInitialAccent(): Accent {

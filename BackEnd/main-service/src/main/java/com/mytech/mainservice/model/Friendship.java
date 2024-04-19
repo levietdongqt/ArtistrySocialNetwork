@@ -3,8 +3,12 @@ package com.mytech.mainservice.model;
 import com.mytech.mainservice.enums.FriendShipStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -19,9 +23,8 @@ public class Friendship implements Serializable {
     @Column(name = "id", nullable = false)
     private long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private FriendShipStatus status;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<FriendShipStatus> status;
 
     @ManyToOne
     @JoinColumn(name = "from_User_Id")

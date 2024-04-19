@@ -1,6 +1,6 @@
 package com.mytech.realtimeservice.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mytech.realtimeservice.enums.ReportStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,13 +9,15 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class BookmarkDTO {
+@Builder
+public class ReportDTO {
     private String id;
-    private String postId;
     private String userId;
-    private LocalDateTime createdAt;
+    private String title;
+    private String postId;
+    private String content;
+    private ReportStatus status;
+    private LocalDateTime createAt;
 }

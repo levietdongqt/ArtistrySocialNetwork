@@ -21,4 +21,8 @@ public interface IPostService {
 
     public Post createPostLike(PostLikeDTO postLikeDTO);
     public Post updateCommentsForPost(String postId);
+    List<PostResponse> findPostByIdInList(List<String> postIds);
+    Boolean deletePost(String postId);
+    Post getPostById(String postId);
+    long getCountPost();
 }

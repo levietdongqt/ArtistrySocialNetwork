@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 import React, { useState, useEffect, useMemo } from 'react';
 import cn from 'clsx';
@@ -11,6 +10,7 @@ import {likeComment} from "../../../../services/realtime/ServerAction/CommentSer
 import {toast} from "react-toastify";
 import {HeroIcon} from "@components/ui/hero-icon";
 import {ToolTip} from "@components/ui/tooltip";
+import {mutate} from "swr";
 
 
 type PostStatsProps =  {
@@ -46,8 +46,8 @@ export function ContentStats({
    totalComments,
   openModal,
    comment,
-                                 replyTags,
-                                 commentsId
+ replyTags,
+ commentsId
 }: PostStatsProps): JSX.Element {
     const totalLikes = userPostLikes?.map((data:any) => data?.id).length as number || 0;
     const totalTag = tagUserPosts?.length;
@@ -87,6 +87,9 @@ export function ContentStats({
                   };
                   setIsLiked(!isLiked);
                   await likePosts(dataLike)
+                  await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/likes`,dataLike,{
+                      optimisticData: [dataLike],
+                  });
               } catch (error) {
                   console.error('Failed to update like status:', error);
                   setIsLiked(currentIsLiked => !currentIsLiked);

@@ -1,5 +1,4 @@
-package com.mytech.realtimeservice.dto;
-
+package com.mytech.realtimeservice.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserParent {
+public class MediaObject {
     private String id;
-    private String fullName;
+    private String src;
+    private String alt;
 }

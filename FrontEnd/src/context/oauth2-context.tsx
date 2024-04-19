@@ -16,6 +16,7 @@ import {getCookie, setCookie} from "cookies-next";
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {useRouter} from "next/navigation";
 import {toast} from "react-toastify";
+import {useUser} from "./user-context";
 
 declare global {
     interface Window {
@@ -50,9 +51,9 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
         try {
             const provider = new GoogleAuthProvider();
             const credential = await signInWithPopup(auth, provider);
-            console.log("LOGIN GOOGLE: ", credential)
             const oauth2Response = await oauth2Service(await credential.user.getIdToken())
-            handleSuccessResponse(oauth2Response, router)
+            console.log("show LOGIN GOOGLE: ", oauth2Response.data);
+            await handleSuccessResponse(oauth2Response, router)
         } catch (error) {
             console.log(error)
             throw error
@@ -65,7 +66,7 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
             const credential = await signInWithPopup(auth, provider);
             console.log("LOGIN FACEBOOK: ")
             const oauth2Response = await oauth2Service(await credential.user.getIdToken())
-            handleSuccessResponse(oauth2Response, router)
+            await handleSuccessResponse(oauth2Response, router)
         } catch (error) {
             console.log(error)
             throw error
@@ -130,8 +131,8 @@ export function useOAuth2(): Oauth2Context {
 }
 
 async function handleSuccessResponse(oauth2Response: any, router: any) {
-    setCookieHandler(oauth2Response.data)
-    console.log("LOGIN GOOGLE SUCCESSFUL: ")
+    await setCookieHandler(oauth2Response.data)
+    console.log("LOGIN GOOGLE SUCCESSFUL:  ", oauth2Response.data);
     const prevPage = getCookie("prev_page")?.toString();
     prevPage ? router.push(prevPage) : router.push("/home")
 }

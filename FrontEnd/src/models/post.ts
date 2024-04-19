@@ -1,6 +1,5 @@
 import type { ImagesPreview } from './file';
 import type { User } from './user';
-import {Timestamp} from "firebase/firestore";
 
 export type Post = {
   id: string;

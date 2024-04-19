@@ -25,7 +25,7 @@ public class Post {
     private LocalDateTime createdAt;
     private String createdBy;
     private LocalDateTime updatedAt;
-    private List<String> mediaUrl;
+    private List<MediaObject> mediaUrl;
     private boolean status;
     private List<User> tagUserPosts;
     private double priorityScore;
@@ -33,5 +33,4 @@ public class Post {
     private int userReplies;
     private int totalLikes;
     private int totalComments;
-
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class FriendService implements IFriendService {
         Friendship newFriendship = Friendship.builder()
                 .friend(User.builder().id(friendId).build())
                 .fromUser(User.builder().id(friendId).build())
-                .status(FriendShipStatus.FOLLOWING).build();
+                .status(List.of(FriendShipStatus.PENDING)).build();
         friendshipRepo.save(newFriendship);
     }
 
@@ -51,7 +52,7 @@ public class FriendService implements IFriendService {
     public boolean acceptFriendRequest(String userId, String friendId) {
         Optional<Friendship> friendship = friendshipRepo.findByFromUser_IdAndFriend_Id(userId, friendId);
         if (friendship.isPresent()) {
-            friendship.get().setStatus(FriendShipStatus.IS_FRIEND);
+            friendship.get().setStatus(List.of(FriendShipStatus.PENDING));
             friendshipRepo.save(friendship.get());
         }
         throw new RuntimeException("Friendship is not found");

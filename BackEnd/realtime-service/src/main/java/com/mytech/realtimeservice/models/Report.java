@@ -1,5 +1,6 @@
 package com.mytech.realtimeservice.models;
 
+import com.mytech.realtimeservice.enums.ReportStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,14 +11,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 @Data
-@Document("bookmarks")
-@AllArgsConstructor
+@Document
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class BookMarks {
+public class Report {
     @Id
     private String id;
-    private String postId;
     private String userId;
-    private LocalDateTime createdAt;
+    private String title;
+    private String postId;
+    private String content;
+    private ReportStatus status;
+    private LocalDateTime createAt;
 }

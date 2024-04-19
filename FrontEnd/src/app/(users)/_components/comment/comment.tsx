@@ -1,11 +1,9 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import cn from 'clsx';
 import { useModal } from '@lib/hooks/useModal';
 import { delayScroll } from '@lib/utils';
-import { Modal } from '../modal/modal';
-import { ContentReplyModal } from '../modal/content-reply-modal';
 import { ImagePreview } from '../input/image-preview';
 import { UserAvatar } from '../user/user-avatar';
 import { UserTooltip } from '../user/user-tooltip';
@@ -13,12 +11,10 @@ import { UserName } from '../user/user-name';
 
 
 import type { Variants } from 'framer-motion';
-import React, {useEffect, useMemo, useState} from "react";
+import React from "react";
 import {User} from "@models/user";
-import {Loading} from "@components/ui/loading";
-import {useAuth} from "../../../../context/oauth2-context";
+
 import {Comments} from "@models/comment";
-import {ImagesPreview} from "@models/file";
 import {useUser} from "../../../../context/user-context";
 import {ContentDate} from "../content/content-date";
 import {ContentAction} from "../content/content-action";
@@ -65,7 +61,7 @@ export function Comment(comments: CommentProps) {
   const { currentUser } = useUser();
   const userId = currentUser?.id as string;
   const viewTweet = false;
-  const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData;
+  const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData as User;
   const { id: parentId, fullName: parentUsername = fullName } = postUserData ?? {};
   const isOwner = userId === postUserData.id;
   const { open, openModal, closeModal } = useModal();

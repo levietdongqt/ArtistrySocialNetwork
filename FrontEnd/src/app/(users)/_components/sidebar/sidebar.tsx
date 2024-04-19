@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import {useAuth} from '../../../../context/oauth2-context';
 import {useWindow} from '../../../../context/window-context';
 import {useModal} from '@lib/hooks/useModal';
 import {Modal} from '../modal/modal';
@@ -63,7 +62,6 @@ export function Sidebar() {
     /*const username = user?.username as string;*/
     const username = "123";
     const test = () => {
-        console.log("Voooooooooooooooo")
         testHeader().then(value => console.log("OKEEEEEEEEEEEE"))
     }
     return (
@@ -91,7 +89,6 @@ export function Sidebar() {
                            focus-visible:bg-accent-blue/10 focus-visible:!ring-accent-blue/80
                            dark:text-twitter-icon dark:hover:bg-dark-primary/10'
                         >
-
                             <CustomIcon className='h-7 w-7' iconName='GameIcon'/>
                         </Link>
                     </h1>

@@ -13,7 +13,9 @@ export function getPostsCount (): fetcherParams {
 export function getPostsLimit (limit: number,offset:number): fetcherParams {
     return [`/posts/get-posts?limit=${limit}&offset=${offset}`, 'GET', null, ServiceDestination.REALTIME];
 }
-
+export function getPostListByPostId(postIds: any): fetcherParams {
+    return [`/posts/postIds?ids=${postIds.join(',')}`, 'GET', null, ServiceDestination.REALTIME];
+}
 export function getPostById(postId: string): fetcherParams {
     return [`/posts/get-post/${postId}`, 'GET', null, ServiceDestination.REALTIME];
 }

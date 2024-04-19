@@ -6,18 +6,18 @@ import {toast} from "react-toastify";
 import {sleep} from '@lib/utils';
 import {getImagesData} from '@lib/validation';
 import {UserAvatar} from '../user/user-avatar';
-import {InputForm, fromTop} from './input-form';
+import {InputForm} from './input-form';
 import {ImagePreview} from './image-preview';
 import {InputOptions} from './input-options';
 import type {ReactNode, FormEvent, ChangeEvent, ClipboardEvent} from 'react';
 import type {Variants} from 'framer-motion';
 import type {FilesWithId, ImagesPreview, ImageData} from '@models/file';
 import {useUser} from "../../../../context/user-context";
-
-import useSWR, {mutate} from "swr";
 import { postPosts1} from "../../../../services/realtime/ServerAction/PostService";
 import {uploadImages} from "../../../../firebase/utils";
 import {postComment} from "../../../../services/realtime/ServerAction/CommentService";
+import {Popover} from "antd";
+
 
 
 type InputProps = {
@@ -55,6 +55,8 @@ export function Input({
   const [visited, setVisited] = useState(false);
   const [selectedEmoji, setSelectedEmoji] = useState(null);
   const {currentUser} = useUser();
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const previewCount = imagesPreview.length;
@@ -78,7 +80,7 @@ export function Input({
     if(!comment){
       const postData = {
         content: inputValue.trim() || null,
-        mediaUrl: uploadedImagesData ? uploadedImagesData?.map(imageObject => imageObject.src) : [],
+        mediaUrl: uploadedImagesData ? uploadedImagesData?.map(imageObject => imageObject) : [],
         sendUserId: userId || null,
         sendFullName: currentUser?.fullName || null,
         sendUserAvatarUrl: currentUser?.avatar || "",
@@ -87,13 +89,12 @@ export function Input({
         sendVerified: currentUser?.verified
       };
       await sleep(200);
-      const newPost = await postPosts1(postData) // day là axios post
-      await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/get-posts?limit=${20}&offset=${0}`, newPost, false);
+      await postPosts1(postData)
     }else{
       const commentData = {
         postId: postID,
         content: inputValue.trim() || null,
-        mediaUrl: uploadedImagesData ? uploadedImagesData.map(imageObject => imageObject.src) : [],
+        mediaUrl: uploadedImagesData ? uploadedImagesData.map(imageObject => imageObject) : [],
         byUser: {
           id: currentUser?.id as string,
           fullName: currentUser?.fullName as string || null,
@@ -104,8 +105,7 @@ export function Input({
         }
       };
       await sleep(200);
-      const  newComment = await postComment(commentData);
-      await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/comments/${postID}`, newComment, false);
+      await postComment(commentData);
     }
   }else{
     toast.error('bạn cần phải đăng nhập mới đăng bài');
@@ -145,9 +145,8 @@ export function Input({
     }
     const files = isClipboardEvent ? e.clipboardData.files : e.target.files;
     const imagesData = getImagesData(files, previewCount);
-    console.log("show image",imagesData);
     if (!imagesData) {
-      toast.error('Please choose a GIF or photo up to 4');
+      toast.error('Please choose a GIF or photo up to 10');
       return;
     }
     const { imagesPreviewData, selectedImagesData } = imagesData;
@@ -185,7 +184,27 @@ export function Input({
 
   const handleChange = ({
     target: { value }
-  }: ChangeEvent<HTMLTextAreaElement>): void => setInputValue(value);
+  }: ChangeEvent<HTMLTextAreaElement>): void => {
+    setInputValue(value)
+    const lastIndex = value.lastIndexOf("@");
+    if (lastIndex >= 0 && (value[lastIndex - 1] === " " || lastIndex === 0)) {
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+  const userList = [
+    "user1",
+    "user2",
+    "user3",
+  ];
+  useEffect(() => {
+    if (showSuggestions) {
+      // Lọc danh sách gợi ý dựa trên input sau ký tự "@"
+      // Ví dụ này chỉ đơn giản hiển thị tất cả người dùng khi người dùng nhập "@"
+      setSuggestions(userList);
+    }
+  }, [showSuggestions]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -233,9 +252,8 @@ export function Input({
             )}
             htmlFor={formId}
         >
-          <UserAvatar src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"} alt={currentUser?.fullName as string} username={currentUser?.fullName  as string} />
+          <UserAvatar src={currentUser?.avatar as string} alt={currentUser?.fullName as string} username={currentUser?.fullName as string} />
           <div className='flex w-full flex-col gap-4'>
-
             <InputForm
                 modal={modal}
                 reply={reply}
@@ -254,6 +272,13 @@ export function Input({
                 handleChange={handleChange}
                 handleImageUpload={handleImageUpload}
             >
+              {showSuggestions && (
+                  <Popover>
+                    {suggestions.map((user, index) => (
+                        <select key={index}>{user}</select>
+                    ))}
+                  </Popover>
+              )}
               {isUploadingImages && (
                   <ImagePreview
                       imagesPreview={imagesPreview}

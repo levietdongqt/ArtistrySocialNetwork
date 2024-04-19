@@ -23,21 +23,19 @@ export const SocketProvider = ({ children }: any) => {
   const [messages, setMessages] = useState<any[]>([]);
   const [notificationMessages, setNotificationMessages] = useState<any>(null);
   useEffect(() => {
-  
     const socket = new SockJS('http://localhost:8062/api/realtime/socket.io');
     const client = over(socket);
   
     client.connect({}, () => {
       console.log('Connected');
-  
-      client.subscribe('/topic/messages', (message) => {
+      client.subscribe('/topic/messages', (message:any) => {
         if (message.body) {
           const newMessage = JSON.parse(message.body);
           setMessages((previousMessages) => [...previousMessages, newMessage]);
         }
       });
 
-      client.subscribe(`/user/topic/private-notification`, (message) => {
+      client.subscribe(`/user/topic/private-notification`, (message:any) => {
         if (message.body) {
           const newMessage = JSON.parse(message.body);
           setNotificationMessages(newMessage);
@@ -45,7 +43,7 @@ export const SocketProvider = ({ children }: any) => {
       });
 
       setStompClient(client);
-    }, error => {
+    }, (error:any) => {
       console.log(error);
     });
   

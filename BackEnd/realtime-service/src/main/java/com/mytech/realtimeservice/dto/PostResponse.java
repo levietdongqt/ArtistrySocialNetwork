@@ -1,6 +1,7 @@
 package com.mytech.realtimeservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mytech.realtimeservice.models.MediaObject;
 import com.mytech.realtimeservice.models.users.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +22,7 @@ public class PostResponse {
     private String id;
     private User user;
     private String content;
-    private List<String> mediaUrl;
-    private UserParent parent;
+    private List<MediaObject> mediaUrl;
     private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

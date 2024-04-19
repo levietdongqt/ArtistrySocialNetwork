@@ -15,4 +15,7 @@ public interface CommentsRepository extends MongoRepository<Comments,String> {
 
     @Query(value = "{'id': ?0}")
     Optional<Comments> findCommentsById(String id);
+
+    @Query(value = "{'postId': ?0}", sort = "{'sentDate': -1}")
+    Optional<Comments> findCommentsByPostId(String postId);
 }

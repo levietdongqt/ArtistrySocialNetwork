@@ -81,34 +81,32 @@ export async function managePinnedTweet(
   await batch.commit();
 }*/
 
-/*export async function removeTweet(tweetId: string): Promise<void> {
-  const userRef = doc(tweetsCollection, tweetId);
-  await deleteDoc(userRef);
-}*/
 
 export async function uploadImages(
-  userId: string,
-  files: FilesWithId
+    userId: string,
+    files: FilesWithId
 ): Promise<ImagesPreview | null> {
-  if (!files.length) return null;
-    return await Promise.all(
-      files.map(async (file) => {
-          let src: string;
-          const {id, name: alt} = file;
-          const storageRef = ref(storage, `images/${userId}/${alt}`);
-          console.log("show src iamge 23 ", uploadBytesResumable(storageRef, file));
-          try {
-              src = await getDownloadURL(storageRef);
-              console.log("show src iamge 23 ", src);
-          } catch {
-              await uploadBytesResumable(storageRef, file);
-              src = await getDownloadURL(storageRef);
-              console.log("show src iamge 23 ", src);
-          }
-          console.log("show src iamge ", src);
-          return {id, src, alt};
-      })
-  );
+    if (!files.length) return null;
+
+    const imagesPreview = await Promise.all(
+        files.map(async (file) => {
+            let src: string;
+
+            const { id, name: alt } = file;
+
+            const storageRef = ref(storage, `images/${userId}/${alt}`);
+
+            try {
+                src = await getDownloadURL(storageRef);
+            } catch {
+                await uploadBytesResumable(storageRef, file);
+                src = await getDownloadURL(storageRef);
+            }
+
+            return { id, src, alt };
+        })
+    );
+    return imagesPreview;
 }
 
 /*

@@ -11,13 +11,13 @@ import { ThemeContextProvider } from "../context/theme-context";
 import { CustomIcon } from "@components/ui/custom-icon";
 import { ChatAlert } from "@components/chat-box/chat-alert";
 import { SocketProvider } from "context/websocket-context1";
+import {getFirebase} from "../firebase/app";
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   // var params = usePathname();
-  // var isLogin = params.includes("/login")
   return (
     <html lang="en">
       <AppHead />

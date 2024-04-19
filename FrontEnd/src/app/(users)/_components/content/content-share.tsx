@@ -9,6 +9,12 @@ import { Button } from '@components/ui/button';
 import { HeroIcon } from '@components/ui/hero-icon';
 import { ToolTip } from '@components/ui/tooltip';
 import { variants } from './content-action';
+import Link from "next/link";
+import {bookmarksPost} from "../../../../services/realtime/ServerAction/bookmarksService";
+import useSWR from "swr";
+import {getBookmarksByUserId} from "../../../../services/realtime/clientRequest/bookmarksClient";
+import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import {useEffect, useState} from "react";
 
 type PostShareProps = {
   userId: string;
@@ -24,6 +30,31 @@ export function ContentShare({
   viewTweet
 }: PostShareProps): JSX.Element {
 
+  const handleBookmark =
+      (closeMenu: () => void, args:string, useid:string,postid:string) =>
+          async (): Promise<void> => {
+            const type = args;
+            const data = {
+              postId:  postid,
+              userId: useid
+            }
+              await bookmarksPost(data)
+
+            closeMenu();
+            toast.success(
+                type === 'bookmark'
+                    ? (): JSX.Element => (
+                        <span className='flex gap-2'>
+                Bài viết bạn đã lưu
+                <Link href='/bookmarks'>
+                  <p className='custom-underline font-bold'>View</p>
+                </Link>
+              </span>
+                    )
+                    : 'Bài post đã xóa khỏi danh sách lưu'
+            );
+          };
+
 
   const handleCopy = (closeMenu: () => void) => async (): Promise<void> => {
     closeMenu();
@@ -31,8 +62,12 @@ export function ContentShare({
     toast.success('Đã copy to clipboard');
   };
 
- /* const tweetIsBookmarked = !!userBookmarks?.some(({ id }) => id === tweetId);*/
-    const tweetIsBookmarked = false;
+  const {data: userBookmarks, isLoading} = useSWR(getBookmarksByUserId(userId) ,fetcherWithToken,{
+      refreshInterval: 3000,
+  });
+
+  const tweetIsBookmarked = !!userBookmarks?.data?.some((items:any) => items.postId === postId);
+
   return (
     <Popover className='relative'>
       {({ open, close }): JSX.Element => (
@@ -77,23 +112,23 @@ export function ContentShare({
                   <Popover.Button
                     className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
                     as={Button}
-                    onClick={/*preventBubbling(
-                      handleBookmark(close, 'bookmark', userId, tweetId)
-                    )*/()=>{}}
+                    onClick={preventBubbling(
+                      handleBookmark(close, 'bookmark', userId, postId)
+                    )}
                   >
                     <HeroIcon iconName='BookmarkIcon' />
-                    Bookmark
+                    Lưu bài post
                   </Popover.Button>
                 ) : (
                   <Popover.Button
                     className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
                     as={Button}
-                    onClick={/*preventBubbling(
-                      handleBookmark(close, 'unbookmark', userId, tweetId)
-                    )*/()=>{}}
+                    onClick={preventBubbling(
+                      handleBookmark(close, 'unbookmark', userId, postId)
+                    )}
                   >
                     <HeroIcon iconName='BookmarkSlashIcon' />
-                    Remove Tweet from Bookmarks
+                    Xóa bài post đã lưu
                   </Popover.Button>
                 )}
               </Popover.Panel>

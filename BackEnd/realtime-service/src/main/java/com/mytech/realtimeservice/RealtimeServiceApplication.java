@@ -51,7 +51,6 @@ public class RealtimeServiceApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		postService.deleteAll();
 		notificationService.deleteAll();
 		postLikeRepository.deleteAll();
 		commentsRepository.deleteAll();

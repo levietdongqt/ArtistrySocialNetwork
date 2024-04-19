@@ -27,5 +27,7 @@ public interface PostRepository extends MongoRepository<Post,String> {
 
     long count();
 
+    @Query(value = "{'id': {$in: ?0}}")
+    List<Post> findByPostIdsIn(List<String> postIds);
 
 }

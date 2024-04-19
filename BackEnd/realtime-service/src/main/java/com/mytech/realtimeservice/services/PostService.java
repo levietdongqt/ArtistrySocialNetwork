@@ -3,7 +3,9 @@ package com.mytech.realtimeservice.services;
 import com.mytech.realtimeservice.client.FriendForeignClient;
 import com.mytech.realtimeservice.dto.*;
 
+import com.mytech.realtimeservice.exception.myException.ForbiddenException;
 import com.mytech.realtimeservice.exception.myException.NotFoundException;
+import com.mytech.realtimeservice.helper.JwtTokenHolder;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.PostLike;
 import com.mytech.realtimeservice.models.users.User;
@@ -44,7 +46,10 @@ public class PostService implements IPostService {
     private ModelMapper modelMapper;
 
     @Autowired
-    private WSSocket wsSocket;
+    private IWSSocket wsSocket;
+
+    @Autowired
+    private JwtTokenHolder jwtTokenHolder;
 
     public Post create(PostDTO postDTO) {
         // Lưu bài post
@@ -99,11 +104,15 @@ public class PostService implements IPostService {
     public Boolean deletePost(String postId) {
         boolean detected = false;
         var post = postRepository.findById(postId);
-        if(post.isPresent()){
+        if(post.isEmpty() ){
+            throw new NotFoundException("Post not found");
+        }
+        if(jwtTokenHolder.isValidUserId(post.get().getUser().getId())){
             detected =  true;
             postRepository.delete(post.get());
+            return detected;
         }
-        return detected;
+        throw  new ForbiddenException("you dont have permission to delete this post");
     }
     public Post getPostById(String postId) {
         Optional<Post> post = postRepository.findById(postId);
@@ -138,6 +147,15 @@ public class PostService implements IPostService {
         throw  new NotFoundException("Post is not found");
     }
 
+    public List<PostResponse> findPostByIdInList(List<String> postIds){
+        List<Post> posts = postRepository.findByPostIdsIn(postIds);
+        List<PostResponse> postResponses = new ArrayList<>();
+        for (Post post : posts) {
+            PostResponse postResponse = modelMapper.map(post, PostResponse.class);
+            postResponses.add(postResponse);
+        }
+        return postResponses;
+    }
 
     //Set tag thành true nếu như id trùng id của  List<UserDTO> trả từ main (tối ưu sau)
     public void setTagForUsers(List<UserDTO> users,List<UserDTO> userTags) {
@@ -172,7 +190,6 @@ public class PostService implements IPostService {
                 .filter(u -> u.getId().equals(userLike.getId()))
                 .findFirst()
                 .orElse(null);
-        System.out.println("user " + deletedUser);
         if (deletedUser != null) {
             users.remove(deletedUser);
         }

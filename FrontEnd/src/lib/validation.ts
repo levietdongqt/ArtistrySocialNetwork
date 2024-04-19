@@ -1,5 +1,5 @@
 import { getRandomId } from './random';
-import type { FilesWithId, FileWithId, ImagesPreview } from '../models/file';
+import type { FilesWithId, FileWithId, ImagesPreview } from '@models/file';
 
 const IMAGE_EXTENSIONS = [
   'apng',
@@ -56,15 +56,12 @@ export function getImagesData(
   if (!files || !files.length) return null;
 
   const singleEditingMode = currentFiles === undefined;
-
   const rawImages =
     singleEditingMode ||
-    !(currentFiles === 4 || files.length > 4 - currentFiles)
+    !(currentFiles === 10 || files.length > 10 - currentFiles)
       ? Array.from(files).filter(({ name, size }) => isValidImage(name, size))
       : null;
-
   if (!rawImages || !rawImages.length) return null;
-
   const imagesId = rawImages.map(({ name }) => {
     const randomId = getRandomId();
     return {

@@ -6,14 +6,19 @@ import {ToolTip} from "@components/ui/tooltip";
 import {Loading} from "@components/ui/loading";
 import {AnimatePresence} from "framer-motion";
 import {useModal} from "@lib/hooks/useModal";
-import {useCollection} from "@lib/hooks/useCollection";
-import {orderBy, query} from "firebase/firestore";
-import {useArrayDocument} from "@lib/hooks/useArrayDocument";
 import {ActionModal} from "../modal/action-modal";
 import {MainHeader} from "../home/main-header";
 import {StatsEmpty} from "../content/stats-empty";
 import {useUser} from "../../../../context/user-context";
 import {Modal} from "../modal/modal";
+import useSWR from "swr";
+import {getBookmarksByUserId} from "../../../../services/realtime/clientRequest/bookmarksClient";
+import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import {getPostById, getPostListByPostId} from "../../../../services/realtime/clientRequest/postClient";
+import {Content} from "../content/content";
+import {toast} from "react-toastify";
+import {deleteAllBokMarksByUserId} from "../../../../services/realtime/ServerAction/bookmarksService";
+import {SEO} from "../common/seo";
 
 const ContainerBookmarks = () => {
     const { currentUser } = useUser();
@@ -22,26 +27,25 @@ const ContainerBookmarks = () => {
 
     const userId = currentUser?.id as string;
 
-    const { data: bookmarksRef, loading: bookmarksRefLoading } = useCollection(
-        query(userBookmarksCollection(userId), orderBy('createdAt', 'desc')),
-        { allowNull: true }
-    );
+    const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken);
 
-    const tweetIds = useMemo(
-        () => bookmarksRef?.map(({ id }) => id) ?? [],
+    const postId = useMemo(
+        () => bookmarksRef?.data?.map((item: any) => item.postId) ?? [],
         [bookmarksRef]
     );
 
-    const { data: tweetData, loading: tweetLoading } = useArrayDocument(
-        tweetIds,
-        tweetsCollection,
-        { includeUser: true }
-    );
+    const { data: postData, isLoading: postLoading } = useSWR(getPostListByPostId(postId),fetcherWithToken,{
+        revalidateOnFocus: false,
+        onSuccess: (data) => {
+            console.log(data)
+        }
+    });
+
 
     const handleClear = async (): Promise<void> => {
-        await clearAllBookmarks(userId);
+        await deleteAllBokMarksByUserId(userId);
         closeModal();
-        toast.success('Successfully cleared all bookmarks');
+        toast.success('Xóa tất cả bookmarks thành công');
     };
     return (
         <>
@@ -63,9 +67,9 @@ const ContainerBookmarks = () => {
             </Modal>
             <MainHeader className='flex items-center justify-between'>
                 <div className='-mb-1 flex flex-col'>
-                    <h2 className='-mt-1 text-xl font-bold'>Page</h2>
+                    <h2 className='-mt-1 text-xl font-bold'>Đã Lưu</h2>
                     <p className='text-xs text-light-secondary dark:text-dark-secondary'>
-                        @{user?.username}
+                        {currentUser?.fullName}
                     </p>
                 </div>
                 <Button
@@ -82,7 +86,7 @@ const ContainerBookmarks = () => {
                 </Button>
             </MainHeader>
             <section className='mt-0.5'>
-                {bookmarksRefLoading || tweetLoading ? (
+                {bookmarksRefLoading || postLoading ? (
                     <Loading className='mt-5' />
                 ) : !bookmarksRef ? (
                     <StatsEmpty
@@ -92,9 +96,8 @@ const ContainerBookmarks = () => {
                     />
                 ) : (
                     <AnimatePresence mode='popLayout'>
-                        {tweetData?.map((tweet) => (
-                            // <con {...tweet} key={tweet.id} />
-                            <content />
+                        {postData?.data?.map((post:any) => (
+                            <Content {...post} key={post.id} />
                         ))}
                     </AnimatePresence>
                 )}
