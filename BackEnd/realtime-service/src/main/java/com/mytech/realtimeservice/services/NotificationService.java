@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,6 +24,9 @@ import java.util.List;
 public class NotificationService implements INotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private WSSocket wsSocket;
 
 
     public Date getTimeForNotification(){
@@ -71,10 +75,10 @@ public class NotificationService implements INotificationService {
     }
 
     public int CountNotificationsUnread(String userFrom){
-       List<Notification> notifications = getNotificationsByDelivory(userFrom);
-       return notifications.size();
+      return notificationRepository.countNotificationByDelivered(userFrom);
     }
 
+    @Async
     public void sendNotification(User userFrom,User userTo,String notificationType,String message,String link){
         Notification notification = Notification.builder()
                 .userFrom(userFrom)
@@ -83,6 +87,7 @@ public class NotificationService implements INotificationService {
                 .status(false)
                 .createdDate(LocalDateTime.now())
                 .link(link)
+                .message(message)
                 .build();
         saveNotification(notification);
         switch (notificationType){
@@ -107,7 +112,16 @@ public class NotificationService implements INotificationService {
                 notification.setNotificationType(NotificationType.FRIEND);
                 notificationRepository.save(notification);
                 break;
+            case "FOLLOWING":
+                notification.setNotificationType(NotificationType.FOLLOWING);
+                notificationRepository.save(notification);
+                break;
+            case "ACCEPT_FRIEND":
+                notification.setNotificationType(NotificationType.ACCEPT_FRIEND);
+                notificationRepository.save(notification);
+                break;
         }
+        wsSocket.sendPrivateNotification(userFrom.getId(),notification);
     }
 
 

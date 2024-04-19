@@ -12,6 +12,7 @@ export function SearchNavLink({ name, path }: UserNavLinkProps): JSX.Element {
     id
   } = useParams();
   const asPath = usePathname();
+  console.log(asPath);
 
   const userPath = `/user/${id as string}${path ? `/${path}` : ''}`;
 

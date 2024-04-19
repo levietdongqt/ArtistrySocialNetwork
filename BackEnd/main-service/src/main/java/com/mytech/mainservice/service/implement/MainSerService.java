@@ -10,9 +10,11 @@ import com.mytech.mainservice.helper.JwtTokenHolder;
 import com.mytech.mainservice.model.ExtraService;
 import com.mytech.mainservice.model.MainService;
 import com.mytech.mainservice.model.Promotion;
+import com.mytech.mainservice.model.elasticsearch.ServiceELS;
 import com.mytech.mainservice.repository.IExtraServiceRepository;
 import com.mytech.mainservice.repository.IMainServiceRepository;
 import com.mytech.mainservice.repository.IPromotionRepository;
+import com.mytech.mainservice.service.IELSService;
 import com.mytech.mainservice.service.IMainSerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,9 @@ public class MainSerService implements IMainSerService {
     @Autowired
     private JwtTokenHolder jwtTokenHolder;
 
+    @Autowired
+    private IELSService elsService;
+
     @Override
     public Set<MainServiceDTO> getMainServices(String userId) {
         return mainServiceRepo.findMainServiceByProvider_IdAndStatus(userId, true).stream()
@@ -59,13 +64,17 @@ public class MainSerService implements IMainSerService {
     @Override
     public void createMainService(MainServiceDTO mainServiceDTO) {
         MainService mainService = modelMapper.map(mainServiceDTO, MainService.class);
+
         List<ExtraService> extraServices = checkValidExtraServiceIds(mainServiceDTO.getExtraServiceDTOs());
         Promotion promotion = checkValidPromotion(mainServiceDTO.getPromotionDTO());
         mainService.setPromotion(promotion);
         mainService.setStatus(true);
         mainService.setCreateDate(LocalDateTime.now());
         mainService.setExtraServices(extraServices);
-        mainServiceRepo.save(mainService);
+        var createdMainService =  mainServiceRepo.save(mainService);
+        //Lưu vào ELS Search
+        ServiceELS serviceELS = modelMapper.map(createdMainService,ServiceELS.class);
+        elsService.saveServiceELS(serviceELS);
     }
 
     @Override
@@ -77,6 +86,8 @@ public class MainSerService implements IMainSerService {
         if (jwtTokenHolder.isValidUserId(mainService.get().getProvider().getId())) {
             mainService.get().setStatus(false);
             mainServiceRepo.save(mainService.get());
+            //Xóa khỏi els search
+            elsService.deleteServiceELSById(mainService.get().getId());
             return;
         }
         throw new InvalidPropertyException("You are not the owner of this service");
@@ -86,6 +97,9 @@ public class MainSerService implements IMainSerService {
     public void updateService(MainServiceDTO mainServiceDTO) {
         MainService mainService = modelMapper.map(mainServiceDTO, MainService.class);
         mainServiceRepo.save(mainService);
+        //Update the mainService ELS
+        ServiceELS serviceELS = modelMapper.map(mainService,ServiceELS.class);
+        elsService.updateServiceELS(serviceELS);
     }
 
     private boolean isValidUser(String userId) {

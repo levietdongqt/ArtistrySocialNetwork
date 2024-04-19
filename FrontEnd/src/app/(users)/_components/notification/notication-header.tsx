@@ -7,7 +7,6 @@ import { useState } from "react";
 const { Title } = Typography;
 
 export default function NotificationHeader() {
-  const [isPopoverVisible, setPopoverVisible] = useState(false);
   return (
     <Row className="flex justify-between mt-3 font-semibold">
       <Col span={8}>
