@@ -8,7 +8,12 @@ import { UserUsername } from './user-username';
 import {UserAvatar} from "./user-avatar";
 import {User} from "@models/user";
 
+<<<<<<< HEAD
 type UserCardProps = User &  {
+=======
+
+type UserCardProps =  {
+>>>>>>> main
   modal?: boolean;
   follow?: boolean;
 };

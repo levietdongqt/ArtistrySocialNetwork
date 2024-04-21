@@ -21,6 +21,6 @@ public class PostELS {
     @Id
     private String id;
     private String content;
-    private String full_name;
+    private String fullName;
     private final String type = "post";
 }

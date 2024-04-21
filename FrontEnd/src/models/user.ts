@@ -20,7 +20,6 @@ export type User = {
   priorityScore: number;
   password: string;
   changePassword: boolean;
-  searchHistory: string[];
   theme: Theme;
   accent: Accent;
   bio: string;

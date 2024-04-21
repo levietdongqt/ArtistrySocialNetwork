@@ -23,6 +23,7 @@ public interface PostRepository extends MongoRepository<Post,String> {
     Page<Post> findByOrderByCreatedAtDesc(Pageable pageable);
 
     long count();
+    List<Post> findByContentContainingIgnoreCaseOrUserFullNameContainingIgnoreCase(String contentKeyword, String fullNameKeyword);
 
 
 }

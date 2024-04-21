@@ -1,9 +1,8 @@
 package com.mytech.realtimeservice.services;
 
-public interface IWSSocket {
+import com.mytech.realtimeservice.models.Notification;
 
-    public void notifyFrontend(String message);
-    public void notifyUser(final String id,String message);
+public interface IWSSocket {
     public void sendGlobalNotification();
-    public void sendPrivateNotification(final String userId);
+    public void sendPrivateNotification(final String userId,Notification notification);
 }

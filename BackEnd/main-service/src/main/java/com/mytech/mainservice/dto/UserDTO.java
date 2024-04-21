@@ -14,8 +14,10 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 /**
  * DTO for {@link com.mytech.mainservice.model.User}
@@ -37,7 +39,6 @@ public class UserDTO implements Serializable {
     private String coverImage;
     private Map<String, Object> userDetails;
     private String password;
-    private List<String> searchHistory;
     private List<String> roles;
     private AccentType accent;
     private Theme theme;

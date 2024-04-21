@@ -1,3 +1,4 @@
+"use client"
 import "./styles/globals.scss";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,6 +12,8 @@ import { ThemeContextProvider } from "../context/theme-context";
 import { CustomIcon } from "@components/ui/custom-icon";
 import { ChatAlert } from "@components/chat-box/chat-alert";
 import { SocketProvider } from "context/websocket-context1";
+import { SearchContextProvider } from "context/search-context";
+import { NotificationContextProvider } from "context/notification-context";
 export default function RootLayout({
   children,
 }: {
@@ -22,13 +25,19 @@ export default function RootLayout({
     <html lang="en">
       <AppHead />
       <body>
+      
         <UserContextProvider>
+        <NotificationContextProvider>
           <SocketProvider>
             <AuthContextProvider>
+              <SearchContextProvider>
               <ThemeContextProvider>{children}</ThemeContextProvider>
-            </AuthContextProvider>
+              </SearchContextProvider>
+            </AuthContextProvider>     
           </SocketProvider>
+          </NotificationContextProvider>
         </UserContextProvider>
+        
 
         <ToastContainer
           position="top-center"
