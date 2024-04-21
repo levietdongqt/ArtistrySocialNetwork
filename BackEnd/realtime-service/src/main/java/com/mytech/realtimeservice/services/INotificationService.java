@@ -17,8 +17,6 @@ public interface INotificationService {
 
     public void saveNotification(Notification notification);
 
-    public void deleteAll();
-
     public int CountNotificationsUnread(String userFrom);
 
     public void sendNotification(User userFrom, User userTo, String notificationType, String message, String link);

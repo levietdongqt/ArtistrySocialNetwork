@@ -1,22 +1,20 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect, ChangeEvent, type KeyboardEvent} from 'react';
 import { toast } from 'react-toastify';
-import cn from 'clsx';
-import { useUser } from '../../../../context/user-context';
-import { useModal } from '@lib/hooks/useModal';
-import { uploadImages } from '../../../../firebase/utils';
-import { sleep } from '@lib/utils';
-import { getImagesData } from '@lib/validation';
-import { Modal } from '../modal/modal';
-import { EditProfileModal } from '../modal/edit-profile-modal';
-import { Button } from '@components/ui/button';
-import { InputField } from '../input/input-field';
-import type { ChangeEvent, KeyboardEvent } from 'react';
-import type { FilesWithId } from '@models/file';
-import type { User, EditableData, EditableUserData } from '@models/user';
-import type { InputFieldProps } from '../input/input-field';
-import useSWR from "swr";
-import {getUserById} from "../../../../services/main/clientRequest/userClient";
+
 import {useParams} from "next/navigation";
+import {useUser} from "../../../context/user-context";
+import {EditableData, EditableUserData, User} from "@models/user";
+import useSWR from "swr";
+import {InputField, InputFieldProps} from "../_components/input/input-field";
+import {FilesWithId} from "@models/file";
+import {useModal} from "@lib/hooks/useModal";
+import {getUserById} from "../../../services/main/clientRequest/userClient";
+import {uploadImages} from "../../../firebase/utils";
+import {getImagesData} from "@lib/validation";
+import {EditProfileModal} from "../_components/modal/edit-profile-modal";
+import cn from "clsx";
+import {sleep} from "@lib/utils";
+
 
 type RequiredInputFieldProps = Omit<InputFieldProps, 'handleChange'> & {
   inputId: EditableData;
@@ -187,24 +185,23 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
     });
 
   const handleChange =
-    (key: EditableData) =>
-    ({
-      target: { value }
-    }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      setEditUserData({ ...editUserData, [key]: value });
+      (key: EditableData) =>
+          ({
+             target: { value }
+           }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+              setEditUserData({ ...editUserData, [key]: value });
 
   const handleKeyboardShortcut = ({
-    key,
-    target,
-    ctrlKey
-  }: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+                                    key,
+                                    target,
+                                    ctrlKey
+                                  }: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     if (ctrlKey && key === 'Enter' && !inputNameError) {
       const inputElement = target as HTMLInputElement | HTMLTextAreaElement;
       inputElement.blur();
       void updateData();
     }
   };
-
   const inputFields: Readonly<RequiredInputFieldProps[]> = [
     {
       label: 'FullName',

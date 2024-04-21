@@ -12,6 +12,7 @@ import {ViewContent} from "../view/view-content";
 import {ViewParentTweet} from "../view/view-parent-tweet";
 import {MainHeader} from "../home/main-header";
 import {Content} from "../content/content";
+import {SEO} from "../common/seo";
 
 const ContainerPostId = () => {
     const {

@@ -1,5 +1,5 @@
 'use client'
-import {useParams} from 'next/navigation';
+import {useParams, useRouter} from 'next/navigation';
 import {motion} from 'framer-motion';
 import {useUser} from '../../../../context/user-context';
 import {SEO} from '../common/seo';
@@ -16,14 +16,21 @@ import {variants} from '../user/user-header';
 import {UserEditProfile} from '../user/user-edit-profile';
 import {UserShare} from '../user/user-share';
 import type {LayoutProps} from './common-layout';
-import {useEffect} from "react";
+import React, {useEffect} from "react";
 import useSWR from "swr";
 import {getUserById} from "../../../../services/main/clientRequest/userClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {User} from "@models/user";
 import {SidebarLink} from "../sidebar/sidebar-link";
-
+import {EditOutlined, PlusCircleOutlined} from "@ant-design/icons";
+import Link from "next/link";
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
+    const router = useRouter();
+
+    const handleClickEdit = ({event}: { event: any }) => {
+        event.preventDefault(); // Ngăn chặn sự kiện mặc định
+        router.push('/profile/edit');
+    };
     const {currentUser} = useUser();
     const {ID} = useParams();
     const {
@@ -40,7 +47,7 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
     const profileData = response?.data
         ? {src: response?.data.avatar, alt: response?.data.fullName}
         : null;
-  
+
     /* const { id: userId } = user ?? {};*/
 
     const isOwner = response?.data?.id === currentUser?.id;
@@ -79,12 +86,33 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                             <div className='flex justify-between'>
                                 <UserHomeAvatar profileData={profileData}/>
                                 {isOwner ? (
-                                    <SidebarLink
-                                        href={`/profile/edit`}
-                                        username={currentUser?.fullName}
-                                        linkName='Sửa thông tin'
-                                        iconName='UserIcon'
-                                    />
+                                    <div
+                                        className="flex flex-row items-center justify-start gap-4"> {/* Cập nhật điều này */}
+                                        <Link href="/profile/edit">
+                                            <button
+                                                className="flex items-center justify-center gap-2 p-1 text-lg transition
+               duration-200 ease-in-out hover:bg-light-primary/10 focus-visible:ring-2
+               focus-visible:ring-[#878a8c] dark:hover:bg-dark-primary/10
+               dark:focus-visible:ring-white sm:p-2 sm:text-lg md:p-2.5 md:text-xl
+               hover:rounded-md"
+                                            >
+                                                <EditOutlined className="h-4 w-4 md:h-5 md:w-5"/>
+                                                Sửa thông tin
+                                            </button>
+                                        </Link>
+                                        <Link href="/profile/createservice">
+                                            <button
+                                                className="flex items-center justify-center gap-2 p-1 text-lg transition
+               duration-200 ease-in-out hover:bg-light-primary/10 focus-visible:ring-2
+               focus-visible:ring-[#878a8c] dark:hover:bg-dark-primary/10
+               dark:focus-visible:ring-white sm:p-2 sm:text-lg md:p-2.5 md:text-xl
+               hover:rounded-md"
+                                            >
+                                                <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5"/>
+                                                Tạo Dịch vụ
+                                            </button>
+                                        </Link>
+                                    </div>
                                 ) : (
                                     <div className='flex gap-2 self-start'>
                                         <UserShare username={response?.data?.fullName}/>
