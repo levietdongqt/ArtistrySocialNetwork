@@ -8,6 +8,11 @@ management:
 spring:
   application:
     name: main-service
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   security:
     oauth2:
       resource-server:
@@ -29,6 +34,19 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: huy.tran9510@gmail.com
+    password: omupuqnffjlqjcac
+    properties.mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+    protocol: smtp
+    default-encoding: UTF-8
+    test-connection: false
 
 eureka:
   client:

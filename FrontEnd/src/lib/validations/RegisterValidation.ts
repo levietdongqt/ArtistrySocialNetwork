@@ -2,9 +2,8 @@ import * as yup from 'yup';
 
 
 const RegisterValidation = yup.object().shape({
-    email: yup.string().required("Email không được để trống!")
-        .max(50, "Email quá dài!")
-        .matches(/(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)|(^\d{10,11}$)/, 'Email hoặc số điện thoại không hợp lệ!'),
+    phoneNumber: yup.string().required(" Số điện thoại không được để trống!")
+        .matches(/(^0\d{9}$)|(^[1-9][0-9]{8}$)/, 'Số điện thoại  không hợp lệ!'),
     password: yup.string()
         .required("Mật khẩu không được để trống")
         .min(6, "Mật khẩu tối thiểu 6 kí tự")

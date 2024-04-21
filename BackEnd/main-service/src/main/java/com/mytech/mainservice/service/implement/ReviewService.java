@@ -12,6 +12,8 @@ import com.mytech.mainservice.repository.IUserRepository;
 import com.mytech.mainservice.service.IReviewService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,7 +42,7 @@ public class ReviewService implements IReviewService {
         reviewRepo.save(review);
 
     }
-
+   @Cacheable(value = "userCache",key = "#userId" )
     @Override
     public List<ReviewDTO> getReviewsByUserId(String userId) {
         Set<Review> reviews = reviewRepo.findByProviderUser_Id(userId);

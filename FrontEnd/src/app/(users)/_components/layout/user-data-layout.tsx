@@ -1,6 +1,6 @@
 'use client'
 import { useParams, useRouter } from 'next/navigation';
-import { UserContextProvider } from '../../../../context/user-context';
+import {UserContextProvider, useUser} from '../../../../context/user-context';
 import { SEO } from '../common/seo';
 import { MainContainer } from '../home/main-container';
 import { MainHeader } from '../home/main-header';
@@ -19,29 +19,10 @@ export function UserDataLayout({ children }: LayoutProps): JSX.Element {
   const a = () =>{}
   const loading = false;
  /* const user = data ? data[0] : null;*/
-  const user:User = {
-    id: '123',
-    bio: 'asdasdasd',
-    name: '',
-    theme: null,
-    accent: null,
-    website: null,
-    location: null,
-    username: '',
-    photoURL: '',
-    verified: false,
-    following: [],
-    followers: [],
-    createdAt: Timestamp.now(),
-    updatedAt: null,
-    totalTweets: 0,
-    totalPhotos: 0,
-    pinnedTweet: null,
-    coverPhotoURL: null
-  };
+  const {currentUser} = useUser();
   return (
-    <UserContextProvider value={{ user, loading }}>
-      {!user && !loading && <SEO title='User not found / Social' />}
+    <UserContextProvider value={{ currentUser, loading }}>
+      {!currentUser && !loading && <SEO title='User not found / Social' />}
       <MainContainer>
         <MainHeader useActionButton action={back }>
           <UserHeader />

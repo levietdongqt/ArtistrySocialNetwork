@@ -1,5 +1,6 @@
 package com.mytech.mainservice.dto;
 
+import co.elastic.clients.util.DateTime;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,6 +13,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +43,8 @@ public class UserDTO implements Serializable {
     private Theme theme;
     private String bio;
     private boolean verified;
+    private LocalDateTime createDate ;
+    private LocalDateTime updateAt;
 
     @JsonProperty("password")
     public String getPasswordForJson() {

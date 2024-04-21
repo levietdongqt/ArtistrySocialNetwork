@@ -53,11 +53,9 @@ const ContainerUser = () => {
                 <AnimatePresence mode='popLayout'>
                     {/* {pinnedData && (*/}
                     {/*<Content pinned {...pinnedData} key={`pinned-${pinnedData.id}`} />*/}
-                    <Content key={`pinned-${'1'}`} />
                     {/* )}*/}
                     {/*{mergedTweets.map((content) => (*/}
                     {/*<Content {...content} profile={user} key={content.id} />*/}
-                    <Content  />
                     {/*))}*/}
                 </AnimatePresence>
             )}

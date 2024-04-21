@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import {useAuth} from '../../../../context/auth-context';
 import {useWindow} from '../../../../context/window-context';
 import {useModal} from '@lib/hooks/useModal';
 import {Modal} from '../modal/modal';
@@ -11,6 +10,7 @@ import {MoreSettings} from './more-settings';
 import {SidebarProfile} from './sidebar-profile';
 import type {IconName} from '@components/ui/hero-icon';
 import {testHeader} from "../../../../services/main/auth-service";
+import {useUser} from "../../../../context/user-context";
 
 export type NavLink = {
     href: string;
@@ -61,17 +61,22 @@ export function Sidebar() {
     const {open, openModal, closeModal} = useModal();
 
     /*const username = user?.username as string;*/
-    const username = "123";
+    const {currentUser} = useUser();
     const test = () => {
         console.log("Voooooooooooooooo")
         testHeader().then(value => console.log("OKEEEEEEEEEEEE"))
     }
+    {
+        console.log("formsigbar",currentUser);
+    }
     return (
+
         <header
             id='sidebar'
             className='flex w-0 shrink-0 transition-opacity duration-200 xs:w-20 md:w-24
                  lg:max-w-none xl:-mr-4 xl:w-full xl:max-w-xs xl:justify-end'
         >
+
             <Modal
                 className='flex items-start justify-center'
                 modalClassName='bg-main-background rounded-2xl max-w-xl w-full mt-8 overflow-hidden'
@@ -99,9 +104,10 @@ export function Sidebar() {
                         {navLinks.map(({...linkData}) => (
                             <SidebarLink {...linkData} key={linkData.href}/>
                         ))}
+
                         <SidebarLink
-                            href={`/profile/${username}`}
-                            username={username}
+                            href={`/profile/${currentUser?.id}`}
+                            username={currentUser?.fullName}
                             linkName='Tài khoản'
                             iconName='UserIcon'
                         />

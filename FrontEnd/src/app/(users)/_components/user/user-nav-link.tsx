@@ -9,11 +9,12 @@ type UserNavLinkProps = {
 
 export function UserNavLink({ name, path }: UserNavLinkProps): JSX.Element {
   const {
-    id
+    ID
   } = useParams();
+  console.log("showid param",ID);
   const asPath = usePathname();
 
-  const userPath = `/user/${id as string}${path ? `/${path}` : ''}`;
+  const userPath = `/profile/${ID as string}${path ? `/${path}` : ''}`;
 
   return (
     <Link href={userPath} scroll={false}  className='hover-animation main-tab dark-bg-tab flex flex-1 justify-center

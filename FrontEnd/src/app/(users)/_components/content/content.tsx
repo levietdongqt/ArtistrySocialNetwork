@@ -20,8 +20,7 @@ import {Timestamp} from "firebase/firestore";
 import {ViewContent} from "../view/view-content";
 import React from "react";
 import {User} from "@models/user";
-import {Loading} from "@components/ui/loading";
-import {useAuth} from "../../../../context/auth-context";
+
 import {Post} from "@models/post";
 import {ImagesPreview} from "@models/file";
 import {useUser} from "../../../../context/user-context";
@@ -63,8 +62,8 @@ export function Content(tweet: TweetProps) {
     parentTweet,
       comment
   } = tweet;
-  const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData;
-  console.log("show user ",ownerId)
+  const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData as User;
+  console.log("show user ",postUserData)
   const { currentUser } = useUser();
   const userId = currentUser?.id as string;
   const isOwner = userId === createdBy;

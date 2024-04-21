@@ -11,16 +11,19 @@ import { EditProfileModal } from '../modal/edit-profile-modal';
 import { Button } from '@components/ui/button';
 import { InputField } from '../input/input-field';
 import type { ChangeEvent, KeyboardEvent } from 'react';
-import type { FilesWithId } from '../../../../models/file';
-import type { User, EditableData, EditableUserData } from '../../../../models/user';
+import type { FilesWithId } from '@models/file';
+import type { User, EditableData, EditableUserData } from '@models/user';
 import type { InputFieldProps } from '../input/input-field';
+import useSWR from "swr";
+import {getUserById} from "../../../../services/main/clientRequest/userClient";
+import {useParams} from "next/navigation";
 
 type RequiredInputFieldProps = Omit<InputFieldProps, 'handleChange'> & {
   inputId: EditableData;
 };
 
 type UserImages = Record<
-  Extract<EditableData, 'photoURL' | 'coverPhotoURL'>,
+  Extract<EditableData, 'avatar' | 'coverImage'>,
   FilesWithId
 >;
 
@@ -34,65 +37,67 @@ type UserEditProfileProps = {
 };
 
 export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
-  const { user } = useUser();
+  const { currentUser } = useUser();
   const { open, openModal, closeModal } = useModal();
-
   const [loading, setLoading] = useState(false);
-
-  const { bio, name, website, location, photoURL, coverPhotoURL } =
-    user as User;
+  const { bio, fullName, location, avatar, coverImage, phoneNumber,dateOfBirth } =
+    currentUser as User;
+  const { ID } = useParams();
+  const {data,isLoading} = useSWR(getUserById(ID as string));
 
   const [editUserData, setEditUserData] = useState<EditableUserData>({
     bio,
-    name,
-    website,
-    photoURL,
+    fullName,
+    avatar,
     location,
-    coverPhotoURL
+    coverImage,
+    phoneNumber,
+    dateOfBirth
   });
 
   const [userImages, setUserImages] = useState<UserImages>({
-    photoURL: [],
-    coverPhotoURL: []
+    avatar: [],
+    coverImage: []
   });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => cleanImage, []);
 
-  const inputNameError = !editUserData.name?.trim()
+  const inputNameError = !editUserData.fullName?.trim()
     ? "Name can't be blank"
     : '';
 
   const updateData = async (): Promise<void> => {
     setLoading(true);
 
-    const userId = user?.id as string;
+    const userId = currentUser?.id as string;
 
-    const { photoURL, coverPhotoURL: coverURL } = userImages;
+    const { avatar, coverImage: coverURL } = userImages;
 
     const [newPhotoURL, newCoverPhotoURL] = await Promise.all(
-      [photoURL, coverURL].map((image) => uploadImages(userId, image))
+      [avatar, coverURL].map((image) => uploadImages(userId, image))
     );
 
-    const newImages: Partial<Pick<User, 'photoURL' | 'coverPhotoURL'>> = {
-      coverPhotoURL:
-        coverPhotoURL === editUserData.coverPhotoURL
-          ? coverPhotoURL
+    const newImages: Partial<Pick<User, 'avatar' | 'coverImage'>> = {
+      coverImage:
+          coverImage === editUserData.coverImage
+          ? coverImage
           : newCoverPhotoURL?.[0].src ?? null,
       ...(newPhotoURL && { photoURL: newPhotoURL[0].src })
     };
 
     const trimmedKeys: Readonly<EditableData[]> = [
-      'name',
+      'fullName',
       'bio',
-      'location',
-      'website'
+      // 'location',
+      // 'website'
     ];
 
     const trimmedTexts = trimmedKeys.reduce(
-      (acc, curr) => ({ ...acc, [curr]: editUserData[curr]?.trim() ?? null }),
+      (acc, curr) => ({ ...acc, [curr]: editUserData[curr] ?? null }),
       {} as TrimmedTexts
     );
+
 
     const newUserData: Readonly<EditableUserData> = {
       ...editUserData,
@@ -143,41 +148,40 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
   const removeCoverImage = (): void => {
     setEditUserData({
       ...editUserData,
-      coverPhotoURL: null
+      coverImage: null
     });
 
     setUserImages({
       ...userImages,
-      coverPhotoURL: []
+      coverImage: []
     });
 
-    URL.revokeObjectURL(editUserData.coverPhotoURL ?? '');
+    URL.revokeObjectURL(editUserData.coverImage ?? '');
   };
 
   const cleanImage = (): void => {
     const imagesKey: Readonly<Partial<EditableData>[]> = [
-      'photoURL',
-      'coverPhotoURL'
+      'avatar',
+      'coverImage'
     ];
 
     imagesKey.forEach((image) =>
-      URL.revokeObjectURL(editUserData[image] ?? '')
+      URL.revokeObjectURL(editUserData[image] as string ?? '')
     );
 
     setUserImages({
-      photoURL: [],
-      coverPhotoURL: []
+       avatar: [],
+      coverImage: []
     });
   };
 
   const resetUserEditData = (): void =>
     setEditUserData({
       bio,
-      name,
-      website,
-      photoURL,
+      fullName,
+      avatar,
       location,
-      coverPhotoURL
+      coverImage
     });
 
   const handleChange =
@@ -201,9 +205,9 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
 
   const inputFields: Readonly<RequiredInputFieldProps[]> = [
     {
-      label: 'Name',
-      inputId: 'name',
-      inputValue: editUserData.name,
+      label: 'FullName',
+      inputId: 'fullName',
+      inputValue: editUserData.fullName,
       inputLimit: 50,
       errorMessage: inputNameError
     },
@@ -215,31 +219,28 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
       useTextArea: true
     },
     {
-      label: 'Location',
-      inputId: 'location',
-      inputValue: editUserData.location,
-      inputLimit: 30
+      label: 'PhoneNumber',
+      inputId: 'phoneNumber',
+      inputValue: editUserData.phoneNumber,
+      inputLimit: 12
     },
     {
-      label: 'Website',
-      inputId: 'website',
-      inputValue: editUserData.website,
-      inputLimit: 100
-    }
+      label: 'Date Of Birth',
+      inputId: 'dateOfBirth',
+      inputValue: editUserData.dateOfBirth,
+      inputLimit: 11
+    },
+
   ];
 
   return (
     <form className={cn(hide && 'hidden md:block')}>
-      <Modal
-        modalClassName='relative bg-main-background rounded-2xl max-w-xl w-full h-[672px] overflow-hidden'
-        open={open}
-        closeModal={closeModal}
-      >
+
         <EditProfileModal
-          name={name}
+          fullName={fullName}
           loading={loading}
-          photoURL={editUserData.photoURL}
-          coverPhotoURL={editUserData.coverPhotoURL}
+          avatar={editUserData.avatar}
+          coverImage={editUserData.coverImage}
           inputNameError={inputNameError}
           editImage={editImage}
           closeModal={closeModal}
@@ -256,15 +257,8 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
             />
           ))}
         </EditProfileModal>
-      </Modal>
-      <Button
-        className='dark-bg-tab self-start border border-light-line-reply px-4 py-1.5 font-bold
-                   hover:bg-light-primary/10 active:bg-light-primary/20 dark:border-light-secondary
-                   dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20'
-        onClick={openModal}
-      >
-        Edit profile
-      </Button>
+
+
     </form>
   );
 }

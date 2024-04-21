@@ -61,7 +61,7 @@ public class PostController {
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
                         .message("Delete all post is OK")
-                        .data("success" )
+                        .data( "success")
                         .build()
         );
     }
