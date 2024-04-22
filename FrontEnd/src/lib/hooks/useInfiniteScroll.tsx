@@ -1,63 +1,49 @@
 'use client';
-import {useCallback, useEffect, useState} from 'react';
-import useSWRInfinite from 'swr/infinite';
+import useSWRInfinite, {SWRInfiniteKeyLoader, SWRInfiniteResponse} from 'swr/infinite';
 import {fetcherParams, fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import { Loading } from '@components/ui/loading';
 import { motion } from 'framer-motion';
+import {useUser} from "../../context/user-context";
+import {Button} from "@components/ui/button";
+import {SWRConfiguration} from "swr";
+
 
 type InfiniteScrollResult = {
-    allData: any[]; // replace `any` with the type of data you are fetching
-    error: any; // replace `any` with the error type you expect
-    isLoadingInitialData: boolean;
+    paginatedPosts: any[] | undefined;
+    error: any;
+    isReachedEnd: boolean | undefined;
     isLoadingMore: boolean | undefined;
     LoadMore: () => JSX.Element;
-    marginBottom: number;
+    size: number | undefined;
+    setSize: (size: number) => void;
+    mutate: any;
 }
-const getKey = (fetchPostsFunc: (limit:number, offset:number) => fetcherParams, pageIndex:number, previousPageData:any, stepSize:number) => {
-    if (previousPageData && !previousPageData.length) return null;
-    return fetchPostsFunc(stepSize, pageIndex * stepSize);
-};
+
 
 export function useInfiniteScroll(
-    fetchPostsFunc: (limit: number, offset: number) => fetcherParams,
-    stepSize: number = 20,
-    marginBottom: number = 1024
+    fetcher: (userId?: string, limit?: number, pageIndex?: number) => fetcherParams,
+    options?: SWRConfiguration
 ) : InfiniteScrollResult {
-    const [loadMoreInView, setLoadMoreInView] = useState(false);
-    const { data, error, size, setSize,mutate } = useSWRInfinite(
-        (pageIndex, previousPageData) => getKey(fetchPostsFunc, pageIndex, previousPageData, stepSize),
-        fetcherWithToken,{
-            revalidateFirstPage: false,
-            revalidateAll: true,
-            keepPreviousData: true,
-            refreshInterval: 3000,
+    const {currentUser} = useUser();
+    const PAGE_SIZE = 7;
+    const getKey:SWRInfiniteKeyLoader = (index:number,previousPageData:any)  =>{
+        if(previousPageData && previousPageData.length){
+            return null;
         }
-    );
-    const allData = data ? [].concat(...data.map(value => value.data)) : [];
-    const isLoadingInitialData = !data && !error;
-    const isLoadingMore = isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === "undefined");
-    const isReachingEnd = isLoadingMore || (data && data[data.length - 1]?.length < stepSize);
-
-    const loadMore = useCallback(() => {
-        if (!isReachingEnd && !isLoadingMore) {
-            setSize(size + 1);
-        }
-    }, [isReachingEnd, isLoadingMore, size, setSize]);
-
-    useEffect(() => {
-        if (loadMoreInView) loadMore();
-    }, [loadMoreInView, loadMore]);
-
+        return fetcher(currentUser?.id,PAGE_SIZE,index);
+    }
+    const {data:posts,size,setSize,error,mutate} = useSWRInfinite(getKey,fetcherWithToken,{
+        ...options
+    });
+    console.log("Show api",posts);
+    const paginatedPosts = posts?.map(post =>post.data).flat();
+    const isReachedEnd = posts?.map(post =>post.data) && posts?.map(post =>post.data)[posts?.map(post =>post.data).length -1]?.length < PAGE_SIZE - 1;
+    console.log("SHow",paginatedPosts);
+    const isLoadingMore = posts && typeof posts[size -1] === 'undefined';
     const LoadMore = () => (
-        <motion.div
-            className={isReachingEnd ? 'hidden' : 'block'}
-            viewport={{ margin: `0px 0px ${marginBottom}px` }}
-            onViewportEnter={() => setLoadMoreInView(true)}
-            onViewportLeave={() => setLoadMoreInView(false)}
-        >
-            {isLoadingMore && <Loading className='mt-5' />}
+        <motion.div>
+            <Loading className='mt-5' />
         </motion.div>
     );
-
-    return {isLoadingMore: undefined, marginBottom: 0, allData, isLoadingInitialData, LoadMore, error };
+    return {paginatedPosts,error,isLoadingMore,isReachedEnd,LoadMore,size,setSize,mutate};
 }

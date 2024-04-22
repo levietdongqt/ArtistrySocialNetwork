@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/reports")
@@ -30,13 +27,24 @@ public class ReportController {
                         .build()
         );
     }
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @PutMapping("/undoReport")
+    public ResponseEntity<?> undoReport(@RequestParam("userId") String userId, @RequestParam("postId") String postId){
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.CREATED)
+                        .message("change report undo status ")
+                        .data(reportService.changeReportUndo(userId, postId))
+                        .build()
+        );
+    }
 
-    @PostMapping("/listReports")
+    @GetMapping("/listReports")
     public ResponseEntity<?> listReport(){
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
-                        .message("create report ok ")
+                        .message("get list report ok ")
                         .data(reportService.findAll())
                         .build()
         );

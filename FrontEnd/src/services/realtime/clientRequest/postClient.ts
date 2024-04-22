@@ -10,9 +10,10 @@ export function getPostsCount (): fetcherParams {
     return ['/posts/count', 'GET', null, ServiceDestination.REALTIME];
 }
 // lay bai viet theo gioi han get-posts?limit=
-export function getPostsLimit (limit: number,offset:number): fetcherParams {
-    return [`/posts/get-posts?limit=${limit}&offset=${offset}`, 'GET', null, ServiceDestination.REALTIME];
+export function getPostsLimit (userId?:string,limit?: number,pageIndex?:number): fetcherParams {
+    return [`/posts/get-posts/${userId}?limit=${limit}&pageIndex=${pageIndex}`, 'GET', null, ServiceDestination.REALTIME];
 }
+
 export function getPostListByPostId(postIds: any): fetcherParams {
     return [`/posts/postIds?ids=${postIds.join(',')}`, 'GET', null, ServiceDestination.REALTIME];
 }

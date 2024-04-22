@@ -86,10 +86,7 @@ export function ContentStats({
                       },
                   };
                   setIsLiked(!isLiked);
-                  await likePosts(dataLike)
-                  await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/likes`,dataLike,{
-                      optimisticData: [dataLike],
-                  });
+                  await likePosts(dataLike);
               } catch (error) {
                   console.error('Failed to update like status:', error);
                   setIsLiked(currentIsLiked => !currentIsLiked);
@@ -119,6 +116,7 @@ export function ContentStats({
       }
 
   };
+
 
   const commentMove = useMemo(
     () => (totalComments as number > (currentComment as number)  ? -25 : 25),

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface PostRepository extends MongoRepository<Post,String> {
@@ -23,7 +24,8 @@ public interface PostRepository extends MongoRepository<Post,String> {
 
     @Query(value = "{'id': ?0}")
     Optional<Post> findPostById(String postId);
-    Page<Post> findByOrderByCreatedAtDesc(Pageable pageable);
+    @Query(value = "{'_id': {$nin: ?1},'user.id' : { $in: ?0 }}")
+    Page<Post> findByOrderByCreatedAtDesc(List<String> userIds, Set<String> reportedPostIds, Pageable pageable);
 
     long count();
     List<Post> findByContentContainingIgnoreCaseOrUserFullNameContainingIgnoreCase(String contentKeyword, String fullNameKeyword);

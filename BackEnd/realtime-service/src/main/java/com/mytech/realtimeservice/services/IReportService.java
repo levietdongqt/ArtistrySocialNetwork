@@ -8,4 +8,6 @@ import java.util.List;
 public interface IReportService  {
     Report createReport(ReportDTO reportDTO);
     List<Report> findAll();
+    Report changeReportUndo(String userId, String postId);
+    List<Report> findReportsByUserId(String userId);
 }

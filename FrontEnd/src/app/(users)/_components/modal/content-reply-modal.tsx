@@ -3,7 +3,7 @@ import useSWR, {mutate} from "swr";
 import { Loading } from "@components/ui/loading";
 import { AnimatePresence } from "framer-motion";
 import { Input } from '../input/input';
-import { Content } from '../content/content';
+import { ContentPost } from '../content/content';
 import { CustomIcon } from "@components/ui/custom-icon";
 import { Comment } from "../comment/comment";
 import type { TweetProps } from '../content/content';
@@ -81,7 +81,7 @@ export function ContentReplyModal({
                         <Loading className='mt-5' />
                     ) : (
                         <AnimatePresence mode='popLayout'>
-                            <Content modal comment={true} {...post} {...postData} />
+                            <ContentPost modal comment={true} {...post} {...postData} />
                         </AnimatePresence>
                     )
                 }

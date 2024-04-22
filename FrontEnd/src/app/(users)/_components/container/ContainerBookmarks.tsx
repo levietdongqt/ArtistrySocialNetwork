@@ -15,7 +15,7 @@ import useSWR from "swr";
 import {getBookmarksByUserId} from "../../../../services/realtime/clientRequest/bookmarksClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {getPostById, getPostListByPostId} from "../../../../services/realtime/clientRequest/postClient";
-import {Content} from "../content/content";
+import {ContentPost} from "../content/content";
 import {toast} from "react-toastify";
 import {deleteAllBokMarksByUserId} from "../../../../services/realtime/ServerAction/bookmarksService";
 import {SEO} from "../common/seo";
@@ -25,21 +25,18 @@ const ContainerBookmarks = () => {
 
     const { open, openModal, closeModal } = useModal();
 
-    const userId = currentUser?.id as string;
-
-    const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken);
+    const userId = useMemo(() => currentUser?.id as string, [currentUser]);
+    console.log("show user",userId);
+    const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken,{
+        refreshInterval: 0
+    });
 
     const postId = useMemo(
         () => bookmarksRef?.data?.map((item: any) => item.postId) ?? [],
         [bookmarksRef]
     );
 
-    const { data: postData, isLoading: postLoading } = useSWR(getPostListByPostId(postId),fetcherWithToken,{
-        revalidateOnFocus: false,
-        onSuccess: (data) => {
-            console.log(data)
-        }
-    });
+    const { data: postData, isLoading: postLoading } = useSWR(getPostListByPostId(postId),fetcherWithToken);
 
 
     const handleClear = async (): Promise<void> => {
@@ -56,6 +53,7 @@ const ContainerBookmarks = () => {
                 closeModal={closeModal}
             >
                 <ActionModal
+                    actionReport={()=>{}}
                     title='Clear all Page?'
                     description='This can’t be undone and you’ll remove all Tweets you’ve added to your Page.'
                     mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75 accent-tab
@@ -97,7 +95,7 @@ const ContainerBookmarks = () => {
                 ) : (
                     <AnimatePresence mode='popLayout'>
                         {postData?.data?.map((post:any) => (
-                            <Content {...post} key={post.id} />
+                            <ContentPost {...post} key={post.id} />
                         ))}
                     </AnimatePresence>
                 )}

@@ -80,7 +80,6 @@ export function ImagePreview({
 
     setSelectedIndex(nextIndex);
   };
-  console.log("show ii",imagesPreview);
 
   const isTweet = post ?? viewTweet;
 

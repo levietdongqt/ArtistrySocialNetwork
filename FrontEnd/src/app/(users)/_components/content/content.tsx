@@ -1,27 +1,27 @@
 'use client'
-import Link from 'next/link';
-import { AnimatePresence, motion } from 'framer-motion';
+import {AnimatePresence, motion} from 'framer-motion';
 import cn from 'clsx';
 import { useModal } from '@lib/hooks/useModal';
-import { delayScroll } from '@lib/utils';
+import {delayScroll, sleep} from '@lib/utils';
 import { Modal } from '../modal/modal';
 import { ContentReplyModal } from '../modal/content-reply-modal';
 import { ImagePreview } from '../input/image-preview';
 import { UserAvatar } from '../user/user-avatar';
 import { UserTooltip } from '../user/user-tooltip';
 import { UserName } from '../user/user-name';
-import { UserUsername } from '../user/user-username';
 import { ContentAction } from './content-action';
-import { ContentStatus } from './content-status';
 import { ContentStats } from './content-stats';
 import { ContentDate } from './content-date';
 import type { Variants } from 'framer-motion';
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {User} from "@models/user";
 import {Post} from "@models/post";
 import {ImagesPreview} from "@models/file";
 import {useUser} from "../../../../context/user-context";
-import {Popover} from "antd";
+import {Button} from "@components/ui/button";
+import {HeroIcon} from "@components/ui/hero-icon";
+import {undoReport} from "../../../../services/realtime/ServerAction/ReportService";
+
 
 
 export type TweetProps = Post & {
@@ -40,7 +40,7 @@ export const variants: Variants = {
 };
 
 export function ContentPost(tweet: TweetProps) {
-  console.log("tweet",tweet);
+  const [IsCheckReport, setIsCheckReport] = useState<boolean>(false);
   const {
     id:postId,
     user: postUserData,
@@ -67,29 +67,52 @@ export function ContentPost(tweet: TweetProps) {
   const isOwner = userId === createdBy;
   const { open, openModal, closeModal } = useModal();
   const { id: parentId, fullName: parentUsername = fullName } = postUserData ?? {};
-  const {
-    id: profileId,
-    fullName: profileUsername
-  } = profile ?? {};
   const postLink = `/post/${postId}`;
+  const handleReported = (check:boolean): void => {
+    setIsCheckReport(check);
+  }
+  const handleUndo = async () =>{
+    await undoReport(userId,postId);
+    await sleep(1000);
+    setIsCheckReport(false);
+  }
+  if (IsCheckReport) {
+    return (
+        <AnimatePresence>
+          <motion.div animate={{...variants.animate}} className={'flex justify-evenly h-14 py-3 px-4 my-3 border-solid border-y-[1px] border-black'}>
+            <div className={'flex justify-start w-full items-center'}>
+              <HeroIcon iconName={'FlagIcon'}/>
+              <div className={'w-full ml-5'}>
+                <p className={'font-bold text-xl'}>Bị ẩn</p>
+                <span className={'text-xs text-gray-500'}>Nhờ hoạt động báo cáo chúng tôi sẽ sử lý như mong muốn</span>
+              </div>
+
+            </div>
+            <div className={'flex justify-end w-[30%] items-center'}>
+              <Button onClick={handleUndo} className={cn(`custom-button main-tab font-bold hover:bg-blue-400`)}>Hoàn tác</Button>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+    );
+  }
   return (
-    <motion.article
-      {...(!modal ? { ...variants, layout: 'position' } : {})}
-      animate={{
-        ...variants.animate,
-        ...(parentTweet && { transition: { duration: 0.2 } })
-      }}
-    >
-      <Modal
-        className='flex items-start justify-center'
-        modalClassName='bg-main-background rounded-2xl max-w-2xl w-full my-8 overflow-y-auto scrollbar-thin scrollbar-webkit max-h-[700px] mx-4'
-        open={open}
-        closeModal={closeModal}
+      <motion.article
+          {...(!modal ? {...variants, layout: 'position'} : {})}
+          animate={{
+            ...variants.animate,
+            ...(parentTweet && {transition: {duration: 0.2}})
+          }}
       >
-        <ContentReplyModal post={tweet} closeModal={closeModal}  />
-      </Modal>
-      <div className={cn(
-          `accent-tab hover-card relative flex flex-col 
+        <Modal
+            className='flex items-start justify-center'
+            modalClassName='bg-main-background rounded-2xl max-w-2xl w-full my-8 overflow-y-auto scrollbar-thin scrollbar-webkit max-h-[700px] mx-4'
+            open={open}
+            closeModal={closeModal}
+        >
+          <ContentReplyModal post={tweet} closeModal={closeModal}/>
+        </Modal>
+        <div className={cn(
+            `accent-tab hover-card relative flex flex-col 
              gap-y-4 px-4 py-3 outline-none duration-200`,
           parentTweet
               ? 'mt-0.5 pt-2.5 pb-0'
@@ -125,6 +148,7 @@ export function ContentPost(tweet: TweetProps) {
               <div className='px-4'>
                 {!modal && (
                     <ContentAction
+                        reported={handleReported}
                         isOwner={isOwner}
                         ownerId={ownerId}
                         postId={postId}

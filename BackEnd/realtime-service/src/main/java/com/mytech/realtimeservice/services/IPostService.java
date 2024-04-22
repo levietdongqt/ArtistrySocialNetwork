@@ -11,7 +11,7 @@ import java.util.List;
 public interface IPostService {
     public Post create(PostDTO postDTO);
 
-    public List<PostResponse> findAll(int limit, int offset);
+    List<PostResponse> findAll(int limit, int pageIndex, String userId);
     public boolean deleteAll();
     public Post findById(String id);
 
@@ -25,4 +25,8 @@ public interface IPostService {
     Boolean deletePost(String postId);
     Post getPostById(String postId);
     long getCountPost();
+
+    List<Post> getPostByKeyWord(String keyword);
+
+
 }

@@ -1,6 +1,6 @@
 import { useMemo, useEffect } from 'react';
 import { getRandomId } from '@lib/random';
-import { Content } from './content';
+import {ContentPost } from './content';
 import type { LoadedParents } from './content-with-parent';
 
 type TweetParentProps = {
@@ -34,5 +34,5 @@ export function ContentParent({
 
   if (loading || !isParentAlreadyLoaded /*|| !data*/) return null;
 
-  return <Content parentTweet />;
+  return <ContentPost parentTweet  content/>;
 }

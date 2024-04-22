@@ -40,15 +40,15 @@ public class PostController {
     @Autowired
     private IWSSocket socket;
 
-
-    @GetMapping("/get-posts")
-    public ResponseEntity<?> getPostList(@RequestParam("limit") int limit,@RequestParam("offset") int offset) {
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @GetMapping("/get-posts/{userId}")
+    public ResponseEntity<?> getPostList(@PathVariable String userId,@RequestParam("limit") int limit,@RequestParam("pageIndex") int pageIndex) {
         log.info("Post List ");
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Get post list limit " + limit + " va offset " + offset + " OK")
-                        .data(postService.findAll(limit,offset))
+                        .message("Get post list limit " + limit + " va offset " + pageIndex + " OK")
+                        .data(postService.findAll(limit,pageIndex,userId))
                         .build()
         );
     }

@@ -18,7 +18,6 @@ function initialize(): Firebase {
   const firebaseApp = initializeApp(getFirebaseConfig());
   const auth = getAuth(firebaseApp);
   const storage = getStorage(firebaseApp);
-  console.log("show firebase ", storage);
   return { firebaseApp, auth, storage };
 }
 

@@ -1,13 +1,11 @@
 'use client'
-import {useMemo, useState} from 'react';
 import { useRouter } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
 import { Popover } from '@headlessui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import cn from 'clsx';
 import { toast } from 'react-toastify';
 import { useModal } from '@lib/hooks/useModal';
-import { delayScroll, preventBubbling, sleep } from '@lib/utils';
+import {  preventBubbling } from '@lib/utils';
 import { Modal } from '../modal/modal';
 import { ActionModal } from '../modal/action-modal';
 import { Button } from '@components/ui/button';
@@ -17,10 +15,10 @@ import { CustomIcon } from '@components/ui/custom-icon';
 import type { Variants } from 'framer-motion';
 import type { Post } from '@models/post';
 import {useUser} from "../../../../context/user-context";
-import useSWR, {mutate} from "swr";
+import {mutate} from "swr";
 import {deletePosts1} from "../../../../services/realtime/ServerAction/PostService";
-import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {deleteComment} from "../../../../services/realtime/ServerAction/CommentService";
+import {createReport} from "../../../../services/realtime/ServerAction/ReportService";
 
 export const variants: Variants = {
   initial: { opacity: 0, y: -25 },
@@ -41,6 +39,7 @@ type TweetActionsProps = Pick<Post, 'createdBy'> & {
   viewTweet?: boolean;
   comment?: boolean;
   commentId?: string;
+  reported?: (check:boolean) => void;
 };
 
 type PinModalData = Record<'title' | 'description' | 'mainBtnLabel', string>;
@@ -68,7 +67,7 @@ export function ContentAction({
   hasImages,
   viewTweet,
   createdBy,comment,
-                                  commentId
+                                  commentId,reported
 
 }: TweetActionsProps): JSX.Element {
   const { currentUser } = useUser();
@@ -80,7 +79,11 @@ export function ContentAction({
     openModal: removeOpenModal,
     closeModal: removeCloseModal
   } = useModal();
-
+    const {
+    open: reportOpen,
+    openModal: reportOpenModal,
+    closeModal: reportCloseModal
+    } = useModal();
   const {
     open: pinOpen,
     openModal: pinOpenModal,
@@ -117,7 +120,28 @@ export function ContentAction({
         }
     }
   };
-
+ const handleReport = async (value:string, content:string) : Promise<void> =>{
+     console.log("show post",postId);
+    if(currentUser !== null){
+        const reportData = {
+            userId:currentUser?.id,
+            title: value,
+            postId: postId,
+            content: content
+        }
+        console.log("show report",reportData);
+        await Promise.all([
+            createReport(reportData)
+        ]);
+        if (reported) {
+            reported(true);
+        }
+        toast.success(
+            `bài viết đã được report`
+        );
+        reportCloseModal();
+    }
+ }
   // const handleFollow =
   //   (closeMenu: () => void, ...args: Parameters<typeof manageFollow>) =>
   //   async (): Promise<void> => {
@@ -154,6 +178,7 @@ const  userIsFollowed = false;
         closeModal={removeCloseModal}
       >
         <ActionModal
+            actionReport={()=>{}}
           title={comment ? 'Xóa bình luận' : 'Xóa bài viết'}
           description={`Bạn muốn xóa ${comment ? 'bình luận' : 'bài viết'} ngày không`}
           mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75 accent-tab
@@ -164,12 +189,31 @@ const  userIsFollowed = false;
           closeModal={removeCloseModal}
         />
       </Modal>
+        <Modal
+            modalClassName='max-w-xl bg-main-background w-full p-8 rounded-2xl '
+            open={reportOpen}
+            closeModal={reportCloseModal}
+        >
+            <ActionModal
+                action={()=>{}}
+                report
+                title={'Báo cáo'}
+                description={`Hãy cho Admin biết bài viết này có vấn đề gì. Chúng tôi sẽ không thông báo cho người đăng rằng bạn đã báo cáo bài viết.`}
+                mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75 accent-tab
+                            focus-visible:bg-accent-red/90'
+                mainBtnLabel='Gửi'
+                focusOnMainBtn
+                actionReport={handleReport}
+                closeModal={reportCloseModal}
+            />
+        </Modal>
       <Modal
         modalClassName='max-w-xs bg-main-background w-full p-8 rounded-2xl'
         open={pinOpen}
         closeModal={pinCloseModal}
       >
         <ActionModal
+            actionReport={()=>{}}
           {...currentPinModalData}
           mainBtnClassName='bg-light-primary hover:bg-light-primary/90 active:bg-light-primary/80 dark:text-light-primary
                             dark:bg-light-border dark:hover:bg-light-border/90 dark:active:bg-light-border/75'
@@ -267,7 +311,7 @@ const  userIsFollowed = false;
                             <Popover.Button
                                 className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
                                 as={Button}
-                                onClick={() => {}}
+                                onClick={preventBubbling(reportOpenModal)}
                             >
                                 <HeroIcon iconName={'ExclamationTriangleIcon'}/>
                                 Báo cáo bài viết

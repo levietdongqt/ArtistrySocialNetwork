@@ -7,6 +7,9 @@ import {getTest} from "../../../services/main/clientRequest/testClient";
 import {getCookie} from "cookies-next";
 import {useState} from "react";
 import {toast} from "react-toastify";
+import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
+import {getPostsLimit} from "../../../services/realtime/clientRequest/postClient";
+import {Button} from "antd";
 
 export default function Page() {
     // const {data: data, isLoading: isLoading, error: error} = useSWR('/auth/hello2')
@@ -18,15 +21,14 @@ export default function Page() {
     if(error2){
         return <div>Error: {error2.message}</div>
     }
+    const { paginatedPosts:Data, isLoadingMore,LoadMore,isReachedEnd,setSize,size,mutate,error } =
+        useInfiniteScroll(
+            getPostsLimit,
+        );
     return (
         <>
             <div>
-                <button type="button" onClick={test}>
-                    CLICK HERE
-                </button>
-                {/*<div> {data?.hello}</div>*/}
-                <br/>
-                <div> {data2?.hello}</div>
+                <Button onClick={() => setSize(size as number+ 1)}>tét</Button>
             </div>
         </>
     )

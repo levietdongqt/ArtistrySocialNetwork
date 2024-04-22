@@ -9,6 +9,7 @@ import com.mytech.realtimeservice.helper.JwtTokenHolder;
 import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.PostLike;
+import com.mytech.realtimeservice.models.Report;
 import com.mytech.realtimeservice.models.users.User;
 import com.mytech.realtimeservice.repositories.*;
 import com.mytech.realtimeservice.repositories.PostLikeRepository;
@@ -26,6 +27,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,6 +40,8 @@ public class PostService implements IPostService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private IReportService reportService;
     @Autowired
     private FriendForeignClient friendForeignClient;
 
@@ -117,18 +122,28 @@ public class PostService implements IPostService {
         Optional<Post> post = postRepository.findById(postId);
         return post.orElse(null);
     }
-    public List<PostResponse> findAll(int limit, int offset) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        int pageIndex = offset / limit;
-        Pageable pageable = PageRequest.of(pageIndex, limit, sort);
-        Page<Post> pagePosts = postRepository.findByOrderByCreatedAtDesc(pageable);
-        List<Post> posts = pagePosts.getContent();
-        List<PostResponse> postResponses = new ArrayList<>();
-        for (Post post : posts) {
-            PostResponse postResponse = modelMapper.map(post, PostResponse.class);
-            postResponses.add(postResponse);
+    public List<PostResponse> findAll(int limit, int pageIndex, String userId) {
+        List<String> friendsIds = filterFollowFriends(userId);
+        if (!friendsIds.contains(userId)) {
+            friendsIds.add(userId);
         }
+        Set<String> reportedPostIds = reportService.findReportsByUserId(userId)
+                .stream()
+                .map(Report::getPostId)
+                .collect(Collectors.toSet());
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(pageIndex, limit, sort);
+        Page<Post> pagePosts = postRepository.findByOrderByCreatedAtDesc(friendsIds,reportedPostIds, pageable);
+        List<PostResponse> postResponses = pagePosts.getContent().stream()
+                .map(post -> modelMapper.map(post, PostResponse.class))
+                .collect(Collectors.toList());
+        log.info( "page inndex: " + pageIndex+ "post response: " + postResponses.size() );
         return postResponses;
+    }
+    public List<String> filterFollowFriends(String userId){
+        var friendsFollow = friendForeignClient.getFollowFriends(userId);
+        return friendsFollow.getData().stream().map(UserDTO::getId).collect(Collectors.toList());
     }
     public long getCountPost(){
         return postRepository.count();
