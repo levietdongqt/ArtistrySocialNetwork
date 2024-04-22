@@ -1,0 +1,9 @@
+diff a/BackEnd/realtime-service/src/main/java/com/mytech/realtimeservice/RealtimeServiceApplication.java b/BackEnd/realtime-service/src/main/java/com/mytech/realtimeservice/RealtimeServiceApplication.java	(rejected hunks)
+@@ -57,6 +57,7 @@
+ 
+ 	@Override
+ 	public void run(String... args) throws Exception {
++//		postService.deleteAll();
+ //		notificationService.deleteAll();
+ //		postLikeRepository.deleteAll();
+ //		commentsRepository.deleteAll();
