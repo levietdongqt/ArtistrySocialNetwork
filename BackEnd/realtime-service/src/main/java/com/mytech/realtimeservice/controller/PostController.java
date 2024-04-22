@@ -92,7 +92,7 @@ public class PostController {
         );
     }
 
-    //@PreAuthorize("@jwtTokenHolder.isValidUserId(#postLikeDTO.byUser.userId) && hasRole('USER')")
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#postLikeDTO.byUser.id) && hasRole('USER')")
     @PostMapping("/likes")
     public ResponseEntity<?> createPostLike(@RequestBody PostLikeDTO postLikeDTO){
         Post post = postService.createPostLike(postLikeDTO);

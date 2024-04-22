@@ -15,6 +15,7 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,17 +25,11 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
     @Override
     protected Principal determineUser(
             ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        System.out.println("Vo ne");
-
-
+        var headers = request.getHeaders();
         var token = request.getHeaders().get("cookie").get(0);
-        log.info("Access token",token);
-        String[] tokens = token.split(";");
-        String userId = tokens[3];
-        log.info("User with id '{}' opened ",userId);
-        String userIdNew = userId.substring(8);
-//        var bool = jwtService.validateToken(accessToken);
-      log.info("User with id '{}' opened ",userIdNew);
-        return new UserPrincipal(userIdNew);
+        var userIdCookie = Arrays.stream(token.split(";")).filter(s -> s.contains("userId")).findAny().get();
+        String userId = userIdCookie.substring(8);
+        log.info("User with id '{}' opened ", userId);
+        return new UserPrincipal(userId);
     }
 }

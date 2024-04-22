@@ -1,4 +1,3 @@
-"use client"
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import cn from "clsx";
@@ -30,7 +29,7 @@ export function SidebarLink({
   iconName,
   linkName,
   disabled,
-  canBeHidden,
+  canBeHidden, callBack
 }: SidebarLinkProps) {
   var user = useUser();
   const [shouldFetch, setShouldFetch] = useState(false);
@@ -38,7 +37,7 @@ export function SidebarLink({
   const isActive = username ? asPath.includes(username) : asPath === href;
   //Xu lý show notifications
   const {dataCount,setDataCount} = useNotification();
-  
+
 
   const {
     data: notificationsData,
@@ -63,6 +62,7 @@ export function SidebarLink({
   );
 
   function handleClickSlidebar() {
+      callBack?.()
     if (!disabled) {
       setShouldFetch(true);
       setDataCount((prev) => 0);
@@ -107,10 +107,10 @@ export function SidebarLink({
             solid={isActive}
           />
           {linkName === "Thông báo" && isLoading? (
-            
+
             <Loading className="mt-5" />
           ) : (
-            
+
             linkName === "Thông báo" &&
             dataCount != 0 && (
               <span className="absolute top-0 left-0 bg-blue-500 text-white rounded-full px-1 py-0.5 text-xs">
@@ -121,8 +121,8 @@ export function SidebarLink({
         </div>
         <p className="hidden xl:block">{linkName}</p>
       </div>
-      
+
     </Link>
-    
+
   );
 }
