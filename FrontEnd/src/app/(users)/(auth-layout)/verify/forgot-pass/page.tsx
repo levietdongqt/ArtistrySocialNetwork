@@ -8,7 +8,7 @@ import {changePassword} from "../../../../../services/main/auth-service";
 import {toast} from "react-toastify";
 import {getCookie} from "cookies-next";
 
-export default function ForGotPass() {
+export default function ForgotPass() {
     const router = useRouter()
     useEffect(() => {
         if (!window.confirmationResult) {

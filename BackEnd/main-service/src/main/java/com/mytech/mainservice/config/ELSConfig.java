@@ -26,7 +26,6 @@ public class ELSConfig extends ElasticsearchConfiguration {
                 .withBasicAuth("elastic","HLG3DTzyWJGcHrJ2_MHz")
                 .build();
     }
-
     private static SSLContext buildSSLContext() {
         try{
             return new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build();

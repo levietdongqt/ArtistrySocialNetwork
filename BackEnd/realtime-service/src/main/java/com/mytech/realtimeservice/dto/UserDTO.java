@@ -16,6 +16,7 @@ import java.time.LocalDate;
 public class UserDTO {
     private String id;
     private String fullName;
+    private String nickname;
     private String email;
     private String phoneNumber;
     private boolean verified = false;

@@ -4,12 +4,12 @@ import type {ReactNode} from 'react';
 import type {User} from '@models/user';
 import {getCookie, setCookie} from "cookies-next";
 
-type UserContext = {
+type UserContextProps = {
     currentUser: User | null;
     setCurrentUser: (user: User) => void;
 };
 
-export const UserContext = createContext<UserContext | null>(null);
+export const UserContext = createContext<UserContextProps | null>(null);
 
 
 export function UserContextProvider({children}: any): JSX.Element {
@@ -27,7 +27,7 @@ export function UserContextProvider({children}: any): JSX.Element {
     return <UserContext.Provider value={values}>{children}</UserContext.Provider>;
 }
 
-export function useUser(): UserContext {
+export function useUser(): UserContextProps {
     const context = useContext(UserContext);
     if (!context)
         throw new Error('useUser must be used within an UserContextProvider');

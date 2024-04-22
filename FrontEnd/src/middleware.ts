@@ -11,10 +11,11 @@ import {isTokenExpired} from "@lib/config/ServerHeaderConfig";
 const middleware = async (request: NextRequest) => {
     console.log("middleware is running:  ", request.nextUrl.pathname);
     const isLoginOrRoot = ["/login", "/"].includes(request.nextUrl.pathname)
+    const isLogin = "/login" === request.nextUrl.pathname
     const response = NextResponse.next()
     const accessToken = getCookie('access_token', {cookies})?.toString();
     if (!accessToken) {
-        if (request.nextUrl.pathname === '/login') {
+        if (isLogin) {
             return NextResponse.next();
         }
         console.log("ACCESS_TOKEN IS NOT FOUND")
@@ -31,10 +32,10 @@ const middleware = async (request: NextRequest) => {
             await resetCookieTokenSSR(result, request, response)
             return isLoginOrRoot ? redirectToHome(request) : response;
         }
-        return isLoginOrRoot ? NextResponse.next() : redirectToLogin(request);
+        return isLogin ? NextResponse.next() : redirectToLogin(request);
     } catch (err) {
         console.log("ERROR: " + err)
-        return isLoginOrRoot ? NextResponse.next() : redirectToLogin(request);
+        return isLogin ? NextResponse.next() : redirectToLogin(request);
     }
 };
 

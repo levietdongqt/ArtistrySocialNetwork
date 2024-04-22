@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ParentMessage {
     private String content;
-    private String userId;
+    private String senderId;
     private String messageId;
 }

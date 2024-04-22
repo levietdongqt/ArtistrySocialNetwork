@@ -16,7 +16,6 @@ import {getCookie, setCookie} from "cookies-next";
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {useRouter} from "next/navigation";
 import {toast} from "react-toastify";
-import {useUser} from "./user-context";
 
 declare global {
     interface Window {
@@ -48,30 +47,33 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
     const [verifyResult, setVerifyResult] = useState(undefined)
     auth.languageCode = 'it';
     const signInWithGoogle = async (): Promise<void> => {
-        try {
-            const provider = new GoogleAuthProvider();
-            const credential = await signInWithPopup(auth, provider);
-            const oauth2Response = await oauth2Service(await credential.user.getIdToken())
-            console.log("show LOGIN GOOGLE: ", oauth2Response.data);
-            await handleSuccessResponse(oauth2Response, router)
-        } catch (error) {
-            console.log(error)
-            throw error
-        }
+        const provider = new GoogleAuthProvider();
+        await loginHandleTemplate(provider);
     };
 
     const signInWithFacebook = async (): Promise<void> => {
+        const provider = new FacebookAuthProvider();
+        await loginHandleTemplate(provider);
+    };
+
+    const loginHandleTemplate = async (provider: GoogleAuthProvider | FacebookAuthProvider) => {
         try {
-            const provider = new FacebookAuthProvider();
             const credential = await signInWithPopup(auth, provider);
             console.log("LOGIN FACEBOOK: ")
-            const oauth2Response = await oauth2Service(await credential.user.getIdToken())
-            await handleSuccessResponse(oauth2Response, router)
+            toast.promise(oauth2Service(await credential.user.getIdToken()), {
+                pending: 'Đang đăng nhập .....',
+                success: "Đăng nhập thành công!",
+                error: 'Thông tin đăng nhập không hợp lệ'
+            }).then((oauth2Response) => {
+                handleSuccessResponse(oauth2Response, router)
+            })
+
         } catch (error) {
             console.log(error)
             throw error
         }
-    };
+    }
+
     const sendVerifyCode = async (phoneNumber: string, destination: string) => {
         signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier!)
             .then((confirmationResult) => {
@@ -91,6 +93,7 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
             throw error
         }
     };
+
     const captchaVerifier = async ({phoneNumber, destination = "/verify/continue", callBack}: captchaVerifierParam) => {
         window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
             'size': 'normal',
@@ -99,7 +102,9 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
                 console.log("Destination: " + destination)
                 router.prefetch(destination)
                 // reCAPTCHA solved, allow signInWithPhoneNumber.
-                sendVerifyCode(phoneNumber, destination)
+                toast.promise(sendVerifyCode(phoneNumber, destination), {
+                    pending: "Đang xác thực.... ",
+                })
                 callBack?.(); //
             },
             'expired-callback': () => {
@@ -131,8 +136,8 @@ export function useOAuth2(): Oauth2Context {
 }
 
 async function handleSuccessResponse(oauth2Response: any, router: any) {
-    await setCookieHandler(oauth2Response.data)
-    console.log("LOGIN GOOGLE SUCCESSFUL:  ", oauth2Response.data);
+    setCookieHandler(oauth2Response.data)
+    console.log("LOGIN GOOGLE SUCCESSFUL: ")
     const prevPage = getCookie("prev_page")?.toString();
     prevPage ? router.push(prevPage) : router.push("/home")
 }
