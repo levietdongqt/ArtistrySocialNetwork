@@ -25,6 +25,5 @@ public class Conversation {
     private Message lastMessage;
     private LocalDateTime updatedAt;
     private LocalDateTime createAt;
-    private List<Message> messages;
     private ConversationType type;
 }

@@ -2,7 +2,7 @@
 import {MainContainer} from "@chatscope/chat-ui-kit-react";
 import React, {useState} from "react";
 import {RightSidebar} from "./right-sidebar";
-import {LeftSidebar} from "./left-sidebar";
+import {Conversations} from "./conversations";
 import {ConversationDto} from "../../models/conversation";
 import dynamic from "next/dynamic";
 import useSWR from "swr";
@@ -18,15 +18,17 @@ export default function MessageMain() {
             ssr: false
         }
     )
+    const {state: {pickedConversations}} = useChat()
     const [showRightSidebar, setShowRightSidebar] = useState(false);
-    const [showLeftSidebar, setShowLeftSidebar] = useState(true);
+    const [showConversations, setShowConversations] = useState(true);
     return (
         <MainContainer
+            responsive={false}
             // responsive={true}
             className="min-h-screen"
         >
-            {showLeftSidebar && <LeftSidebar/>}
-            <ChatBox/>
+            {showConversations && <Conversations/>}
+            <ChatBox curConversation={undefined}/>
             {showRightSidebar && <RightSidebar/>}
         </MainContainer>
     );

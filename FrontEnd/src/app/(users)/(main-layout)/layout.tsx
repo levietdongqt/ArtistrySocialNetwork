@@ -7,22 +7,23 @@ import {usePathname} from "next/navigation";
 import {Bounce, ToastContainer} from "react-toastify";
 import {UserContextProvider} from "../../../context/user-context";
 import {Placeholder} from "../_components/common/placeholder";
-import {Suspense} from "react";
+import React, {Suspense} from "react";
 import {ChatAlert} from "@components/chat-box/chat-alert";
+import {Conversations} from "@components/chat-box/conversations";
+import {ACTION_TYPE, ChatAction} from "@lib/reducer/chat-reducer";
+import {useChat} from "../../../context/chat-context";
 
 export default function RootLayout({
                                        children,
                                    }: {
     children: React.ReactNode
 }) {
-    // var params = usePathname();
-    // var isLogin = params.includes("/login")
     return (
         <>
             <MainLayout >
                 {children}
             </MainLayout>
-            {/*<ChatAlert />*/}
+            <ChatAlert/>
         </>
 
     )

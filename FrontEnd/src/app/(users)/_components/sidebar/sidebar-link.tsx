@@ -29,7 +29,7 @@ export function SidebarLink({
   iconName,
   linkName,
   disabled,
-  canBeHidden,
+  canBeHidden, callBack
 }: SidebarLinkProps) {
   var user = useUser();
   const [shouldFetch, setShouldFetch] = useState(false);
@@ -62,6 +62,7 @@ export function SidebarLink({
   );
 
   function handleClickSlidebar() {
+      callBack?.()
     if (!disabled) {
       setShouldFetch(true);
       setDataCount((prev) => 0);
@@ -106,10 +107,10 @@ export function SidebarLink({
             solid={isActive}
           />
           {linkName === "Thông báo" && isLoading? (
-            
+
             <Loading className="mt-5" />
           ) : (
-            
+
             linkName === "Thông báo" &&
             dataCount != 0 && (
               <span className="absolute top-0 left-0 bg-blue-500 text-white rounded-full px-1 py-0.5 text-xs">

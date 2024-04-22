@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -53,6 +54,8 @@ public class ConversationService implements IConversationService {
         Conversation conversation = modelMapper.map(conversationDTO, Conversation.class);
         List<Conversation> conversations = conversationRepo.findConversationsByMemberIdsAAndType(userIds, ConversationType.PRIVATE);
         if (conversations.isEmpty()) {
+            conversation.setCreateAt(LocalDateTime.now());
+            conversation.setUpdatedAt(LocalDateTime.now());
             return modelMapper.map(conversationRepo.save(conversation), ConversationDTO.class);
         }
         if (isPrivateConversation(conversations)) {

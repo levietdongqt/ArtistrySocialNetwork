@@ -1,53 +1,30 @@
 'use client'
-import {createContext, useContext, useEffect, useRef, useState} from 'react';
+import {createContext, Dispatch, useContext, useEffect, useReducer, useRef, useState} from 'react';
 import {ConversationDto} from "@models/conversation";
 import {MessageDto} from "@models/message";
+import {initState, reducer, stateType} from "@lib/reducer/chat-reducer";
 
 type ChatContextType = {
-    curConversation: ConversationDto | undefined;
-    setCurConversation: (conversation: ConversationDto) => void;
-    updateMessage: (message: MessageDto) => void;
-    setMessages: (message: MessageDto[]) => void;
-    setReRender: (update: (prev: number) => number) => void;
-    reRender: number
+    state: stateType,
+    dispatch: Dispatch<any>,
+    reRender: number,
+    setReRender: (func: (prev: number) => number) => void
 };
-
 export const ChatContext = createContext<ChatContextType | undefined>(undefined);
-
-
 export default function ChatContextProvider({children}: any): JSX.Element {
-    const [curConversation, setCurConversation] = useState<ConversationDto>()
+    console.log("ChatContextProvider is running")
+    // const [curConversation, setCurConversation] = useState<ConversationDto>()
     const [reRender, setReRender] = useState(0)
-    const curConversationRef = useRef<ConversationDto>();
-
-    // Cập nhật ref mỗi khi curConversation thay đổi
-    useEffect(() => {
-        curConversationRef.current = curConversation;
-    }, [curConversation]);
-
-    const setMessages = (message: MessageDto[]) => {
-        console.log("Set messages for new conversation")
-        const updatedConversation = {...curConversationRef.current} as ConversationDto;
-        updatedConversation.messages = [...message];
-        setCurConversation(updatedConversation); // Cập nhật trạng thái mới dựa trên ref
-    }
-    const updateMessage = (message: MessageDto) => {
-        console.log("update messages for conversation")
-        const updatedConversation = {...curConversationRef.current} as ConversationDto;
-        if (!updatedConversation.messages) {
-            updatedConversation.messages = [message];
-        } else {
-            updatedConversation.messages.push(message);
-        }
-        setCurConversation(updatedConversation); // Cập nhật trạng thái mới dựa trên ref
-    }
+    const [state, dispatch] = useReducer(reducer, initState)
     const values = {
-        curConversation,
-        setCurConversation,
-        updateMessage,
-        setMessages,
-        setReRender,
-        reRender,
+        state: state,
+        dispatch: dispatch,
+        reRender: reRender,
+        setReRender: setReRender
+        // curConversation,
+        // setCurConversation,
+        // updateMessage,
+        // setMessages,
     }
     return <ChatContext.Provider value={values}>{children}</ChatContext.Provider>;
 }

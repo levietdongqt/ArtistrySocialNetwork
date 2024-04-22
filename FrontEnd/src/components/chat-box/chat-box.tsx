@@ -3,33 +3,40 @@ import {
     Avatar,
     ChatContainer,
     ConversationHeader,
-    // InfoButton,
     Message,
     MessageInput,
     MessageList,
-    MessageSeparator,
     TypingIndicator,
     VideoCallButton,
-    VoiceCallButton
+    VoiceCallButton,
+    AddUserButton,
+    ArrowButton,
+    EllipsisButton
 } from "@chatscope/chat-ui-kit-react";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useSocket} from "../../context/websocket-context1";
-import {MessageDto} from "../../models/message";
-import {ConversationDto, ConversationMember} from "../../models/conversation";
+import {MessageDto} from "@models/message";
+import {ConversationDto, ConversationMember} from "@models/conversation";
 import {useUser} from "../../context/user-context"
-import {getMessageDirection, getReceiverIds, MyAvatar, MyMessageSeparator} from "@components/chat-box/chat-box-helper";
+import {getMessageDirection, getReceiverIds, MyMessageSeparator} from "@components/chat-box/chat-box-helper";
 import {useChat} from "../../context/chat-context";
 import {dateParse} from "@lib/helper/dateParse";
+import {ACTION_TYPE, ChatAction} from "@lib/reducer/chat-reducer";
+import {CustomIcon} from "@components/ui/custom-icon";
+import {ToolTip} from "@components/ui/tooltip";
+import {MyTooltip} from "@components/ui/my-tooltip";
 
 
 interface ChatBoxProps {
     closeChatBox?: () => void; // The callback prop is an optional function
+    curConversation: ConversationDto | undefined
 }
 
-export default function ChatBox({closeChatBox}: ChatBoxProps) {
+export default function ChatBox({closeChatBox, curConversation}: ChatBoxProps) {
     const {currentUser} = useUser();
     const [memberMap, setMemberMap] = useState(new Map<string, ConversationMember>())
-    const {curConversation, setMessages, reRender, setReRender} = useChat()
+    const {state, dispatch, reRender} = useChat()
+    const {pickedConversations, showChatBoxes} = state!;
     const {stompClient} = useSocket();
     const [isLoading, setIsLoading] = useState(true)
     const handleCloseChatBox = () => {
@@ -39,15 +46,10 @@ export default function ChatBox({closeChatBox}: ChatBoxProps) {
         const a = stompClient?.subscribe(`/user/chat/conversation`, (message) => {
             const messages: MessageDto[] = JSON.parse(message.body, dateParse)
             console.log("Callback from chatBox: ", curConversation?.messages?.length)
-            setMessages(messages)
+            dispatch(ChatAction(messages, ACTION_TYPE.SET_NEW_MESSAGES))
             setIsLoading(false)
         });
         console.log("Subscribe success")
-        const payload = {
-            conversationId: curConversation?.id,
-            senderId: currentUser!.id
-        }
-        stompClient?.send("/app/chat.getConversation", JSON.stringify(payload))
         return () => {
             a?.unsubscribe()
             console.log("Unsubscribe success")
@@ -56,20 +58,31 @@ export default function ChatBox({closeChatBox}: ChatBoxProps) {
 
 
     useEffect(() => {
+        console.log("CHANGE MEMBER CONVERSATION")
         if (curConversation) {
+            // const payload = {
+            //     conversationId: curConversation?.id,
+            //     senderId: currentUser!.id
+            // }
+            // stompClient?.send("/app/chat.getConversation", JSON.stringify(payload))
             handleMembersConversation()
         }
-    }, [reRender]);
+    }, [curConversation]);
 
     const sendMessage = (innerHtml: string) => {
-        const payload: MessageDto = {
+        const message: MessageDto = {
             content: innerHtml,
             seen: false,
             sendTime: new Date(Date.now()),
             senderId: currentUser!.id,
             type: "text",
             conversationId: curConversation?.id,
-            receiverIds: getReceiverIds(curConversation!)
+        }
+        const payload = {
+            members: curConversation?.members,
+            name: curConversation?.name,
+            id: curConversation?.id!,
+            messages: [message]
         }
         console.log("ONSUBMIT send message")
         stompClient?.send("/app/chat.sendPrivate", JSON.stringify(payload))
@@ -90,51 +103,89 @@ export default function ChatBox({closeChatBox}: ChatBoxProps) {
 
     function handleMembersConversation() {
         const members = new Map<string, ConversationMember>();
-        curConversation!.members.map(value => {
+        curConversation!.members?.map(value => {
             members.set(value.id, value)
         })
         setMemberMap(members)
     }
 
+    const onClickCloseMessage = () => {
+        const currIndex = pickedConversations.findIndex(value => value?.id === curConversation?.id)
+        const newPickedConversations = [...pickedConversations]
+        newPickedConversations[currIndex] = undefined
+        const newShowChatBoxes = [...showChatBoxes]
+        newShowChatBoxes[currIndex] = false
+        dispatch(ChatAction(newPickedConversations, ACTION_TYPE.SET_PICKED_CONVERSATION))
+        dispatch(ChatAction(newShowChatBoxes, ACTION_TYPE.SHOW_CHAT_BOXES))
+    }
+
+    if (!curConversation) {
+        return (
+            <div>
+                <div className={"flex justify-center items-center h-screen"}>
+                    <div className={"text-center"}>
+                        Hãy kết nối bạn bè và trò chuyện ngay!
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <>
-            <ChatContainer
+            <ChatContainer className={"border-2 overflow-auto"}
             >
                 <ConversationHeader>
-                    <ConversationHeader.Back onClick={handleCloseChatBox}/>
+                    {/*<ConversationHeader.Back onClick={handleCloseChatBox}/>*/}
                     <Avatar
-                        name={curConversation?.members.filter(memberMap => memberMap.id !== currentUser?.id).pop()?.fullName}
+                        name={curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id).pop()?.fullName}
                         src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"
                     />
                     <ConversationHeader.Content
                         title={"HELLO"}
                         info="Active 10 mins ago"
-                        userName={curConversation?.members.filter(memberMap => memberMap.id !== currentUser?.id).pop()?.nickname}
+                        userName={curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id).pop()?.nickname}
                     />
                     <ConversationHeader.Actions>
-                        <VoiceCallButton/>
-                        <VideoCallButton/>
+                        {/*<VoiceCallButton/>*/}
+                        {/*<VideoCallButton/>*/}
                         {/*<InfoButton/>*/}
+                        <MyTooltip content={"Thu nhỏ"}>
+                            <button className="relative overflow-hidden">
+                            <span
+                                className="block w-full h-full bg-gray-200 rounded-full opacity-0 transition-opacity duration-300 absolute inset-0 hover:opacity-50">
+                            </span>
+                                <CustomIcon iconName={"MinusIcon"}/>
+                            </button>
+                        </MyTooltip>
+                        <MyTooltip content={"Đóng"}>
+                            <button className="relative overflow-hidden" onClick={onClickCloseMessage}>
+                                <span
+                                    className="block w-full h-full bg-gray-200 rounded-full opacity-0 transition-opacity duration-300 absolute inset-0 hover:opacity-50">
+                                </span>
+                                <CustomIcon iconName={"CloseMessage"}/>
+                            </button>
+                        </MyTooltip>
                     </ConversationHeader.Actions>
                 </ConversationHeader>
                 <MessageList
                     scrollBehavior="smooth"
                     loadingMore={false}
                     autoScrollToBottom={true}
+                    disableOnYReachWhenNoScroll={true}
                     loading={isLoading}
                     loadingMorePosition={"top"}
                     typingIndicator={<TypingIndicator content="Zoe is typing"/>}
 
                 >
                     {!isLoading ?
-
                         <MessageList.Content
                             className="flex flex-col justify-end  h-full pb-10 text-center text-lg"
                         >
                             {
                                 curConversation?.messages?.map((message, index) => {
                                     const sender: ConversationMember = memberMap.get(message.senderId)!
-                                    const prevMessage: MessageDto | null = index > 0 ? curConversation.messages[index - 1] : null
+                                    const prevMessage: MessageDto | undefined = index > 0 ? curConversation.messages?.[index - 1] : undefined
                                     // console.log("current time: ", message.sendTime.toLocaleDateString())
                                     let timeDifference: number | undefined = undefined;
                                     if (prevMessage) {
@@ -145,7 +196,7 @@ export default function ChatBox({closeChatBox}: ChatBoxProps) {
                                             <MyMessageSeparator timeDifference={timeDifference}
                                                                 currentTime={message.sendTime}/>
                                             <Message
-                                                className={"rounded-md"}
+                                                className={"rounded-md text-xs"}
                                                 model={{
                                                     direction: getMessageDirection(message.senderId, currentUser!.id),
                                                     message: message.content,
@@ -156,7 +207,7 @@ export default function ChatBox({closeChatBox}: ChatBoxProps) {
                                                 }}
                                             >
                                                 {
-                                                    handleShowAvatar(timeDifference, sender, prevMessage)
+                                                    handleShowAvatar(timeDifference, sender, prevMessage!)
                                                     // (message.senderId === currentUser?.id || sender?.id !== prevMessage?.senderId) ?
                                                     //     null :
                                                     //     < Avatar status={"invisible"} name={sender?.nickname}
@@ -169,41 +220,6 @@ export default function ChatBox({closeChatBox}: ChatBoxProps) {
                                     )
                                 })
                             }
-
-                            {/*<Message*/}
-                            {/*    model={{*/}
-                            {/*        direction: 'outgoing',*/}
-                            {/*        message: 'Hello',*/}
-                            {/*        position: 'single',*/}
-                            {/*        sender: 'Zoe',*/}
-                            {/*        sentTime: '15 mins ago'*/}
-                            {/*    }}*/}
-                            {/*>*/}
-                            {/*    <Avatar*/}
-                            {/*        name="Zoe"*/}
-                            {/*        src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"*/}
-                            {/*    />*/}
-                            {/*</Message>*/}
-                            {/*<Message*/}
-                            {/*    avatarSpacer*/}
-                            {/*    model={{*/}
-                            {/*        direction: 'outgoing',*/}
-                            {/*        message: 'Hello sdsfdsfsdfkj ksdfksjdhf ksfbkds ksfdkjhsd kjhdsfkhdsf sjfdhksjhfskjdhfkshfks  sdfksjdh dsdadasadadasdadads',*/}
-                            {/*        position: 'single',*/}
-                            {/*        sender: 'Patrik',*/}
-                            {/*        sentTime: '15 mins ago',*/}
-                            {/*    }}*/}
-                            {/*/>*/}
-                            {/*<Message*/}
-                            {/*    avatarSpacer*/}
-                            {/*    model={{*/}
-                            {/*        direction: 'incoming',*/}
-                            {/*        message: 'Hello my friend',*/}
-                            {/*        position: 'single',*/}
-                            {/*        sender: 'Patrik',*/}
-                            {/*        sentTime: '15 mins ago',*/}
-                            {/*    }}*/}
-                            {/*/>*/}
                         </MessageList.Content>
                         :
                         <MessageList className={"mt-10 mx-auto"}
@@ -215,9 +231,12 @@ export default function ChatBox({closeChatBox}: ChatBoxProps) {
 
                     }
                 </MessageList>
+                <div is={"MessageInput"} className={"flex items-center"}>
+                    <MessageInput placeholder="Type message here"
+                                  onSend={sendMessage}/>
+                    <CustomIcon iconName={"MinusIcon"}/>
 
-                <MessageInput placeholder="Type message here"
-                              onSend={sendMessage}/>
+                </div>
             </ChatContainer>
         </>
     )

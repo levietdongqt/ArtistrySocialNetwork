@@ -4,6 +4,7 @@ export type ConversationDto = {
     id: string;
     name: string;
     members: ConversationMember[];
+    memberMap?: Map<string, ConversationMember>;
     lastMessage: MessageDto;
     updatedAt?: Date;
     createAt?: Date;

@@ -35,12 +35,18 @@ public class ChatController {
 
     @MessageMapping("/chat.sendPrivate")
 //    @SendTo("/chat/message")
-    public void handleSingleChat(@Payload MessageDTO message) {
+    public void handleSingleChat(@Payload ConversationDTO conversation) {
         String destination = "/chat/message";
-        log.info("FROM SEND MESSAGE" + message  );
-        MessageDTO savedMessage = chatService.saveNewMessage(message);
-        message.getReceiverIds().forEach(receiverId -> {
-            simpMessagingTemplate.convertAndSendToUser(receiverId, destination, savedMessage);
+        log.info("FROM SEND MESSAGE" + conversation);
+        MessageDTO savedMessage = chatService.saveNewMessage(conversation.getMessages().get(0));
+
+        conversation.setLastMessage(savedMessage);
+        conversation.setUpdatedAt(LocalDateTime.now());
+        conversation.setMessages(null);
+        chatService.updateConversation(conversation);
+
+        conversation.getMembers().forEach(member -> {
+            simpMessagingTemplate.convertAndSendToUser(member.getId(), destination, conversation);
         });
     }
 
