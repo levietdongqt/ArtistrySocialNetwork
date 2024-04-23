@@ -18,7 +18,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private String clientUrl;
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic"); // Định tuyến thông báo đến "/topic"
+        config.enableSimpleBroker("/topic","/chat"); // Định tuyến thông báo đến "/topic"
         config.setApplicationDestinationPrefixes("/app"); // Thiết lập tiền tố của các đường dẫn được xử lý bởi @MessageMapping
     }
 

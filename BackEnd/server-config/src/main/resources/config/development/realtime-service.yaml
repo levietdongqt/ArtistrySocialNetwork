@@ -3,7 +3,6 @@ server:
   servlet:
     context-path: /api/realtime
 
-
 spring:
   application:
     name: realtime-service

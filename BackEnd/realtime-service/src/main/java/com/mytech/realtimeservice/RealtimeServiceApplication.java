@@ -31,17 +31,12 @@ import java.util.List;
 public class RealtimeServiceApplication implements CommandLineRunner {
 
 
-
-
-
-
 	public static void main(String[] args) {
 		SpringApplication.run(RealtimeServiceApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-
 	}
 
 }
