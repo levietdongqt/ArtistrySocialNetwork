@@ -13,5 +13,5 @@ export function useModal(): Modal {
   const openModal = (): void => setOpen(true);
   const closeModal = (): void => setOpen(false);
 
-  return { open, openModal, closeModal };
+  return { open:open, openModal:openModal, closeModal:closeModal };
 }

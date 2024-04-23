@@ -14,6 +14,7 @@ public interface FriendForeignClient {
     @GetMapping("/api/main/friends/is-friend/{userId}")
     public ResponseObject<List<UserDTO>> getFriends(@PathVariable String userId);
 
+
     @GetMapping("/api/main/friends/follow/{userId}")
     public ResponseObject<List<UserDTO>> getFollowFriends(@PathVariable String userId);
 

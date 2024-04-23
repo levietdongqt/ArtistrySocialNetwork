@@ -1,6 +1,7 @@
 package com.mytech.mainservice.service;
 
 import com.google.firebase.auth.UserInfo;
+import com.mytech.mainservice.dto.FriendDTO;
 import com.mytech.mainservice.dto.UserDTO;
 import com.mytech.mainservice.dto.request.LoginDTO;
 import com.mytech.mainservice.dto.request.RegisterDto;
@@ -26,4 +27,9 @@ public interface IUserService {
     void verifyPhone(String phoneNumber);
 
     void changePass(LoginDTO data);
+
+    public void deleteHistory(String userId,String history);
+
+    public void deleteAllHistory(String userId);
+
 }

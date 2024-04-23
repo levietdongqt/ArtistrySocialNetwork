@@ -1,13 +1,16 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useRouter } from "next/navigation";
 import cn from "clsx";
 import { HeroIcon } from "@components/ui/hero-icon";
 import { Button } from "@components/ui/button";
-import { Avatar, Popover } from "antd";
+import { Avatar, Divider, Popover, Skeleton } from "antd";
 import type { ChangeEvent, FormEvent, KeyboardEvent } from "react";
 import Link from "next/link";
 import {
+  deleteAllHistorySearch,
+  deleteHistorySearch,
   getHistorySearch,
   suggestKeyword,
   updatedHistorySearch,
@@ -21,19 +24,33 @@ import _ from "lodash";
 import { useUser } from "context/user-context";
 import { parseStringToJson } from "@lib/helper/convertTime";
 import { useSearch } from "context/search-context";
+import { preventBubbling } from "@lib/utils";
+import { SearchBarCard } from "./search-bar-card";
+import { HistoryBarCard } from "./history-bar-card";
 
 interface SearchBarProps {
   width: string;
 }
 export function SearchBar({ width }: SearchBarProps): JSX.Element {
-  const { searchText, setSearchText } = useSearch();
-
+  const {
+    searchText,
+    setSearchText,
+    setSearchArrayUserIds,
+    setSearchArrayPostIds,
+    setSearchArrayServiceIds,
+    setTopSearch,
+  } = useSearch();
+  const [searchData, setSearchData] = useState<any>([]);
+  const [objectArray, setObjectArray] = useState<any[]>([]);
   const [inputValue, setInputValue] = useState(searchText || "");
   const [shouldFetch, setShouldFetch] = useState(searchText ? true : false);
   const [shouldGetFetch, setShouldGetFetch] = useState(false);
+  const [shouldDeleteFetch, setShouldDeleteFetch] = useState(false);
+  const [shouldDeleteAllFetch, setShouldDeleteAllFetch] = useState(false);
+  const [valueDelete, setValueDelete] = useState("");
   const [clickLink, setClickLink] = useState(false);
   const [link, setLink] = useState("");
-  const [shouldupdatedFetch, setShouldUpdatedFetch] = useState(false);
+  const [shouldUpdatedFetch, setShouldUpdatedFetch] = useState(false);
   const { push } = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -49,7 +66,14 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
     }
   );
 
-  var objectArray = dataHistory && parseStringToJson(dataHistory.data);
+  // var objectArray = dataHistory && parseStringToJson(dataHistory.data);
+
+  useEffect(() => {
+    if (dataHistory) {
+      setObjectArray(dataHistory && parseStringToJson(dataHistory.data));
+    }
+  }, [dataHistory]);
+
   const {
     data: data,
     isLoading: isLoading,
@@ -63,11 +87,31 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
   );
 
   const {} = useSWR(
-    shouldupdatedFetch
+    shouldUpdatedFetch
       ? updatedHistorySearch(
           currentUser?.id as string,
           clickLink ? link : { keyword: inputValue }
         )
+      : null,
+    fetcherWithToken,
+    {
+      revalidateOnFocus: false,
+    }
+  );
+
+  const {} = useSWR(
+    shouldDeleteFetch
+      ? deleteHistorySearch(currentUser?.id as string, valueDelete)
+      : null,
+    fetcherWithToken,
+    {
+      revalidateOnFocus: false,
+    }
+  );
+
+  const {} = useSWR(
+    shouldDeleteAllFetch
+      ? deleteAllHistorySearch(currentUser?.id as string)
       : null,
     fetcherWithToken,
     {
@@ -95,12 +139,44 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
       push(`/search?q=${inputValue}`);
     }
   };
+
+  const handleRemoveAllHistory = () => {
+    setShouldDeleteAllFetch(true);
+  };
+
+  const handleWhenClickLink = (value: any) => {
+    setLink(value);
+    setClickLink(true);
+    setShouldUpdatedFetch(true);
+  };
+
+  const handleFunctionDelete = (value: any) => {
+      setValueDelete(value);
+      setShouldDeleteFetch(true);
+      var array = objectArray.filter((ob) => {
+        if (ob.id) {
+          return ob.id !== value.id;
+        }
+        return ob.keyword !== value.keyword;
+      });
+      setObjectArray(array);
+  };
+
+  const handleFunctionLink = (value: any) => {
+    setLink(value);
+    setClickLink(true);
+    setShouldUpdatedFetch(true);
+    if (value.keyword) {
+      setSearchText(value.keyword);
+    }
+  };
+
   //Quan lý useEffect
   useEffect(() => {
-    if (shouldupdatedFetch) {
+    if (shouldUpdatedFetch) {
       setShouldUpdatedFetch(false);
     }
-  }, [shouldupdatedFetch]);
+  }, [shouldUpdatedFetch]);
 
   useEffect(() => {
     if (clickLink) {
@@ -112,6 +188,45 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
       setClickLink(false);
     }
   }, [shouldGetFetch]);
+
+  useEffect(() => {
+    if (shouldDeleteFetch) {
+      setShouldDeleteFetch(false);
+    }
+  }, [shouldDeleteFetch]);
+
+  useEffect(() => {
+    if (shouldDeleteAllFetch) {
+      setShouldDeleteAllFetch(false);
+    }
+  }, [shouldDeleteAllFetch]);
+
+  useEffect(() => {
+    if (data) {
+      setSearchData(data.data);
+      if (data.data.length > 0) {
+        setTopSearch((prev: any) => data.data[0].type);
+      }
+      setSearchArrayUserIds(
+        data &&
+          data.data
+            .filter((user: any) => user.type === "user")
+            .map((user: any) => user.id)
+      );
+      setSearchArrayPostIds(
+        data &&
+          data.data
+            .filter((post: any) => post.type === "post")
+            .map((post: any) => post.id)
+      );
+      setSearchArrayServiceIds(
+        data &&
+          data.data
+            .filter((service: any) => service.type === "service")
+            .map((service: any) => service.id)
+      );
+    }
+  }, [data]);
 
   const clearInputValue = (focus?: boolean) => (): void => {
     if (focus) inputRef.current?.focus();
@@ -129,175 +244,73 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
     setShouldGetFetch(true);
   };
 
-  const content = (inputValue == "" &&
-    objectArray &&
-    objectArray.toReversed().map((value: any) => (
-      <Link
-        href={
-          value.keyword
-            ? `/search?q=${value.keyword}`
-            : value.type === "user"
-            ? `/user/${value.id}`
-            : value.type === "post"
-            ? `/post/${value.id}`
-            : value.type === "service"
-            ? `/service/${value.id}`
-            : ``
-        }
-        className="accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4 py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5"
-        onClick={() => {
-          setLink(value);
-          setClickLink(true);
-          setShouldUpdatedFetch(true);
-          if (value.keyword) {
-            setSearchText(value.keyword);
-          }
-        }}
-      >
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center">
-            {
-               value.keyword
-               ?  <HeroIcon
-               className="h-5 w-5 text-light-secondary transition-colors 
-                        group-focus-within:text-main-accent dark:text-dark-secondary"
-               iconName="MagnifyingGlassIcon"
-             />
-               : value.type === "user"
-               ?  <HeroIcon
-               className="h-5 w-5 text-light-secondary transition-colors 
-                        group-focus-within:text-main-accent dark:text-dark-secondary"
-               iconName="ArrowTrendingUpIcon"
-             />
-               : value.type === "post"
-               ?  <HeroIcon
-               className="h-5 w-5 text-light-secondary transition-colors 
-                        group-focus-within:text-main-accent dark:text-dark-secondary"
-               iconName="ArrowDownOnSquareStackIcon"
-             />
-               : value.type === "service"
-               ?  <HeroIcon
-               className="h-5 w-5 text-light-secondary transition-colors 
-                        group-focus-within:text-main-accent dark:text-dark-secondary"
-               iconName="MagnifyingGlassIcon"
-             />
-               : ``
-            }
-           
-            <div className="flex flex-col justify-center ml-3">
-              <h5 className="text">
-                {value.keyword ||
-                  value.fullName ||
-                  value.content ||
-                  value.description}
-              </h5>
-            </div>
-            {!value.keyword && value.type === "user" && (
-              <Avatar
-                src={value.avatar}
-                shape="square"
-                className="absolute right-10"
-              ></Avatar>
-            )}
-          </div>
+  const content = (
+    <div
+      style={{
+        maxHeight: "520px",
+        overflowY: "auto",
+      }}
+    >
+      {inputValue == "" && (
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Button className="font-bold">Gần đây</Button>
+          <Button
+            className="hover:bg-light-primary/5 font-bold"
+            onClick={preventBubbling(() => {
+              handleRemoveAllHistory();
+              setShouldGetFetch(true);
+              setObjectArray([]);
+            })}
+          >
+            Xoá toàn bộ lịch sử
+          </Button>
         </div>
-      </Link>
-    ))) || (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      {isLoading ? (
-        <Loading className="mt-5" />
-      ) : !data?.data ? (
-        <Error message="Something went wrong" />
-      ) : (
-        data?.data.map((value: any) =>
-          value.type == "user" ? (
-            <Link
-              href={`/user/${value.id}`}
-              className="accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4 py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5"
-              onClick={() => {
-                setLink(value);
-                setClickLink(true);
-                setShouldUpdatedFetch(true);
-              }}
-            >
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center">
-                  <button>
-                    <HeroIcon
-                      className="h-5 w-5 text-light-secondary transition-colors 
-                       group-focus-within:text-main-accent dark:text-dark-secondary"
-                      iconName="ArrowTrendingUpIcon"
-                    />
-                  </button>
-                  <div className="flex flex-col justify-center ml-3">
-                    <h3 className="text-lg font-bold">{value.fullName}</h3>
-                    {value.roles.map((role: string, index: number) => (
-                      <React.Fragment key={index}>
-                        <h5>{role}</h5>
-                      </React.Fragment>
-                    ))}
-                  </div>
-
-                  <Avatar
-                    src={value.avatar}
-                    shape="square"
-                    className="absolute right-10"
-                  ></Avatar>
-                </div>
-              </div>
-            </Link>
-          ) : value.type === "service" ? (
-            <Link
-              href={`/service/${value.id}`}
-              className="accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4 py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5"
-              onClick={() => {
-                setLink(value);
-                setClickLink(true);
-                setShouldUpdatedFetch(true);
-              }}
-            >
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center">
-                  <HeroIcon
-                    className="h-5 w-5 text-light-secondary transition-colors 
-                       group-focus-within:text-main-accent dark:text-dark-secondary"
-                    iconName="ArrowDownOnSquareStackIcon"
-                  />
-                  <div className="flex flex-col justify-center ml-3">
-                    <h4 className="text-lg font-bold">{value.name}</h4>
-                    <h3>{value.description}</h3>
-                    <h5>Dịch vụ</h5>
-                  </div>
-                </div>
-              </div>
-            </Link>
+      )}
+      {(inputValue == "" &&
+        objectArray &&
+        objectArray.toReversed().map((value: any) => (
+          <HistoryBarCard
+            data={value}
+            handleFunctionLink={() => handleFunctionLink(value)}
+            handleFunctionDelete={() => handleFunctionDelete(value)}
+          />
+        ))) || (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {isLoading ? (
+            <Loading className="mt-5" />
+          ) : data?.data.length === 0 ? (
+            <Error message="Không tìm thấy kết quả nào" />
           ) : (
-            <Link
-              href={`/posts/${value.id}`}
-              className="accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4 py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5"
-              onClick={() => {
-                setLink(value);
-                setClickLink(true);
-                setShouldUpdatedFetch(true);
-              }}
-            >
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center">
-                  <HeroIcon
-                    className="h-5 w-5 text-light-secondary transition-colors 
-                       group-focus-within:text-main-accent dark:text-dark-secondary"
-                    iconName="MagnifyingGlassIcon"
-                  />
-                  <div className="flex flex-col justify-center ml-3">
-                    <h2>{value.fullName}</h2>
-                    <h3>{value.content}</h3>
-                    <h5>Bài đăng</h5>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          )
-        )
+            searchData.map((value: any) =>
+              value.type === "user" ? (
+                <SearchBarCard
+                  id={value.id}
+                  type={value.type}
+                  avatar={value.avatar}
+                  fullName={value.fullName}
+                  roles={value.roles}
+                  handleFunction={() => handleWhenClickLink(value)}
+                />
+              ) : value.type === "service" ? (
+                <SearchBarCard
+                  id={value.id}
+                  type={value.type}
+                  nameService={value.name}
+                  description={value.description}
+                  handleFunction={() => handleWhenClickLink(value)}
+                />
+              ) : (
+                <SearchBarCard
+                  id={value.id}
+                  type={value.type}
+                  fullName={value.fullName}
+                  content={value.content}
+                  handleFunction={() => handleWhenClickLink(value)}
+                />
+              )
+            )
+          )}
+        </div>
       )}
     </div>
   );

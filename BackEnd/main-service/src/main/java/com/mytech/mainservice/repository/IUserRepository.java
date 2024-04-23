@@ -11,6 +11,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import reactor.util.annotation.NonNullApi;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,4 +25,9 @@ public interface IUserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmailOrPhoneNumber(@Param("email") String email, @Param("phoneNumber") String phoneNumber);
 
     Optional<User> findByPhoneNumber(String phoneNumber);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles")
+    List<User> getAllContainRoles();
+
+
 }

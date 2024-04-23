@@ -9,18 +9,20 @@ import { Error } from "@components/ui/error";
 import { AnimatePresence } from "framer-motion";
 import { SearchServiceCard } from "./search-service-card";
 import { useEffect } from "react";
+import { HeroIcon } from "@components/ui/hero-icon";
+import { EmptyPage } from "@models/search";
 
 
 export default function SearchService() {
-  const {searchText} = useSearch();
+  const {searchText,searchArrayServiceIds} = useSearch();
   const {
       data: data,
       isLoading: isLoading,
       error: error,
-  } = useSWR(getServiceSearch(searchText), fetcherWithToken);
+  } = useSWR(getServiceSearch(searchArrayServiceIds), fetcherWithToken);
   return (
       <Layout>
-    <Content style={{ background: "#fff", padding: "20px" }}>
+    <Content style={{ background: "#fff"}}>
       {isLoading ? (
         <Loading className="mt-5" />
       ) : !data.data ? (
@@ -35,8 +37,16 @@ export default function SearchService() {
               )
             })
           }
+          {
+              data?.data.length === 0 &&
+              <div className="text-center">
+              <HeroIcon
+              iconName="ShoppingBagIcon" className="mx-auto w-20"></HeroIcon>
+              <p className="text-gray-500 text-lg">{EmptyPage.SERVICE}</p>
+            </div>
+            }
           </AnimatePresence>
-          {/* <LoadMore />*/}
+          
         </>
       )}
     </Content>

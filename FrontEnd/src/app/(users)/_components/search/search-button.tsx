@@ -1,10 +1,10 @@
 
 import { useModal } from '@lib/hooks/useModal';
 import { preventBubbling } from '@lib/utils';
-import { Modal } from '../../app/(users)/_components/modal/modal';
-import { ActionModal } from '../../app/(users)/_components/modal/action-modal';
+import { Modal } from '../modal/modal';
+import { ActionModal } from '../modal/action-modal';
 import { Button } from '@components/ui/button';
-import { acceptFriend, addFriend, followingFriend, isFollowing, removeFriend, returnAddFriend, unAcceptFriend, unFollowingFriend } from 'services/main/clientRequest/friendsClient';
+import { acceptFriend, addFriend, followingFriend, removeFriend, returnAddFriend, unAcceptFriend, unFollowingFriend } from 'services/main/clientRequest/friendsClient';
 import { useUser } from 'context/user-context';
 import { useEffect, useState } from 'react';
 import { fetcherWithToken } from '@lib/config/SwrFetcherConfig';
@@ -14,18 +14,24 @@ import {Typography} from "antd";
 
 const { Text } = Typography;
 
-type FollowButtonProps = {
+type SearchButtonProps = {
   userTargetId: string;
   userTargetUsername: string;
-  hovered:boolean;
+  follow: Boolean;
+  pending: Boolean;
+  friend: Boolean;
+  acceptedFriend: Boolean;
 };
 
-export function FollowButton({
+export function SearchButton({
   userTargetId,
   userTargetUsername,
-  hovered,
+  follow,
+  pending,
+  friend,
+  acceptedFriend,
   
-}: FollowButtonProps): JSX.Element | null {
+}: SearchButtonProps): JSX.Element | null {
   const {currentUser} = useUser();
   const { open:openUnFollow, openModal:openUnFollowModal, closeModal:closeUnFollowModal } = useModal();
   const { open:openUnfriend, openModal:openUnFriendModal, closeModal:closeUnFriendModal } = useModal();
@@ -36,17 +42,11 @@ export function FollowButton({
   const [shouldUnFriend,setShouldUnFriend] = useState(false);
   const [shouldReFriend,setShouldReFriend] = useState(false);
   const [shouldAcceptFriend,setShouldAcceptFriend] = useState(false);
+  const [renderFollow,setRenderFollow] = useState(follow);
+  const [renderFriend,setRenderFriend] = useState(friend);
+  const [renderPending,setRenderPending] = useState(pending);
+  const [renderAccept,setRenderAccept] = useState(acceptedFriend);
   //Xử lý follow
-  const { data: data } = useSWR(
-    hovered?
-      isFollowing({
-          userId: currentUser?.id as string,
-          friendId: userTargetId
-        }):null,
-    fetcherWithToken,{
-      revalidateOnFocus: false,
-    }
-  );
   const {} = useSWR(
     shouldUnFollowed?
     unFollowingFriend({
@@ -84,11 +84,13 @@ useEffect(()=>{
 
 const handleUnfollow = () =>{
   setShouldUnFollowed(true);
+  setRenderFollow(!renderFollow);
   closeUnFollowModal();
 }
 
 const handlefollow = () =>{
   setShouldFollowed(true);
+  setRenderFollow(!renderFollow);
 }
 
 //Xử lý kết bạn
@@ -125,7 +127,7 @@ fetcherWithToken,{
 );
 
 const {} = useSWR(
-  shouldAcceptFriend?
+  shouldAcceptFriend ?
   acceptFriend({
       userId: currentUser?.id as string,
       friendId: userTargetId
@@ -137,20 +139,24 @@ fetcherWithToken,{
 
   const handleAddFriend = () =>{
     setShouldAddFriend(true);
+    setRenderPending(!renderPending);
   }
 
   const handleRemoveFriend = () =>{
     setShouldUnFriend(true);
+    setRenderFriend(!renderFriend);
     closeUnFriendModal();
   }
 
   const handleReAcceptFriend = () =>{
     setShouldReFriend(true);
+    setRenderPending(!renderPending);
     closeReAcceptModal();
   }
 
   const handleAcceptFriend = () =>{
     setShouldAcceptFriend(true);
+    setRenderFriend(!renderFriend);
   }
 
 
@@ -225,9 +231,9 @@ fetcherWithToken,{
         />
       </Modal>
       <div className='flex flex-col'>
-      {data?.data.follow ? (
+      {renderFollow ? (
         <Button
-          className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
+          className='dark-bg-tab min-w-[130px] self-start border border-light-line-reply px-4 py-1.5 
                      font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
                      hover:before:content-["Bỏ_theo_dõi"] inner:hover:hidden dark:border-light-secondary'
           onClick={preventBubbling(openUnFollowModal)}
@@ -236,7 +242,7 @@ fetcherWithToken,{
         </Button>
       ) : (
         <Button
-          className='self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90 
+          className='self-start border min-w-[130px] bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90 
                      focus-visible:bg-light-primary/90 active:bg-light-border/75 dark:bg-light-border 
                      dark:text-light-primary dark:hover:bg-light-border/90 dark:focus-visible:bg-light-border/90 
                      dark:active:bg-light-border/75 min-w-[120px]'
@@ -248,9 +254,9 @@ fetcherWithToken,{
         </Button>
       )
       }
-      {data?.data.friend ? (
+      {renderFriend ? (
         <Button
-          className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
+          className='dark-bg-tab min-w-[130px] self-start border border-light-line-reply px-4 py-1.5 
                      font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
                      hover:before:content-["Hủy_kết_bạn"] inner:hover:hidden dark:border-light-secondary'
           onClick={preventBubbling(openUnFriendModal)}
@@ -258,9 +264,9 @@ fetcherWithToken,{
           <span>{FollowButtonType.FRIENDED_BUTTON}</span>
         </Button>
       ) : 
-      data?.data.pending ? (
+      renderPending ? (
         <Button
-        className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
+        className='dark-bg-tab min-w-[130px] self-start border border-light-line-reply px-4 py-1.5 
                    font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
                    hover:before:content-["Rút_lại_lời_mời"] inner:hover:hidden dark:border-light-secondary'
         onClick={preventBubbling(openReAcceptModal)}
@@ -269,7 +275,7 @@ fetcherWithToken,{
       </Button>
       )
       :
-      data?.data.acceptFriend ?(
+      renderAccept ?(
         <Button
           className='self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90 
                      focus-visible:bg-light-primary/90 active:bg-light-border/75 dark:bg-light-border 
@@ -285,7 +291,7 @@ fetcherWithToken,{
       :
       (
         <Button
-          className='self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90 
+          className='self-start border min-w-[130px] bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90 
                      focus-visible:bg-light-primary/90 active:bg-light-border/75 dark:bg-light-border 
                      dark:text-light-primary dark:hover:bg-light-border/90 dark:focus-visible:bg-light-border/90 
                      dark:active:bg-light-border/75 min-w-[120px]'

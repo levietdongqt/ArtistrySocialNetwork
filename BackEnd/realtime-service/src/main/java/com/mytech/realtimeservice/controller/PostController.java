@@ -188,9 +188,9 @@ public class PostController {
         );
     }
 
-    @GetMapping("/search-posts")
-    public ResponseEntity<?> getPostsByKeyWord(@Param("q") String q){
-        List<Post> posts = postService.getPostByKeyWord(q);
+    @PostMapping("/search-posts")
+    public ResponseEntity<?> searchPost(@RequestBody List<String> listIds){
+        List<PostResponse> posts = postService.searchPost(listIds);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
@@ -200,17 +200,5 @@ public class PostController {
         );
     }
 
-
-//    @GetMapping("/suggests")
-//    public ResponseEntity<?> searchSuggestPosts(@PathParam("q") String q) {
-//        List<PostELS> postELSList = postELSService.testPostELS(q);
-//        return ResponseEntity.status(HttpStatus.OK).body(
-//                ResponseObject.builder()
-//                        .status(HttpStatus.OK)
-//                        .message("Handler get successfully")
-//                        .data(postELSList)
-//                        .build()
-//        );
-//    }
 
 }

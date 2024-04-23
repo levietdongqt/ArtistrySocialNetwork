@@ -3,6 +3,7 @@ import React, {ReactNode, useState} from 'react';
 import {Loading} from "@components/ui/loading";
 import {AnimatePresence} from "framer-motion";
 import {ContentPost} from "../content/content";
+import {getCookie} from "cookies-next";
 import {getPostsLimit} from "../../../../services/realtime/clientRequest/postClient";
 import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
 import { Error } from '@components/ui/error';

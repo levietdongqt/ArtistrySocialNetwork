@@ -26,7 +26,7 @@ public interface IPostService {
     Post getPostById(String postId);
     long getCountPost();
 
-    List<Post> getPostByKeyWord(String keyword);
 
 
+    public List<PostResponse> searchPost(List<String> listIds);
 }

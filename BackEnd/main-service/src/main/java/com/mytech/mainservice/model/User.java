@@ -124,7 +124,7 @@ public class User implements Serializable {
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_Id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private  List<Role> roles;
+    private  List<Role> roles = new ArrayList<Role>();
 
     @ManyToMany()
     @JoinTable(name = "saved_service",

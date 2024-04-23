@@ -15,12 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class FriendDTO {
-    @Id
-    private String id;
-    private String email;
-    private String fullName;
-    private String avatar;
-    private List<String> roles;
-    private String friendShipStatus;
+    private UserDTO user;
+    private IsCheckFriendDTO isCheckFriend;
     private String type = "user";
 }

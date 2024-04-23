@@ -79,7 +79,7 @@ public class PostService implements IPostService {
         PostELS postELS = PostELS.builder()
                 .id(createdPost.getId())
                 .content(createdPost.getContent())
-                .full_name(createdPost.getUser().getFullName())
+                .fullName(createdPost.getUser().getFullName())
                 .build();
         friendForeignClient.savePostELS(postELS);
         //Lấy ra danh sách bạn bè của chủ bài post, gọi từ main service
@@ -270,8 +270,15 @@ public class PostService implements IPostService {
         return postRepository.save(post);
     }
 
-    public List<Post> getPostByKeyWord(String keyword){
-        var posts = postRepository.findByContentContainingIgnoreCaseOrUserFullNameContainingIgnoreCase(keyword,keyword);
+    public List<PostResponse> searchPost(List<String> listId){
+        List<PostResponse> posts = new ArrayList<>();
+        listId.forEach(id -> {
+            var post = postRepository.findById(id);
+            if(post.isPresent()){
+                PostResponse postResponse = modelMapper.map(post.get(), PostResponse.class);
+                posts.add(postResponse);
+            }
+        });
         return posts;
     }
 

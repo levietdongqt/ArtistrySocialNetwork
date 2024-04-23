@@ -30,10 +30,4 @@ public interface IFriendshipRepository extends JpaRepository<Friendship, Long> {
     Optional<Friendship> findByFromUser_IdAndFriend_Id (@Param("fromUserId")String fromUserId,@Param("friendId") String friendId);
 
 
-
-    @Query("SELECT f.status FROM Friendship f " +
-            "WHERE (f.fromUser.id = :userTo and f.friend.id = :userId) " +
-            "or (f.fromUser.id = :userId and f.friend.id = :userTo)")
-    String getStatusFriend(@Param("userTo") String userTo, @Param("userId") String userId);
-
 }
