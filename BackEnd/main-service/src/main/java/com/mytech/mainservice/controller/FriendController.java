@@ -102,6 +102,7 @@ public class FriendController {
                         .build()
         );
     }
+
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#friendDTO.userId()) && hasRole('USER')")
     @PostMapping("/removeFriend")
     public ResponseEntity<?> removeFriend(@RequestBody FriendDTO friendDTO) {
@@ -127,6 +128,7 @@ public class FriendController {
                         .build()
         );
     }
+
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#friendDTO.userId()) && hasRole('USER')")
     @PostMapping("/unFollowFriend")
     public ResponseEntity<?> unFollowFriend(@RequestBody FriendDTO friendDTO) {
@@ -140,5 +142,16 @@ public class FriendController {
         );
     }
 
-
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/search-by-name")
+    public ResponseEntity<?> searchByName(@RequestParam("search") String name) {
+        List<UserDTO> friends = friendService.searchByName(name);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Search by name successfully")
+                        .data(friends)
+                        .build()
+        );
+    }
 }

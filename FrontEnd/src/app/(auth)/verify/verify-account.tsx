@@ -4,8 +4,8 @@ import {CustomIcon} from "@components/ui/custom-icon";
 import {useRouter} from "next/navigation";
 import Swal from "sweetalert2";
 import {checkPhoneFormat} from "../_components/phone-validate";
-import {isExistAccount} from "../../../../services/main/auth-service";
-import {useOAuth2} from "../../../../context/oauth2-context";
+import {isExistAccount} from "../../../services/main/auth-service";
+import {useOAuth2} from "../../../context/oauth2-context";
 
 interface verifyAccountParam {
     destination: string

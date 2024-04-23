@@ -1,7 +1,7 @@
 /** @models {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['cdn.wallpapersafari.com'],
+        domains: ['cdn.wallpapersafari.com','graph.facebook.com'],
     },
 }
 

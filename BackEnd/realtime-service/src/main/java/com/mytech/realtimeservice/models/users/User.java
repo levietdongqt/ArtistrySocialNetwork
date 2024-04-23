@@ -16,6 +16,7 @@ public class User{
     private String avatar;
     private String coverImage;
     private String bio;
+    private Boolean notSeen;
     private boolean verified;
 }
 

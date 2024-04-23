@@ -1,19 +1,19 @@
 'use client'
 import {useModal} from "@lib/hooks/useModal";
-import {useOAuth2} from "../../../../context/oauth2-context";
-import {useUser} from "../../../../context/user-context";
+import {useOAuth2} from "../../../context/oauth2-context";
+import {useUser} from "../../../context/user-context";
 import {useRouter} from "next/navigation";
 import {useFormik} from "formik";
 import LoginValidation from "@lib/validations/LoginValidation";
 import {useEffect, useState} from "react";
 import {getCookie} from "cookies-next";
 import {toast} from "react-toastify";
-import {isExistAccount, loginService, registerService} from "../../../../services/main/auth-service";
+import {isExistAccount, loginService, registerService} from "../../../services/main/auth-service";
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {CustomIcon} from "@components/ui/custom-icon";
 import RegisterValidation from "@lib/validations/RegisterValidation";
 import CustomModal from "@components/modals/CreateModal";
-import {DisplayModalLogin} from "../../_components/modal/display-modal-login";
+import {DisplayModalLogin} from "../../(users)/_components/modal/display-modal-login";
 import {checkPhoneFormat} from "../_components/phone-validate";
 
 export default function Register() {

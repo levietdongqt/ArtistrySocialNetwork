@@ -11,11 +11,9 @@ export function MyTooltip({
     content: string;
 }) {
     return (
-        <>
-            <Tooltip color={"default"} content={content} closeDelay={80}
-                     className="bg-[#c6e3fa] px-2.5 pt-1.5 pb-1 text-black text-sm rounded-xl">
-                {children}
-            </Tooltip>
-        </>
+        <Tooltip color={"default"} content={content} closeDelay={80}
+                 className="bg-[#c6e3fa] px-2.5 pt-1.5 pb-1 text-black text-sm rounded-xl relative overflow-hidden">
+            {children}
+        </Tooltip>
     )
 }

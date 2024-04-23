@@ -22,4 +22,5 @@ public interface IFriendService {
 
     void unfollowingFriendRequest(String userId, String friendId);
 
+    List<UserDTO> searchByName(String name);
 }

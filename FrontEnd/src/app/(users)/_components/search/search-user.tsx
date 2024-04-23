@@ -14,8 +14,6 @@ import { SearchServiceCard } from "./search-service-card";
 import { useEffect } from "react";
 
 
-
-
 export default function SearchUser() {
       const {currentUser} = useUser();
     const {searchText} = useSearch();
