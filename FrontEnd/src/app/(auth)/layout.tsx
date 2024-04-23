@@ -1,4 +1,4 @@
-import {useUser} from "../../../context/user-context";
+import {useUser} from "../../context/user-context";
 import {redirect, useRouter} from "next/navigation";
 import {cookies} from "next/headers";
 import {getCookie} from "cookies-next";

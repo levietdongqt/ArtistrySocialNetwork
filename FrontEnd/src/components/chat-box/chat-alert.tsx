@@ -7,6 +7,8 @@ import ChatBox from "@components/chat-box/chat-box";
 import React from "react";
 import {MyTooltip} from "@components/ui/my-tooltip";
 import {MainContainer} from "../../app/(users)/_components/home/main-container";
+import {Avatar, Badge, Space} from 'antd';
+import {MessageOutlined, MessageTwoTone} from "@ant-design/icons";
 
 export function ChatAlert() {
     const {state, dispatch} = useChat()
@@ -21,14 +23,13 @@ export function ChatAlert() {
                     </div>
                 )}
                 <MyTooltip content={"Danh sách trò chuyện"}>
-                    <button className="fixed bottom-0 right-2 mb-4 ml-2 p-2 text-white rounded"
-                            onClick={() => {
-                                dispatch(ChatAction(null, ACTION_TYPE.SHOW_CONVERSATIONS))
-                            }}>
-                        <CustomIcon iconName="MessageIcon"/>
-                    </button>
+                    <Badge count={7} className={"fixed bottom-0 right-4 mb-5  mr-3 "}>
+                        <MessageTwoTone className={""} style={{fontSize: '32px'}} onClick={() => {
+                            dispatch(ChatAction(null, ACTION_TYPE.SHOW_CONVERSATIONS))
+                        }}/>
+                    </Badge>
                 </MyTooltip>
-                <div className="flex bottom-0 fixed right-12 p-2 z-20 h-[60%]">
+                <div className="flex bottom-0 fixed right-12 px-2 pb-1 mr-4 z-40 h-[60%]">
                     {showChatBoxes.map((conversation, index) => (
                         conversation &&
                         <div key={index} className={`w-[calc(33.3333% - 0.5rem)] ml-${index > 0 ? '1' : '0'} `}>

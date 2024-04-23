@@ -1,9 +1,6 @@
 'use client'
-import {VerifyCode} from "../verify-code";
 import {useEffect, useState} from "react";
 import {VerifyAccount} from "../verify-account";
-import {useOAuth2} from "../../../../../context/oauth2-context";
-import {searchParamsToUrlQuery} from "next/dist/shared/lib/router/utils/querystring";
 import {useSearchParams} from "next/navigation";
 
 export default function ReVerify() {

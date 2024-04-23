@@ -1,14 +1,14 @@
 'use client'
 import {useModal} from "@lib/hooks/useModal";
-import {useAuth} from "../../../../context/oauth2-context";
-import {useUser} from "../../../../context/user-context";
+import {useAuth} from "../../../context/oauth2-context";
+import {useUser} from "../../../context/user-context";
 import {useRouter} from "next/navigation";
 import {useFormik} from "formik";
 import LoginValidation from "@lib/validations/LoginValidation";
 import {useEffect, useState} from "react";
 import {getCookie} from "cookies-next";
 import {toast} from "react-toastify";
-import {loginService, registerService} from "../../../../services/main/auth-service";
+import {loginService, registerService} from "../../../services/main/auth-service";
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {CustomIcon} from "@components/ui/custom-icon";
 import RegisterValidation from "@lib/validations/RegisterValidation";

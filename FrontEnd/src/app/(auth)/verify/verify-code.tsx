@@ -5,7 +5,7 @@ import {getCookie} from "cookies-next";
 import Swal from "sweetalert2";
 import {toast} from "react-toastify";
 import Link from "next/link";
-import {verifyPhoneNumber} from "../../../../services/main/auth-service";
+import {verifyPhoneNumber} from "../../../services/main/auth-service";
 
 interface verifyCodeParam {
     destination?: string;

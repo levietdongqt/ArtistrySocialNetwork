@@ -12,10 +12,10 @@ type ChatContextType = {
 };
 export const ChatContext = createContext<ChatContextType | undefined>(undefined);
 export default function ChatContextProvider({children}: any): JSX.Element {
-    console.log("ChatContextProvider is running")
     // const [curConversation, setCurConversation] = useState<ConversationDto>()
     const [reRender, setReRender] = useState(0)
     const [state, dispatch] = useReducer(reducer, initState)
+    const {showChatBoxes,pickedConversations} = state
     const values = {
         state: state,
         dispatch: dispatch,
@@ -26,6 +26,9 @@ export default function ChatContextProvider({children}: any): JSX.Element {
         // updateMessage,
         // setMessages,
     }
+    useEffect(() => {
+        pickedConversations
+    }, [showChatBoxes,pickedConversations]);
     return <ChatContext.Provider value={values}>{children}</ChatContext.Provider>;
 }
 

@@ -1,12 +1,12 @@
 'use client'
-import {useEffect, useState} from "react";
-import {useRouter, useSearchParams} from "next/navigation";
+import {useEffect} from "react";
+import {useRouter} from "next/navigation";
 import Swal from "sweetalert2";
 import {useFormik} from "formik";
 import RegisterValidation from "@lib/validations/ForgotPassValidation";
-import {changePassword} from "../../../../../services/main/auth-service";
 import {toast} from "react-toastify";
 import {getCookie} from "cookies-next";
+import {changePassword} from "../../../../services/main/auth-service";
 
 export default function ForgotPass() {
     const router = useRouter()

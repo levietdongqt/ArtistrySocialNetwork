@@ -6,6 +6,7 @@ import com.mytech.mainservice.dto.IsCheckFriendDTO;
 import com.mytech.mainservice.dto.NotificationDTO;
 import com.mytech.mainservice.dto.UserDTO;
 import com.mytech.mainservice.enums.FriendShipStatus;
+import com.mytech.mainservice.helper.JwtTokenHolder;
 import com.mytech.mainservice.model.Friendship;
 import com.mytech.mainservice.model.User;
 import com.mytech.mainservice.repository.IFriendshipRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +32,8 @@ public class FriendService implements IFriendService {
     private IUserRepository userRepo;
     @Autowired
     private ModelMapper modelMapper;
-
+    @Autowired
+    private JwtTokenHolder jwtTokenHolder;
     @Autowired
     private IUserService userService;
 
@@ -62,6 +65,7 @@ public class FriendService implements IFriendService {
         //Trường hợp 3: chi có lời mời ngược
         if(reverseFriend.isPresent()){
             handleIfFriendshipExisted(reverseFriend.get(),"Đã tồn tại lời mời từ "+ friendId + " đến "+userId);
+            return;
         }
         //Trường hợp 4 : chưa tồn tại tạo mới
         Friendship newFriendship = Friendship.builder()
@@ -80,6 +84,7 @@ public class FriendService implements IFriendService {
         if (friendship.isPresent()) {
             if(reverseFriend.isPresent()) {
                 handleDeleteFriendship(reverseFriend.get());
+                return;
             }
             handleDeleteFriendship(friendship.get());
             return;
@@ -255,6 +260,11 @@ public class FriendService implements IFriendService {
         throw new RuntimeException("Chưa tồn tại quan hệ bạn bè");
     }
 
+    @Override
+    public List<UserDTO> searchByName(String search) {
+        List<User> users = userRepo.findFriendByFullname(jwtTokenHolder.getUserId(), search);
+        return users.stream().map(user -> modelMapper.map(user, UserDTO.class)).toList();
+    }
     @Override
     public IsCheckFriendDTO isFollowingAndIsFriend(String userId, String friendId) {
         if(userId.equals(friendId)){

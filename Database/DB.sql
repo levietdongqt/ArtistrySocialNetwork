@@ -194,6 +194,16 @@ Create Table template(
 CREATE INDEX fullNameIndex ON users(full_Name);
 CREATE INDEX statusIndex ON orders(status);
 CREATE INDEX refreshTokenIndex ON sessions(refresh_token);
+
+DELIMITER $$
+CREATE PROCEDURE FindFriendByFullName(in v_status VARCHAR(255))
+BEGIN
+    SET @json_status = CONCAT('"', v_status, '"');
+    SELECT *
+    FROM FriendShip
+    WHERE JSON_CONTAINS(`status`, @json_status, '$') = 1;
+END; $$
+
 INSERT INTO users
 (`full_name`, `email`, `phone_number`, `gender`, `email_confirmed`, `phone_confirmed`, `password`,`status`)
  VALUES ('Trần Thụ Huy', 'huy@gmail.com', '1234567891',b'1', b'1', b'1', '123','ACTIVED'),
