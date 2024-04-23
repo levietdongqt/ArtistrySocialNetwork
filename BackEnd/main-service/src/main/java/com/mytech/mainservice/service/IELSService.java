@@ -30,9 +30,9 @@ public interface IELSService {
 
     public List<Object> suggestsKeyword(String searchText);
 
-    public List<FriendDTO> searchUserELS(String searchText, String userId);
 
-    public Set<MainServiceDTO> searchMainServiceByKeyword(String keyword);
+    public Set<MainServiceDTO> searchMainServiceByKeyword(List<Long> listIdsService);
+
 
 
 }

@@ -4,7 +4,6 @@ import {Loading} from "@components/ui/loading";
 import {AnimatePresence} from "framer-motion";
 import {ContentPost} from "../content/content";
 import {getCookie} from "cookies-next";
-import {useAuth} from "../../../../context/oauth2-context";
 import {getPostsLimit} from "../../../../services/realtime/clientRequest/postClient";
 import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
 import { Error } from '@components/ui/error';
@@ -16,7 +15,6 @@ function ContainerHome() {
     const { allData, isLoadingInitialData, LoadMore } = useInfiniteScroll(
         getPostsLimit,
     );
-    console.log("all",allData);
     return (
         <section className='mt-0.5 xs:mt-0'>
             {isLoadingInitialData ? (

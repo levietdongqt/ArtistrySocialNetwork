@@ -151,6 +151,40 @@ public class UserService implements IUserService {
         throw new NotFoundException("User not found");
     }
 
+    @Override
+    public void deleteHistory(String userId, String history) {
+        var updatedUserOptional = userRepo.findById(userId);
+        if (updatedUserOptional.isPresent()){
+            var updatedUser = updatedUserOptional.get();
+            var listHistory = updatedUser.getSearchHistory();
+            listHistory.forEach(his -> {
+                if (his.equals(history)){
+                    listHistory.remove(his);
+                }
+            });
+            updatedUser.setSearchHistory(listHistory);
+            userRepo.save(updatedUser);
+            return;
+        }
+        throw new NotFoundException("Không tìm thấy người dùng");
+
+    }
+
+    @Override
+    public void deleteAllHistory(String userId) {
+        var updatedUserOptional = userRepo.findById(userId);
+        if (updatedUserOptional.isPresent()){
+            var updatedUser = updatedUserOptional.get();
+            var listHistory = updatedUser.getSearchHistory();
+            listHistory.clear();
+            updatedUser.setSearchHistory(listHistory);
+            userRepo.save(updatedUser);
+            return;
+        }
+        throw new NotFoundException("Không tìm thấy người dùng");
+
+    }
+
     public User existUser(UserInfo userInfo) throws UnAuthenticationException {
         Optional<User> user = userRepo.findByEmailOrPhoneNumber(userInfo.getEmail(), userInfo.getPhoneNumber());
         if (user.isPresent() && !user.get().getAuthProvider().equals(userInfo.getProviderId())) {

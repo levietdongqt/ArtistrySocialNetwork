@@ -105,19 +105,15 @@ export function SidebarLink({
             )}
             iconName={iconName}
             solid={isActive}
-          />
-          {linkName === "Thông báo" && isLoading? (
-
-            <Loading className="mt-5" />
-          ) : (
-
+          />  
+            {
             linkName === "Thông báo" &&
             dataCount != 0 && (
               <span className="absolute top-0 left-0 bg-blue-500 text-white rounded-full px-1 py-0.5 text-xs">
                 {dataCount}
               </span>
             )
-          )}
+          }
         </div>
         <p className="hidden xl:block">{linkName}</p>
       </div>

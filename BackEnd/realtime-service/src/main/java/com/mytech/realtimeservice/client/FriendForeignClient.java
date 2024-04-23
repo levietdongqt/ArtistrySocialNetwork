@@ -11,8 +11,9 @@ import java.util.List;
 
 @FeignClient (name="MAIN-SERVICE")
 public interface FriendForeignClient {
-    @GetMapping("/api/main/friends/{userId}")
-    public ResponseObject<List<UserDTO>> getFriends( @PathVariable String userId);
+    @GetMapping("/api/main/friends/is-friend/{userId}")
+    public ResponseObject<List<UserDTO>> getFriends(@PathVariable String userId);
+
 
     @PostMapping("/api/main/elasticsearch/posts")
     public ResponseEntity<?> savePostELS(@RequestBody PostELS postELS);

@@ -10,7 +10,7 @@ import { UserFollowing } from './user-following';
 import { UserUsername } from './user-username';
 import type { ReactNode } from 'react';
 import {User} from "@models/user";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 
 
 type UserTooltipProps = Pick<
@@ -38,18 +38,23 @@ export function UserTooltip({
                               verified,
                               children,
                               coverImage,
-  avatarCheck,
+  avatarCheck
 }: UserTooltipProps):JSX.Element {
   const { isMobile } = useWindow();
-  'use client'
-  if (isMobile || modal) return <>{children}</>;
+  const [hovered, setHovered] = useState(false);
+  // if (isMobile || modal) return <>{children}</>;
   const userLink = `/profile/${id}`;
 
+  useEffect(() => {
+    if (hovered) {
+    }
+  }, [hovered]);
+  const handleMouseEnter = () => setHovered(true);
+  const handleMouseLeave = () => setHovered(false);
   const allStats: Readonly<Stats[]> = [
     ['following', 'Following',2],
     ['followers', 'Followers',2]
   ];
-
 
   return (
     <div
@@ -57,6 +62,8 @@ export function UserTooltip({
         'group relative self-start text-light-primary dark:text-dark-primary',
         avatarCheck ? '[&>div]:translate-y-2' : 'grid [&>div]:translate-y-7'
       )}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {children}
       <div
@@ -96,7 +103,10 @@ export function UserTooltip({
                   username={fullName}
                 />
               </div>
-              <FollowButton userTargetId={id} userTargetUsername={fullName} />
+              { hovered &&
+                <FollowButton userTargetId={id} userTargetUsername={fullName} hovered={hovered}/>
+              }
+              
             </div>
             <div>
               <UserName
@@ -104,16 +114,20 @@ export function UserTooltip({
                 name={fullName}
                 username={fullName}
                 verified={verified}
+                id={id}
               />
               <div className='flex items-center gap-1 text-light-secondary dark:text-dark-secondary'>
-                <UserUsername username={fullName} />
-                <UserFollowing userTargetId={id} />
+               <UserUsername username={fullName} id={id} />
+               { hovered &&
+             <UserFollowing userTargetId={id} hovered={hovered}/>
+               }
+               
               </div>
             </div>
           </div>
           {bio && <p>{bio}</p>}
           <div className='text-secondary flex gap-4'>
-            {allStats.map(([id, label, stat]) => (
+            {/* {allStats.map(([id, label, stat]) => (
               <Link href={`${userLink}/${id}`} key={id}  className='hover-animation flex h-4 items-center gap-1 border-b border-b-transparent
                              outline-none hover:border-b-light-primary focus-visible:border-b-light-primary
                              dark:hover:border-b-dark-primary dark:focus-visible:border-b-dark-primary'>
@@ -122,7 +136,7 @@ export function UserTooltip({
                     {label}
                   </p>
               </Link>
-            ))}
+            ))} */}
           </div>
         </div>
       </div>
