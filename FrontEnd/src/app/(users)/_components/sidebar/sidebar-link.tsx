@@ -73,7 +73,6 @@ export function SidebarLink({
       setShouldFetch(false);
     }
   }, [shouldFetch]);
-
   return (
     <Link
       href={href}

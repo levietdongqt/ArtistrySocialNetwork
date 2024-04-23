@@ -294,7 +294,7 @@ export function LoginMain() {
 //                   target='_blank'
 //                   rel='noreferrer'
 //                 >
-//                   Terms of Service
+//                   Terms of ServerAction
 //                 </a>{' '}
 //                 và {' '}
 //                 <a

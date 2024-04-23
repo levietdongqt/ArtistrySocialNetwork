@@ -24,7 +24,7 @@ const topNavLinks: Readonly<MobileNavLink[]> = [
   },
   {
     href: '/bookmarks',
-    linkName: 'Bookmarks',
+    linkName: 'Page',
     iconName: 'BookmarkIcon'
   },
   {

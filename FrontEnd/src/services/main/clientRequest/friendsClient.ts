@@ -14,6 +14,9 @@ export function returnAddFriend (body: any): fetcherParams {
     return [`/friends/return-addFriend`, 'POST', body, ServiceDestination.MAIN];
 }
 
+export function getFriendByUserId (userId: string): fetcherParams {
+    return [`/friends/is-friend/${userId}`, 'GET', null, ServiceDestination.MAIN];
+}
 
 export function unAcceptFriend (body: any): fetcherParams {
     return [`/friends/unAcceptFriend`, 'POST', body, ServiceDestination.MAIN];

@@ -1,83 +1,68 @@
 'use client'
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {Loading} from "@components/ui/loading";
 import {Error} from "@components/ui/error";
 import {AnimatePresence} from "framer-motion";
-import {useRouter} from "next/router";
-import {useDocument} from "@lib/hooks/useDocument";
-import {doc, orderBy, query, where} from "firebase/firestore";
-import {useCollection} from "@lib/hooks/useCollection";
+import {useParams, usePathname,useRouter} from "next/navigation";
 import {isPlural} from "@lib/utils";
 import {ViewContent} from "../view/view-content";
 import {ViewParentTweet} from "../view/view-parent-tweet";
 import {MainHeader} from "../home/main-header";
-import {Content} from "../content/content";
+import useSWR from "swr";
+import {getPostById} from "../../../../services/realtime/clientRequest/postClient";
+import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import {SEO} from "../common/seo";
+import {getCommentByPost} from "../../../../services/realtime/clientRequest/commentClient";
+import {Comment} from "../comment/comment";
 
 const ContainerPostId = () => {
-    const {
-        query: { id },
-        back
-    } = useRouter();
-
-    const { data: tweetData, loading: tweetLoading } = useDocument(
-        doc(tweetsCollection, id as string),
-        { includeUser: true, allowNull: true }
-    );
-
+    const {back} = useRouter();
+    const {id} = useParams();
+    const {data: postData, isLoading:postLoading,mutate:postMutate} = useSWR(getPostById(id as string), fetcherWithToken,{
+        refreshInterval: 3000,
+    });
     const viewTweetRef = useRef<HTMLElement>(null);
 
-    const { data: repliesData, loading: repliesLoading } = useCollection(
-        query(
-            tweetsCollection,
-            where('parent.id', '==', id),
-            orderBy('createdAt', 'desc')
-        ),
-        { includeUser: true, allowNull: true }
-    );
+    const {data: repliesData, isLoading: repliesLoading, error,mutate:repliesMutate} = useSWR(postData?.data?.id ? getCommentByPost(postData?.data?.id) : null, fetcherWithToken,{
+        refreshInterval:2000,
+    });
 
-    const { text, images } = tweetData ?? {};
+    const { content, mediaUrl } = postData?.data ?? {};
 
-    const imagesLength = images?.length ?? 0;
-    const parentId = tweetData?.parent?.id;
+    const imagesLength = mediaUrl?.length ?? 0;
 
-    const pageTitle = tweetData
-        ? `${tweetData.user.name} on Twitter: "${text ?? ''}${
-            images ? ` (${imagesLength} image${isPlural(imagesLength)})` : ''
-        }" / Twitter`
+    const pageTitle = postData
+        ? `${postData?.data?.user?.fullName} on Post: "${content ?? ''}${
+            mediaUrl ? ` (${imagesLength} image${isPlural(imagesLength)})` : ''
+        }" / Post`
         : null;
 
     return (
         <>
             <MainHeader
                 useActionButton
-                title={parentId ? 'Thread' : 'Tweet'}
+                title={'Post'}
                 action={back}
             />
             <section>
-                {tweetLoading ? (
+                {postLoading ? (
                     <Loading className='mt-5' />
-                ) : !tweetData ? (
+                ) : !postData?.data ? (
                     <>
-                        <SEO title='Tweet not found / Twitter' />
-                        <Error message='Tweet not found' />
+                        <SEO title='Post not found / Social Media' />
+                        <Error message='Post not found' />
                     </>
                 ) : (
                     <>
                         {pageTitle && <SEO title={pageTitle} />}
-                        {parentId && (
-                            <ViewParentTweet
-                                parentId={parentId}
-                                viewTweetRef={viewTweetRef}
-                            />
-                        )}
-                        <ViewContent viewTweetRef={viewTweetRef} {...tweetData} />
-                        {tweetData &&
+                        <ViewContent viewTweetRef={viewTweetRef} {...postData?.data} comment/>
+                        {postData?.data &&
                             (repliesLoading ? (
                                 <Loading className='mt-5' />
                             ) : (
                                 <AnimatePresence mode='popLayout'>
-                                    {repliesData?.map((tweet) => (
-                                        <Content {...tweet} key={tweet.id} />
+                                    {repliesData.data?.map((tweet:any) => (
+                                        <Comment {...tweet} key={tweet.id} comment />
                                     ))}
                                 </AnimatePresence>
                             ))}

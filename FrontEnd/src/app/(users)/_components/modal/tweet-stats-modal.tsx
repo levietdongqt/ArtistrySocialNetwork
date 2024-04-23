@@ -1,6 +1,6 @@
 import { MainHeader } from '../home/main-header';
 import type { ReactNode } from 'react';
-import type { StatsType } from '../view/view-tweet-stats';
+import type { StatsType } from '../view/view-content-stats';
 
 type TweetStatsModalProps = {
   children: ReactNode;

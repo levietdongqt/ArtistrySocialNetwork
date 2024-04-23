@@ -21,7 +21,6 @@ export function countUnreadNotifications (userId :string): fetcherParams {
     return [`/notifications/${userId}/count-notifications`, 'GET', null, ServiceDestination.REALTIME];
 }
 export function updateDeliveryNotification (userId :string): fetcherParams {
-    console.log('Updating delivery notification')
     return [`/notifications/${userId}/change-delivery`, 'POST', null, ServiceDestination.REALTIME];
 }
 
