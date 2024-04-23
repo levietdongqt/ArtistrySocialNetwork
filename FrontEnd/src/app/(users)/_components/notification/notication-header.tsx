@@ -6,11 +6,10 @@ import { HeroIcon } from "@components/ui/hero-icon";
 import { useEffect, useState } from "react";
 import { NotificationTab } from "@models/notifications";
 import { useNotification } from "context/notification-context";
-import { CheckOutlined, PlusOutlined } from "@ant-design/icons";
+import { CheckOutlined} from "@ant-design/icons";
 import useSWR from "swr";
 import { updateAllNotification } from "services/main/clientRequest/notificationsClient";
 import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
-import Link from "next/link";
 const { Title } = Typography;
 
 export default function NotificationHeader() {
@@ -34,7 +33,10 @@ export default function NotificationHeader() {
   },[shouldUpdate])
 
   const content = (
+    <div>
     <Button className="border-none" onClick={handleUpdateAll}> <CheckOutlined />Tích tất cả là đã đọc</Button>
+    {/* <Button className="border-none" onClick={handle}> <CheckOutlined /></Button> */}
+    </div>
   )
   return (
     <Row className="flex justify-between mt-3 font-semibold">

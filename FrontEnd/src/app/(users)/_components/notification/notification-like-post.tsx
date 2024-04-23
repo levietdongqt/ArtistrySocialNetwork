@@ -9,6 +9,7 @@ import {
 import {
   NotificationModel,
 } from "@models/notifications";
+import { UserTooltip } from "../user/user-tooltip";
 const { Text } = Typography;
 
 interface NotificationCardParams {
@@ -35,21 +36,26 @@ export default function NotificationPostCard({ data }: NotificationCardParams) {
             {data?.map((notify: any, index: any) => {
               return (
                 !notify.status && (     
+                  <UserTooltip avatarCheck={true} {...notify?.userTo}>
                     <UserAvatar
                       src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
                       alt={"name"}
                       username={`${notify?.id}`}
+                      key={index}
                     />
+                    </UserTooltip>
                 )
               );
             })}
           </Avatar.Group>
           </div>
+          <div>
           <Text> {" "} {data[0]?.message}</Text>  
+          </div>
         <div className="absolute right-10">
           {" "}
           <Tooltip placement="bottomRight" title={"Ấn vào để xem chi tiết"}>
-            {!status && <EyeOutlined />}
+            <EyeOutlined />
           </Tooltip>
           <Popover placement="bottomLeft" content={content}>
             <Button shape="circle" icon={<DashOutlined />} className="ml-3" />

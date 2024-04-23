@@ -101,7 +101,7 @@ public class NotificationService implements INotificationService {
 
     @Async
     public void sendNotification(User userFrom,User userTo,String notificationType,String message,String link){
-        //Kiểm tra nope notifications
+        //Kiểm tra nope notification
         var nopeNotifications = nopeNotificationsRepository.getNopeNotifications(userTo.getId(),userFrom.getId());
         if (nopeNotifications.isPresent()){
             var nopeTime = nopeNotifications.get().getNopeMinutesTime();
