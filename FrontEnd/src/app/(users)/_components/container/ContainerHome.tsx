@@ -11,13 +11,9 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 
 function ContainerHome() {
-    const [postList, setPostList] = useState()
     const { paginatedPosts:Data, isLoadingMore,LoadMore,isReachedEnd,setSize,size,mutate,error } =
     useInfiniteScroll(
-        getPostsLimit,{
-            revalidateOnFocus:false,
-            refreshInterval:0
-        }
+        getPostsLimit
     );
     const theEndPost = ():ReactNode =>{
         return (

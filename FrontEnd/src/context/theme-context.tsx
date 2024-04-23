@@ -46,8 +46,8 @@ export function ThemeContextProvider({
   useEffect(() => {
     const flipTheme = (theme: Theme): NodeJS.Timeout | undefined => {
       const root = document.documentElement;
-      const targetTheme = theme.toLowerCase() === 'dim' ? 'dark' : theme;
-      if (targetTheme === 'dark') root.classList.add('dark');
+      const targetTheme = theme.toLowerCase() === 'dim' ? 'light' : theme;
+      if (targetTheme === 'light') root.classList.add('dark');
       else root.classList.remove('dark');
       root.style.setProperty('--main-background', `var(--${theme.toLowerCase()}-background)`);
       root.style.setProperty(

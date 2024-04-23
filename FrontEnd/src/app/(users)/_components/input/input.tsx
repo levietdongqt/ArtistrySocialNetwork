@@ -17,11 +17,9 @@ import { postPosts1} from "../../../../services/realtime/ServerAction/PostServic
 import {uploadImages} from "../../../../firebase/utils";
 import {postComment} from "../../../../services/realtime/ServerAction/CommentService";
 import {Popover} from "antd";
-import useSWR, {mutate} from "swr";
-import {getPostsLimit} from "../../../../services/realtime/clientRequest/postClient";
+import useSWR from "swr";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
-import { Select } from 'antd';
-import type { SelectProps } from 'antd';
+
 import {getFriendByUserId} from "../../../../services/main/clientRequest/friendsClient";
 
 
@@ -59,10 +57,10 @@ export function Input({
   const [loading, setLoading] = useState(false);
   const [visited, setVisited] = useState(false);
   const [selectedEmoji, setSelectedEmoji] = useState(null);
+  const [options, setOptions] = useState("");
   const {currentUser} = useUser();
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestions, setSuggestions] = useState<SelectProps['options']>([]);
-
+  const [isCheckTrigger, setIsCheckTrigger] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const previewCount = imagesPreview.length;
   const isUploadingImages = !!previewCount;
@@ -92,10 +90,9 @@ export function Input({
         sendUserCoverImage: currentUser?.coverImage || null,
         sendUserBio: currentUser?.bio || null,
         sendVerified: currentUser?.verified
-      };
+      } as any;
       await sleep(200);
       await postPosts1(postData);
-      await mutate(getPostsLimit,fetcherWithToken);
     }else{
       const commentData = {
         postId: postID,
@@ -192,29 +189,16 @@ export function Input({
     target: { value }
   }: ChangeEvent<HTMLTextAreaElement>): void => {
     setInputValue(value)
-    const lastIndex = value.lastIndexOf("@");
-    if (lastIndex >= 0 && (value[lastIndex - 1] === " " || lastIndex === 0)) {
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-    }
   };
-  const optionsFriends:SelectProps['options'] = [];
-  const {data:Friends} = useSWR(getFriendByUserId(currentUser?.id as string),fetcherWithToken);
-  console.log("Show friends",Friends)
-  useEffect(() => {
-    if (showSuggestions) {
-      // Lọc danh sách gợi ý dựa trên input sau ký tự "@"
-      // Ví dụ này chỉ đơn giản hiển thị tất cả người dùng khi người dùng nhập "@"
-      setSuggestions(Friends);
-    }
-  }, [showSuggestions]);
+
+  const {data:friends} = useSWR(getFriendByUserId(currentUser?.id as string),fetcherWithToken);
+
+
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     void sendPost();
   };
-
   const handleFocus = (): void => setVisited(!loading);
 
   const formId = useId();
@@ -276,17 +260,6 @@ export function Input({
                 handleChange={handleChange}
                 handleImageUpload={handleImageUpload}
             >
-              {showSuggestions && (
-                  <Popover>
-                    <Select
-                        mode="tags"
-                        style={{ width: '100%' }}
-                        placeholder="Tags Mode"
-                        onChange={handleChange}
-                        options={suggestions}
-                    />
-                  </Popover>
-              )}
               {isUploadingImages && (
                   <ImagePreview
                       imagesPreview={imagesPreview}

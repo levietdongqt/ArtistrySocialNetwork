@@ -3,6 +3,7 @@ package com.mytech.realtimeservice.services;
 import com.mytech.realtimeservice.client.FriendForeignClient;
 import com.mytech.realtimeservice.dto.*;
 
+import com.mytech.realtimeservice.enums.ReportStatus;
 import com.mytech.realtimeservice.exception.myException.ForbiddenException;
 import com.mytech.realtimeservice.exception.myException.NotFoundException;
 import com.mytech.realtimeservice.helper.JwtTokenHolder;
@@ -129,6 +130,7 @@ public class PostService implements IPostService {
         }
         Set<String> reportedPostIds = reportService.findReportsByUserId(userId)
                 .stream()
+                .filter(status->status.getStatus().equals(ReportStatus.UNDO))
                 .map(Report::getPostId)
                 .collect(Collectors.toSet());
 

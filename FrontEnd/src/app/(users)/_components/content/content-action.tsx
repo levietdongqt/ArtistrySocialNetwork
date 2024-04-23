@@ -283,29 +283,7 @@ const  userIsFollowed = false;
                         </>
                       )}
                     </Popover.Button>
-                  ) : userIsFollowed ? (
-                    <Popover.Button
-                      className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
-                      as={Button}
-                      onClick={/*preventBubbling(
-                        handleFollow(close, 'unfollow', /!*userId*!/'1', createdBy)
-                      )*/()=>{}}
-                    >
-                      <HeroIcon iconName='UserMinusIcon' />
-                      Unfollow @{username}
-                    </Popover.Button>
-                  ) : (
-                    <Popover.Button
-                      className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
-                      as={Button}
-                      onClick={/*preventBubbling(
-                        handleFollow(close, 'follow', /!*userId*!/'1', createdBy)
-                      )*/()=>{}}
-                    >
-                      <HeroIcon iconName='UserPlusIcon' />
-                      Follow @{username}
-                    </Popover.Button>
-                  )}
+                  ) : <></>}
                     {
                         !isOwner && (
                             <Popover.Button

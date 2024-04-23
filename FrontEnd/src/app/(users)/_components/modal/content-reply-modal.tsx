@@ -31,7 +31,7 @@ export function ContentReplyModal({
 
     useEffect(() => {
        var subscription = stompClient?.subscribe('/topic/comments/' + post.id, function (comment) {
-           setReplieData((prev:any) => [...prev, JSON.parse(comment.body)]);
+           setReplieData(JSON.parse(comment.body));
         });
     return () => {
         if (subscription) {
@@ -45,12 +45,14 @@ export function ContentReplyModal({
     );
     // Fetch comments, ensure that we don't re-fetch if hasFetched is true
     const { data: commentsData, isLoading: repliesLoading,mutate } = useSWR(
-        getCommentByPost(post?.id), fetcherWithToken
+        getCommentByPost(post?.id), fetcherWithToken,{
+            refreshInterval:3000
+        }
     );
-    console.log(postData)
+    console.log("show" ,joinCommentArray);
     useEffect(() => {
         if (commentsData) {
-            setJoinCommentArray([...replieDatas, ...commentsData.data]);
+            setJoinCommentArray([...replieDatas, ...commentsData?.data]);
         }
     }, [commentsData, replieDatas]);
     const handleCloseModal = () => {

@@ -26,9 +26,10 @@ const ContainerBookmarks = () => {
     const { open, openModal, closeModal } = useModal();
 
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
-    console.log("show user",userId);
     const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken,{
-        refreshInterval: 0
+        revalidateIfStale: false,
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false
     });
 
     const postId = useMemo(
