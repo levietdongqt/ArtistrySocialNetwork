@@ -29,6 +29,7 @@ export type User = {
   totalPhotos: number;
   pinnedPost: string;
   roles: [];
+  friendShipStatus: string;
 };
 
 export type EditableData = Extract<

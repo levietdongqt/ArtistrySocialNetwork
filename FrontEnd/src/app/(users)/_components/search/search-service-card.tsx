@@ -13,6 +13,7 @@ import { UserUsername } from '../user/user-username';
 import { Row, Col, Card } from 'antd';
 import { User } from '@models/user';
 import { formatElapsedTime } from '@lib/helper/convertTime';
+import { ServiceName } from './service-name';
 
 const { Text } = Typography;
 interface SearchServiceParams {
@@ -53,13 +54,12 @@ export function SearchServiceCard({data} : SearchServiceParams): JSX.Element {
       <Avatar
           src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
           alt={"name"}
-          size={40}
+          size={50}
         />
         </UserTooltip>
         <div className='flex flex-col'>
-            <Text strong>{data.name}</Text>
+            <ServiceName name={data.name} id={data.id} className='-mb-1 text-lg' price={data.price}/>
             <span>{timeDifferenceInSeconds}</span>
-            <Text strong>Price: {data.price}</Text>
             <Text >{data.description}</Text>    
         </div>
       </div>
@@ -70,7 +70,7 @@ export function SearchServiceCard({data} : SearchServiceParams): JSX.Element {
     <Row className='ml-20'>
   {data.imageUrls && data.imageUrls.map((image, index) => (
     <Col key={index} span={10}>
-      <Card hoverable cover={<img alt={image} src={image}/>}/>
+      <Card hoverable cover={<img alt={image} src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}/>}/>
     </Col>
   ))}
 </Row>

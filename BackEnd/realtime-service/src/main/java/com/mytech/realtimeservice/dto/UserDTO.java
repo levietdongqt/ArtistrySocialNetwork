@@ -29,4 +29,5 @@ public class UserDTO {
 
     //Đánh dấu là user sẽ được Tag vào bài viết
     private boolean tag;
+
 }

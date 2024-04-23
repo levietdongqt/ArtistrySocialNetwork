@@ -27,7 +27,6 @@ export function AuthLayout({ children }: LayoutProps): JSX.Element {
 
     void checkLogin();
   }, [currentUser,loading]);
-  console.log("show login ", loading, pending);
   if (loading || pending) return <Placeholder />;
 
   return <>{children}</>;

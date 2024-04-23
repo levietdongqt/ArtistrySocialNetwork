@@ -14,6 +14,8 @@ import com.mytech.mainservice.model.elasticsearch.ServiceELS;
 import com.mytech.mainservice.model.elasticsearch.UserELS;
 import com.mytech.mainservice.repository.*;
 import com.mytech.mainservice.service.IELSService;
+import com.mytech.mainservice.service.IFriendService;
+import com.mytech.mainservice.service.IUserService;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.modelmapper.ModelMapper;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,15 +40,9 @@ public class ELSService implements IELSService {
 
     @Autowired
     private UserELSRepository userELSRepository;
-
-    @Autowired
-    private IFriendshipRepository friendshipRepository;
-
     @Autowired
     private IMainServiceRepository mainServiceRepository;
 
-    @Autowired
-    private NotificationForeignClient postForeignClient;
 
     @Autowired
     ELSConfig elsConfig;
@@ -160,40 +157,19 @@ public class ELSService implements IELSService {
         return search.hits().hits().stream().map(objectHit -> objectHit.source()).toList();
     }
 
-    @Override
-    public List<FriendDTO> searchUserELS(String searchText, String userId) {
-        var listFriendDTO = new ArrayList<FriendDTO>();
-        var listUsersELS = userELSRepository.getUserELS(searchText);
-        if (listUsersELS.isEmpty()) {
-            return null;
-        }
-
-       for (UserELS user : listUsersELS) {
-           var friendDTO = FriendDTO.builder()
-                   .id(user.getId())
-                   .fullName(user.getFullName())
-                   .avatar(user.getAvatar())
-                   .roles(user.getRoles())
-                   .email(user.getEmail())
-                   .type("user")
-                   .build();
-           var statusFriends = friendshipRepository.getStatusFriend(user.getId(),userId);
-           if (statusFriends!= null) {
-               friendDTO.setFriendShipStatus(statusFriends);
-           }else{
-               friendDTO.setFriendShipStatus("UNFRIEND");
-           }
-           listFriendDTO.add(friendDTO);
-       }
-
-       return listFriendDTO;
-    }
 
     @Override
-    public Set<MainServiceDTO> searchMainServiceByKeyword(String keyword) {
-        return mainServiceRepository.searchMainServiceByKeyword(keyword).stream()
-                .map(mainService -> modelMapper.map(mainService, MainServiceDTO.class))
-                .collect(Collectors.toSet());
+    public Set<MainServiceDTO> searchMainServiceByKeyword(List<Long> listIdsService) {
+        Set<MainServiceDTO> results = new HashSet<>();
+        listIdsService.forEach(id -> {
+            var mainServiceOptional = mainServiceRepository.findById(id);
+            if (mainServiceOptional.isPresent()) {
+                var mainService = mainServiceOptional.get();
+                results.add(modelMapper.map(mainService, MainServiceDTO.class));
+            }
+        });
+        return results;
+
     }
 
 

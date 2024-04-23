@@ -19,49 +19,51 @@ import { Input } from '../input/input';
 import type { RefObject } from 'react';
 import boolean from "async-validator/dist-types/validator/boolean";
 import {Timestamp} from "firebase/firestore";
+import {Post} from "@models/post";
+import {useUser} from "../../../../context/user-context";
+import { User } from '@models/user';
+import {ImagesPreview} from "@models/file";
+import React from "react";
 
-type ViewTweetProps =  {
-  parentTweet?: boolean;
-  pinned?: boolean;
-  modal?: boolean;
+type ViewPostProps =  Post & {
+  user: User;
   viewTweetRef?: RefObject<HTMLElement>;
+  comment?: boolean;
 };
 
-export function ViewContent(tweet: ViewTweetProps): JSX.Element {
+export function ViewContent(post: ViewPostProps): JSX.Element {
   const {
+    id:postId,
+    user: postUserData,
+    content,
+    mediaUrl,
+    createdBy,
+    createdAt,
+    updatedAt,
+    status,
+    tagUserPosts,
+    userPostLikes,
+    priorityScore,
+    userReplies,
+    totalLikes,
+    totalComments,
     viewTweetRef,
-    parentTweet,
-    modal,
-    pinned
-  } = tweet;
-
+    comment
+  } = post;
+  const { id: ownerId, fullName, verified, avatar } = postUserData;
+  const {currentUser} = useUser();
   const { open, openModal, closeModal } = useModal();
 
-  const tweetLink = `/tweet/${'tweetId'}`;
+  const postLink = `/post/${postId}`;
 
-  /*const userId = user?.id as string;*/
+  const userId = currentUser?.id as string;
 
- /* const isOwner = userId === createdBy;*/
-
-  // const reply = !!parent;
-  const reply = true;
-  /*const { id: parentId, username: parentUsername = username } = parent ?? {};*/
-  const text = "haha";
-  const images = [{
-    id: '1',
-    src: 'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg',
-    alt: 'haha'
-  },{
-    id: '2',
-    src: 'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg',
-    alt: 'haha'
-  }];
+  const isOwner = userId === createdBy;
   return (
     <motion.article
       className={cn(
         `accent-tab h- relative flex cursor-default flex-col gap-3 border-b
          border-light-border px-4 py-3 outline-none dark:border-dark-border`,
-        reply && 'scroll-m-[3.25rem] pt-0'
       )}
       {...variants}
       animate={{ ...variants.animate, transition: { duration: 0.2 } }}
@@ -74,88 +76,76 @@ export function ViewContent(tweet: ViewTweetProps): JSX.Element {
         open={open}
         closeModal={closeModal}
       >
-        <ContentReplyModal tweet={tweet} closeModal={closeModal} />
+        <ContentReplyModal post={post} closeModal={closeModal} />
       </Modal>
       <div className='flex flex-col gap-2'>
-        {reply && (
-          <div className='flex w-12 items-center justify-center'>
-            <i className='hover-animation h-2 w-0.5 bg-light-line-reply dark:bg-dark-line-reply' />
-          </div>
-        )}
         <div className='grid grid-cols-[auto,1fr] gap-3'>
-          <UserTooltip avatar >
-            <UserAvatar src={'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg'} alt={'name'} username={'username'} />
+          <UserTooltip avatarCheck {...postUserData}>
+            <UserAvatar src={avatar} alt={fullName} username={fullName} />
           </UserTooltip>
           <div className='flex min-w-0 justify-between'>
             <div className='flex flex-col truncate xs:overflow-visible xs:whitespace-normal'>
-              {/*<UserTooltip {...tweetUserData}>*/}
-              <UserTooltip >
+              <UserTooltip {...postUserData}>
                 <UserName
-                  className='mb-1'
-                  name={'name'}
-                  username={'username'}
-                  verified={false}
+                    className='-mb-1'
+                    name={fullName}
+                    username={fullName}
+                    verified={verified}
                 />
-              </UserTooltip>
-              {/*<UserTooltip {...tweetUserData}>*/}
-              <UserTooltip>
-                <UserUsername username={'username'} />
               </UserTooltip>
             </div>
             <div className='px-4'>
               <ContentAction
                 viewTweet
-                isOwner={false}
-                ownerId={"ownerId"}
-                tweetId={"tweetId"}
-                parentId={"parentId"}
-                username={"username"}
-                /*hasImages={!!images}*/
-                hasImages={false}
-                createdBy={'sssssss'}
+                isOwner={isOwner}
+                ownerId={ownerId}
+                postId={postId}
+                username={fullName}
+                hasImages={!!mediaUrl}
+                createdBy={createdBy}
               />
             </div>
           </div>
         </div>
       </div>
-
-      {reply && (
-        <p className='text-light-secondary dark:text-dark-secondary'>
-          Replying to{' '}
-          <Link href={`/user/${'parentUsername'}` } className='custom-underline text-main-accent'>
-              @{'parentUsername'}
-          </Link>
-        </p>
-      )}
       <div>
-        {text && (
-          <p className='whitespace-pre-line break-words text-2xl'>{text}</p>
+        {content && (
+          <p className='whitespace-pre-line break-words text-2xl'>{content}</p>
         )}
-        {images && (
+        {mediaUrl?.length as number > 0 && (
           <ImagePreview
             viewTweet
-            imagesPreview={images}
-            previewCount={images.length}
+            imagesPreview={mediaUrl as ImagesPreview}
+            previewCount={mediaUrl?.length as number}
           />
         )}
         <div
           className='inner:hover-animation inner:border-b inner:border-light-border
                      dark:inner:border-dark-border'
         >
-          <ContentDate viewTweet tweetLink={tweetLink} createdAt={Timestamp.now()} />
+          <ContentDate viewTweet tweetLink={postLink} createdAt={createdAt} />
           <ContentStats
-            viewTweet
-            reply={reply}
-            userId={"userId"}
-            isOwner={false}
-            tweetId={"tweetId"}
-            userLikes={["1", "2"]}
-            userRetweets={["1", "2"]}
-            userReplies={2}
-            openModal={openModal}
+              comment={comment}
+              viewTweet={false}
+              avatar={currentUser?.avatar as string}
+              username={currentUser?.fullName as string}
+              userId={userId}
+              bio={currentUser?.bio as string}
+              verified={currentUser?.verified}
+              coverImage={currentUser?.coverImage as string}
+              isOwner={!isOwner}
+              postId={postId}
+              userPostLikes={userPostLikes}
+              tagUserPosts={tagUserPosts}
+              totalComments={totalComments}
+              openModal={openModal}
           />
         </div>
-        <Input reply parent={{ id: '1', username: 'username' }} />
+        <Input reply postID={post?.id}
+               modal
+               replyModal
+               closeModal={closeModal}
+               comment />
       </div>
     </motion.article>
   );

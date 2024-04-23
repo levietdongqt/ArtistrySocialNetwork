@@ -5,6 +5,7 @@ import SearchPost from "./search-post";
 import SearchService from "./search-service";
 import SearchAll from "./search-all";
 import { useSearch } from "context/search-context";
+import { useEffect } from "react";
 const { TabPane } = Tabs;
 
 const items = [
@@ -31,9 +32,15 @@ const items = [
 ];
 
 export default function SearchMain() {
+  const {topSearch} = useSearch();
+  console.log("topSearch",topSearch)
+
+  useEffect(()=>{
+
+  },[topSearch])
   return (
     <>
-  <Tabs className="flex flex-col h-full justify-center" defaultActiveKey="service">
+  <Tabs className="flex flex-col h-full justify-center" defaultActiveKey={topSearch}>
     {items.map((item) => (
       <TabPane
         key={item.key}

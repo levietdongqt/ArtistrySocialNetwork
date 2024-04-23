@@ -1,20 +1,20 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 import React, { useState, useEffect, useMemo } from 'react';
 import cn from 'clsx';
-import { ViewTweetStats } from '../view/view-tweet-stats';
+import {ViewContentStats} from '../view/view-content-stats';
 import { TweetOption } from './content-option';
 import { ContentShare } from './content-share';
-import type { Post } from '@models/post';
-import useSWR from "swr";
-import {likePosts} from "../../../../services/realtime/clientRequest/postClient";
-import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import {likePosts} from "../../../../services/realtime/ServerAction/PostService";
+import {AnimatePresence} from "framer-motion";
+import {likeComment} from "../../../../services/realtime/ServerAction/CommentService";
+import {toast} from "react-toastify";
+import {HeroIcon} from "@components/ui/hero-icon";
+import {ToolTip} from "@components/ui/tooltip";
+import {mutate} from "swr";
 
 
-type PostStatsProps = Pick<
-  Post,
-  'userPostLikes' | 'userReplies' | 'tagUserPosts'
-> & {
+type PostStatsProps =  {
+    commentsId?: string;
   userId: string;
   isOwner?: boolean;
   coverImage: string,
@@ -27,6 +27,10 @@ type PostStatsProps = Pick<
   openModal?: () => void;
   comment?: boolean;
   verified?: boolean;
+  replyTags?: boolean;
+    userPostLikes?: [];
+    tagUserPosts?: [];
+    totalComments?: number;
 };
 
 export function ContentStats({
@@ -39,96 +43,116 @@ export function ContentStats({
   icon,
   viewTweet,
    tagUserPosts,
-  userReplies: totalReplies,
+   totalComments,
   openModal,
-   comment
+   comment,
+ replyTags,
+ commentsId
 }: PostStatsProps): JSX.Element {
-  const [isLike, setIsLike] = useState(userPostLikes?.map(data => userId).some(likeID => likeID === userId));
-  const [totalLikes, setTotalLikes] = useState(userPostLikes?.length as number);
-  const totalTweets = tagUserPosts?.length;
-  const [{ currentReplies, currentTweets, currentLikes }, setCurrentStats] =
+    const totalLikes = userPostLikes?.map((data:any) => data?.id).length as number || 0;
+    const totalTag = tagUserPosts?.length;
+    const [isLiked, setIsLiked] = useState(true);
+  const [{ currentComment , currentTag, currentLikes }, setCurrentStats] =
     useState({
-      currentReplies: totalReplies,
+      currentComment: totalComments,
       currentLikes: totalLikes,
-      currentTweets: totalTweets
+        currentTag: totalTag
     });
-  const [isStat, setIsStat] = useState({});
-  const {data,mutate } = useSWR(likePosts(isStat),fetcherWithToken, { revalidateOnFocus: false });
-  const handleLikes = async (type: 'Like' | 'Unlike'): Promise<void> => {
-    const currentIsLiked = isLike;
-    const nextIsLiked = type === 'Like';
+    useEffect(() => {
+        const postIsLiked = userPostLikes?.map((data:any) => data.id).includes(userId) as boolean;
+        setIsLiked(postIsLiked);
+    }, [userPostLikes]);
+    useEffect(() => {
+        setCurrentStats({
+            currentComment: totalComments,
+            currentLikes: totalLikes,
+            currentTag: totalTag
+        });
+    }, [totalComments, totalLikes, totalTag]);
+  const handleLikes = async (): Promise<void> => {
 
-    // Optimistically update the state to provide instant feedback to the user.
-    setIsLike(nextIsLiked);
-    setTotalLikes(prevLikes => prevLikes + (nextIsLiked ? 1 : -1));
-    try {
-      const dataLike = {
-        postId: postId,
-        byUser: {
-          id: userId,
-          fullName: username,
-          avatar: avatar,
-          coverImage: coverImage,
-          bio: bio,
-          verified: verified
-        },
-      };
-
-      // Only call the API if the next state is different from the current state.
-      if (currentIsLiked !== nextIsLiked) {
-        setIsStat(dataLike); // This should be where you set up the payload for the API request.
-        await mutate(); // Call the API to reflect the change on the server.
+      if(userId !== null){
+          if(!replyTags){
+              try {
+                  const dataLike = {
+                      postId: postId,
+                      byUser: {
+                          id: userId,
+                          fullName: username,
+                          avatar: avatar,
+                          coverImage: coverImage,
+                          bio: bio,
+                          verified: verified
+                      },
+                  };
+                  setIsLiked(!isLiked);
+                  await likePosts(dataLike);
+              } catch (error) {
+                  console.error('Failed to update like status:', error);
+                  setIsLiked(currentIsLiked => !currentIsLiked);
+              }
+          }else{
+              try {
+                  const dataLike = {
+                      commentId: commentsId,
+                      byUser: {
+                          id: userId,
+                          fullName: username,
+                          avatar: avatar,
+                          coverImage: coverImage,
+                          bio: bio,
+                          verified: verified
+                      },
+                  };
+                  setIsLiked(!isLiked);
+                  await likeComment(dataLike)
+              } catch (error) {
+                  console.error('Failed to update like status:', error);
+                  setIsLiked(currentIsLiked => !currentIsLiked);
+              }
+          }
+      }else{
+          toast.error("Bạn cần đăng mới like được");
       }
-    } catch (error) {
-      // If the API call fails, revert the optimistic update.
-      setIsLike(currentIsLiked);
-      setTotalLikes(prevLikes => prevLikes - (nextIsLiked ? 1 : -1));
-      console.error('Failed to update like status:', error);
-    }
+
   };
-  useEffect(() => {
-    setCurrentStats({
-      currentReplies: totalReplies,
-      currentLikes: totalLikes,
-      currentTweets: totalTweets
-    });
-  }, [totalReplies, totalLikes, totalTweets]);
-  const replyMove = useMemo(
-    () => (totalReplies > currentReplies ? -25 : 25),
-    [totalReplies]
+
+
+  const commentMove = useMemo(
+    () => (totalComments as number > (currentComment as number)  ? -25 : 25),
+    [totalComments]
   );
 
   const likeMove = useMemo(
     () => (totalLikes > currentLikes ? -25 : 25),
     [totalLikes]
   );
-
-  const tweetMove = useMemo(
-    () => (totalTweets > currentTweets ? -25 : 25),
-    [totalTweets]
+  const tagMove = useMemo(
+    () => (totalTag as number > (currentTag as number) ? -25 : 25),
+    [totalTag]
   );
-  const tweetIsLiked = userPostLikes?.map(data => userId).includes(userId);
   // const tweetIsPosts = tagUserPosts?.includes(userId);
-  const isStatsVisible = !!(totalReplies || totalTweets || totalLikes);
+  const isStatsVisible = !!(totalComments || totalTag || totalLikes);
   return (
     <>
-      {viewTweet && (
-        <ViewTweetStats
-          likeMove={likeMove}
-          userPostLikes={userPostLikes}
-          tweetMove={tweetMove}
-          replyMove={replyMove}
-          tagUserPosts={tagUserPosts}
-          currentLikes={currentLikes}
-          currentTweets={currentTweets}
-          currentReplies={currentReplies}
-          isStatsVisible={isStatsVisible}
-        />
-      )}
+        {
+         !replyTags &&  (<AnimatePresence>
+                <ViewContentStats
+                    likeMove={likeMove}
+                    tagMove={tagMove}
+                    commentMove={commentMove}
+                    currentLikes={currentLikes}
+                    currentTweets={currentTag as number}
+                    currentComment={currentComment as number}
+                    isStatsVisible={isStatsVisible}
+                />
+            </AnimatePresence>)
+        }
       <div
         className={cn(
-          'flex text-light-secondary inner:outline-none dark:text-dark-secondary ',
-          viewTweet ? 'justify-around py-2' : 'max-w justify-between'
+          'flex text-light-secondary inner:outline-none dark:text-dark-secondary max-w  border-y-2 border-gray-300 ',
+            replyTags ? 'text-sm border-y-0 ' :  'justify-between'
+
         )}
       >
         { comment ? null : <TweetOption
@@ -136,8 +160,7 @@ export function ContentStats({
                 iconClassName='group-hover:bg-accent-blue/10 group-active:bg-accent-blue/20
                        group-focus-visible:bg-accent-blue/10 group-focus-visible:ring-accent-blue/80'
                 tip='Comments'
-                move={replyMove}
-                stats={currentReplies}
+                name={'Bình luận'}
                 iconName='ChatBubbleOvalLeftIcon'
                 viewTweet={viewTweet}
                 onClick={openModal}
@@ -146,30 +169,32 @@ export function ContentStats({
         <TweetOption
           className={cn(
             'hover:text-accent-pink focus-visible:text-accent-pink',
-              isLike && 'text-accent-pink [&>i>svg]:fill-accent-pink'
+              isLiked ? 'text-accent-pink [&>i>svg]:fill-accent-pink' : ''
           )}
           iconClassName='group-hover:bg-accent-pink/10 group-active:bg-accent-pink/20
                          group-focus-visible:bg-accent-pink/10 group-focus-visible:ring-accent-pink/80'
-          tip={isLike ? 'Unlike' : 'Like'}
-          move={likeMove}
-          stats={currentLikes}
+          tip={isLiked ? 'Unlike' : 'Like'}
+          name={'Thích'}
           iconName='HeartIcon'
           viewTweet={viewTweet}
-          onClick={() => handleLikes(
-              isLike ? 'Unlike' : 'Like'
-          )}
+          onClick={() => handleLikes()}
         />
-        <ContentShare userId={userId} tweetId={postId} viewTweet={viewTweet} />
-        {isOwner && (
-          <TweetOption
-            className='hover:text-accent-blue focus-visible:text-accent-blue'
-            iconClassName='group-hover:bg-accent-blue/10 group-active:bg-accent-blue/20
-                           group-focus-visible:bg-accent-blue/10 group-focus-visible:ring-accent-blue/80'
-            tip='Analytics'
-            iconName='ChartPieIcon'
-            disabled
-          />
-        )}
+          {
+            !replyTags &&  (<ContentShare userId={userId} postId={postId} viewTweet={viewTweet}  name={'Chia sẻ'}/>)
+          }
+          {
+              replyTags && (
+                  <button className={cn(`group ml-3 flex items-center gap-1.5 p-0 transition-none 
+                        disabled:cursor-not-allowed inner:transition inner:duration-200`)}>
+                      <i className={'relative rounded-full p-1 not-italic group-focus-visible:ring-2'}>
+                          <HeroIcon iconName={'ChatBubbleLeftRightIcon'} className={'h-5 w-5'} />
+                          <ToolTip tip={'Phản hồi'} />
+                      </i>
+                      <p>Phản hồi</p>
+                  </button>
+
+              )
+          }
       </div>
     </>
   );

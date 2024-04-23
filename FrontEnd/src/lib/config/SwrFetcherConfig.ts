@@ -36,7 +36,7 @@ export async function fetchJSON(
 
 export type fetcherParams = [url: string, method: Method | 'GET', body: any | null, destination: ServiceDestination];
 
-export async function fetcherWithToken(params: any): Promise<any> {
+export async function fetcherWithToken(params: any, arg?:any): Promise<any> {
     const [url, method, body, destination] = params;
     try {
         var fullUrl = "";
@@ -47,7 +47,7 @@ export async function fetcherWithToken(params: any): Promise<any> {
             fullUrl = fullUrl.concat(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}`).concat(url);
         }
         const config: AxiosRequestConfig = {
-            data: body,
+            data: body || arg,
             url: fullUrl,
             method: method,
         };
