@@ -1,7 +1,8 @@
 package com.mytech.mainservice.service.implement;
 
 import com.mytech.mainservice.client.NotificationForeignClient;
-import com.mytech.mainservice.dto.IsCheckDTO;
+import com.mytech.mainservice.dto.FriendDTO;
+import com.mytech.mainservice.dto.IsCheckFriendDTO;
 import com.mytech.mainservice.dto.NotificationDTO;
 import com.mytech.mainservice.dto.UserDTO;
 import com.mytech.mainservice.enums.FriendShipStatus;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -127,7 +127,26 @@ public class FriendService implements IFriendService {
             friendshipRepo.save(friendship.get());
             return;
         }
-        throw new RuntimeException("Friendship is not found");
+        throw new RuntimeException("Bạn chưa nhận được lời mời kết bạn");
+    }
+
+    @Override
+    public void returnAddFriend(String userId, String friendId) {
+        if(userId.equals(friendId)){
+            throw new RuntimeException("Bạn không thể rút lại lời mời kết bạn với chính mình");
+        }
+        Optional<Friendship> friendship = friendshipRepo.findByFromUser_IdAndFriend_Id(userId, friendId);
+        if (friendship.isPresent()) {
+            var checkPendingStatus = checkStatusInFriendship(friendship.get(),FriendShipStatus.PENDING);
+            if(checkPendingStatus){
+                var status = friendship.get().getStatus();
+                status.remove(FriendShipStatus.PENDING);
+                friendship.get().setStatus(status);
+                friendshipRepo.save(friendship.get());
+                return;
+            }
+        }
+        throw new RuntimeException("Bạn chưa gửi lời mời kết bạn");
     }
 
     @Override
@@ -237,14 +256,16 @@ public class FriendService implements IFriendService {
     }
 
     @Override
-    public IsCheckDTO isFollowingAndIsFriend(String userId, String friendId) {
+    public IsCheckFriendDTO isFollowingAndIsFriend(String userId, String friendId) {
         if(userId.equals(friendId)){
             throw new RuntimeException("Không có quan hệ với chính mình");
         }
         boolean isFollowing = false;
         boolean isFriend = false;
         boolean isPending = false;
+        boolean isAcceptFriend = false;
         Optional<Friendship> friendship= friendshipRepo.findByFromUser_IdAndFriend_Id(userId, friendId);
+        Optional<Friendship> reverseFriendship =  friendshipRepo.findByFromUser_IdAndFriend_Id(friendId, userId);
         if (friendship.isPresent()) {
             var checkFollowingStatus = checkStatusInFriendship(friendship.get(),FriendShipStatus.FOLLOWING);
             isFollowing = checkFollowingStatus;
@@ -252,16 +273,32 @@ public class FriendService implements IFriendService {
             isFriend = checkFriendStatus;
             var checkPendingStatus = checkStatusInFriendship(friendship.get(),FriendShipStatus.PENDING);
             isPending = checkPendingStatus;
+
+        }
+        if(reverseFriendship.isPresent()){
+            var checkIsAcceptFriend = checkStatusInFriendship(reverseFriendship.get(),FriendShipStatus.PENDING);
+            isAcceptFriend = checkIsAcceptFriend;
         }
         if (isFriend) {
-            return IsCheckDTO.builder().isFriend(true).isFollow(isFollowing).isPending(isPending).build();
+            return IsCheckFriendDTO.builder().isFriend(true).isFollow(isFollowing).isPending(isPending).isAcceptFriend(isAcceptFriend).build();
         }
-        Optional<Friendship> reverseFriendship =  friendshipRepo.findByFromUser_IdAndFriend_Id(friendId, userId);
         if (reverseFriendship.isPresent()) {
             var checkFriendStatus = checkStatusInFriendship(reverseFriendship.get(),FriendShipStatus.ISFRIEND);
             isFriend = checkFriendStatus;
         }
-        return IsCheckDTO.builder().isFriend(isFriend).isFollow(isFollowing).isPending(isPending).build();
+        return IsCheckFriendDTO.builder().isFriend(isFriend).isFollow(isFollowing).isAcceptFriend(isAcceptFriend).isPending(isPending).build();
+    }
+
+    @Override
+    public List<FriendDTO> searchFriend(String userId, List<String> listIdSearch) {
+        List<FriendDTO> friendDTOs = new ArrayList<>();
+        listIdSearch.forEach(id -> {
+            var userDTO = userService.getUserById(id);
+            var isCheckFriend = isFollowingAndIsFriend(userId,id);
+            var friendDTO = FriendDTO.builder().user(userDTO).isCheckFriend(isCheckFriend).build();
+            friendDTOs.add(friendDTO);
+        });
+        return friendDTOs;
     }
 
     //Handler status friendships

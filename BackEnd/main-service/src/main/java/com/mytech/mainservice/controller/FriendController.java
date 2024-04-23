@@ -20,10 +20,6 @@ public class FriendController {
     @Autowired
     private IFriendService friendService;
 
-    @PostMapping
-    public String addFriend(String friend) {
-        return friend;
-    }
 
     //    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
@@ -102,6 +98,19 @@ public class FriendController {
                         .build()
         );
     }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#friendDTO.userId()) && hasRole('USER')")
+    @PostMapping("/return-addFriend")
+    public ResponseEntity<?> returnAddFriend(@RequestBody FriendDTO friendDTO) {
+        friendService.returnAddFriend(friendDTO.userId(), friendDTO.friendId());
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Return Add Friend successfully")
+                        .data(null)
+                        .build()
+        );
+    }
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#friendDTO.userId()) && hasRole('USER')")
     @PostMapping("/removeFriend")
     public ResponseEntity<?> removeFriend(@RequestBody FriendDTO friendDTO) {
@@ -147,7 +156,7 @@ public class FriendController {
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Is following successfully")
+                        .message("Get Is following successfully")
                         .data(result)
                         .build()
         );

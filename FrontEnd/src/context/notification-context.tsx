@@ -9,6 +9,10 @@ type NotificationContext = {
     setDataCount: (updateFunction: (prevDataCount: number) => number) => void;
     notificationsContent: any;
     setNotificationsContent: (updateFunction: (prevDataCount: any) => any) => void;
+    updatedNotifications: any[];
+    setUpdatedNotifications: (updateFunction: (prevUpdatedNotifications: any[]) => any[]) => void;
+    reRenderNotifications:boolean;
+    setReRenderNotifications: (updateFunction: (prevRender:boolean) => boolean) => void;
 };
 
 export const NotificationContext = createContext<NotificationContext | null>(null);
@@ -17,11 +21,17 @@ export const NotificationContext = createContext<NotificationContext | null>(nul
 export function NotificationContextProvider({children}: any): JSX.Element {
     const [dataCount, setDataCount] = useState<number>(0);
     const [notificationsContent,setNotificationsContent] = useState<any>();
+    const [updatedNotifications,setUpdatedNotifications] = useState<any>();
+    const [reRenderNotifications,setReRenderNotifications] = useState<boolean>(false);
     const values = {
         dataCount,
         setDataCount,
         notificationsContent,
-        setNotificationsContent
+        setNotificationsContent,
+        updatedNotifications,
+        setUpdatedNotifications,
+        reRenderNotifications,
+        setReRenderNotifications
     }
 
     return <NotificationContext.Provider value={values}>{children}</NotificationContext.Provider>;

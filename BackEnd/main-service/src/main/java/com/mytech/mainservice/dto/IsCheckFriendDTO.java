@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class IsCheckDTO {
+public class IsCheckFriendDTO {
     private boolean isFollow;
     private boolean isFriend;
     private boolean isPending;
+    private boolean isAcceptFriend;
 }

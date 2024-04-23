@@ -1,13 +1,17 @@
 package com.mytech.realtimeservice.services;
 
+import com.mytech.realtimeservice.dto.NopeNotificationDTO;
 import com.mytech.realtimeservice.dto.ResponseMessage;
 import com.mytech.realtimeservice.enums.NotificationType;
 import com.mytech.realtimeservice.exception.myException.NotFoundException;
+import com.mytech.realtimeservice.models.NopeNotifications;
 import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.users.User;
+import com.mytech.realtimeservice.repositories.INopeNotificationsRepository;
 import com.mytech.realtimeservice.repositories.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -26,7 +30,13 @@ public class NotificationService implements INotificationService {
     private NotificationRepository notificationRepository;
 
     @Autowired
+    private INopeNotificationsRepository nopeNotificationsRepository;
+
+    @Autowired
     private WSSocket wsSocket;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     public Date getTimeForNotification(){
@@ -49,6 +59,17 @@ public class NotificationService implements INotificationService {
     public List<Notification> getNotificationsByDelivory(String userFrom) {
         Date startDate = getTimeForNotification();
         return notificationRepository.findNotificationByDelivered(userFrom,startDate);
+    }
+
+    @Override
+    public void updateAllNotifications(List<String> listId) {
+        listId.stream().forEach(id -> {
+            var notif = notificationRepository.findById(id);
+            if(notif.isPresent()){
+                notif.get().setStatus(true);
+                notificationRepository.save(notif.get());
+            }
+        });
     }
 
     public Notification changeNotifStatusToRead(String notifID) {
@@ -80,6 +101,16 @@ public class NotificationService implements INotificationService {
 
     @Async
     public void sendNotification(User userFrom,User userTo,String notificationType,String message,String link){
+        //Kiểm tra nope notifications
+        var nopeNotifications = nopeNotificationsRepository.getNopeNotifications(userTo.getId(),userFrom.getId());
+        if (nopeNotifications.isPresent()){
+            var nopeTime = nopeNotifications.get().getNopeMinutesTime();
+            var timeCheckNope = nopeNotifications.get().getCreatedTime().minusMinutes(nopeTime);
+            if (timeCheckNope.isBefore(LocalDateTime.now())){
+                return;
+            }
+            nopeNotificationsRepository.delete(nopeNotifications.get());
+        }
         Notification notification = Notification.builder()
                 .userFrom(userFrom)
                 .userTo(userTo)
@@ -122,6 +153,17 @@ public class NotificationService implements INotificationService {
                 break;
         }
         wsSocket.sendPrivateNotification(userFrom.getId(),notification);
+    }
+
+    @Override
+    public void saveNopeNotification(NopeNotificationDTO nopeNotificationDTO) {
+        var nopeNotification = NopeNotifications
+                .builder()
+                .userId(nopeNotificationDTO.getUserId())
+                .nopeId(nopeNotificationDTO.getNopeId())
+                .nopeMinutesTime(nopeNotificationDTO.getNopeMinutesTime())
+                .createdTime(LocalDateTime.now()).build();
+        nopeNotificationsRepository.save(nopeNotification);
     }
 
 

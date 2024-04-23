@@ -21,7 +21,6 @@ import {ViewContent} from "../view/view-content";
 import React from "react";
 import {User} from "@models/user";
 import {Loading} from "@components/ui/loading";
-import {useAuth} from "../../../../context/oauth2-context";
 import {Post} from "@models/post";
 import {ImagesPreview} from "@models/file";
 import {useUser} from "../../../../context/user-context";
@@ -43,7 +42,6 @@ export const variants: Variants = {
 };
 
 export function ContentPost(tweet: TweetProps) {
-  console.log("tweet",tweet);
   const {
     id:postId,
     user: postUserData,
@@ -65,7 +63,6 @@ export function ContentPost(tweet: TweetProps) {
       comment
   } = tweet;
   const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData;
-  console.log("show user ",ownerId)
   const { currentUser } = useUser();
   const userId = currentUser?.id as string;
   const isOwner = userId === createdBy;
@@ -137,6 +134,7 @@ export function ContentPost(tweet: TweetProps) {
                 <UserTooltip modal={modal} {...postUserData}>
                   <UserName
                       name={fullName ?? 'Customer 1'}
+                      id={ownerId}
                       username={fullName}
                       verified={verified}
                       className='text-light-primary dark:text-dark-primary'

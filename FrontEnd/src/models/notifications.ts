@@ -39,7 +39,19 @@ export enum FollowButtonType {
     FOLLOWING_BUTTON = "Đang Theo dõi",
     UN_FOLLOW_BUTTON = "Bỏ theo dõi",  
     ADD_FRIEND_BUTTON= "Kết bạn",
-    PENDING_BUTTON= "Đang chờ đồng ý",
-    FRIENDED_BUTTON = "Đang là bạn bè",
-    REMOVE_FRIEND_BUTTON ="Hủy kết bạn"
+    PENDING_BUTTON= "Đang chờ",
+    FRIENDED_BUTTON = "Bạn bè",
+    REMOVE_FRIEND_BUTTON ="Hủy kết bạn",
+    ACCEPT_FRIEND_BUTTON = "Đồng ý kết bạn"
 }
+
+export enum NotificationTab {
+    TITLE = "Thông báo",
+    ALL = "Tất cả",
+    UNREAL = "Chưa đọc",
+    INTERACT ="Tương tác với bạn",
+    FRIEND ="Lời mời kết bạn",
+    POST = "Bài viết khác",
+    POST_INTERACT = "Tương tác với bài viết của bạn"
+}
+

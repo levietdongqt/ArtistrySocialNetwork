@@ -10,6 +10,9 @@ export function addFriend (body: any): fetcherParams {
     return [`/friends/addFriend`, 'POST', body, ServiceDestination.MAIN];
 }
 
+export function returnAddFriend (body: any): fetcherParams {
+    return [`/friends/return-addFriend`, 'POST', body, ServiceDestination.MAIN];
+}
 
 
 export function unAcceptFriend (body: any): fetcherParams {
@@ -32,3 +35,4 @@ export function removeFriend (body: any): fetcherParams {
 export function unFollowingFriend (body: any): fetcherParams {
     return [`/friends/unFollowFriend`, 'POST', body, ServiceDestination.MAIN];
 }
+

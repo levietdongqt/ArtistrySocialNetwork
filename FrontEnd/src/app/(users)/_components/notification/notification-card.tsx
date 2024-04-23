@@ -1,9 +1,14 @@
 "use client";
 import Link from "next/link";
 import { UserAvatar } from "../user/user-avatar";
-import { Typography, Button, Tooltip, Popconfirm } from "antd";
+import { Typography, Button, Tooltip, Popconfirm,Popover } from "antd";
 import { formatElapsedTime } from "@lib/helper/convertTime";
-import { EyeOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import {
+  DashOutlined,
+  EyeOutlined,
+  QuestionCircleOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import useSWR from "swr";
 import { updateNotification } from "services/main/clientRequest/notificationsClient";
 import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
@@ -17,9 +22,10 @@ import {
   AddFriendButtonType,
   AddFriendType,
   NotificationModel,
-  notificationString,
+
 } from "@models/notifications";
 import { UserTooltip } from "../user/user-tooltip";
+import { useNotification } from "context/notification-context";
 const { Text } = Typography;
 
 interface NotificationCardParams {
@@ -32,10 +38,29 @@ export default function NotificationCard({ data }: NotificationCardParams) {
   const [shouldUnAcceptFriend, setShouldUnAcceptFriend] = useState(false);
   const [successAccept, setSuccessAccept] = useState(false);
   const [successUnAccept, setUnSuccessAccept] = useState(false);
+  const { reRenderNotifications } = useNotification();
+  const [status, setStatus] = useState<any>(false);
   var currentDate = new Date();
   var specificDate = new Date(data?.createdDate);
   var timeDifference = currentDate.getTime() - specificDate.getTime();
   var timeDifferenceInSeconds = formatElapsedTime(timeDifference);
+
+  const content = (
+    <div className="flex flex-col">
+      <Button>Gỡ thông báo này</Button>
+      <Button>Chặn thông báo từ người này</Button>
+    </div>
+  );
+  useEffect(() => {
+    setStatus(data?.status);
+  }, [data]);
+
+  useEffect(() => {
+    if (data?.status === true) {
+      setStatus(true);
+    }
+  }, [reRenderNotifications]);
+
   const user = useUser();
   const {} = useSWR(
     shouldUpdateFetch ? updateNotification(data?.id) : null,
@@ -103,12 +128,12 @@ export default function NotificationCard({ data }: NotificationCardParams) {
     >
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center">
-        <UserTooltip avatarCheck={true} {...data?.userTo!}>
-          <UserAvatar
-            src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
-            alt={"name"}
-            username={`${data?.id}`}
-          />
+          <UserTooltip avatarCheck={true} {...data?.userTo!}>
+            <UserAvatar
+              src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
+              alt={"name"}
+              username={`${data?.id}`}
+            />
           </UserTooltip>
           <div className="flex flex-col justify-center ml-3">
             {" "}
@@ -158,8 +183,11 @@ export default function NotificationCard({ data }: NotificationCardParams) {
         <div className="absolute right-10">
           {" "}
           <Tooltip placement="bottomRight" title={"Ấn vào để xem chi tiết"}>
-            {!data?.status && <EyeOutlined />}
+            {!status && <EyeOutlined />}
           </Tooltip>
+          <Popover placement="bottomLeft" content={content}>  
+            <Button shape="circle"  icon={<DashOutlined />} className="ml-3"/>
+          </Popover>
         </div>
       </div>
     </Link>

@@ -2,17 +2,18 @@ import NotificationHeader from "./notication-header";
 import {Tabs } from 'antd';
 import AllNotification from "./all-notification";
 import UnreadNotification from "./unread-notification";
+import { NotificationTab } from "@models/notifications";
 
 const items = [
     {
-      label: 'Tất Cả',
+      label: NotificationTab.ALL,
       key: 'all',
-      children: <AllNotification/>, // Truyền component vào children
+      children: <AllNotification/>,
     },
     {
-      label: 'Chưa Đọc',
+      label: NotificationTab.UNREAL,
       key: 'unread',
-      children: <UnreadNotification/>, // Truyền component vào children
+      children: <UnreadNotification/>,
     }
   ];
 
