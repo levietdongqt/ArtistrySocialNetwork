@@ -93,7 +93,7 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
             throw error
         }
     };
-    
+
     const captchaVerifier = async ({phoneNumber, destination = "/verify/continue", callBack}: captchaVerifierParam) => {
         window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
             'size': 'normal',

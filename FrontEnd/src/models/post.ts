@@ -1,12 +1,11 @@
 import type { ImagesPreview } from './file';
 import type { User } from './user';
-import {Timestamp} from "firebase/firestore";
 
 export type Post = {
   id: string;
   user: User  ;
   content: string | null;
-  mediaUrl: ImagesPreview | null;
+  mediaUrl: ImagesPreview;
   parent: { id: string; username: string } | null;
   createdBy: string;
   createdAt: string;

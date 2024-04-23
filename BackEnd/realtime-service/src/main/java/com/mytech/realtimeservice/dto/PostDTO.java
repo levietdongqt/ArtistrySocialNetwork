@@ -1,5 +1,6 @@
 package com.mytech.realtimeservice.dto;
 
+import com.mytech.realtimeservice.models.MediaObject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,7 @@ import java.util.List;
 @Builder
 public class PostDTO {
     private String content;
-    private List<String> mediaUrl;
+    private List<MediaObject> mediaUrl;
     private String sendUserId;
     private String sendFullName;
     private String sendUserAvatarUrl;

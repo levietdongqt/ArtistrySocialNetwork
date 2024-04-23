@@ -32,13 +32,15 @@ spring:
               - OPTIONS
       routes:
         - id: main-service
-          uri: lb://main-service
+#          uri: lb://main-service
+          uri: http://localhost:8061
           predicates:
             - Path=/api/main/**
           filters:
             - AuthenticationFilter
         - id: runtime-service
-          uri: lb://realtime-service
+          uri: http://localhost:8062
+#          uri: lb://realtime-service
           predicates:
             - Path=/api/realtime/**
           filters:

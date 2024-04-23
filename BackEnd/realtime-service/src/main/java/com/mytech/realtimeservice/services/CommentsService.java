@@ -4,6 +4,7 @@ import com.mytech.realtimeservice.dto.CommentDTO;
 import com.mytech.realtimeservice.dto.CommentLikeDTO;
 import com.mytech.realtimeservice.dto.UserDTO;
 import com.mytech.realtimeservice.exception.myException.NotFoundException;
+import com.mytech.realtimeservice.helper.JwtTokenHolder;
 import com.mytech.realtimeservice.models.CommentLike;
 import com.mytech.realtimeservice.models.Comments;
 import com.mytech.realtimeservice.models.Post;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -35,8 +37,27 @@ public class CommentsService implements ICommentsService {
     @Autowired
     private CommentLikeRepository commentLikeRepository;
 
+    @Autowired
+    private JwtTokenHolder jwtTokenHolder;
+
+    @Autowired
+    private IWSSocket wsSocket;
+
+
     public List<Comments> getCommentsByPostId(String postId) {
         return commentsRepository.findAllByPostId(postId);
+    }
+    public Boolean deleteCommentById(String id){
+        Optional<Comments> comments = commentsRepository.findCommentsById(id);
+        if(comments.isEmpty()){
+            return false;
+        }
+        if(jwtTokenHolder.isValidUserId(comments.get().getByUser().getId())){
+            commentsRepository.delete(comments.get());
+            postService.updateDeleteCommentForPost(comments.get().getPostId());
+            return true;
+        }
+        return false;
     }
     public Comments createComments(CommentDTO commentDTO) {
         var post = postService.findById(commentDTO.getPostId());
@@ -53,7 +74,6 @@ public class CommentsService implements ICommentsService {
                 .mediaUrl(commentDTO.getMediaUrl())
                 .tagUserComments(commentDTO.getUserTags())
                 .build();
-        System.out.println(comments);
         //Nếu nó là 1 comments đã tồn tại khác
         if (commentDTO.getCommentsId() != null ) {
             //Check xem id của comments đã tồn tại đó đúng hay chưa
@@ -72,6 +92,7 @@ public class CommentsService implements ICommentsService {
             return createdComment;
         }
         var createdComment = commentsRepository.save(comments);
+        wsSocket.sendGlobalComment(commentDTO.getPostId(),createdComment);
         //Update comments cho bài post
         postService.updateCommentsForPost(post.getId());
         //Gửi notification for user
@@ -156,9 +177,9 @@ public class CommentsService implements ICommentsService {
         commentLikeRepository.save(commentLikeCreated);
         //Update total commentlike
         commentUpdated = updateLikeForComment(comment.getId(),commentLikeDTO.getByUser());
+
         //Tạo 1 notification;
         User userTo = comment.getByUser();
-
         User userFrom = User.builder()
                 .id(commentLikeDTO.getByUser().getId())
                 .fullName(commentLikeDTO.getByUser().getFullName())

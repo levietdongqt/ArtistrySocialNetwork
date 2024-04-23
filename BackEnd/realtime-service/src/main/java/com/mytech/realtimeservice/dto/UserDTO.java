@@ -25,6 +25,7 @@ public class UserDTO {
     private String avatar;
     private String coverImage;
     private String bio;
+    private Boolean notSeen;
 
     //Đánh dấu là user sẽ được Tag vào bài viết
     private boolean tag;

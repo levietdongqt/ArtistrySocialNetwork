@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CommentLikeRepository extends MongoRepository<CommentLike,String> {
-    @Query("{ 'commentId' : ?0, 'byUser.userId' : ?1,'postId': ?2 }")
+    @Query("{ 'commentId' : ?0, 'byUser.id' : ?1,'postId': ?2 }")
     public CommentLike GetCommentLikeByCommentIdAndUserIdAndPostId(String commentId, String userId,String postId);
 }

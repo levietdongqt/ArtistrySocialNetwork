@@ -98,13 +98,15 @@ function FlagVietNam({className}: IconProps): JSX.Element {
     );
 }
 
-function ArrowLeft({className}: IconProps): JSX.Element {
+export function ArrowLeft({className}: IconProps): JSX.Element {
     return (
 
-        <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-             width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                  d="M5 12h14M5 12l4-4m-4 4 4 4"/>
+        <svg
+            viewBox="0 0 24 24"
+            fill="#6ea9d7"
+            className={"w-6 h-12 "}
+        >
+            <path d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z"/>
         </svg>
 
 

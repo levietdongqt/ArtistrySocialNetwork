@@ -25,11 +25,13 @@ type UserTooltipProps = Pick<
   modal?: boolean;
   avatarCheck?: boolean;
   children: ReactNode;
+  comment?: boolean;
 };
 
 type Stats = [string, string, number];
 
 export function UserTooltip({
+                              comment,
                               id,
                               bio,
                               fullName,
@@ -60,16 +62,18 @@ export function UserTooltip({
     <div
       className={cn(
         'group relative self-start text-light-primary dark:text-dark-primary',
-        avatarCheck ? '[&>div]:translate-y-2' : 'grid [&>div]:translate-y-7'
+        avatarCheck ? '[&>div]:translate-y-2' : 'grid [&>div]:translate-y-7',
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {children}
       <div
-        className='menu-container invisible absolute left-1/2 w-72 -translate-x-1/2 rounded-2xl 
+        className={cn(`menu-container invisible absolute left-1/2 w-72 -translate-x-1/2 rounded-2xl 
                    opacity-0 [transition:visibility_0ms_ease_400ms,opacity_200ms_ease_200ms] group-hover:visible 
-                   group-hover:opacity-100 group-hover:delay-500'
+                   group-hover:opacity-100 group-hover:delay-500`,
+            comment ?'left-[13.25rem] top-[-12.5rem] z-50 ' : ''
+            )}
       >
         <div className='flex flex-col gap-3 p-4'>
           <div className='flex flex-col gap-2'>
@@ -94,7 +98,7 @@ export function UserTooltip({
             <div className='flex justify-between'>
               <div className='mb-10'>
                 <UserAvatar
-                  className='absolute -translate-y-1/2 bg-main-background p-1 
+                  className='absolute -translate-y-1/2 bg-main-background p-1
                              hover:brightness-100 [&>figure>span]:[transition:200ms]
                              [&:hover>figure>span]:brightness-75'
                   src={avatar ?? "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}

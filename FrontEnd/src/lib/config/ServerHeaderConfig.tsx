@@ -1,3 +1,4 @@
+
 import {cookies} from "next/headers";
 import {ConTentType} from "@lib/enum/ConTentType";
 import {getCookie} from "cookies-next";
@@ -5,7 +6,6 @@ import {jwtDecode, JwtPayload} from "jwt-decode";
 import {getNewToken} from "../../services/main/auth-service";
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {resetCookieTokenSSR, setCookieTokenSSR} from "@lib/helper/serverCookieHandle";
-
 
 export async function getServerSideHeaders(isAuth: boolean, contentType: ConTentType): Promise<Headers> {
     const headers = new Headers();

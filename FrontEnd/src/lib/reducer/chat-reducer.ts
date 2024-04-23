@@ -23,7 +23,7 @@ const enum ACTION_TYPE {
     SET_CONVERSATIONS = "SET_CONVERSATIONS",
     UPDATE_CONVERSATIONS = "UPDATE_CONVERSATIONS",
     SET_NEW_MESSAGES = "SET_NEW_MESSAGES",
-    SET_PICKED_CONVERSATION = "SET_PICKED_CONVERSATION",
+    SET_PICKED_CONVERSATIONS = "SET_PICKED_CONVERSATIONS",
     UPDATE_MESSAGE = "UPDATE_MESSAGE",
     SHOW_CONVERSATIONS = "SHOW_CONVERSATIONS",
     SHOW_CHAT_BOXES = "SHOW_CHAT_BOXES"
@@ -85,7 +85,7 @@ const reducer = (state: any, action: any): stateType => {
                 pickedConversations: newPickedConversations
             }
             break;
-        case ACTION_TYPE.SET_PICKED_CONVERSATION:
+        case ACTION_TYPE.SET_PICKED_CONVERSATIONS:
             newState = {
                 ...state,
                 pickedConversations: [...action.payload]

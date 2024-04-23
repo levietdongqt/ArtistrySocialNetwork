@@ -3,10 +3,14 @@ package com.mytech.realtimeservice.services;
 import com.mytech.realtimeservice.client.FriendForeignClient;
 import com.mytech.realtimeservice.dto.*;
 
+import com.mytech.realtimeservice.enums.ReportStatus;
+import com.mytech.realtimeservice.exception.myException.ForbiddenException;
 import com.mytech.realtimeservice.exception.myException.NotFoundException;
+import com.mytech.realtimeservice.helper.JwtTokenHolder;
 import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.PostLike;
+import com.mytech.realtimeservice.models.Report;
 import com.mytech.realtimeservice.models.users.User;
 import com.mytech.realtimeservice.repositories.*;
 import com.mytech.realtimeservice.repositories.PostLikeRepository;
@@ -23,6 +27,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -35,6 +42,8 @@ public class PostService implements IPostService {
     private NotificationService notificationService;
 
     @Autowired
+    private IReportService reportService;
+    @Autowired
     private FriendForeignClient friendForeignClient;
 
     @Autowired
@@ -42,6 +51,12 @@ public class PostService implements IPostService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private IWSSocket wsSocket;
+
+    @Autowired
+    private JwtTokenHolder jwtTokenHolder;
 
     public Post create(PostDTO postDTO) {
         // Lưu bài post
@@ -94,26 +109,43 @@ public class PostService implements IPostService {
     public Boolean deletePost(String postId) {
         boolean detected = false;
         var post = postRepository.findById(postId);
-        if(post.isPresent()){
+        if(post.isEmpty() ){
+            throw new NotFoundException("Post not found");
+        }
+        if(jwtTokenHolder.isValidUserId(post.get().getUser().getId())){
             detected =  true;
             postRepository.delete(post.get());
             friendForeignClient.deletePostELS(post.get().getId());
         }
         return detected;
     }
-
-    public List<PostResponse> findAll(int limit, int offset) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        int pageIndex = offset / limit;
-        Pageable pageable = PageRequest.of(pageIndex, limit, sort);
-        Page<Post> pagePosts = postRepository.findByOrderByCreatedAtDesc(pageable);
-        List<Post> posts = pagePosts.getContent();
-        List<PostResponse> postResponses = new ArrayList<>();
-        for (Post post : posts) {
-            PostResponse postResponse = modelMapper.map(post, PostResponse.class);
-            postResponses.add(postResponse);
+    public Post getPostById(String postId) {
+        Optional<Post> post = postRepository.findById(postId);
+        return post.orElse(null);
+    }
+    public List<PostResponse> findAll(int limit, int pageIndex, String userId) {
+        List<String> friendsIds = filterFollowFriends(userId);
+        if (!friendsIds.contains(userId)) {
+            friendsIds.add(userId);
         }
+        Set<String> reportedPostIds = reportService.findReportsByUserId(userId)
+                .stream()
+                .filter(status->status.getStatus().equals(ReportStatus.UNDO))
+                .map(Report::getPostId)
+                .collect(Collectors.toSet());
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(pageIndex, limit, sort);
+        Page<Post> pagePosts = postRepository.findByOrderByCreatedAtDesc(friendsIds,reportedPostIds, pageable);
+        List<PostResponse> postResponses = pagePosts.getContent().stream()
+                .map(post -> modelMapper.map(post, PostResponse.class))
+                .collect(Collectors.toList());
+        log.info( "page inndex: " + pageIndex+ "post response: " + postResponses.size() );
         return postResponses;
+    }
+    public List<String> filterFollowFriends(String userId){
+        var friendsFollow = friendForeignClient.getFollowFriends(userId);
+        return friendsFollow.getData().stream().map(UserDTO::getId).collect(Collectors.toList());
     }
     public long getCountPost(){
         return postRepository.count();
@@ -132,6 +164,15 @@ public class PostService implements IPostService {
         throw  new NotFoundException("Post is not found");
     }
 
+    public List<PostResponse> findPostByIdInList(List<String> postIds){
+        List<Post> posts = postRepository.findByPostIdsIn(postIds);
+        List<PostResponse> postResponses = new ArrayList<>();
+        for (Post post : posts) {
+            PostResponse postResponse = modelMapper.map(post, PostResponse.class);
+            postResponses.add(postResponse);
+        }
+        return postResponses;
+    }
 
     //Set tag thành true nếu như id trùng id của  List<UserDTO> trả từ main (tối ưu sau)
     public void setTagForUsers(List<UserDTO> users,List<UserDTO> userTags) {
@@ -166,7 +207,6 @@ public class PostService implements IPostService {
                 .filter(u -> u.getId().equals(userLike.getId()))
                 .findFirst()
                 .orElse(null);
-        System.out.println("user " + deletedUser);
         if (deletedUser != null) {
             users.remove(deletedUser);
         }
@@ -190,7 +230,6 @@ public class PostService implements IPostService {
         boolean alreadyLiked = post.getUserPostLikes()
                 .stream()
                 .anyMatch(like ->  postLikeDTO.getByUser().getId().equals(like.getId()));
-        System.out.println(postLikeDTO.getByUser().getId());
         if(alreadyLiked){
             return post;
         }
@@ -218,6 +257,15 @@ public class PostService implements IPostService {
     public Post updateCommentsForPost(String postId) {
         var post = findById(postId);
         post.setTotalComments(post.getTotalComments() + 1);
+        post.setUpdatedAt(LocalDateTime.now());
+        return postRepository.save(post);
+    }
+    public Post updateDeleteCommentForPost(String postId) {
+        var post = findById(postId);
+        if (post == null) {
+            return null;
+        }
+        post.setTotalComments(post.getTotalComments() - 1);
         post.setUpdatedAt(LocalDateTime.now());
         return postRepository.save(post);
     }

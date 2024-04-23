@@ -23,7 +23,7 @@ public class Comments {
     private String content;
     private LocalDateTime sentDate;
     private LocalDateTime updatedDate;
-    private List<String> mediaUrl;
+    private List<MediaObject> mediaUrl;
     private String postId;
     private String commentId;
     private User byUser;

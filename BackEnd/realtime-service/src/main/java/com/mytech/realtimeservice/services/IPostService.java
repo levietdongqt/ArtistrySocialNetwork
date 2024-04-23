@@ -11,7 +11,7 @@ import java.util.List;
 public interface IPostService {
     public Post create(PostDTO postDTO);
 
-    public List<PostResponse> findAll(int limit, int offset);
+    List<PostResponse> findAll(int limit, int pageIndex, String userId);
     public boolean deleteAll();
     public Post findById(String id);
 
@@ -21,6 +21,12 @@ public interface IPostService {
 
     public Post createPostLike(PostLikeDTO postLikeDTO);
     public Post updateCommentsForPost(String postId);
+    List<PostResponse> findPostByIdInList(List<String> postIds);
+    Boolean deletePost(String postId);
+    Post getPostById(String postId);
+    long getCountPost();
+
+
 
     public List<PostResponse> searchPost(List<String> listIds);
 }
