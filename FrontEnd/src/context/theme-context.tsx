@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, createContext, useContext } from 'react';
 import type { ReactNode, ChangeEvent } from 'react';
-import type { Theme, Accent } from '../models/theme';
+import type { Theme, Accent } from '@models/theme';
 import {useUser} from "./user-context";
 
 type ThemeContext = {
@@ -18,10 +18,7 @@ type ThemeContextProviderProps = {
 };
 
 function setInitialTheme(): Theme{
-  if (typeof window === 'undefined') return 'light';
-  const savedTheme = localStorage.getItem('theme') as Theme | null;
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  return savedTheme ?? (prefersDark ? 'light' : 'dark');
+  return 'light';
 }
 
 function setInitialAccent(): Accent {
@@ -49,8 +46,8 @@ export function ThemeContextProvider({
   useEffect(() => {
     const flipTheme = (theme: Theme): NodeJS.Timeout | undefined => {
       const root = document.documentElement;
-      const targetTheme = theme.toLowerCase() === 'dim' ? 'dark' : theme;
-      if (targetTheme === 'dark') root.classList.add('dark');
+      const targetTheme = theme.toLowerCase() === 'dim' ? 'light' : theme;
+      if (targetTheme === 'light') root.classList.add('dark');
       else root.classList.remove('dark');
       root.style.setProperty('--main-background', `var(--${theme.toLowerCase()}-background)`);
       root.style.setProperty(

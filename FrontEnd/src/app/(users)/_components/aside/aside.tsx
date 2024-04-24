@@ -15,7 +15,6 @@ export function Aside({ children }: AsideProps): JSX.Element | null {
   const search = useSearchParams();
     const isSearching = search.has('q');
     if (width < 1024) return null;
-
     return (
         <aside className='flex w-96 flex-col gap-4 px-4 py-3 pt-1'>
             {isSearching ? (

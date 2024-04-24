@@ -13,16 +13,25 @@ export function getHistorySearch (userId: string): fetcherParams {
     return [`/elasticsearch/${userId}/get-history`, 'GET',null, ServiceDestination.MAIN];
 }
 
-export function getUserSearch (userId :string,keyword: string): fetcherParams {
-    return [`/elasticsearch/${userId}/get-users?q=${keyword}`, 'GET', null, ServiceDestination.MAIN];
+export function deleteHistorySearch (userId: string,body: any): fetcherParams {
+    return [`/elasticsearch/${userId}/delete-history`, 'POST',body, ServiceDestination.MAIN];
 }
 
-export function getPostSearch (keyword: string): fetcherParams {
-    return [`/posts/search-posts?q=${keyword}`, 'GET', null, ServiceDestination.REALTIME];
+export function deleteAllHistorySearch (userId: string): fetcherParams {
+    return [`/elasticsearch/${userId}/delete-all-history`, 'POST',null, ServiceDestination.MAIN];
 }
 
-export function getServiceSearch (keyword: string): fetcherParams {
-    return [`/elasticsearch/get-services?q=${keyword}`, 'GET', null, ServiceDestination.MAIN];
+
+export function getUserSearch (userId :string,body: any[]): fetcherParams {
+    return [`/elasticsearch/${userId}/get-users`, 'POST', body, ServiceDestination.MAIN];
+}
+
+export function getPostSearch (body: any[]): fetcherParams {
+    return [`/posts/search-posts`, 'POST', body, ServiceDestination.REALTIME];
+}
+
+export function getServiceSearch (body: any[]): fetcherParams {
+    return [`/elasticsearch/get-services`, 'POST', body, ServiceDestination.MAIN];
 }
 
 

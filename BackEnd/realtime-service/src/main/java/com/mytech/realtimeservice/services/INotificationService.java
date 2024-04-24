@@ -1,5 +1,7 @@
 package com.mytech.realtimeservice.services;
 
+import com.mytech.realtimeservice.dto.NopeNotificationDTO;
+import com.mytech.realtimeservice.models.NopeNotifications;
 import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.users.User;
 
@@ -11,6 +13,8 @@ public interface INotificationService {
 
     public List<Notification> getNotificationsByDelivory(String userFrom);
 
+    public void updateAllNotifications(List<String> listId);
+
     public Notification changeNotifStatusToRead(String notifID);
 
     public void changeNotifiDelivory(String userFrom);
@@ -20,5 +24,8 @@ public interface INotificationService {
     public int CountNotificationsUnread(String userFrom);
 
     public void sendNotification(User userFrom, User userTo, String notificationType, String message, String link);
+
+    public void saveNopeNotification(NopeNotificationDTO nopeNotificationDTO);
+
 
 }

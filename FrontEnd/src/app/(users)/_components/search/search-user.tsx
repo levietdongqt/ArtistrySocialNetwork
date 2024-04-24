@@ -12,38 +12,48 @@ import { AnimatePresence } from "framer-motion";
 import { Error } from "@components/ui/error";
 import { SearchServiceCard } from "./search-service-card";
 import { useEffect } from "react";
-
-
+import { HeroIcon } from "@components/ui/hero-icon";
+import { EmptyPage } from "@models/search";
 
 
 export default function SearchUser() {
       const {currentUser} = useUser();
-    const {searchText} = useSearch();
+
+    const {searchText,searchArrayUserIds} = useSearch();
     const {
         data: data,
         isLoading: isLoading,
         error: error,
-    } = useSWR(getUserSearch(currentUser?.id as string,searchText)  , fetcherWithToken);
+    } = useSWR(getUserSearch(currentUser?.id as string,searchArrayUserIds.filter((id:string) => id !== currentUser?.id))  , fetcherWithToken);
     return (
         <Layout>
-      <Content style={{ background: "#fff", padding: "20px" }}>
+      <Content style={{ background: "#fff"}}>
         {isLoading ? (
           <Loading className="mt-5" />
         ) : !data.data ? (
           <Error message="Không tìm thấy kết quả" />
         ) : (
-          <>
+          <div>
             <AnimatePresence mode="popLayout">
               {
-            data.data.map((item: any, index : number) => {
+            data?.data.map((item: any, index : number) => {
               return (
+                <div className="mt-3">
                 <SearchUserCard key={index} data={item}/>
+                </div>
               )
             })
-          }
+            }
+            {
+              data?.data.length === 0 &&
+              <div className="text-center">
+              <HeroIcon
+              iconName="UsersIcon" className="mx-auto w-20"></HeroIcon>
+              <p className="text-gray-500 text-lg">{EmptyPage.USER}</p>
+            </div>
+            }
             </AnimatePresence>
-            {/* <LoadMore />*/}
-          </>
+          </div>
         )}
       </Content>
     </Layout>

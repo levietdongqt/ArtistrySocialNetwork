@@ -21,7 +21,7 @@ export async function fetchJSON(
         else if (destination === ServiceDestination.MAIN) {
             fullUrl = fullUrl.concat(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}`).concat(url);
         }else{
-            throw new Error("Invalid service destination!! ")
+            throw new Error("Invalid service destination!!")
         }
         const response = await axios.get(fullUrl);
         console.log("SWR url", fullUrl)
@@ -29,16 +29,15 @@ export async function fetchJSON(
         console.log("SWR response", response)
         return response.data;
     } catch (e) {
-        console.log(e)
+        console.log(params,e)
         throw e;
     }
 }
 
 export type fetcherParams = [url: string, method: Method | 'GET', body: any | null, destination: ServiceDestination];
 
-export async function fetcherWithToken(params: any): Promise<any> {
+export async function fetcherWithToken(params: any, arg?:any): Promise<any> {
     const [url, method, body, destination] = params;
-    console.log("Fetcher with token -  destination: ", destination)
     try {
         var fullUrl = "";
         if (destination === ServiceDestination.REALTIME) {
@@ -48,7 +47,7 @@ export async function fetcherWithToken(params: any): Promise<any> {
             fullUrl = fullUrl.concat(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}`).concat(url);
         }
         const config: AxiosRequestConfig = {
-            data: body,
+            data: body || arg,
             url: fullUrl,
             method: method,
         };

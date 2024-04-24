@@ -1,5 +1,6 @@
 package com.mytech.realtimeservice.dto;
 
+import com.mytech.realtimeservice.models.MediaObject;
 import com.mytech.realtimeservice.models.users.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,6 @@ public class CommentDTO {
     private String content;
     private User byUser;
     private User usersComments;
-    private List<String> mediaUrl;
+    private List<MediaObject> mediaUrl;
     private List<User> userTags = new ArrayList<>();
 }

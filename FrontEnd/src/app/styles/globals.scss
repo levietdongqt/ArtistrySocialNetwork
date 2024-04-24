@@ -91,9 +91,9 @@
 
 @layer base {
   :root {
-    --main-background: var(--dark-background);
-    --main-search-background: var(--dark-search-background);
-    --main-sidebar-background: var(--dark-sidebar-background);
+    --main-background: var(--light-background);
+    --main-search-background: var(--light-search-background);
+    --main-sidebar-background: var(--light-sidebar-background);
     --main-accent: var(--accent-blue);
 
     --dark-background: 0 0 0;

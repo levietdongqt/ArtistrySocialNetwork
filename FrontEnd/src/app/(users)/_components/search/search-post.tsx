@@ -9,21 +9,20 @@ import { Error } from "@components/ui/error";
 import { AnimatePresence } from "framer-motion";
 import {ContentPost} from "../content/content";
 import { useEffect } from "react";
+import { HeroIcon } from "@components/ui/hero-icon";
+import { EmptyPage } from "@models/search";
 
 
 export default function SearchUser() {
-  const {searchText,setDataUserSearch} = useSearch();
+  const {searchText,searchArrayPostIds} = useSearch();
   const {
       data: data,
       isLoading: isLoading,
       error: error,
-  } = useSWR(getPostSearch(searchText), fetcherWithToken);
-  useEffect(() => {
-    setDataUserSearch([data?.data]);
-  },[data])
+  } = useSWR(getPostSearch(searchArrayPostIds), fetcherWithToken);
   return (
       <Layout>
-    <Content style={{ background: "#fff", padding: "20px" }}>
+    <Content style={{ background: "#fff"}}>
       {isLoading ? (
         <Loading className="mt-5" />
       ) : !data.data ? (
@@ -38,8 +37,15 @@ export default function SearchUser() {
               )
             })
           }
+          {
+              data?.data.length === 0 &&
+              <div className="text-center">
+                <HeroIcon
+                iconName="DocumentIcon" className="mx-auto w-20"></HeroIcon>
+                <p className="text-gray-500 text-lg">{EmptyPage.POST}</p>
+              </div>
+            }
           </AnimatePresence>
-          {/* <LoadMore />*/}
         </>
       )}
     </Content>

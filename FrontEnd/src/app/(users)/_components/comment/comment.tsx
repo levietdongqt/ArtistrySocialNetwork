@@ -1,35 +1,24 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import cn from 'clsx';
 import { useModal } from '@lib/hooks/useModal';
 import { delayScroll } from '@lib/utils';
-import { Modal } from '../modal/modal';
-import { ContentReplyModal } from '../modal/content-reply-modal';
 import { ImagePreview } from '../input/image-preview';
 import { UserAvatar } from '../user/user-avatar';
 import { UserTooltip } from '../user/user-tooltip';
 import { UserName } from '../user/user-name';
-import { UserUsername } from '../user/user-username';
+
 
 import type { Variants } from 'framer-motion';
-import {Timestamp} from "firebase/firestore";
-import {ViewContent} from "../view/view-content";
-import React, {useEffect, useMemo, useState} from "react";
+import React from "react";
 import {User} from "@models/user";
-import {Loading} from "@components/ui/loading";
-import {useAuth} from "../../../../context/oauth2-context";
+
 import {Comments} from "@models/comment";
-import {ImagesPreview} from "@models/file";
 import {useUser} from "../../../../context/user-context";
 import {ContentDate} from "../content/content-date";
 import {ContentAction} from "../content/content-action";
 import {ContentStats} from "../content/content-stats";
-import {TweetOption} from "../content/content-option";
-import useSWR, {mutate} from "swr";
-import {likePosts} from "../../../../services/realtime/clientRequest/postClient";
-import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
-import {likeComment} from "../../../../services/realtime/clientRequest/commentClient";
 
 export type CommentProps = Comments & {
   user?: User;
@@ -38,6 +27,7 @@ export type CommentProps = Comments & {
   profile?: User | null;
   parentTweet?: boolean;
   comment?: boolean;
+  replyTags?: boolean;
 };
 
 export const variants: Variants = {
@@ -46,7 +36,7 @@ export const variants: Variants = {
   exit: { opacity: 0, transition: { duration: 0.2 } }
 };
 
-export function Comment(comment: CommentProps) {
+export function Comment(comments: CommentProps) {
   const {
       id,
       content,
@@ -65,73 +55,16 @@ export function Comment(comment: CommentProps) {
     pinned,
     profile,
     parentTweet,
-  } = comment;
+    comment,
+    replyTags
+  } = comments;
   const { currentUser } = useUser();
   const userId = currentUser?.id as string;
-  const [isLike, setIsLike] = useState(commentsLikes?.map((data:any) => data?.id).some(likeID => likeID === userId));
-  const [totalLike, setTotalLike] = useState(commentsLikes?.length as number);
-  const [isComment, setIsComment] = useState({});
-  const [{ currentLikes }, setCurrentStats] =
-      useState({
-        currentLikes: totalLike,
-      });
   const viewTweet = false;
-  const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData;
-
-  const { open, openModal, closeModal } = useModal();
+  const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData as User;
   const { id: parentId, fullName: parentUsername = fullName } = postUserData ?? {};
   const isOwner = userId === postUserData.id;
-  // const {
-  //   id: profileId,
-  //   fullName: profileUsername
-  // } = profile ?? {};
-  const {data,mutate } = useSWR(likeComment(isComment),fetcherWithToken, { revalidateOnFocus: false });
-
-  const handleLikesComment = async (type: 'Like' | 'Unlike'): Promise<void> => {
-    const currentIsLiked = isLike;
-    const nextIsLiked = type === 'Like';
-
-    // Cập nhật trạng thái và số lượt like ngay lập tức cho giao diện người dùng
-    setIsLike(nextIsLiked);
-    setCurrentStats(prevStats => ({
-      ...prevStats,
-      currentLikes: prevStats.currentLikes + (nextIsLiked ? 1 : -1),
-    }));
-
-    try {
-      const dataCommentLike = {
-        commentId: id,
-        byUser: {
-          id: currentUser?.id as string,
-          fullName: currentUser?.fullName as string || null,
-          avatar: currentUser?.avatar as string || null,
-          coverImage: currentUser?.coverImage as string || null,
-          bio: currentUser?.bio as string || null,
-          verified: false
-        }
-      };
-      if (currentIsLiked !== nextIsLiked) {
-        setIsComment(dataCommentLike);
-        await mutate(isComment);
-      }
-    } catch (error) {
-      setIsLike(currentIsLiked);
-      setCurrentStats(prevStats => ({
-        ...prevStats,
-        currentLikes: prevStats.currentLikes - (nextIsLiked ? 1 : -1),
-      }));
-      console.error('Failed to update like status:', error);
-    }
-  };
-  useEffect(() => {
-    setCurrentStats({
-      currentLikes: totalLikes,
-    });
-  }, [totalLikes]);
-  const likeMove = useMemo(
-      () => (totalLikes > currentLikes ? -25 : 25),
-      [totalLikes]
-  );
+  const { open, openModal, closeModal } = useModal();
   return (
     <motion.article
       {...(!modal ? { ...variants, layout: 'position' } : {})}
@@ -151,7 +84,7 @@ export function Comment(comment: CommentProps) {
       >
         <div className='grid grid-cols-[auto,1fr] gap-x-3 gap-y-1'>
           <div className='flex flex-col items-center gap-2'>
-            <UserTooltip avatarCheck modal={modal} {...postUserData} >
+            <UserTooltip  avatarCheck  modal={modal} {...postUserData} comment >
               <UserAvatar src={avatar} alt={fullName ?? 'Customer 1'} username={fullName ?? 'Customer 1'} />
             </UserTooltip>
             {parentTweet && (
@@ -175,12 +108,13 @@ export function Comment(comment: CommentProps) {
                 {!modal && (
                     <ContentAction
                         isOwner={isOwner}
+                        commentId={id}
                         ownerId={ownerId}
                         postId={postId}
-                        parentId={parentId}
                         username={fullName}
                         hasImages={!!mediaUrl}
                         createdBy={sentDate}
+                        comment
                     />
                 )}
               </div>
@@ -196,32 +130,28 @@ export function Comment(comment: CommentProps) {
                       previewCount={mediaUrl?.length}
                   />
               )}
-              <div className={'flex items-center'}>
-                <TweetOption
-                    className={cn(
-                        'hover:text-accent-pink focus-visible:text-accent-pink',
-                        isLike && 'text-accent-pink [&>i>svg]:fill-accent-pink'
-                    )}
-                    iconClassName='group-hover:bg-accent-pink/10 group-active:bg-accent-pink/20
-                         group-focus-visible:bg-accent-pink/10 group-focus-visible:ring-accent-pink/80'
-                    tip={isLike ? 'Unlike' : 'Like'}
-                    move={likeMove}
-                    stats={currentLikes}
-                    iconName='HeartIcon'
-                    viewTweet={viewTweet}
-                    onClick={() => handleLikesComment(
-                        isLike ? 'Unlike' : 'Like'
-                    )}
+                <ContentStats
+                    commentsId={id}
+                    viewTweet={false}
+                    avatar={currentUser?.avatar as string}
+                    username={currentUser?.fullName as string}
+                    comment={comment}
+                    userId={userId}
+                    bio={currentUser?.bio as string}
+                    verified={currentUser?.verified}
+                    coverImage={currentUser?.coverImage as string}
+                    isOwner={!isOwner}
+                    postId={postId}
+                    userPostLikes={commentsLikes}
+                    tagUserPosts={tagUserComments}
+                    totalComments={totalReply}
+                    openModal={openModal}
+                    replyTags={replyTags}
                 />
-                <button className='ml-5 text-light-primary dark:text-dark-secondary hover:text-accent-blue hover:dark:text-accent-blue hover:underline'>
-                  phản hồi
-                </button>
-              </div>
             </div>
           </div>
         </div>
       </div>
-
     </motion.article>
   );
 }

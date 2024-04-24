@@ -1,22 +1,59 @@
-"use client"
+"use client";
 import { Col, Row } from "antd";
 import { Typography } from "antd";
-import { Popover, Button } from 'antd';
+import { Popover, Button } from "antd";
 import { HeroIcon } from "@components/ui/hero-icon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { NotificationTab } from "@models/notifications";
+import { useNotification } from "context/notification-context";
+import { CheckOutlined, PlusOutlined } from "@ant-design/icons";
+import useSWR from "swr";
+import { updateAllNotification } from "services/main/clientRequest/notificationsClient";
+import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
+import Link from "next/link";
 const { Title } = Typography;
 
 export default function NotificationHeader() {
+  const { updatedNotifications,setUpdatedNotifications,setReRenderNotifications} = useNotification();
+  const [shouldUpdate,setShouldUpdate] = useState(false);
+  const {
+} = useSWR(shouldUpdate ? updateAllNotification(updatedNotifications): null, fetcherWithToken,{
+    revalidateOnFocus: false,
+});
+
+  const handleUpdateAll = () => {
+    setShouldUpdate(true);
+  }
+
+  useEffect(()=>{
+    if(shouldUpdate){ 
+      setUpdatedNotifications((prev) => []);
+      setShouldUpdate(false);
+      setReRenderNotifications((prev) => true)
+    }
+  },[shouldUpdate])
+
+  const content = (
+    <Button className="border-none" onClick={handleUpdateAll}> <CheckOutlined />Tích tất cả là đã đọc</Button>
+  )
   return (
     <Row className="flex justify-between mt-3 font-semibold">
       <Col span={8}>
         <Title level={3} className="ml-4">
-          Thông báo
+          {NotificationTab.TITLE}
         </Title>
       </Col>
       <Col span={8}>
         <div className="flex justify-end mr-4">
+          <Popover
+            content={content}
+            trigger="click"
+            placement="bottom"
+          >
+            <Button>
             <HeroIcon iconName="Cog8ToothIcon" />
+            </Button>
+          </Popover>
         </div>
       </Col>
     </Row>

@@ -7,8 +7,7 @@ import type { IconName } from '@components/ui/hero-icon';
 
 type ContentOption = {
   tip: string;
-  move?: number;
-  stats?: number;
+  name?: string;
   iconName: IconName;
   disabled?: boolean;
   className: string;
@@ -19,8 +18,7 @@ type ContentOption = {
 
 export function TweetOption({
   tip,
-  move,
-  stats,
+                              name,
   disabled,
   iconName,
   className,
@@ -51,7 +49,7 @@ export function TweetOption({
         <ToolTip tip={tip} />
       </i>
       {!viewTweet && (
-        <NumberStats move={move as number} stats={stats as number} />
+        <p>{name}</p>
       )}
     </button>
   );

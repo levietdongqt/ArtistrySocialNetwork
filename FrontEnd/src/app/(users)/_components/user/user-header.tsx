@@ -2,7 +2,7 @@
 import { useParams,usePathname } from 'next/navigation';
 import { doc } from 'firebase/firestore';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useDocument } from '@lib/hooks/useDocument';
+
 import { useUser } from '../../../../context/user-context';
 import { isPlural } from '@lib/utils';
 import { UserName } from './user-name';

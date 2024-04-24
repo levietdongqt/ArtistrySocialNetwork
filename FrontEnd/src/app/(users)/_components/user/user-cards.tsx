@@ -5,7 +5,7 @@ import { StatsEmpty } from '../content/stats-empty';
 import { Loading } from '@components/ui/loading';
 import { variants } from '../user/user-header';
 import { UserCard } from './user-card';
-import type { StatsType } from '../view/view-tweet-stats';
+import type { StatsType } from '../view/view-content-stats';
 import type { StatsEmptyProps } from '../content/stats-empty';
 import {User} from "@models/user";
 

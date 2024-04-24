@@ -1,4 +1,4 @@
-
+'use client'
 import { Aside } from '../aside/aside';
 import { AsideTrends } from '../aside/aside-trends';
 import { Suggestions } from '../aside/suggestions';
@@ -8,6 +8,8 @@ import {sleep} from "@lib/utils";
 import {getPostsCount} from "../../../../services/realtime/clientRequest/postClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import useSWR from "swr";
+import {useEffect, useState} from "react";
+import {useRouter} from "next/router";
 
 export type LayoutProps = {
   children: ReactNode;

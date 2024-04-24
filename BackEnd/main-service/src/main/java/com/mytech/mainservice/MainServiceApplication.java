@@ -46,6 +46,7 @@ public class MainServiceApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+<<<<<<< HEAD
 		userELSRepository.deleteAll();
 		serviceELSRepository.deleteAll();
 		List<String> listsRoles = List.of("Nhà cung cấp","người dùng");
@@ -113,21 +114,9 @@ public class MainServiceApplication implements CommandLineRunner {
 				.name("Chụp lẻ")
 				.description("Đây là bộ ảnh chụp lẻ. Ai cần liên hệ 0903443211")
 				.build();
+=======
+>>>>>>> main
 
-		serviceELSRepository.save(serviceELS);
-		serviceELSRepository.save(serviceELS2);
-		serviceELSRepository.save(serviceELS3);
-
-		PostELS postELS = PostELS.builder().id("d3cc9af4-9d38-44ee-8127-6efa4436fd7a")
-				.content("cần tìm studio giá rẻ")
-				.fullName("Huy Trần")
-				.build();
-		PostELS postELS1 = PostELS.builder().id("d3cc9af4-9d38-44ee-8127-6efa4436fdna")
-				.content("cần thuê nhiếp ảnh")
-				.fullName("Hải Yến")
-				.build();
-		elsService.savePostELS(postELS1);
-		elsService.savePostELS(postELS);
 
 	}
 }

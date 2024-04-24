@@ -16,6 +16,7 @@ public interface ICommentsService {
     public Comments updateDislikeForComment(String commentId,User userLike);
 
     public Comments createCommentLike(CommentLikeDTO commentLikeDTO);
-
+    List<Comments> getCommentsByPostId(String postId);
+    Boolean deleteCommentById(String id);
 
 }

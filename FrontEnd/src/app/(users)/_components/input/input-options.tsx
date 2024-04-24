@@ -1,6 +1,6 @@
 'use client'
 import type {ChangeEvent, ClipboardEvent} from 'react';
-import {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {motion} from 'framer-motion';
 import {Button} from '@components/ui/button';
 import type {IconName} from '@components/ui/hero-icon';
@@ -10,7 +10,9 @@ import {variants} from './input';
 import {ProgressBar} from './progress-bar';
 import EmojiPicker, {EmojiStyle, Theme} from 'emoji-picker-react';
 import {CustomIcon} from '@components/ui/custom-icon';
-
+import cn from "clsx";
+import {Popper} from "react-popper";
+import {Popover} from "antd";
 type Options = {
   name: string;
   iconName: IconName;
@@ -76,7 +78,6 @@ export function InputOptions({
 }: InputOptionsProps): JSX.Element {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-
   const onClick = (): void => inputFileRef.current?.click();
 
   let filteredOptions = options;
@@ -112,6 +113,16 @@ export function InputOptions({
       setShowEmojiPicker((prev) => !prev);
     }
   };
+  const content = (
+            <EmojiPicker
+                theme={Theme.LIGHT}
+                emojiStyle={EmojiStyle.TWITTER}
+                width={320}
+                height={400}
+                lazyLoadEmojis={true}
+                onEmojiClick={(emojiObject) => handleEmojiClick(emojiObject)}
+            />
+  )
   return (
     <motion.div className='flex justify-between' {...variants}>
       <div
@@ -126,36 +137,26 @@ export function InputOptions({
           ref={inputFileRef}
           multiple
         />
-        {filteredOptions.map(({ name, iconName, disabled },index) => (
-          <Button
-            className={`accent-tab accent-bg-tab group relative rounded-full p-2
+        <div>
+          {filteredOptions.map(({ name, iconName, disabled },index) => (<>
+                <Popover trigger="click" content={name === 'Emoji' && content} ref={emojiPickerRef}>
+                  <Button
+                      className={`accent-tab accent-bg-tab group relative rounded-full p-2
               hover:bg-main-accent/10 active:bg-main-accent/20 ${showEmojiPicker ? 'cursor-default' : 'cursor-pointer'}`}
+                      onClick={(event) => handleOptionClick(event, index)}
+                      disabled={disabled}
+                      key={name}
+                  >
+                    <HeroIcon className='h-5 w-5' iconName={iconName} />
+                    <ToolTip tip={name} modal={modal} />
+                  </Button>
+                </Popover>
+          </>
+          ))}
+        </div>
 
-            onClick={(event) => handleOptionClick(event, index)}
-            disabled={disabled}
-            key={name}
-          >
-            <HeroIcon className='h-5 w-5' iconName={iconName} />
-            <ToolTip tip={name} modal={modal} />
-          </Button>
-        ))}
-        {showEmojiPicker && (
-            <motion.div ref={emojiPickerRef} className="absolute z-50 top-[194px] transform:translate-x-1 transition duration-300 ease-in-out}">
-              <CustomIcon iconName={"ArrowUpIcon"} className="absolute h-5 w-5 right-[184px] top-[-11px] z-[10]" />
-              <div className={'flex-shrink-1 filter:drop-shadow(rgb(51, 54, 57) 1px -1px 1px) '}>
-                <EmojiPicker
-                    theme={Theme.DARK}
-                    emojiStyle={EmojiStyle.TWITTER}
-                    width={320}
-                    height={400}
-                    lazyLoadEmojis={true}
-                    onEmojiClick={(emojiObject) => handleEmojiClick(emojiObject)}
-                />
-              </div>
-            </motion.div>
-        )}
       </div>
-
+      <div id="emoji-picker-root"></div>
       <div className='flex items-center gap-4'>
         <motion.div
           className='flex items-center gap-4'

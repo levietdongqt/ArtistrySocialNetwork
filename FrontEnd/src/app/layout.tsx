@@ -32,7 +32,6 @@ export default function RootLayout({
             <ChatContextProvider>
                 <NotificationContextProvider>
                     <SocketProvider>
-
                         <AuthContextProvider>
                             <SearchContextProvider>
                                 <ThemeContextProvider>{children}</ThemeContextProvider>

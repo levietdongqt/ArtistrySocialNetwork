@@ -1,6 +1,7 @@
 package com.mytech.realtimeservice.controller;
 
 
+import com.mytech.realtimeservice.dto.NopeNotificationDTO;
 import com.mytech.realtimeservice.dto.NotificationDTO;
 import com.mytech.realtimeservice.dto.ResponseObject;
 import com.mytech.realtimeservice.models.Notification;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +29,7 @@ public class NotificationController {
     private NotificationService notificationService;
 
 
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
     @GetMapping("/{userId}")
     public ResponseEntity<?> getNotifications(@PathVariable String userId) {
         List<Notification> notifications = notificationService.getNotificationsByUserFromUserIdOrderByCreatedDateDesc(userId);
@@ -40,6 +43,7 @@ public class NotificationController {
         );
     }
 
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
     @GetMapping("/{userId}/all")
     public ResponseEntity<?> getAllNotifications(@PathVariable String userId) {
         List<Notification> notifications = notificationService.getNotificationsByUserFromUserId(userId);
@@ -67,6 +71,19 @@ public class NotificationController {
         );
     }
 
+    @PostMapping("/update-all")
+    public ResponseEntity<?> changeAllNotificationsStatusToRead(@RequestBody List<String> listId) {
+        notificationService.updateAllNotifications(listId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Updated status ok")
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
     @GetMapping("/{userId}/count-notifications")
     public ResponseEntity<?> countDeliveryNotifications(@PathVariable String userId) {
         int count = notificationService.CountNotificationsUnread(userId);
@@ -79,8 +96,11 @@ public class NotificationController {
         );
     }
 
+
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
     @PostMapping("/{userId}/change-delivery")
-    public ResponseEntity changeDeliveryNotifications(@PathVariable String userId) {
+    public ResponseEntity changeAllDeliveryNotifications(@PathVariable String userId) {
         log.info("Notification changed");
         notificationService.changeNotifiDelivory(userId);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -97,6 +117,17 @@ public class NotificationController {
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
                         .message("Updated delivery notifications ok")
+                        .build());
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#nopeNotificationDTO.getUserId()) && hasRole('USER')")
+    @PostMapping("/nope-notifications")
+    public ResponseEntity<?> saveNopeNotification(@RequestBody NopeNotificationDTO nopeNotificationDTO) {
+        notificationService.saveNopeNotification(nopeNotificationDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("saved successfully")
                         .build());
     }
 }

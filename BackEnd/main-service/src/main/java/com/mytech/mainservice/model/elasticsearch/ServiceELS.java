@@ -22,13 +22,6 @@ public class ServiceELS {
     private String name;
     private String description;
     private String priceType;
-    private float duration;
-    private float restTime;
-    private List<String> imageUrls;
-    private String createBy;
-    private LocalDateTime createDate;
-    private List<ExtraServiceDTO> extraServiceDTOs;
-    private PromotionDTO promotionDTO;
-    private UserDTO provider;
+    private double price;
     private final String type = "service";
 }

@@ -18,7 +18,9 @@ export function MyMessageSeparator({timeDifference, currentTime}: MyMessageSepar
     if (!timeDifference || timeDifference >= 60) {
         if(dayBeforeNow < 7) {
             return (
-                <MessageSeparator className={"text-xs"}
+                <MessageSeparator style={{
+                    fontSize: "12px"
+                }}
                                   content={currentTime.toLocaleDateString('vi-VN', {
                                       weekday: 'narrow',
                                       hour: '2-digit',

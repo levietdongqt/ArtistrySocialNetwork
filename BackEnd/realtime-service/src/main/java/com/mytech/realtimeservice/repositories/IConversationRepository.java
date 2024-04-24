@@ -1,3 +1,4 @@
+
 package com.mytech.realtimeservice.repositories;
 
 import com.mytech.realtimeservice.enums.ConversationType;
@@ -16,3 +17,4 @@ public interface IConversationRepository extends MongoRepository<Conversation, S
     @Query("{'members.id': {$all: ?0}, 'type': ?1}")
     List<Conversation> findConversationsByMemberIdsAAndType(List<String> members, ConversationType type);
 }
+

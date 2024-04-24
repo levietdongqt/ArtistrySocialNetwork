@@ -9,6 +9,7 @@ export type ConversationDto = {
     updatedAt?: Date;
     createAt?: Date;
     messages: MessageDto[];
+    type: "PRIVATE" | "GROUP"
 
 }
 export type ConversationMember = {
@@ -16,5 +17,6 @@ export type ConversationMember = {
     nickname: string,
     fullName: string,
     avatar: string,
-    coverImage: string
+    coverImage: string,
+    notSeen : boolean,
 }
