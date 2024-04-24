@@ -1,6 +1,8 @@
+import {User} from "@models/user";
+
 export  type ExtraService = {
-    id: number;
-    userId : number;
+    id: number|null;
+    provider : User|null;
     name: string;
     price : number;
     priceType: string;
@@ -10,5 +12,6 @@ export  type ExtraService = {
     description: string;
     createDate: Date;
     updateDate: Date;
+    promotionId: number|null ;
     status: boolean;
 }

@@ -1,18 +1,18 @@
-import {UserLayout} from "../../../_components/layout/common-layout";
-import {UserDataLayout} from "../../../_components/layout/user-data-layout";
-import {UserHomeLayout} from "../../../_components/layout/user-home-layout";
 import ContainerUser from "../../../_components/container/ContainerUser";
+import React, { ReactNode } from 'react';
+import {UserHomeLayout} from "../../../_components/layout/user-home-layout";
 
-
-export default function UserPost() {
-  return (
-          <UserLayout>
-            <UserDataLayout>
-              <UserHomeLayout>
-                <ContainerUser/>
-              </UserHomeLayout>
-            </UserDataLayout>
-          </UserLayout>
-  );
+interface UserPostProps {
+    children: ReactNode;
 }
 
+const UserPostComponent = ({children}: UserPostProps) => {
+    return (
+        <UserHomeLayout>
+            <ContainerUser/>
+            {children}
+        </UserHomeLayout>
+    );
+}
+
+export default UserPostComponent;

@@ -1,45 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import useSWR from 'swr';
 import axios from 'axios';
 import Rating from "./rating";
-import {Review} from "@models/review";
 import ReviewCard from "./reviewcard";
+import {useUser} from "../../../../../../context/user-context";
+import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 
+interface ReviewComponentProps {
+    id: string;
+}
 
-// ... (định nghĩa của các type JsonObject, Review và ReviewDetails từ dữ liệu của bạn)
-
-const ReviewComponent: React.FC = () => {
-    const [reviews, setReviews] = useState<Review[]>([]);
-    const [error, setError] = useState<string>('');
-
-    useEffect(() => {
-        const fetchReviews = async () => {
-            try {
-                const response = await axios.get('http://localhost:5000/reviews');
-                setReviews(response.data);
-            } catch (error) {
-                setError(error instanceof Error ? error.message : String(error));
-            }
-        };
-
-        fetchReviews();
-    }, []);
-
-    // Tính toán overall rating
+const ReviewComponent: React.FC<ReviewComponentProps> = ({ id }) => {
+    const { data: reviews, error } = useSWR(`/api/reviews?id=${id}`, fetcherWithToken)
+    console.log('Review',reviews?.data)
 
     return (
         <>
             <div className="review-component">
-                {error && <p className="text-red-500">{error}</p>}
-                {reviews.length > 0 ? (
+                {reviews?.data.length > 0 ? (
                     <Rating reviews={reviews}/>
                 ) : (
                     <p>No reviews to display</p>
                 )}
-
-
             </div>
             <div className="container mx-auto p-4 space-y-4">
-                {reviews.map((review) => (
+                {reviews?.data.map((review: any) => (
                     <ReviewCard key={review.id} review={review}/>
                 ))}
             </div>

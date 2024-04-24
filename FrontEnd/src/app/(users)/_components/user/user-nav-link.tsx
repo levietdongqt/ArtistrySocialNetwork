@@ -11,8 +11,7 @@ export function UserNavLink({ name, path }: UserNavLinkProps): JSX.Element {
   const {
     ID
   } = useParams();
-  console.log("showid param",ID);
-  const asPath = usePathname();
+   const asPath = usePathname();
 
   const userPath = `/profile/${ID as string}${path ? `/${path}` : ''}`;
 

@@ -38,9 +38,6 @@ export function UserDetails({
 }: UserDetailsProps): JSX.Element {
 
   const createDateTimestamp = Timestamp.fromDate(new Date(createDate));
-  console.log(
-      "test",createDate,'id', fullName
-  )
   const detailIcons: Readonly<DetailIcon[]> = [
     // [ location, 'MapPinIcon'],
     // [website, 'LinkIcon'],

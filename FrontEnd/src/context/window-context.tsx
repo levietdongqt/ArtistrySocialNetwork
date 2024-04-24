@@ -41,7 +41,7 @@ export function WindowContextProvider({
     ...windowSize,
     isMobile: windowSize.width < 500
   };
-  console.log("show,",value);
+
   return <WindowContext.Provider value={value}>{children}</WindowContext.Provider>;
 }
 export function useWindow(): WindowContext {

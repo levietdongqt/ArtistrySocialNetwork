@@ -17,3 +17,7 @@ export async function updateUser(data: string): Promise<any> {
     const response = await axiosWithToken(config);
     return response.data.data;
 }
+
+export function getAllReviewById (userId: string): fetcherParams {
+    return [`review/get-all/${userId}`, 'GET', null, ServiceDestination.MAIN];
+}

@@ -9,25 +9,11 @@ import {ServiceMini} from "../../../../services/[id]/service-mini";
 
 
 export default function UserMedia(): JSX.Element {
-  /*const { user } = useUser();*/
 
-  /*const { id, name, username } = user ?? {};*/
-
-  /*const { data, loading } = useCollection(
-    query(
-      tweetsCollection,
-      where('createdBy', '==', id),
-      where('images', '!=', null)
-    ),
-    { includeUser: true, allowNull: true }
-  );*/
-
-  /*const sortedTweets = mergeData(true, data);*/
     const loading = false;
   return (
-              <UserLayout>
-                  <UserDataLayout>
-                      <UserHomeLayout>
+
+
                           <section>
                               <SEO
                                   title={`Media Tweets by ${'name'} (@${
@@ -51,8 +37,6 @@ export default function UserMedia(): JSX.Element {
                                   </AnimatePresence>
                               )}
                           </section>
-                      </UserHomeLayout>
-                  </UserDataLayout>
-              </UserLayout>
+
   );
 }

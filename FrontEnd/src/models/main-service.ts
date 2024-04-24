@@ -1,8 +1,9 @@
 import {User} from "@models/user";
+import {Promotion} from "@models/promotion";
 
 export  type MainService = {
-id: number;
-provider : User;
+id: number|null;
+provider : User|null;
 name: string;
 price : number;
 priceType: string;
@@ -12,5 +13,6 @@ imageUrl: string[];
 description: string;
 createDate: Date;
 updateDate: Date;
+promotionId: number|null ;
 status: boolean;
 }

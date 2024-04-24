@@ -24,6 +24,9 @@ import {User} from "@models/user";
 import {SidebarLink} from "../sidebar/sidebar-link";
 import {EditOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import Link from "next/link";
+import { Dropdown, Menu } from 'antd';
+
+
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
     const router = useRouter();
 
@@ -51,8 +54,44 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
     /* const { id: userId } = user ?? {};*/
 
     const isOwner = response?.data?.id === currentUser?.id;
-    console.log('show param id:', ID, ' response?.data', response?.data?.id)
-    return (
+
+    const menu = (
+        <Menu>
+            <Menu.Item>
+                <Link href="/profile/edit/user">
+
+                    <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
+                    Đổi mật khẩu
+
+                </Link>
+            </Menu.Item>
+            <Menu.Item>
+                <Link href="/profile/edit/user">
+
+                        <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
+                        Sửa thông tin
+
+                </Link>
+            </Menu.Item>
+            <Menu.Item>
+                <Link href="/profile/create/main-service">
+
+                        <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5" />
+                        Tạo Dịch vụ chính
+
+                </Link>
+            </Menu.Item>
+            <Menu.Item>
+                <Link href="/profile/create/extra-service">
+
+                    <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5" />
+                    Tạo Dịch vụ phụ
+
+                </Link>
+            </Menu.Item>
+        </Menu>
+    );
+       return (
         <>
             {response?.data && (
                 <SEO
@@ -86,33 +125,11 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                             <div className='flex justify-between'>
                                 <UserHomeAvatar profileData={profileData}/>
                                 {isOwner ? (
-                                    <div
-                                        className="flex flex-row items-center justify-start gap-4"> {/* Cập nhật điều này */}
-                                        <Link href="/profile/edit">
-                                            <button
-                                                className="flex items-center justify-center gap-2 p-1 text-lg transition
-               duration-200 ease-in-out hover:bg-light-primary/10 focus-visible:ring-2
-               focus-visible:ring-[#878a8c] dark:hover:bg-dark-primary/10
-               dark:focus-visible:ring-white sm:p-2 sm:text-lg md:p-2.5 md:text-xl
-               hover:rounded-md"
-                                            >
-                                                <EditOutlined className="h-4 w-4 md:h-5 md:w-5"/>
-                                                Sửa thông tin
-                                            </button>
-                                        </Link>
-                                        <Link href="/profile/createservice">
-                                            <button
-                                                className="flex items-center justify-center gap-2 p-1 text-lg transition
-               duration-200 ease-in-out hover:bg-light-primary/10 focus-visible:ring-2
-               focus-visible:ring-[#878a8c] dark:hover:bg-dark-primary/10
-               dark:focus-visible:ring-white sm:p-2 sm:text-lg md:p-2.5 md:text-xl
-               hover:rounded-md"
-                                            >
-                                                <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5"/>
-                                                Tạo Dịch vụ
-                                            </button>
-                                        </Link>
-                                    </div>
+                                        <div className="text-right">
+                                            <Dropdown.Button overlay={menu} placement="bottomRight" trigger={['click']}>
+                                                Tùy chọn
+                                            </Dropdown.Button>
+                                        </div>
                                 ) : (
                                     <div className='flex gap-2 self-start'>
                                         <UserShare username={response?.data?.fullName}/>
