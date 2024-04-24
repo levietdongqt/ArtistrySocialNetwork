@@ -46,7 +46,6 @@ public class MainServiceApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-<<<<<<< HEAD
 		userELSRepository.deleteAll();
 		serviceELSRepository.deleteAll();
 		List<String> listsRoles = List.of("Nhà cung cấp","người dùng");
@@ -114,8 +113,7 @@ public class MainServiceApplication implements CommandLineRunner {
 				.name("Chụp lẻ")
 				.description("Đây là bộ ảnh chụp lẻ. Ai cần liên hệ 0903443211")
 				.build();
-=======
->>>>>>> main
+
 
 
 	}
