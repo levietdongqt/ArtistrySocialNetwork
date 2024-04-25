@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { isFollowing } from "services/main/clientRequest/friendsClient";
 import useSWR from "swr";
 
+
 type UserFollowingProps = {
   userTargetId: string;
   hovered: boolean;

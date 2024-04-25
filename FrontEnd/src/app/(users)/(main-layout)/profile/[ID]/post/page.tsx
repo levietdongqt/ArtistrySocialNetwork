@@ -1,34 +1,19 @@
 'use client'
 import { AnimatePresence } from 'framer-motion';
-import { UserLayout, ProtectedLayout } from '../../_components/layout/common-layout';
-import { MainLayout } from '../../_components/layout/main-layout';
-import { SEO } from '../../_components/common/seo';
-import { UserDataLayout } from '../../_components/layout/user-data-layout';
-import { UserHomeLayout } from '../../_components/layout/user-home-layout';
-import { Content } from '../../_components/content/content';
-import { Loading } from '@components/ui/loading';
-import { StatsEmpty } from '../../_components/content/stats-empty';
+import {UserDataLayout} from "../../../../_components/layout/user-data-layout";
+import {UserLayout} from "../../../../_components/layout/common-layout";
+import {UserHomeLayout} from "../../../../_components/layout/user-home-layout";
+import {SEO} from "../../../../_components/common/seo";
+import {Loading} from "@components/ui/loading";
+import {ServiceMini} from "../../../../services/[id]/service-mini";
+
 
 export default function UserMedia(): JSX.Element {
-  /*const { user } = useUser();*/
 
-  /*const { id, name, username } = user ?? {};*/
-
-  /*const { data, loading } = useCollection(
-    query(
-      tweetsCollection,
-      where('createdBy', '==', id),
-      where('images', '!=', null)
-    ),
-    { includeUser: true, allowNull: true }
-  );*/
-
-  /*const sortedTweets = mergeData(true, data);*/
     const loading = false;
   return (
-              <UserLayout>
-                  <UserDataLayout>
-                      <UserHomeLayout>
+
+
                           <section>
                               <SEO
                                   title={`Media Tweets by ${'name'} (@${
@@ -43,16 +28,15 @@ export default function UserMedia(): JSX.Element {
                                       description='Once they do, those Tweets will show up here.'
                                       imageData={{ src: '/assets/no-media.png', alt: 'No media' }}
                                   />
-                              ) */: (
+                              ) */
+                                  : (
                                   <AnimatePresence mode='popLayout'>
                                       {/*{sortedTweets.map((content) => (*/}
-                                      <Content  />
+                                      <ServiceMini  />
                                       {/*))}*/}
                                   </AnimatePresence>
                               )}
                           </section>
-                      </UserHomeLayout>
-                  </UserDataLayout>
-              </UserLayout>
+
   );
 }

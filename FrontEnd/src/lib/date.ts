@@ -73,6 +73,7 @@ function getJoinedTime(date: Date): string {
     month: 'long',
     year: 'numeric'
   }).format(date);
+
 }
 
 function getShortTime(date: Date): string {
@@ -81,7 +82,6 @@ function getShortTime(date: Date): string {
     : isYesterday(date)
     ? 'yesterday'
     : null;
-
   return isNear
     ? `${isNear === 'today' ? 'Today' : 'Yesterday'} at ${date
         .toLocaleTimeString('en-gb')

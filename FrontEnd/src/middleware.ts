@@ -45,6 +45,8 @@ export const config = {
         '/home',
         '/',
         '/login',
+        '/profile/edit',
+        // '/profile/create/main-service',
         '/notifications',
         // '/login',
         // '/testClient',

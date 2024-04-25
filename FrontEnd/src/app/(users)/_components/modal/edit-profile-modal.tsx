@@ -8,10 +8,12 @@ import { ToolTip } from '@components/ui/tooltip';
 import type { ReactNode, ChangeEvent } from 'react';
 import type { User } from '../../../../models/user';
 
+
+
 type EditProfileModalProps = Pick<
   User,
-  'name' | 'photoURL' | 'coverPhotoURL'
-> & {
+  'fullName' | 'avatar' | 'coverImage'
+> & {}&{
   loading: boolean;
   children: ReactNode;
   inputNameError: string;
@@ -25,11 +27,11 @@ type EditProfileModalProps = Pick<
 };
 
 export function EditProfileModal({
-  name,
+                                   fullName,
   loading,
-  photoURL,
+  avatar,
   children,
-  coverPhotoURL,
+  coverImage,
   inputNameError,
   editImage,
   closeModal,
@@ -48,14 +50,7 @@ export function EditProfileModal({
   return (
     <>
       <MainHeader
-        useActionButton
-        disableSticky
-        iconName='XMarkIcon'
-        tip='Close'
-        className='absolute flex w-full items-center gap-6 rounded-tl-2xl'
-        title='Edit profile'
-        action={closeModal}
-      >
+          >
         <div className='ml-auto flex items-center gap-3'>
           <Button
             className='dark-bg-tab group relative p-2 hover:bg-light-primary/10
@@ -94,14 +89,14 @@ export function EditProfileModal({
             ref={coverInputFileRef}
             onChange={editImage('cover')}
           />
-          {coverPhotoURL ? (
+          {coverImage ? (
             <NextImage
               useSkeleton
               className='relative h-full'
               imgClassName='object-cover transition group-hover:brightness-75 duration-200
                             group-focus-within:brightness-75'
-              src={coverPhotoURL}
-              alt={name}
+              src={coverImage}
+              alt={fullName}
               layout='fill'
             />
           ) : (
@@ -119,7 +114,7 @@ export function EditProfileModal({
               />
               <ToolTip groupInner tip='Add photo' />
             </Button>
-            {coverPhotoURL && (
+            {coverImage && (
               <Button
                 className='group/inner relative bg-light-primary/60 p-2 hover:bg-image-preview-hover/50
                            focus-visible:bg-image-preview-hover/50'
@@ -152,8 +147,8 @@ export function EditProfileModal({
                 className='h-full w-full bg-main-background inner:!m-1 inner:rounded-full'
                 imgClassName='rounded-full transition group-hover:brightness-75 duration-200
                               group-focus-within:brightness-75'
-                src={photoURL}
-                alt={name}
+                src={avatar}
+                alt={fullName}
                 layout='fill'
               />
               <Button

@@ -11,9 +11,9 @@ export function MainLayout({ children }: LayoutProps) {
     <div className='flex w-full justify-center gap-0 lg:gap-4'>
       <WindowContextProvider>
         <Sidebar />
-        <SWRConfig value={{ fetcher: fetchJSON,refreshInterval: 3000,revalidateOnFocus: false,revalidateOnReconnect: false,revalidateIfStale: false}}>
+        {/* <SWRConfig value={{ fetcher: fetchJSON}}> */}
             {children}
-        </SWRConfig>
+        {/* </SWRConfig> */}
       </WindowContextProvider>
     </div>
   );

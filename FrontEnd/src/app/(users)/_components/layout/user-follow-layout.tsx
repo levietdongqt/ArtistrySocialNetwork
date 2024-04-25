@@ -7,8 +7,8 @@ import { variants } from '../user/user-header';
 import type { LayoutProps } from './common-layout';
 
 export function UserFollowLayout({ children }: LayoutProps): JSX.Element {
-  const { user: userData, loading } = useUser();
-
+  const { currentUser: userData  } = useUser();
+  const loading = false;
   return (
     <>
       {!userData ? (

@@ -5,40 +5,43 @@ import { UserName } from './user-name';
 import { UserFollowing } from './user-following';
 import { UserFollowStats } from './user-follow-stats';
 import type { IconName } from '@components/ui/hero-icon';
-import type { User } from '../../../../models/user';
+import {User} from "@models/user";
+import {Timestamp} from "firebase/firestore";
+
 
 type UserDetailsProps = Pick<
   User,
   | 'id'
   | 'bio'
-  | 'name'
-  | 'website'
-  | 'username'
+  | 'fullName'
   | 'location'
   | 'verified'
-  | 'createdAt'
-  | 'following'
-  | 'followers'
->;
+  | 'avatar'
+  | 'coverImage'
+  | 'createDate'
+>& {
+  follow?: boolean;
+  following?: boolean;
+};
 
 type DetailIcon = [string | null, IconName];
 
 export function UserDetails({
   id,
   bio,
-  name,
-  website,
-  username,
+  fullName,
   location,
   verified,
-  createdAt,
-  following,
-  followers
+    avatar,
+    coverImage,
+    createDate
 }: UserDetailsProps): JSX.Element {
+
+  const createDateTimestamp = Timestamp.fromDate(new Date(createDate));
   const detailIcons: Readonly<DetailIcon[]> = [
-    [location, 'MapPinIcon'],
-    [website, 'LinkIcon'],
-    [`Joined ${formatDate(createdAt, 'joined')}`, 'CalendarDaysIcon']
+    // [ location, 'MapPinIcon'],
+    // [website, 'LinkIcon'],
+    [`Joined ${formatDate(createDateTimestamp, 'joined')}`, 'CalendarDaysIcon']
   ];
 
   return (
@@ -46,12 +49,12 @@ export function UserDetails({
       <div>
         <UserName
           className='-mb-1 text-xl'
-          name={name}
+          name={fullName}
           iconClassName='w-6 h-6'
           verified={verified}
         />
         <div className='flex items-center gap-1 text-light-secondary dark:text-dark-secondary'>
-          <p>@{username}</p>
+          <p>@{fullName}</p>
           <UserFollowing userTargetId={id} />
         </div>
       </div>
@@ -79,7 +82,7 @@ export function UserDetails({
                       {detail}
                       <ToolTip
                         className='translate-y-1'
-                        tip={formatDate(createdAt, 'full')}
+                        tip={formatDate(createDateTimestamp, 'full')}
                       />
                     </button>
                   ) : (
@@ -90,7 +93,7 @@ export function UserDetails({
           )}
         </div>
       </div>
-      <UserFollowStats following={following} followers={followers} />
+      {/*<UserFollowStats following={following} followers={followers} />*/}
     </>
   );
 }

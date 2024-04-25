@@ -1,14 +1,11 @@
 'use client'
-import { AnimatePresence } from 'framer-motion';
-import { UserLayout, ProtectedLayout } from '../../_components/layout/common-layout';
-import { MainLayout } from '../../_components/layout/main-layout';
-import { SEO } from '../../_components/common/seo';
-import { UserDataLayout } from '../../_components/layout/user-data-layout';
-import { UserHomeLayout } from '../../_components/layout/user-home-layout';
-import { Content } from '../../_components/content/content';
 import { Loading } from '@components/ui/loading';
-import { StatsEmpty } from '../../_components/content/stats-empty';
-import { ContentWithParent } from '../../_components/content/content-with-parent';
+import { Content } from 'antd/es/layout/layout';
+import { SEO } from 'app/(users)/_components/common/seo';
+import { UserLayout } from 'app/(users)/_components/layout/common-layout';
+import { UserDataLayout } from 'app/(users)/_components/layout/user-data-layout';
+import { UserHomeLayout } from 'app/(users)/_components/layout/user-home-layout';
+import { AnimatePresence } from 'framer-motion';
 import type { ReactElement, ReactNode } from 'react';
 
 export default function UserWithReplies(): JSX.Element {
@@ -17,8 +14,8 @@ export default function UserWithReplies(): JSX.Element {
 
 
   return (
-              <UserLayout>
-                  <UserDataLayout>
+            //   <UserLayout>
+            //       <UserDataLayout>
                       <UserHomeLayout>
                           <section>
                               <SEO
@@ -36,14 +33,14 @@ export default function UserWithReplies(): JSX.Element {
                               )*/ : (
                                   <AnimatePresence mode='popLayout'>
                                       {/*{pinnedData && (*/}
-                                          <Content pinned key={`pinned-${'1'}`} />
+                                          <Content  key={`pinned-${'1'}`} />
                                       {/*)}*/}
                                       {/*<ContentWithParent data={data} />*/}
                                   </AnimatePresence>
                               )}
                           </section>
                       </UserHomeLayout>
-                  </UserDataLayout>
-              </UserLayout>
+            //       </UserDataLayout>
+            //   </UserLayout>
   );
 }

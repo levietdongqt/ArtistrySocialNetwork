@@ -29,7 +29,7 @@ function ContainerHome() {
                 <Error message='Something went wrong' />
             ) : (
                 <>
-                    <InfiniteScroll style={{overflow: 'hidden'}} next={() => setSize(size as number + 1)}
+                    <InfiniteScroll style={{overflow: 'initial'}} next={() => setSize(size as number + 1)}
                                     hasMore={!isReachedEnd}
                                     loader={<LoadMore />}
                                     dataLength={Data?.length as number ?? 0}

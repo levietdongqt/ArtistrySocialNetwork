@@ -120,14 +120,37 @@ public class NotificationController {
                         .build());
     }
 
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#nopeNotificationDTO.getUserId()) && hasRole('USER')")
-    @PostMapping("/nope-notifications")
-    public ResponseEntity<?> saveNopeNotification(@RequestBody NopeNotificationDTO nopeNotificationDTO) {
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @PostMapping("/{userId}/nope-notifications")
+    public ResponseEntity<?> saveNopeNotification(@PathVariable String userId,@RequestBody NopeNotificationDTO nopeNotificationDTO) {
         notificationService.saveNopeNotification(nopeNotificationDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
                         .message("saved successfully")
+                        .build());
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @PostMapping("/{userId}/check-nope-notifications")
+    public ResponseEntity<?> checkNopeNotification(@PathVariable String userId,@RequestBody NopeNotificationDTO nopeNotificationDTO) {
+        var check = notificationService.getNopeNotification(nopeNotificationDTO.getUserId(),nopeNotificationDTO.getNopeId());
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("saved successfully")
+                        .data(check)
+                        .build());
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @PostMapping("/{userId}/delete-nope-notifications")
+    public ResponseEntity<?> deleteNopeNotification(@PathVariable String userId,@RequestBody NopeNotificationDTO nopeNotificationDTO) {
+        notificationService.deleteNopeNotification(nopeNotificationDTO.getUserId(),nopeNotificationDTO.getNopeId());
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("deleted successfully")
                         .build());
     }
 }

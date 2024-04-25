@@ -14,7 +14,7 @@ export type User = {
   status: string;
   location: Map<string, any>;
   avatar: string;
-  coverImage: string;
+  coverImage: string | null;
   authProvider: string;
   userDetails: Map<string, any>;
   priorityScore: number;
@@ -34,7 +34,7 @@ export type User = {
 
 export type EditableData = Extract<
   keyof User,
-  'bio' | 'name' | 'website' | 'photoURL' | 'location' | 'coverPhotoURL'
+  'bio' | 'fullName' | 'avatar' | 'location' | 'coverImage'|'phoneNumber'|'dateOfBirth'
 >;
 
 export type EditableUserData = Pick<User, EditableData>;
