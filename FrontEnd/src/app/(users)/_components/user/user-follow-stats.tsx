@@ -6,6 +6,8 @@ import { useParams } from 'next/navigation';
 import { NumberStats } from '../content/number-stats';
 import type { User } from '../../../../models/user';
 
+
+// @ts-ignore
 type UserFollowStatsProps = Pick<User, 'following' | 'followers'>;
 type Stats = [string, string, number, number];
 
