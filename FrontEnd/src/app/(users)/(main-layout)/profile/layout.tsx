@@ -13,12 +13,8 @@ export default function ProfileLayout({
 }) {
     return (
         <>
-            <UserLayout>
-                <UserDataLayout>
                         {children}
-                </UserDataLayout>
-            </UserLayout>
-
+  
         </>
 
     )

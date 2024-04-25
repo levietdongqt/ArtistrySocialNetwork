@@ -1,17 +1,17 @@
-import { UserLayout, ProtectedLayout } from '../../_components/layout/common-layout';
-import { MainLayout } from '../../_components/layout/main-layout';
-import { UserDataLayout } from '../../_components/layout/user-data-layout';
-import { UserFollowLayout } from '../../_components/layout/user-follow-layout';
-import { UserFollow } from '../../_components/user/user-follow';
+
+import { UserLayout } from 'app/(users)/_components/layout/common-layout';
+import { UserDataLayout } from 'app/(users)/_components/layout/user-data-layout';
+import { UserFollowLayout } from 'app/(users)/_components/layout/user-follow-layout';
+import { UserFollow } from 'app/(users)/_components/user/user-follow';
 import type { ReactElement, ReactNode } from 'react';
 
 export default function UserFollowing(): JSX.Element {
   return (
-              <UserLayout>
-                  <UserDataLayout>
+              // <UserLayout>
+              //     <UserDataLayout>
                       <UserFollowLayout><UserFollow type='following' /></UserFollowLayout>
-                  </UserDataLayout>
-              </UserLayout>
+              //     </UserDataLayout>
+              // </UserLayout>
   );
 }
 

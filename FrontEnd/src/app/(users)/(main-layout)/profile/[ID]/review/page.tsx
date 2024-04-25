@@ -12,7 +12,6 @@ const UserReview= (): JSX.Element => {  // Đây là một functional component
     const loading = false;
 
     return (
-
         <section>
             <SEO
                 title={`Media Tweets by ${'name'} (@${

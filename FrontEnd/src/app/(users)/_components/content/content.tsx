@@ -13,12 +13,8 @@ import { ContentAction } from './content-action';
 import { ContentStats } from './content-stats';
 import { ContentDate } from './content-date';
 import type { Variants } from 'framer-motion';
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {User} from "@models/user";
-<<<<<<< HEAD
-
-=======
->>>>>>> main
 import {Post} from "@models/post";
 import {ImagesPreview} from "@models/file";
 import {useUser} from "../../../../context/user-context";
@@ -65,12 +61,7 @@ export function ContentPost(tweet: TweetProps) {
     parentTweet,
       comment
   } = tweet;
-<<<<<<< HEAD
-  const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData as User;
-  console.log("show user ",postUserData)
-=======
   const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData;
->>>>>>> main
   const { currentUser } = useUser();
   const userId = currentUser?.id as string;
   const isOwner = userId === createdBy;

@@ -8,10 +8,7 @@ interface UserPostProps {
 
 const UserPostComponent = ({children}: UserPostProps) => {
     return (
-        <UserHomeLayout>
             <ContainerUser/>
-            {children}
-        </UserHomeLayout>
     );
 }
 

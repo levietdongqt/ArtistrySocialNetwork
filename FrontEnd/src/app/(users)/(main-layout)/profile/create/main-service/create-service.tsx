@@ -88,7 +88,7 @@ const CreateMainServiceForm = () => {
 
 
     return (
-        <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded shadow">
+        <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded shadow mr-10">
             <ImageService onImageListChange={handleImageListChange}/>
             <div className="mb-4">
                 <label htmlFor="serviceName" className="block text-gray-700 text-sm font-bold mb-2">

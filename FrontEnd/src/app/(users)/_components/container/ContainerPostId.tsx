@@ -8,17 +8,12 @@ import {isPlural} from "@lib/utils";
 import {ViewContent} from "../view/view-content";
 import {ViewParentTweet} from "../view/view-parent-tweet";
 import {MainHeader} from "../home/main-header";
-<<<<<<< HEAD
-import {Content} from "../content/content";
 import {SEO} from "../common/seo";
-=======
 import useSWR from "swr";
 import {getPostById} from "../../../../services/realtime/clientRequest/postClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
-import {SEO} from "../common/seo";
 import {getCommentByPost} from "../../../../services/realtime/clientRequest/commentClient";
 import {Comment} from "../comment/comment";
->>>>>>> main
 
 const ContainerPostId = () => {
     const {back} = useRouter();
