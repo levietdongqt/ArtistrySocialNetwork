@@ -29,5 +29,9 @@ public interface INotificationService {
 
     public void saveNopeNotification(NopeNotificationDTO nopeNotificationDTO);
 
+    public boolean getNopeNotification(String userId,String nopeId);
+
+    public void deleteNopeNotification(String userId,String nopeId);
+
 
 }

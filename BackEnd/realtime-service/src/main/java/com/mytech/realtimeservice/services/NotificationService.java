@@ -39,12 +39,7 @@ public class NotificationService implements INotificationService {
     private ModelMapper modelMapper;
 
 
-    public Date getTimeForNotification(){
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -7); // Lấy ngày 7 ngày trước
-        Date startDate = calendar.getTime();
-        return startDate;
-    }
+
 
     public List<Notification> getNotificationsByUserFromUserIdOrderByCreatedDateDesc(String userFrom) {
         Date startDate = getTimeForNotification();
@@ -102,14 +97,17 @@ public class NotificationService implements INotificationService {
     @Async
     public void sendNotification(User userFrom,User userTo,String notificationType,String message,String link){
         //Kiểm tra nope notification
-        var nopeNotifications = nopeNotificationsRepository.getNopeNotifications(userTo.getId(),userFrom.getId());
-        if (nopeNotifications.isPresent()){
-            var nopeTime = nopeNotifications.get().getNopeMinutesTime();
-            var timeCheckNope = nopeNotifications.get().getCreatedTime().minusMinutes(nopeTime);
-            if (timeCheckNope.isBefore(LocalDateTime.now())){
-                return;
-            }
-            nopeNotificationsRepository.delete(nopeNotifications.get());
+        var checkAllNotification = handleNopeNotification(userFrom.getId(),userFrom.getId());
+        if (checkAllNotification){
+            return;
+        }
+        var checkNotification = handleNopeNotification(userFrom.getId(),userTo.getId());
+        if (checkNotification){
+            return;
+        }
+        //Kiểm tra xem có gửi cho chính mình không
+        if(userFrom.getId().equals(userTo.getId())) {
+            return;
         }
         Notification notification = Notification.builder()
                 .userFrom(userFrom)
@@ -164,6 +162,41 @@ public class NotificationService implements INotificationService {
                 .nopeMinutesTime(nopeNotificationDTO.getNopeMinutesTime())
                 .createdTime(LocalDateTime.now()).build();
         nopeNotificationsRepository.save(nopeNotification);
+    }
+
+    @Override
+    public boolean getNopeNotification(String userId, String nopeId) {
+        var check = handleNopeNotification(userId, nopeId);
+        return check;
+    }
+
+    @Override
+    public void deleteNopeNotification(String userId, String nopeId) {
+        var nopeNotification = nopeNotificationsRepository.getNopeNotifications(userId, nopeId);
+        if (nopeNotification.isPresent()){
+            nopeNotificationsRepository.delete(nopeNotification.get());
+            return;
+        }
+        throw new RuntimeException("Không tìm thấy nope notification");
+    }
+
+    public boolean handleNopeNotification(String userId,String userFrom){
+        var nopeNotifications = nopeNotificationsRepository.getNopeNotifications(userId,userFrom);
+        if (nopeNotifications.isPresent()){
+            var nopeTime = nopeNotifications.get().getNopeMinutesTime();
+            var timeCheckNope = nopeNotifications.get().getCreatedTime().plusMinutes(nopeTime);
+            if (timeCheckNope.isAfter(LocalDateTime.now())){
+                return true;
+            }
+            nopeNotificationsRepository.delete(nopeNotifications.get());
+        }
+        return false;
+    }
+    public Date getTimeForNotification(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -7); // Lấy ngày 7 ngày trước
+        Date startDate = calendar.getTime();
+        return startDate;
     }
 
 

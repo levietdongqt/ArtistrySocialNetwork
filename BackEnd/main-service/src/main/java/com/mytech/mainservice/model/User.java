@@ -157,4 +157,7 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private Set<Session> sessions;
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    private List<Promotion> promotions;
 }

@@ -84,7 +84,6 @@ public class FriendService implements IFriendService {
         if (friendship.isPresent()) {
             if(reverseFriend.isPresent()) {
                 handleDeleteFriendship(reverseFriend.get());
-                return;
             }
             handleDeleteFriendship(friendship.get());
             return;

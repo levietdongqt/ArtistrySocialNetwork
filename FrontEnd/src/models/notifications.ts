@@ -13,6 +13,12 @@ export type NotificationModel = {
     delivered: boolean;
 };
 
+export type NopeNotificationModel = {
+    userId : string;
+    nopeId: string;
+    nopeMinutesTime: number;
+}
+
 export const notificationString: string[] = [
     "đã gửi lời mời kết bạn",
     "đã bình luận bài viết của bạn",

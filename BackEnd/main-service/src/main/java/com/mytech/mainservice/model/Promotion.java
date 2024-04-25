@@ -59,4 +59,8 @@ public class Promotion implements Serializable {
     @OneToMany(mappedBy = "promotion")
     private List<Order> orders;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id",nullable = false)
+    private User user;
+
 }

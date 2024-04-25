@@ -1,5 +1,6 @@
 import {fetcherParams} from "@lib/config/SwrFetcherConfig";
 import {ServiceDestination} from "@lib/enum/ServiceDestination";
+import { NopeNotificationModel } from "@models/notifications";
 
 export function getUnreadNotifications (userId :string): fetcherParams {
     return [`/notifications/${userId}`, 'GET', null, ServiceDestination.REALTIME];
@@ -23,4 +24,17 @@ export function countUnreadNotifications (userId :string): fetcherParams {
 export function updateDeliveryNotification (userId :string): fetcherParams {
     return [`/notifications/${userId}/change-delivery`, 'POST', null, ServiceDestination.REALTIME];
 }
+
+export function checkNopeNotifications (userId :string, body: any): fetcherParams {
+    return [`/notifications/${userId}/check-nope-notifications`, 'POST', body, ServiceDestination.REALTIME];
+}
+
+export function saveNopeNotifications (userId :string, body: NopeNotificationModel): fetcherParams {
+    return [`/notifications/${userId}/nope-notifications`, 'POST', body, ServiceDestination.REALTIME];
+}
+
+export function deleteNopeNotifications (userId :string, body: NopeNotificationModel): fetcherParams {
+    return [`/notifications/${userId}/delete-nope-notifications`, 'POST', body, ServiceDestination.REALTIME];
+}
+
 
