@@ -42,7 +42,7 @@ export default function UnreadNotification() {
           <>
             <AnimatePresence mode="popLayout">
               {
-            dataUnread.map((item: any, index : number) => {
+            dataUnread && dataUnread.map((item: any, index : number) => {
               return (
                 <NotificationCard key={index} data={item}/>
               )

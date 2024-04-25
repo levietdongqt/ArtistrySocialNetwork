@@ -1,41 +1,86 @@
 "use client";
 import { Col, Row } from "antd";
 import { Typography } from "antd";
-import { Popover, Button } from "antd";
+import { Popover} from "antd";
+import { Button } from '@components/ui/button';
 import { HeroIcon } from "@components/ui/hero-icon";
 import { useEffect, useState } from "react";
-import { NotificationTab } from "@models/notifications";
+import { NopeNotificationModel, NotificationTab } from "@models/notifications";
 import { useNotification } from "context/notification-context";
-import { CheckOutlined, PlusOutlined } from "@ant-design/icons";
 import useSWR from "swr";
-import { updateAllNotification } from "services/main/clientRequest/notificationsClient";
+import {
+  saveNopeNotifications,
+  updateAllNotification,
+} from "services/main/clientRequest/notificationsClient";
 import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
-import Link from "next/link";
+import { useUser } from "context/user-context";
+import { NotificationButton } from "@components/ui/notification-button";
 const { Title } = Typography;
 
 export default function NotificationHeader() {
-  const { updatedNotifications,setUpdatedNotifications,setReRenderNotifications} = useNotification();
-  const [shouldUpdate,setShouldUpdate] = useState(false);
+  const { currentUser } = useUser();
   const {
-} = useSWR(shouldUpdate ? updateAllNotification(updatedNotifications): null, fetcherWithToken,{
-    revalidateOnFocus: false,
-});
+    updatedNotifications,
+    setUpdatedNotifications,
+    setReRenderNotifications,
+  } = useNotification();
+  const [shouldUpdate, setShouldUpdate] = useState(false);
+  const [data, setData] = useState<NopeNotificationModel>();
+  const [shouldSaveNope, setShouldSaveNope] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const handleMouseEnter = () => setHovered(!hovered);
+  const {} = useSWR(
+    shouldUpdate ? updateAllNotification(updatedNotifications) : null,
+    fetcherWithToken,
+    {
+      revalidateOnFocus: false,
+    }
+  );
+
+  const {} = useSWR(
+    shouldUpdate
+      ? saveNopeNotifications(
+          currentUser?.id as string,
+          data as NopeNotificationModel
+        )
+      : null,
+    fetcherWithToken,
+    {
+      revalidateOnFocus: false,
+    }
+  );
 
   const handleUpdateAll = () => {
     setShouldUpdate(true);
-  }
+  };
 
-  useEffect(()=>{
-    if(shouldUpdate){ 
+
+  useEffect(() => {
+    if (shouldUpdate) {
       setUpdatedNotifications((prev) => []);
       setShouldUpdate(false);
-      setReRenderNotifications((prev) => true)
+      setReRenderNotifications((prev) => true);
     }
-  },[shouldUpdate])
+  }, [shouldUpdate]);
+
+  useEffect(() => {
+    if (shouldSaveNope) {
+      setShouldSaveNope(false);
+    }
+  }, [shouldSaveNope]);
 
   const content = (
-    <Button className="border-none" onClick={handleUpdateAll}> <CheckOutlined />Tích tất cả là đã đọc</Button>
-  )
+    <div className="flex flex-col">
+      <Button
+            className='dark-bg-tab min-w-[135px] self-start border border-light-line-reply px-4 py-1.5 
+            font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red' 
+        onClick={handleUpdateAll}
+      >
+        <span>Tích toàn bộ là đã đọc</span>
+      </Button>
+      <NotificationButton userTargetId={currentUser?.id as string} hovered={hovered} userTargetUsername={currentUser?.fullName as string}/>
+    </div>
+  );
   return (
     <Row className="flex justify-between mt-3 font-semibold">
       <Col span={8}>
@@ -45,13 +90,9 @@ export default function NotificationHeader() {
       </Col>
       <Col span={8}>
         <div className="flex justify-end mr-4">
-          <Popover
-            content={content}
-            trigger="click"
-            placement="bottom"
-          >
+          <Popover content={content} trigger="click" placement="bottom" afterOpenChange={handleMouseEnter}>
             <Button>
-            <HeroIcon iconName="Cog8ToothIcon" />
+              <HeroIcon iconName="Cog8ToothIcon" />
             </Button>
           </Popover>
         </div>

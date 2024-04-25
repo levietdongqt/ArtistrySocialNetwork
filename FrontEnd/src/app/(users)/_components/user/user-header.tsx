@@ -18,9 +18,10 @@ export function UserHeader(): JSX.Element {
 
   const pathname = usePathname();
   const {id} = useParams();
-  const { user, loading } = useUser();
+  const { currentUser } = useUser();
+  const loading = false;
 
-  const userId = user ? user.id : null;
+  const userId = currentUser ? currentUser.id : null;
   const statsLoading = false;
   /*const { data: statsData, loading: statsLoading } = useDocument(
     doc(userStatsCollection(userId ?? 'null'), 'stats'),
@@ -55,7 +56,7 @@ export function UserHeader(): JSX.Element {
           <div className='mb-1 -mt-1 h-5 w-24' />
           <div className='h-4 w-12' />
         </motion.div>
-      ) : !user ? (
+      ) : !currentUser ? (
         <motion.h2 className='text-xl font-bold' {...variants} key='not-found'>
           {isInFollowPage ? `@${id as string}` : 'User'}
         </motion.h2>
@@ -63,10 +64,10 @@ export function UserHeader(): JSX.Element {
         <motion.div className='-mb-1 truncate' {...variants} key='found'>
           <UserName
             tag='h2'
-            name={user.name}
+            name={currentUser.fullName}
             className='-mt-1 text-xl'
             iconClassName='w-6 h-6'
-            verified={user.verified}
+            verified={currentUser.verified}
           />
           <p className='text-xs text-light-secondary dark:text-dark-secondary'>
            {/* {isInFollowPage

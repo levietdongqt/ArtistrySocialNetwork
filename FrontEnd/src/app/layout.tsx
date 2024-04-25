@@ -2,19 +2,11 @@
 import "./styles/globals.scss";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import "react-toastify/dist/ReactToastify.css";
-
-
 import {Bounce, ToastContainer} from "react-toastify";
 import {AppHead} from "./(users)/_components/common/app-head";
-import {UserContextProvider} from "../context/user-context";
-import {AuthContextProvider} from "../context/oauth2-context";
 import {ThemeContextProvider} from "../context/theme-context";
-import {CustomIcon} from "@components/ui/custom-icon";
-import {ChatAlert} from "@components/chat-box/chat-alert";
-import {SocketProvider} from "context/websocket-context1";
-import {SearchContextProvider} from "context/search-context";
-import {NotificationContextProvider} from "context/notification-context";
-import ChatContextProvider from "../context/chat-context";
+import {AuthContextProvider} from "../context/oauth2-context";
+import {UserContextProvider} from "../context/user-context";
 
 export default function RootLayout({
                                        children,
@@ -27,22 +19,11 @@ export default function RootLayout({
         <html lang="en">
         <AppHead/>
         <body>
-
         <UserContextProvider>
-            <ChatContextProvider>
-                <NotificationContextProvider>
-                    <SocketProvider>
-                        <AuthContextProvider>
-                            <SearchContextProvider>
-                                <ThemeContextProvider>{children}</ThemeContextProvider>
-                            </SearchContextProvider>
-                        </AuthContextProvider>
-                    </SocketProvider>
-                </NotificationContextProvider>
-            </ChatContextProvider>
+            <AuthContextProvider>
+                {children}
+            </AuthContextProvider>
         </UserContextProvider>
-
-
         <ToastContainer
             position="top-center"
             autoClose={3000}

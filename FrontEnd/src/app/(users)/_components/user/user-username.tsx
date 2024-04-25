@@ -2,7 +2,7 @@ import Link from 'next/link';
 import cn from 'clsx';
 
 type UserUsernameProps = {
-  id: string;
+  id?: string;
   username: string;
   className?: string;
   disableLink?: boolean;

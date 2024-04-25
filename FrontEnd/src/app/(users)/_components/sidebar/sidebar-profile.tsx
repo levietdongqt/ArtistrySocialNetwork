@@ -13,14 +13,24 @@ import {UserName} from '../user/user-name';
 import {UserUsername} from '../user/user-username';
 import {variants} from './more-settings';
 import {useUser} from "../../../../context/user-context";
+import {useRouter} from "next/navigation";
+import {useOAuth2} from "../../../../context/oauth2-context";
+import {deleteCookieTokenSSR} from "@lib/helper/serverCookieHandle";
 
 export function SidebarProfile(): JSX.Element {
     // const {  signOut } = useAuth();
     const {open, openModal, closeModal} = useModal();
-
+    const router = useRouter()
+    const {signOut} = useOAuth2()
     const {currentUser} = useUser()
     /*const { name, username, verified, photoURL } = user as User;*/
-
+    const handleSignOut = async () => {
+        // router.prefetch("/login")
+        console.log("SIGN OUT")
+        await deleteCookieTokenSSR();
+        await signOut();
+        router.push("/login");
+    }
     return (
         <>
             <Modal
@@ -56,8 +66,7 @@ export function SidebarProfile(): JSX.Element {
                                             size={40}/>
                                 <div className='hidden truncate text-start leading-5 xl:block'>
                                     {/*<UserName name={'name'} className='start' verified={verified} />*/}
-                                    <UserName name={'name'} className='start' verified={false}/>
-                                    <UserUsername username={'username'} disableLink/>
+                                    <UserName name={currentUser?.fullName!} className='start' verified={!!currentUser?.verified}/>
                                 </div>
                             </div>
                             <HeroIcon
@@ -96,18 +105,20 @@ export function SidebarProfile(): JSX.Element {
                                             />
                                         </i>
                                     </Menu.Item>
-                                    <Menu.Item>
+                                    <Menu.Item >
                                         {({active}): JSX.Element => (
-                                            <Button
-                                                className={cn(
-                                                    'flex w-full gap-3 rounded-md rounded-t-none p-4',
-                                                    active && 'bg-main-sidebar-background'
-                                                )}
-                                                onClick={openModal}
-                                            >
-                                                <HeroIcon iconName='ArrowRightOnRectangleIcon'/>
-                                                Log out @{currentUser?.fullName ? currentUser?.fullName : ""}
-                                            </Button>
+                                           <div className={"mx-auto"}>
+                                               <Button
+                                                   className={cn(
+                                                       'flex  w-full gap-3 rounded-md rounded-t-none p-4 items-center',
+                                                       active && 'bg-main-sidebar-background'
+                                                   )}
+                                                   onClick={handleSignOut}
+                                               >
+                                                   <HeroIcon iconName='ArrowRightOnRectangleIcon'/>
+                                                   Đăng xuất
+                                               </Button>
+                                           </div>
                                         )}
                                     </Menu.Item>
                                     <i

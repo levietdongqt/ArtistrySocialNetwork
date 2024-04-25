@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
 import { UserAvatar } from "../user/user-avatar";
-import { Typography, Button, Tooltip, Popconfirm,Popover } from "antd";
+import { Typography, Tooltip, Popconfirm, Popover } from "antd";
+import { Button } from '@components/ui/button';
 import { formatElapsedTime } from "@lib/helper/convertTime";
 import {
   DashOutlined,
   EyeOutlined,
   QuestionCircleOutlined,
-  SearchOutlined,
 } from "@ant-design/icons";
 import useSWR from "swr";
 import { updateNotification } from "services/main/clientRequest/notificationsClient";
@@ -22,10 +22,10 @@ import {
   AddFriendButtonType,
   AddFriendType,
   NotificationModel,
-
 } from "@models/notifications";
 import { UserTooltip } from "../user/user-tooltip";
 import { useNotification } from "context/notification-context";
+import { NotificationButton } from "@components/ui/notification-button";
 const { Text } = Typography;
 
 interface NotificationCardParams {
@@ -39,18 +39,29 @@ export default function NotificationCard({ data }: NotificationCardParams) {
   const [successAccept, setSuccessAccept] = useState(false);
   const [successUnAccept, setUnSuccessAccept] = useState(false);
   const { reRenderNotifications } = useNotification();
+  const [hovered, setHovered] = useState(false);
   const [status, setStatus] = useState<any>(false);
   var currentDate = new Date();
   var specificDate = new Date(data?.createdDate);
   var timeDifference = currentDate.getTime() - specificDate.getTime();
   var timeDifferenceInSeconds = formatElapsedTime(timeDifference);
-
+  const handleMouseEnter = () => setHovered(!hovered);
   const content = (
     <div className="flex flex-col">
-      <Button>Gỡ thông báo này</Button>
-      <Button>Chặn thông báo từ người này</Button>
+      <Button
+        className="dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
+                       font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
+      >
+        Gỡ thông báo này
+      </Button>
+      <NotificationButton
+        userTargetUsername={data?.userTo?.fullName as string}
+        userTargetId={data?.userTo?.id as string}
+        hovered={hovered}
+      />
     </div>
   );
+
   useEffect(() => {
     setStatus(data?.status);
   }, [data]);
@@ -103,6 +114,7 @@ export default function NotificationCard({ data }: NotificationCardParams) {
     setUnSuccessAccept(true);
   };
 
+
   useEffect(() => {
     if (shouldAcceptFriend) {
       setShouldAcceptFriend(false);
@@ -130,7 +142,10 @@ export default function NotificationCard({ data }: NotificationCardParams) {
         <div className="flex items-center">
           <UserTooltip avatarCheck={true} {...data?.userTo!}>
             <UserAvatar
-              src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
+              src={
+                data?.userTo?.avatar ||
+                "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"
+              }
               alt={"name"}
               username={`${data?.id}`}
             />
@@ -149,7 +164,6 @@ export default function NotificationCard({ data }: NotificationCardParams) {
                 {!successAccept && !successUnAccept && (
                   <>
                     <Button
-                      type="primary"
                       style={{ width: "48%", backgroundColor: "Highlight" }}
                       onClick={handleAcceptFriend}
                     >
@@ -168,7 +182,6 @@ export default function NotificationCard({ data }: NotificationCardParams) {
                       onConfirm={handleSubmitDeny}
                     >
                       <Button
-                        type="default"
                         style={{ width: "48%", backgroundColor: "whitesmoke" }}
                       >
                         {AddFriendButtonType.DENY}
@@ -185,8 +198,12 @@ export default function NotificationCard({ data }: NotificationCardParams) {
           <Tooltip placement="bottomRight" title={"Ấn vào để xem chi tiết"}>
             {!status && <EyeOutlined />}
           </Tooltip>
-          <Popover placement="bottomLeft" content={content}>  
-            <Button shape="circle"  icon={<DashOutlined />} className="ml-3"/>
+          <Popover
+            placement="bottomLeft"
+            content={content}
+            onOpenChange={handleMouseEnter}
+          >
+            <Button className="ml-3" ><DashOutlined /></Button>
           </Popover>
         </div>
       </div>
