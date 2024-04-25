@@ -2,6 +2,8 @@ package com.mytech.realtimeservice.controller;
 
 import com.mytech.realtimeservice.dto.ConversationDTO;
 import com.mytech.realtimeservice.dto.MessageDTO;
+import com.mytech.realtimeservice.dto.ResponseSocket;
+import com.mytech.realtimeservice.enums.ResponseSocketType;
 import com.mytech.realtimeservice.models.Message;
 import com.mytech.realtimeservice.services.IChatService;
 import com.mytech.realtimeservice.services.IConversationService;
@@ -55,14 +57,18 @@ public class ChatController {
         String destination = "/chat/conversation";
         log.info("FROM getConversation" + message);
         List<MessageDTO> messages = chatService.getMessagesByConversation(message.getConversationId());
-        simpMessagingTemplate.convertAndSendToUser(message.getSenderId(), destination, messages);
+        simpMessagingTemplate.convertAndSendToUser(message.getSenderId(), destination,
+                ResponseSocket.builder()
+                        .type(ResponseSocketType.GET_CONVERSATION)
+                        .data(messages)
+                        .build());
     }
 
     @MessageMapping("/chat.checkConversation")
 //    @SendTo("/chat/message")
     public void checkConversation(@Payload ConversationDTO conversationDTO) {
         ConversationDTO savedConversation = conversationService.checkConversation(conversationDTO);
-        simpMessagingTemplate.convertAndSend("/chat/message/", savedConversation);
+        simpMessagingTemplate.convertAndSend("/chat/conversation", savedConversation);
     }
 
     @MessageMapping("/chat.sendGroup")
@@ -75,8 +81,7 @@ public class ChatController {
 
     @MessageMapping("/chat.addUser")
     @SendTo("/chat/message")
-    public Message addUser(@Payload Message chatMessage,
-                           SimpMessageHeaderAccessor headerAccessor) {
+    public Message addUser(@Payload Message chatMessage, SimpMessageHeaderAccessor headerAccessor) {
         // Add username in web socket session
         headerAccessor.getSessionAttributes().put("username", "");
         return chatMessage;

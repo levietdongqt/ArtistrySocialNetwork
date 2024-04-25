@@ -3,6 +3,8 @@ server:
 
 eureka:
   client:
+    instance:
+      prefer-ip-address: true
     client:
       register-with-eureka: false
     serviceUrl:

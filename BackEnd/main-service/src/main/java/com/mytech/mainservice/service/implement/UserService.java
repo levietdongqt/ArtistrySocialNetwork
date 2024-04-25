@@ -18,6 +18,7 @@ import com.mytech.mainservice.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,6 +46,12 @@ public class UserService implements IUserService {
 
     @Autowired
     private IELSService elsService;
+
+    @Value("${env.images.default.avatar}")
+    private String DEFAULT_AVATAR;
+
+    @Value("${env.images.default.background}")
+    private String DEFAULT_BACKGROUND;
 
     @Override
     public UserDTO getUserById(String userId) {
@@ -76,12 +83,13 @@ public class UserService implements IUserService {
                 .roles(roles)
                 .status(UserStatus.PENDING)
                 .createDate(LocalDateTime.now())
+                .avatar(DEFAULT_AVATAR)
+                .coverImage(DEFAULT_BACKGROUND)
                 .build();
         User savedUser = userRepo.save(user);
         log.info("User added to this system");
         return savedUser;
     }
-
 
     @Override
     public String getRandomId() {
@@ -102,6 +110,7 @@ public class UserService implements IUserService {
                 .emailConfirmed(userInfo.getEmail() != null)
                 .phoneConfirmed(userInfo.getPhoneNumber() != null)
                 .createDate(LocalDateTime.now())
+                .coverImage(DEFAULT_BACKGROUND)
                 .roles(roles)
                 .status(UserStatus.ACTIVED)
                 .build();
@@ -140,6 +149,7 @@ public class UserService implements IUserService {
         }
         throw new NotFoundException("User not found");
     }
+
     @Override
     public void changePass(LoginDTO data) {
         Optional<User> user = userRepo.findByPhoneNumber(data.phoneNumber());
@@ -154,11 +164,11 @@ public class UserService implements IUserService {
     @Override
     public void deleteHistory(String userId, String history) {
         var updatedUserOptional = userRepo.findById(userId);
-        if (updatedUserOptional.isPresent()){
+        if (updatedUserOptional.isPresent()) {
             var updatedUser = updatedUserOptional.get();
             var listHistory = updatedUser.getSearchHistory();
             listHistory.forEach(his -> {
-                if (his.equals(history)){
+                if (his.equals(history)) {
                     listHistory.remove(his);
                 }
             });
@@ -173,7 +183,7 @@ public class UserService implements IUserService {
     @Override
     public void deleteAllHistory(String userId) {
         var updatedUserOptional = userRepo.findById(userId);
-        if (updatedUserOptional.isPresent()){
+        if (updatedUserOptional.isPresent()) {
             var updatedUser = updatedUserOptional.get();
             var listHistory = updatedUser.getSearchHistory();
             listHistory.clear();
@@ -185,6 +195,12 @@ public class UserService implements IUserService {
 
     }
 
+    @Override
+    public void updateUser(UserDTO userDto) {
+        User user = userRepo.findById(userDto.getId()).orElseThrow(() -> new NotFoundException("User not Found"));
+        user = modelMapper.map(userDto,User.class);
+        userRepo.save(user);
+    }
     public User existUser(UserInfo userInfo) throws UnAuthenticationException {
         Optional<User> user = userRepo.findByEmailOrPhoneNumber(userInfo.getEmail(), userInfo.getPhoneNumber());
         if (user.isPresent() && !user.get().getAuthProvider().equals(userInfo.getProviderId())) {
@@ -197,26 +213,26 @@ public class UserService implements IUserService {
     @Override
     public void updateHistorySearch(String userId, String keyword) {
         var updatedUserOptional = userRepo.findById(userId);
-        if (updatedUserOptional.isPresent()){
+        if (updatedUserOptional.isPresent()) {
             var updatedUser = updatedUserOptional.get();
             var listHistory = updatedUser.getSearchHistory();
-            if(listHistory == null){
+            if (listHistory == null) {
                 listHistory = new LinkedList<>();
             }
             //Xóa phần tử bị trùng trong mảng
-            for(String history : listHistory){
-                if(history.equals(keyword)){
+            for (String history : listHistory) {
+                if (history.equals(keyword)) {
                     listHistory.remove(history);
                     break;
                 }
             }
             System.out.println(listHistory);
             //Nếu size lớn hơn 10 thì xóa phần tử đầu
-            if (!listHistory.isEmpty()){
+            if (!listHistory.isEmpty()) {
                 if (listHistory.size() >= 10) {
                     listHistory.poll();
                     listHistory.add(keyword);
-                }else {
+                } else {
                     listHistory.add(keyword);
                 }
                 updatedUser.setSearchHistory(listHistory);
@@ -235,10 +251,10 @@ public class UserService implements IUserService {
     @Override
     public List<String> getHistorySearch(String userId) {
         var userOptional = userRepo.findById(userId);
-        if (userOptional.isPresent()){
+        if (userOptional.isPresent()) {
             var user = userOptional.get();
             var listHistory = user.getSearchHistory();
-            if(listHistory == null){
+            if (listHistory == null) {
                 listHistory = new LinkedList<>();
             }
             return listHistory.stream().toList();
@@ -249,7 +265,7 @@ public class UserService implements IUserService {
     public List<String> getVietnameseRolesFromRolesTable(List<Role> roles) {
         List<String> vietnameseRoles = new ArrayList<>();
         for (Role role : roles) {
-            switch (role.getName()){
+            switch (role.getName()) {
                 case ROLE_ADMIN:
                     vietnameseRoles.add("Quản trị viên");
                     break;
@@ -269,6 +285,5 @@ public class UserService implements IUserService {
         }
         return vietnameseRoles;
     }
-
 
 }

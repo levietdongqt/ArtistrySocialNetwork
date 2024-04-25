@@ -1,6 +1,6 @@
 import { cn } from "@nextui-org/react";
-import { UserLayout } from "app/(users)/_components/layout/common-layout";
-import { UserDataLayout } from "app/(users)/_components/layout/user-data-layout";
+import { UserLayout } from "../../_components/layout/common-layout";
+import { UserDataLayout } from "../../_components/layout/user-data-layout";
 import React from "react";
 
 export default function RootLayout({

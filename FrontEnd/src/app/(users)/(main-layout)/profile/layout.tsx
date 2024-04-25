@@ -7,13 +7,19 @@ import {UserHomeLayout} from "../../_components/layout/user-home-layout";
 import ContainerUser from "../../_components/container/ContainerUser";
 
 export default function ProfileLayout({
-                                       children,
-                                   }: {
+                                          children,
+                                      }: {
     children: React.ReactNode
 }) {
     return (
         <>
-            {children}
+            <UserLayout>
+                <UserDataLayout>
+                    <UserHomeLayout>
+                        {children}
+                    </UserHomeLayout>
+                </UserDataLayout>
+            </UserLayout>
         </>
 
     )

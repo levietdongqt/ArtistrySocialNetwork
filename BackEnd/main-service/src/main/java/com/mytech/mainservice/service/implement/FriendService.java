@@ -5,6 +5,7 @@ import com.mytech.mainservice.dto.FriendDTO;
 import com.mytech.mainservice.dto.IsCheckFriendDTO;
 import com.mytech.mainservice.dto.NotificationDTO;
 import com.mytech.mainservice.dto.UserDTO;
+import com.mytech.mainservice.dto.foreignClient.ConversationDTO;
 import com.mytech.mainservice.enums.FriendShipStatus;
 import com.mytech.mainservice.helper.JwtTokenHolder;
 import com.mytech.mainservice.model.Friendship;
@@ -13,14 +14,14 @@ import com.mytech.mainservice.repository.IFriendshipRepository;
 import com.mytech.mainservice.repository.IUserRepository;
 import com.mytech.mainservice.service.IFriendService;
 import com.mytech.mainservice.service.IUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +42,7 @@ public class FriendService implements IFriendService {
     private NotificationForeignClient notificationForeignClient;
 
     @Override
-    
+
     public void addFriend(String userId, String friendId) {
         if(userId.equals(friendId)){
             throw new RuntimeException("Bạn không thể kết bạn với chính mình");
@@ -392,4 +393,28 @@ public class FriendService implements IFriendService {
                 .build();
         notificationForeignClient.saveNotification(notificationDTO);
     }
+    private void createConversation(User friend, User user) {
+        HashMap<String, Object> member1 = new HashMap<String, Object>();
+        member1.put("id", friend.getId());
+        member1.put("fullName", friend.getFullName());
+        member1.put("avatar", friend.getAvatar());
+        member1.put("nickname", friend.getFullName());
+        member1.put("notSeen", false);
+
+        HashMap<String, Object> member2 = new HashMap<>();
+        member2.put("id", user.getId());
+        member2.put("fullName", user.getFullName());
+        member2.put("avatar", user.getAvatar());
+        member1.put("nickname", user.getFullName());
+        member1.put("notSeen", false);
+
+        ConversationDTO conversationDTO = ConversationDTO.builder()
+                .members(List.of(member1, member2))
+                .createAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .type("PRIVATE")
+                .build();
+        notificationForeignClient.createConversation(conversationDTO);
+    }
+
 }

@@ -21,6 +21,7 @@ export type  stateType = {
 
 const enum ACTION_TYPE {
     SET_CONVERSATIONS = "SET_CONVERSATIONS",
+    ADD_CONVERSATION = "ADD_CONVERSATION",
     UPDATE_CONVERSATIONS = "UPDATE_CONVERSATIONS",
     SET_NEW_MESSAGES = "SET_NEW_MESSAGES",
     SET_PICKED_CONVERSATIONS = "SET_PICKED_CONVERSATIONS",
@@ -54,6 +55,16 @@ const reducer = (state: any, action: any): stateType => {
                 conversations: conversations
             }
             break;
+        case ACTION_TYPE.ADD_CONVERSATION:
+            const newConversation1 = action.payload as ConversationDto;
+            const isExist = state.conversations.every((value: ConversationDto) => value.id === newConversation1.id)
+            if (isExist) return state
+            initMemberMap(newConversation1);
+            newState = {
+                ...state,
+                conversations: [...state.conversations, newConversation1]
+            }
+            break;
         case ACTION_TYPE.UPDATE_CONVERSATIONS:
             const newConversation = action.payload as ConversationDto
             let newConversationList = [...state.conversations];
@@ -70,6 +81,10 @@ const reducer = (state: any, action: any): stateType => {
             break;
         case ACTION_TYPE.SET_NEW_MESSAGES:
             const messages = action.payload as MessageDto[]
+            if (messages.length === 0) {
+                return state
+            }
+            console.log("NEW MESSAGES", messages)
             curPickedIndex = state.pickedConversations.findIndex((value: ConversationDto) => value?.id === messages[0].conversationId)
             if (curPickedIndex === -1) {
                 throw new Error("Current Conversation not found!")
@@ -99,9 +114,12 @@ const reducer = (state: any, action: any): stateType => {
                 return state;
             }
             curConversation = state.pickedConversations[curPickedIndex]!
-            const newCurConversation = {
+            const newCurConversation: ConversationDto = {
                 ...curConversation,
+                lastMessage: newMessage,
+                updatedAt: newMessage.sendTime,
                 messages: curConversation.messages ? [...curConversation.messages, newMessage] : [newMessage]
+
             }
             newPickedConversations = [...state.pickedConversations]
             newPickedConversations[curPickedIndex] = newCurConversation
