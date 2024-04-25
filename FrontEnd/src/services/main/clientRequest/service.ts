@@ -2,6 +2,8 @@ import {AxiosRequestConfig} from "axios";
 import axiosWithToken from "@lib/config/AxiosConfig";
 import {MainService} from "@models/main-service";
 import {ExtraService} from "@models/extra-service";
+import { fetcherParams } from "@lib/config/SwrFetcherConfig";
+import { ServiceDestination } from "@lib/enum/ServiceDestination";
 
 
 
@@ -46,4 +48,8 @@ export async function createExtraService(data: ExtraService): Promise<any> {
         console.error('Error creating main service:', error);
         throw error; // Hoặc return thứ gì đó cho ngữ cảnh của bạn
     }
+}
+
+export function GetAllMainService (userId :string): fetcherParams {
+    return [`/main-service/get-all/${userId}`, 'GET', null, ServiceDestination.MAIN];
 }

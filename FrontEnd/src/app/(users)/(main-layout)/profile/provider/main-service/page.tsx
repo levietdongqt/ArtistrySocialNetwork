@@ -7,7 +7,5 @@ export default function CreateMainService(): JSX.Element {
   return (
 
                      <CreateMainServiceForm/>
-
-
   );
 }

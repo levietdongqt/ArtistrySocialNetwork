@@ -74,19 +74,9 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                 </Link>
             </Menu.Item>
             <Menu.Item>
-                <Link href="/profile/create/main-service">
-
+                <Link href="/profile/provider">
                         <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5" />
-                        Tạo Dịch vụ chính
-
-                </Link>
-            </Menu.Item>
-            <Menu.Item>
-                <Link href="/profile/create/extra-service">
-
-                    <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5" />
-                    Tạo Dịch vụ phụ
-
+                        Nhà cung cấp
                 </Link>
             </Menu.Item>
         </Menu>
