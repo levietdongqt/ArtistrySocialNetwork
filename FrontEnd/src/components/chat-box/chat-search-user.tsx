@@ -1,39 +1,52 @@
 import Link from "next/link";
-import {ConversationMember} from "@models/conversation";
+import {ConversationDto} from "@models/conversation";
 import {Typography} from "antd";
-import {UserTooltip} from "../../app/(users)/_components/user/user-tooltip";
-import {UserAvatar} from "../../app/(users)/_components/user/user-avatar";
-import {UserUsername} from "../../app/(users)/_components/user/user-username";
-import {UserName} from "../../app/(users)/_components/user/user-name";
+import {useUser} from "../../context/user-context";
+import React, {useState} from "react";
+import {Avatar} from "@chatscope/chat-ui-kit-react";
+import {useChat} from "../../context/chat-context";
+import {ACTION_TYPE, ChatAction} from "@lib/reducer/chat-reducer";
 
 const {Text} = Typography;
 
 interface SearchUserParams {
-    data: ConversationMember,
+    conversation: ConversationDto,
+    onPickConversation: (currentConversation: ConversationDto) => void,
 }
 
 
-export function SearchUserCard({data}: SearchUserParams): JSX.Element {
-
+export function SearchUserCard({conversation, onPickConversation}: SearchUserParams): JSX.Element {
+    const {currentUser} = useUser()
+    const {dispatch} = useChat()
+    const [otherMembers, setOtherMembers] = useState(conversation.members.filter(member => member.id !== currentUser?.id))
+    const onClickFriend = () => {
+        onPickConversation(conversation)
+        dispatch(ChatAction(conversation, ACTION_TYPE.ADD_CONVERSATION))
+    }
+    let data;
     return (
-        <Link href={`/user/${data.id}`} className='accent-tab bg-w-primary  hover-animation grid grid-cols-[auto,1fr] gap-3 px-4
+        <Link href={"#"} onClick={onClickFriend} className='accent-tab bg-w-primary  hover-animation grid grid-cols-[auto,1fr] gap-3 px-4
                    py-2 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5 w-full'
         >
-            <div className="flex items-center justify-between w-full">
+            <div className="flex items-center justify-between ml-5 w-full">
                 <div className="flex items-center">
-                    <UserAvatar
-                        src={data.avatar || "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
-                        alt={"name"}
-                        username={`${data.fullName}`}
-                    />
-                    <div className='flex flex-col pl-2'>
-                        <UserName
-                            className='-mb-1 text-sm'
-                            name={data.fullName}
-                            username={data.fullName}
-                            verified={false}
-                        />
-                    </div>
+                    {
+                        otherMembers.length === 1 ?
+                            <>
+                                <Avatar
+                                    name={otherMembers[0].nickname}
+                                    src={otherMembers[0].avatar}
+                                />
+                                <div className='flex flex-col ml-3 pl-2'>
+                                    <p>{otherMembers[0].fullName}</p>
+                                </div>
+                            </>
+                            :
+                            <>
+                                <h2>IS GROUP</h2>
+                            </>
+                    }
+
                 </div>
             </div>
         </Link>

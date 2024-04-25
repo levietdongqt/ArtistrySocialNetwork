@@ -1,17 +1,14 @@
 'use client'
 import {
     Avatar,
+    AvatarGroup,
     ChatContainer,
     ConversationHeader,
     Message,
     MessageInput,
     MessageList,
     TypingIndicator,
-    VideoCallButton,
-    VoiceCallButton,
-    AddUserButton,
-    ArrowButton,
-    EllipsisButton
+    InfoButton
 } from "@chatscope/chat-ui-kit-react";
 import React, {useEffect, useState} from "react";
 import {useSocket} from "../../context/websocket-context1";
@@ -26,35 +23,22 @@ import {CustomIcon} from "@components/ui/custom-icon";
 import {ToolTip} from "@components/ui/tooltip";
 import {MyTooltip} from "@components/ui/my-tooltip";
 import {Tooltip} from "antd";
+import MiniChatBox from "@components/chat-box/mini-chat-box";
 
 interface ChatBoxProps {
-    closeChatBox?: () => void; // The callback prop is an optional function
+    isMinusChatBox?: boolean; // The callback prop is an optional function
     curConversation: ConversationDto | undefined
 }
 
-export default function ChatBox({closeChatBox, curConversation}: ChatBoxProps) {
+export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps) {
     const {currentUser} = useUser();
     const [memberMap, setMemberMap] = useState(new Map<string, ConversationMember>())
     const {state, dispatch, reRender} = useChat()
     const {pickedConversations, showChatBoxes} = state!;
     const {stompClient} = useSocket();
-    const [isLoading, setIsLoading] = useState(true)
     const [messageIdFooter, setMessageIdFooter] = useState("")
-    const handleCloseChatBox = () => {
-        closeChatBox?.();
-    }
+    const otherMembers = curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id);
     useEffect(() => {
-        const a = stompClient?.subscribe(`/user/chat/conversation`, (message) => {
-            const messages: MessageDto[] = JSON.parse(message.body, dateParse)
-            console.log("Callback from chatBox: ", curConversation?.messages?.length)
-            dispatch(ChatAction(messages, ACTION_TYPE.SET_NEW_MESSAGES))
-            setIsLoading(false)
-        });
-        console.log("Subscribe success")
-        return () => {
-            a?.unsubscribe()
-            console.log("Unsubscribe success")
-        }
     }, []);
 
 
@@ -82,7 +66,7 @@ export default function ChatBox({closeChatBox, curConversation}: ChatBoxProps) {
         const members = curConversation?.members.map(member => {
             if (member.id !== currentUser!.id) {
                 member.notSeen = true
-            }else{
+            } else {
                 member.notSeen = false
             }
             return member
@@ -94,7 +78,10 @@ export default function ChatBox({closeChatBox, curConversation}: ChatBoxProps) {
             messages: [message],
         }
         console.log("ONSUBMIT send message")
-        stompClient?.send("/app/chat.sendPrivate", JSON.stringify(payload))
+        stompClient?.publish({
+            destination: "/app/chat.sendPrivate",
+            body: JSON.stringify(payload)
+        })
     }
 
     const handleShowAvatar = (timeDifference: number | undefined, sender: ConversationMember, prevMessage: MessageDto | null) => {
@@ -106,7 +93,7 @@ export default function ChatBox({closeChatBox, curConversation}: ChatBoxProps) {
                 <div is={"Avatar"}>
                     <Tooltip title={sender.nickname} placement={"left"}>
                         < Avatar name={sender?.nickname}
-                                 src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"/>
+                                 src={sender?.avatar}/>
                     </Tooltip>
                 </div>
             )
@@ -134,6 +121,22 @@ export default function ChatBox({closeChatBox, curConversation}: ChatBoxProps) {
         dispatch(ChatAction(newShowChatBoxes, ACTION_TYPE.SHOW_CHAT_BOXES))
     }
 
+
+    const onShowMessageFooter = (messageId: string) => {
+        if (messageId === messageIdFooter) {
+            setMessageIdFooter("")
+            return
+        }
+        setMessageIdFooter(messageId)
+    }
+
+    const onClickMinusChatBox = (toggle: boolean) => {
+        const newShowChatBoxes = [...showChatBoxes]
+        const currIndex = pickedConversations.findIndex(value => value?.id === curConversation?.id);
+        newShowChatBoxes[currIndex] = toggle
+        dispatch(ChatAction(newShowChatBoxes, ACTION_TYPE.SHOW_CHAT_BOXES))
+    }
+
     if (!curConversation) {
         return (
             <div>
@@ -145,12 +148,12 @@ export default function ChatBox({closeChatBox, curConversation}: ChatBoxProps) {
             </div>
         )
     }
-    const onShowMessageFooter = (messageId: string) => {
-        if (messageId === messageIdFooter) {
-            setMessageIdFooter("")
-            return
-        }
-        setMessageIdFooter(messageId)
+
+    if (isMinusChatBox) {
+        return <MiniChatBox curConversation={curConversation}
+                            onClickCloseMessage={onClickCloseMessage}
+                            onClickMinusChatBox={onClickMinusChatBox}
+        />
     }
     return (
         <>
@@ -162,23 +165,53 @@ export default function ChatBox({closeChatBox, curConversation}: ChatBoxProps) {
                                borderBottomLeftRadius: "10px",
                                borderBottomRightRadius: "10px",
                                boxShadow: "5px",
-                               width: "20vw"
+                               width: "20vw",
+                               height: "60vh"
                            }}>
 
                 <ConversationHeader>
-                    {/*<ConversationHeader.Back onClick={handleCloseChatBox}/>*/}
-                    <Avatar
-                        name={curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id).pop()?.fullName}
-                        src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"
-                    />
+                    {
+                        otherMembers?.length === 1 ?
+                            <Avatar
+                                name={otherMembers[0].nickname}
+                                src={otherMembers[0].avatar}
+                            />
+                            :
+                            <AvatarGroup size={"md"} hoverToFront={true} style={{
+                                display: 'flex', flexDirection: 'row'
+                            }}>
+                                <div is={"Avatar"}>
+                                    <Avatar
+                                        name={"Nhóm"}
+                                        src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"
+                                    />
+                                </div>
+                                <div is={"Avatar"}>
+                                    <Avatar
+                                        name={"Nhóm"}
+                                        src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"
+                                    />
+                                </div>
+                            </AvatarGroup>
+                    }
                     <ConversationHeader.Content
                         title={"HELLO"}
                         info="Active 10 mins ago"
                         userName={curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id).pop()?.nickname}
                     />
                     <ConversationHeader.Actions>
-                        <MyTooltip content={"Thu nhỏ"}>
+                        <MyTooltip content={"Thêm"}>
                             <button className="relative overflow-hidden">
+                            <span
+                                className="block w-full h-full bg-gray-200 rounded-full opacity-0 transition-opacity duration-300 absolute inset-0 hover:opacity-50">
+                            </span>
+                                <InfoButton/>
+                            </button>
+                        </MyTooltip>
+                        <MyTooltip content={"Thu nhỏ"}>
+                            <button className="relative overflow-hidden"
+                                    onClick={() => onClickMinusChatBox(false)}
+                            >
                             <span
                                 className="block w-full h-full bg-gray-200 rounded-full opacity-0 transition-opacity duration-300 absolute inset-0 hover:opacity-50">
                             </span>
@@ -200,15 +233,16 @@ export default function ChatBox({closeChatBox, curConversation}: ChatBoxProps) {
                     scrollBehavior="smooth"
                     loadingMore={false}
                     autoScrollToBottomOnMount={true}
-                    loading={isLoading}
+                    autoScrollToBottom={true}
+                    loading={!curConversation}
                     loadingMorePosition={"top"}
                     // typingIndicator={<TypingIndicator content="Zoe is typing"/>}
 
                 >
-                    {!isLoading ?
+                    {!!curConversation ?
                         (
                             curConversation?.messages?.map((message, index) => {
-                                const sender: ConversationMember = memberMap.get(message.senderId)!
+                                const sender: ConversationMember = curConversation.memberMap?.get(message.senderId)!
                                 const prevMessage: MessageDto | undefined = index > 0 ? curConversation.messages?.[index - 1] : undefined
                                 // console.log("current time: ", message.sendTime.toLocaleDateString())
                                 let timeDifference: number | undefined = undefined;
@@ -280,6 +314,9 @@ export default function ChatBox({closeChatBox, curConversation}: ChatBoxProps) {
                 </MessageList>
                 <div is={"MessageInput"} className={"flex items-center"}>
                     <MessageInput placeholder="Type message here"
+                                  fancyScroll={true}
+                                  autoFocus = {true}
+                                  sendButton={false}
                                   style={{
                                       width: "100%"
                                   }}

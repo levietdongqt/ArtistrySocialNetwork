@@ -63,7 +63,7 @@ export function ContentShare({
   };
 
   const {data: userBookmarks, isLoading} = useSWR(getBookmarksByUserId(userId) ,fetcherWithToken,{
-      refreshInterval: 3000,
+      refreshInterval: 0,
   });
 
   const tweetIsBookmarked = !!userBookmarks?.data?.some((items:any) => items.postId === postId);

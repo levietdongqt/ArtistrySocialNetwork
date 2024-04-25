@@ -14,4 +14,6 @@ public interface IConversationService {
     List<Conversation> getConversationsByUserId(String userId);
 
     ConversationDTO checkConversation(ConversationDTO conversationDTO);
+
+    List<Conversation> searchConversationsByMemberName(String userId,String searchName);
 }

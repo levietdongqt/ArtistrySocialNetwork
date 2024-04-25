@@ -8,11 +8,11 @@ const axiosWithToken = axios.create();
 axiosWithToken.interceptors.request.use(
     async config => {
         var accessToken = getCookie("access_token")?.toString();
-        console.log("Config axios - access_token: " + accessToken)
         if (!accessToken) {
             throw new Error("Access token not provided")
         }
         config.headers.Authorization = `Bearer ${accessToken}`;
+        config.headers["Content-Type"] = "application/json"
         return config;
     },
 )
