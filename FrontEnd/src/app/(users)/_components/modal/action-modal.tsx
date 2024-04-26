@@ -18,9 +18,9 @@ type ActionModalProps = {
   mainBtnClassName?: string;
   secondaryBtnLabel?: string;
   secondaryBtnClassName?: string;
-  actionReport?: (value:string , content:string) => void;
-  action?: () => void;
-  closeModal?: () => void;
+  actionReport: (value:string , content:string) => void;
+  action: () => void;
+  closeModal: () => void;
 };
 
 export function ActionModal({
@@ -32,7 +32,7 @@ export function ActionModal({
   mainBtnClassName,
   secondaryBtnLabel,
   secondaryBtnClassName,
-                              actionReport,
+  actionReport,
   action,
   closeModal,
                               report

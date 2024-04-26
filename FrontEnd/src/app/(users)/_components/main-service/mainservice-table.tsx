@@ -16,12 +16,29 @@ export default function ServiceMainTable({ data }: DataTable) {
     const content =(record:any) => (
         <div className="flex flex-col">
           <Button
-            className="dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
+            className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
                            font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
                             onClick={()=> handleTest(record.id)}
           >
             Chỉnh sửa
           </Button>
+          <Button
+            className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
+                           font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
+                            onClick={()=> handleTest(record.id)}
+          >
+            Chi tiết dịch vụ
+          </Button>
+          {
+            record.status && <Button
+            className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
+                           font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
+                            onClick={()=> handleTest(record.id)}
+          >
+            Áp dụng khuyến mãi
+          </Button>
+          }
+          
         </div>
       );
     const columns : any = [

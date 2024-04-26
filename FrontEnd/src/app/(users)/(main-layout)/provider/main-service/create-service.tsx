@@ -7,27 +7,28 @@ import ImageService , { ImageItem } from "./image-service";
 import { useFormik } from 'formik';
 import ServiceValidation from "@lib/validations/ServiceValidation";
 import {Promotion} from "@models/promotion";
+import useSWR from 'swr';
+import { getPromotions } from 'services/main/clientRequest/promotion';
+import { fetcherWithToken } from '@lib/config/SwrFetcherConfig';
 
 
 const CreateMainServiceForm = () => {
     const {currentUser} = useUser();
     const [promotions, setPromotions] = useState<Promotion[]>([]);
 
-    useEffect(() => {
-        fetch('http://localhost:5000/promotions')
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Network response was not ok.');
-            })
-            .then((data) => {
-                setPromotions(data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    }, []);
+    const {
+        data: dataPromotion,
+        isLoading: isLoading2,
+        error: error2,
+      } = useSWR(
+        getPromotions(currentUser?.id as string,true,false),
+        fetcherWithToken
+      );
+    useEffect(()=>{
+        if(dataPromotion){
+            setPromotions(dataPromotion.data);
+        }
+    },[dataPromotion])
     const [mService, setMService] = useState<MainService>({
         id: null, // Làm cho giá trị này undefined cho đối tượng mới tạo
         provider: currentUser, // Sử dụng currentUser từ hook useUser
@@ -36,21 +37,25 @@ const CreateMainServiceForm = () => {
         priceType: '',
         duration: 0,
         restTime: 0,
-        imageUrl: [],
+        imageUrls: [],
         description: '',
         createDate: new Date(),
         updateDate: new Date(),
-        promotionId: 0,
-        status: true,
+        promotionDTO: null,
+        status: true,     
     });
 
     const [promotionId, setPromotionId] = useState<number | null>(null);
+    const [applyPromotion,setApplyPromotion] = useState<any | null>(null);
     const handlePromotionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         // Chuyển giá trị nhận được từ event.target.value sang kiểu number trước khi gán giá trị
         const value = event.target.value === 'null' ? null : Number(event.target.value);
-
+        console.log("promotionid",value);
+        var result = promotions.find((promotion)=> promotion.id === value);
         // Cập nhật giá trị trong state
         setPromotionId(value);
+        setApplyPromotion(result);
+
     };
     const {values, touched, handleSubmit, handleChange, errors } = useFormik({
         initialValues: mService,
@@ -59,8 +64,8 @@ const CreateMainServiceForm = () => {
             const newService = {
 
                 ...values,
-                imageUrl: mService.imageUrl,
-                promotion: promotionId
+                imageUrls: mService.imageUrls,
+                promotionDTO: applyPromotion
 
             };
             console.log('newservice:',newService);
@@ -79,10 +84,11 @@ const CreateMainServiceForm = () => {
         },
     });
     const handleImageListChange = (newImageList: ImageItem[]) => {
+        console.log("newImageList",newImageList)
         // Chỉ cần cập nhật mService imageUrl thay vì gọi setFieldValue tại đây.
         setMService({
             ...mService,
-            imageUrl: newImageList.map((imageItem) => imageItem.src),
+            imageUrls: newImageList.map((imageItem) => imageItem.src),
         });
     };
 
