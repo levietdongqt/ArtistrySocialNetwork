@@ -16,8 +16,7 @@ public interface IPromotionService {
 
     public Promotion getDBPromotionById(String userId, long promotionId);
 
-    List<PromotionDTO> getPromotions(String userId,boolean status);
-
+    List<PromotionDTO> getPromotions(String userId, boolean status, boolean isExpired);
 
     void applyPromotionForMainService(String userId, long mainServiceId, long promotionId);
 

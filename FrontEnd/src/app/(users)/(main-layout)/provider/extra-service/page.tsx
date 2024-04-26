@@ -4,7 +4,7 @@ import CreateExtraServiceForm from "./create-service";
 
 
 
-export default function CreateMainService(): JSX.Element {
+export default function CreateExtraMainService(): JSX.Element {
   return (
 
                      <CreateExtraServiceForm/>

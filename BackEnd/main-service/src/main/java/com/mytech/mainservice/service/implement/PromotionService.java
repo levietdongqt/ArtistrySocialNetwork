@@ -74,10 +74,16 @@ public class PromotionService implements IPromotionService {
     }
 
     @Override
-    public List<PromotionDTO> getPromotions(String userId,boolean status) {
+    public List<PromotionDTO> getPromotions(String userId,boolean status,boolean isExpired){
         var promotions = promotionRepository.getPromotionsByUser(userId,status);
+        if(isExpired){
+            return promotions
+                    .stream().filter(promotion -> promotion.getEndDate().isBefore(LocalDateTime.now()))
+                    .map((promotion -> modelMapper.map(promotion, PromotionDTO.class)))
+                    .collect(Collectors.toList());
+        }
         return promotions
-                .stream().filter(promotion -> promotion.getEndDate().isBefore(LocalDateTime.now()))
+                .stream().filter(promotion -> promotion.getEndDate().isAfter(LocalDateTime.now()))
                 .map((promotion -> modelMapper.map(promotion, PromotionDTO.class)))
                 .collect(Collectors.toList());
 

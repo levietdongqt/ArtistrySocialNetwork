@@ -35,7 +35,9 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
         router.push('/profile/edit');
     };
     const {currentUser} = useUser();
+    //console.log("currentUser",currentUser)
     const {ID} = useParams();
+    console.log("currentUser",ID)
     const {
         isLoading: loading,
         data: response,
@@ -59,14 +61,12 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
         <Menu>
             <Menu.Item>
                 <Link href="/profile/edit/user">
-
                     <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
                     Đổi mật khẩu
-
                 </Link>
             </Menu.Item>
             <Menu.Item>
-                <Link href="/profile/edit/user">
+                <Link href="/edit/user">
 
                         <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
                         Sửa thông tin
@@ -74,7 +74,7 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                 </Link>
             </Menu.Item>
             <Menu.Item>
-                <Link href="/profile/provider">
+                <Link href="/provider">
                         <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5" />
                         Nhà cung cấp
                 </Link>
@@ -116,7 +116,7 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                                 <UserHomeAvatar profileData={profileData}/>
                                 {isOwner ? (
                                         <div className="text-right">
-                                            <Dropdown.Button overlay={menu} placement="bottomRight" trigger={['click']}>
+                                            <Dropdown.Button overlay={menu}placement="bottomRight" trigger={['click']}>
                                                 Tùy chọn
                                             </Dropdown.Button>
                                         </div>
@@ -134,6 +134,7 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                                         <FollowButton
                                             userTargetId={response?.data?.id}
                                             userTargetUsername={response?.data?.fullName}
+                                            hovered={false}
                                         />
                                         {/*{isOwner && <UserEditProfile hide/>}*/}
                                     </div>

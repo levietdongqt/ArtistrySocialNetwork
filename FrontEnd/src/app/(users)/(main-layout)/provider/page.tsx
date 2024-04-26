@@ -21,7 +21,7 @@ const items = [
     },
     {
         key: "3",
-        label: "Thêm Dịch vụ",
+        label: "Dịch vụ Thêm",
         children: <CreateMainServiceForm/>,
     },
     {
@@ -31,6 +31,7 @@ const items = [
     },
 ];
 export default function AdminMain() {
+    
     const {back} = useRouter();
     return (
         <>

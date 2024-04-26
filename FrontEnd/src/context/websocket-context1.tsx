@@ -8,7 +8,6 @@ import {ConversationDto} from "@models/conversation";
 import {Client} from "@stomp/stompjs";
 import {getCookie} from "cookies-next";
 import {toast} from "react-toastify";
-import {MessageDto} from "@models/message";
 import {ResponseSocket} from "@models/ResponseSocket";
 import {ResponseSocketType} from "@lib/enum/MessageType";
 
@@ -23,9 +22,9 @@ export const SocketContext = createContext<SocketContextType | undefined>(
 
 export const SocketProvider = ({children}: any) => {
     const [stompClient, setStompClient] = useState<Client | null>(null);
-    const {dataCount, setDataCount, setNotificationsContent} = useNotification();
+    const {setDataCount, setNotificationsContent} = useNotification();
     const socketRef = useRef<Client | null>(null);
-    const {state, dispatch} = useChat()
+    const {dispatch} = useChat()
     // const { curConversation}  = state
     useEffect(() => {
         if (socketRef.current !== null) {
