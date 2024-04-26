@@ -16,6 +16,7 @@ import {MyTooltip} from "@components/ui/my-tooltip";
 import {findFriend} from "../../services/main/clientRequest/friendsClient";
 import {MyResponse} from "@models/responseObject";
 import {SearchUserCard} from "@components/chat-box/chat-search-user";
+import {formatDurationConversation} from "@lib/helper/dateParse";
 
 interface ConversationsProps {
     closeConversations?: () => void; // The callback prop is an optional function
@@ -26,7 +27,7 @@ export function Conversations({closeConversations}: ConversationsProps) {
     const {conversations, showChatBoxes, pickedConversations} = state
     const {stompClient} = useSocket()
     const {currentUser} = useUser()
-    const [friends, setFriends] = useState<ConversationMember[]>([])
+    const [friends, setFriends] = useState<ConversationDto[]>([])
     const isInMessagePage = usePathname() === "/message"
     const [isSearching, setIsSearching] = useState(false)
     const handleCloseConversations = () => {
@@ -49,8 +50,8 @@ export function Conversations({closeConversations}: ConversationsProps) {
                 setFriends([])
                 return;
             }
-            const response: MyResponse<ConversationMember[]> = await findFriend(search)
-            console.log("CALL API...", response.data)
+            const response: MyResponse<ConversationDto[]> = await findFriend(search)
+            console.log("FRIENDS: ",response.data)
             setFriends(response.data)
         }
         clearTimeout(timeoutId)
@@ -76,8 +77,8 @@ export function Conversations({closeConversations}: ConversationsProps) {
             return
         }
         curConversation.members.forEach(member => {
-            if(member.id === currentUser?.id)
-                member.notSeen= false
+            if (member.id === currentUser?.id)
+                member.notSeen = false
         })   // must send new update to server
         //Conversation was picked and not showing
         if (curIndex !== -1 && !showChatBoxes[curIndex]) {
@@ -95,7 +96,10 @@ export function Conversations({closeConversations}: ConversationsProps) {
             senderId: currentUser!.id
         }
         console.log("Getting conversation")
-        stompClient?.send("/app/chat.getConversation", JSON.stringify(payload))
+        stompClient?.publish({
+            destination: "/app/chat.getConversation",
+            body: JSON.stringify(payload)
+        })
     }
 
     return (
@@ -133,11 +137,15 @@ export function Conversations({closeConversations}: ConversationsProps) {
                     <ConversationList loading={isLoading} key={"sdf"}>
                         {
                             conversations?.map((conversation: ConversationDto, index: number) => {
+                                if (!conversation.lastMessage) {
+                                    return
+                                }
                                 const lastSendMember: ConversationMember | undefined = conversation.memberMap?.get(conversation?.lastMessage?.senderId)
                                 const currentMember: ConversationMember | undefined = conversation.memberMap?.get(currentUser?.id!)
                                 const otherMembers = conversation.members.filter(value => value.id !== currentUser?.id)
                                 const isGroup: boolean = conversation.memberMap?.size !== 2
-                                const content = conversation.lastMessage.content
+                                const content = conversation.lastMessage?.content
+                                const lastActivityTime = new Date(Date.now()).getTime() - new Date(conversation.lastMessage?.sendTime).getTime()
                                 return (
                                     <>
                                         <Conversation key={conversation.id}
@@ -148,6 +156,9 @@ export function Conversations({closeConversations}: ConversationsProps) {
                                                       name={!isGroup ? otherMembers[0].nickname : "Group chat"}
                                                       onClick={() => onPickConversation(conversation)}
                                                       className={'mx-2 my-0.5 rounded-md'}
+                                                      lastActivityTime={<span style={{
+                                                          color: "teal"
+                                                      }}>{lastActivityTime < 60000 ? 'Hiện tại' : formatDurationConversation(lastActivityTime)}</span>}
                                         >
                                             {
                                                 !isGroup &&
@@ -165,12 +176,16 @@ export function Conversations({closeConversations}: ConversationsProps) {
                         }
                     </ConversationList>
                     :
-                    friends &&
-                    friends.map(value => {
-                        return (
-                            <SearchUserCard key={value.id} data={value}/>
-                        )
-                    })
+                    friends.length !== 0 ?
+                        friends.map(value => {
+                            return (
+                                <SearchUserCard key={value.id} conversation={value} onPickConversation={onPickConversation}/>
+                            )
+                        })
+                        :
+                        <>
+                            <div>Không tìm thấy bạn bè</div>
+                        </>
                 }
 
             </Sidebar>

@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { useAuth } from '../../../../context/oauth2-context';
 import { useModal } from '@lib/hooks/useModal';
 import { Button } from '@components/ui/button';
 import { UserAvatar } from '../user/user-avatar';
@@ -13,6 +12,9 @@ import { Modal } from './modal';
 import { ActionModal } from './action-modal';
 import { DisplayModal } from './display-modal';
 import type { NavLink } from '../sidebar/sidebar';
+import {deleteCookieTokenSSR} from "@lib/helper/serverCookieHandle";
+import {useRouter} from "next/navigation";
+import {useOAuth2} from "../../../../context/oauth2-context";
 
 export type MobileNavLink = Omit<NavLink, 'canBeHidden'>;
 
@@ -65,6 +67,8 @@ export function MobileSidebarModal({
   closeModal
 }: MobileSidebarModalProps): JSX.Element {
   // const { signOut } = useAuth();
+  const router = useRouter()
+  const {signOut} = useOAuth2()
 
   const {
     open: displayOpen,
@@ -85,33 +89,39 @@ export function MobileSidebarModal({
 
   const userLink = `/user/${"username"}`;
   const coverPhotoURL = `/user/${"username"}`;
-
+  const handleSignOut = async () => {
+    // router.prefetch("/login")
+    console.log("SIGN OUT")
+    await deleteCookieTokenSSR();
+    await signOut();
+    router.push("/login");
+  }
   return (
     <>
-      <Modal
-        className='items-center justify-center xs:flex'
-        modalClassName='max-w-xl bg-main-background w-full p-8 rounded-2xl hover-animation'
-        open={displayOpen}
-        closeModal={displayCloseModal}
-      >
-        <DisplayModal closeModal={displayCloseModal} />
-      </Modal>
-      <Modal
-        modalClassName='max-w-xs bg-main-background w-full p-8 rounded-2xl'
-        open={logOutOpen}
-        closeModal={logOutCloseModal}
-      >
-        <ActionModal
-          useIcon
-          focusOnMainBtn
-          title='Log out of Social?'
-          description='You can always log back in at any time. If you just want to switch accounts, you can do that by adding an existing account.'
-          mainBtnLabel='Log out'
-          // action={signOut}
-          action={()=>{}}
-          closeModal={logOutCloseModal}
-        />
-      </Modal>
+      {/*<Modal*/}
+      {/*  className='items-center justify-center xs:flex'*/}
+      {/*  modalClassName='max-w-xl bg-main-background w-full p-8 rounded-2xl hover-animation'*/}
+      {/*  open={displayOpen}*/}
+      {/*  closeModal={displayCloseModal}*/}
+      {/*>*/}
+      {/*  <DisplayModal closeModal={displayCloseModal} />*/}
+      {/*</Modal>*/}
+      {/*<Modal*/}
+      {/*  modalClassName='max-w-xs bg-main-background w-full p-8 rounded-2xl'*/}
+      {/*  open={logOutOpen}*/}
+      {/*  closeModal={logOutCloseModal}*/}
+      {/*>*/}
+      {/*  <ActionModal*/}
+      {/*    useIcon*/}
+      {/*    focusOnMainBtn*/}
+      {/*    title='Log out of Social?'*/}
+      {/*    description='You can always log back in at any time. If you just want to switch accounts, you can do that by adding an existing account.'*/}
+      {/*    mainBtnLabel='Log out'*/}
+      {/*    // action={signOut}*/}
+      {/*    action={()=>{}}*/}
+      {/*    closeModal={logOutCloseModal}*/}
+      {/*  />*/}
+      {/*</Modal>*/}
       <MainHeader
         useActionButton
         className='flex flex-row-reverse items-center justify-between'
@@ -199,13 +209,13 @@ export function MobileSidebarModal({
               className='accent-tab accent-bg-tab flex items-center gap-2 rounded-md p-1.5 font-bold transition
                          hover:bg-light-primary/10 focus-visible:ring-2 first:focus-visible:ring-[#878a8c] 
                          dark:hover:bg-dark-primary/10 dark:focus-visible:ring-white'
-              onClick={logOutOpenModal}
+              onClick={handleSignOut}
             >
               <HeroIcon
                 className='h-5 w-5'
                 iconName='ArrowRightOnRectangleIcon'
               />
-              Log out
+              Đăng xuất
             </Button>
           </nav>
         </div>

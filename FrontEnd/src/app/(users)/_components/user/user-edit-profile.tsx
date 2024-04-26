@@ -38,6 +38,7 @@ type UserEditProfileProps = {
 
 export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
   const { currentUser } = useUser();
+  console.log("Edit User", currentUser)
   const { open, openModal, closeModal } = useModal();
   const [loading, setLoading] = useState(false);
   const { bio, fullName, location, avatar, coverImage, phoneNumber,dateOfBirth } =

@@ -26,7 +26,6 @@ public interface IUserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmailOrPhoneNumber(@Param("email") String email, @Param("phoneNumber") String phoneNumber);
 
     Optional<User> findByPhoneNumber(String phoneNumber);
-
 @Query("SELECT u FROM User u inner join Friendship f on u.id = f.friend.id" +
         " where f.fromUser.id = :userId and lower(u.fullName) like concat('%',lower(:search),'%') ")
     List<User> findFriendByFullname(String userId,String search);

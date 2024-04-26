@@ -74,3 +74,4 @@ export function handlePickedConversations(conversation: ConversationDto, pickedC
     newPickedCon[lastPickedIndex] = conversation;
     return newPickedCon;
 }
+

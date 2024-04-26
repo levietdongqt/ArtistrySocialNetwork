@@ -1,15 +1,16 @@
 'use client'
 import React, {useEffect, useState} from 'react';
 import { MainService } from "@models/main-service";
-import { useUser } from "../../../../../../context/user-context";
-import { createMainService } from "../../../../../../services/main/clientRequest/service";
+import { useUser } from "../../../../../context/user-context";
+import {createExtraService, createMainService} from "../../../../../services/main/clientRequest/service";
 import ImageService , { ImageItem } from "./image-service";
 import { useFormik } from 'formik';
 import ServiceValidation from "@lib/validations/ServiceValidation";
 import {Promotion} from "@models/promotion";
+import {ExtraService} from "@models/extra-service";
 
 
-const CreateMainServiceForm = () => {
+const CreateExtraServiceForm = () => {
     const {currentUser} = useUser();
     const [promotions, setPromotions] = useState<Promotion[]>([]);
 
@@ -28,7 +29,7 @@ const CreateMainServiceForm = () => {
                 console.error('Error:', error);
             });
     }, []);
-    const [mService, setMService] = useState<MainService>({
+    const [eService, setMService] = useState<ExtraService>({
         id: null, // Làm cho giá trị này undefined cho đối tượng mới tạo
         provider: currentUser, // Sử dụng currentUser từ hook useUser
         name: '',
@@ -53,20 +54,20 @@ const CreateMainServiceForm = () => {
         setPromotionId(value);
     };
     const {values, touched, handleSubmit, handleChange, errors } = useFormik({
-        initialValues: mService,
+        initialValues: eService,
         validationSchema: ServiceValidation,
-        onSubmit: async (values: MainService, {setSubmitting, resetForm }) => {
+        onSubmit: async (values: ExtraService, {setSubmitting, resetForm }) => {
             const newService = {
 
                 ...values,
-                imageUrl: mService.imageUrl,
+                imageUrl: eService.imageUrl,
                 promotion: promotionId
 
             };
             console.log('newservice:',newService);
 
             try {
-                const response = await createMainService(newService);
+                const response = await createExtraService(newService);
 
                 console.log("Service created successfully", response);
 
@@ -81,14 +82,14 @@ const CreateMainServiceForm = () => {
     const handleImageListChange = (newImageList: ImageItem[]) => {
         // Chỉ cần cập nhật mService imageUrl thay vì gọi setFieldValue tại đây.
         setMService({
-            ...mService,
+            ...eService,
             imageUrl: newImageList.map((imageItem) => imageItem.src),
         });
     };
 
 
     return (
-        <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded shadow mr-10">
+        <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded shadow">
             <ImageService onImageListChange={handleImageListChange}/>
             <div className="mb-4">
                 <label htmlFor="serviceName" className="block text-gray-700 text-sm font-bold mb-2">
@@ -224,4 +225,4 @@ const CreateMainServiceForm = () => {
 );
 };
 
-export default CreateMainServiceForm;
+export default CreateExtraServiceForm;

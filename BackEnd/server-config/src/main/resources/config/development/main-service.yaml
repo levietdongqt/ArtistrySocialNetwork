@@ -54,7 +54,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka
 
 env:
-  elasticsearch_pass: "JlqYg9P29w+Kmk29QdDa"
+  elasticsearch_pass: "6oamFruO_jZXP7=4RBHL"
   secret_token: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
   firebaseConfig: |
     {
@@ -70,4 +70,8 @@ env:
       "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-qczy2%40artistrysocialnetwork.iam.gserviceaccount.com",
       "universe_domain": "googleapis.com"
     }
+  images:
+    default:
+      avatar: "/images/avatar.png"
+      background: "/images/background.png"
 
