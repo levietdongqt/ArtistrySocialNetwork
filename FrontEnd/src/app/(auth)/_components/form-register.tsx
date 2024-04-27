@@ -1,6 +1,6 @@
 'use client'
 import {useModal} from "@lib/hooks/useModal";
-import {useAuth} from "../../../context/oauth2-context";
+import {useOAuth2} from "../../../context/oauth2-context";
 import {useUser} from "../../../context/user-context";
 import {useRouter} from "next/navigation";
 import {useFormik} from "formik";
@@ -14,7 +14,7 @@ import {CustomIcon} from "@components/ui/custom-icon";
 import RegisterValidation from "@lib/validations/RegisterValidation";
 
 export function FormRegister() {
-    const {signInWithFacebook, signInWithGoogle} = useAuth()
+    const {signInWithFacebook, signInWithGoogle} = useOAuth2()
     const router = useRouter();
     const [isGetGeolocation, setIsGetGeolocation] = useState(false)
     const {values, touched, handleSubmit, handleChange, errors, isValid, resetForm} = useFormik({

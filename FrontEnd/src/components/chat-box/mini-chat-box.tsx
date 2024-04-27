@@ -18,14 +18,13 @@ export default function MiniChatBox({curConversation,onClickCloseMessage,onClick
 
     const {currentUser} = useUser();
     const lastMessage = curConversation.lastMessage
-    const sender = curConversation.memberMap?.get(lastMessage.senderId)
+    const sender = curConversation.memberMap?.get(lastMessage!.senderId)
     const otherMembers = curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id);
 
-    console.log("Mini ChatBox:",otherMembers)
     return (
         <>
             <Tooltip
-                title={`${sender?.id === currentUser?.id ? 'Bạn' : sender?.nickname}: ${lastMessage.content}`}
+                title={`${sender?.id === currentUser?.id ? 'Bạn' : sender?.nickname}: ${lastMessage!.content}`}
                 placement="left"
                 onOpenChange={(isOpen) => {
                     setIsShowCloseMinus(isOpen)

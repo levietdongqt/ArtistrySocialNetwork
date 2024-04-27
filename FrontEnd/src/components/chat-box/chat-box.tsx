@@ -24,6 +24,7 @@ import {ToolTip} from "@components/ui/tooltip";
 import {MyTooltip} from "@components/ui/my-tooltip";
 import {Tooltip} from "antd";
 import MiniChatBox from "@components/chat-box/mini-chat-box";
+import MyConversationHeader from "@components/chat-box/conversation-header";
 
 interface ChatBoxProps {
     isMinusChatBox?: boolean; // The callback prop is an optional function
@@ -39,8 +40,18 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
     const [messageIdFooter, setMessageIdFooter] = useState("")
     const otherMembers = curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id);
     useEffect(() => {
+        if (!curConversation?.messages) {
+            const payload = {
+                conversationId: curConversation?.id,
+                senderId: currentUser!.id
+            }
+            console.log("Getting conversation")
+            stompClient?.publish({
+                destination: "/app/chat.getConversation",
+                body: JSON.stringify(payload)
+            })
+        }
     }, []);
-
 
     useEffect(() => {
         console.log("CHANGE MEMBER CONVERSATION")
@@ -169,65 +180,11 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
                                height: "60vh"
                            }}>
 
-                <ConversationHeader>
-                    {
-                        otherMembers?.length === 1 ?
-                            <Avatar
-                                name={otherMembers[0].nickname}
-                                src={otherMembers[0].avatar}
-                            />
-                            :
-                            <AvatarGroup size={"md"} hoverToFront={true} style={{
-                                display: 'flex', flexDirection: 'row'
-                            }}>
-                                <div is={"Avatar"}>
-                                    <Avatar
-                                        name={"Nhóm"}
-                                        src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"
-                                    />
-                                </div>
-                                <div is={"Avatar"}>
-                                    <Avatar
-                                        name={"Nhóm"}
-                                        src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"
-                                    />
-                                </div>
-                            </AvatarGroup>
-                    }
-                    <ConversationHeader.Content
-                        title={"HELLO"}
-                        info="Active 10 mins ago"
-                        userName={curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id).pop()?.nickname}
-                    />
-                    <ConversationHeader.Actions>
-                        <MyTooltip content={"Thêm"}>
-                            <button className="relative overflow-hidden">
-                            <span
-                                className="block w-full h-full bg-gray-200 rounded-full opacity-0 transition-opacity duration-300 absolute inset-0 hover:opacity-50">
-                            </span>
-                                <InfoButton/>
-                            </button>
-                        </MyTooltip>
-                        <MyTooltip content={"Thu nhỏ"}>
-                            <button className="relative overflow-hidden"
-                                    onClick={() => onClickMinusChatBox(false)}
-                            >
-                            <span
-                                className="block w-full h-full bg-gray-200 rounded-full opacity-0 transition-opacity duration-300 absolute inset-0 hover:opacity-50">
-                            </span>
-                                <CustomIcon iconName={"MinusIcon"}/>
-                            </button>
-                        </MyTooltip>
-                        <MyTooltip content={"Đóng"}>
-                            <button className="relative overflow-hidden" onClick={onClickCloseMessage}>
-                                <span
-                                    className="block w-full h-full bg-gray-200 rounded-full opacity-0 transition-opacity duration-300 absolute inset-0 hover:opacity-50">
-                                </span>
-                                <CustomIcon iconName={"CloseMessage"}/>
-                            </button>
-                        </MyTooltip>
-                    </ConversationHeader.Actions>
-                </ConversationHeader>
+                <div is={"ConversationHeader"}>
+                    <MyConversationHeader otherMembers={otherMembers}
+                                          onClickCloseMessage={onClickCloseMessage}
+                                          onClickMinusChatBox={onClickMinusChatBox}/>
+                </div>
                 <MessageList
                     className="flex flex-col justify-end  h-full pb-3 text-center text-lg"
                     scrollBehavior="smooth"
@@ -315,7 +272,7 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
                 <div is={"MessageInput"} className={"flex items-center"}>
                     <MessageInput placeholder="Type message here"
                                   fancyScroll={true}
-                                  autoFocus = {true}
+                                  autoFocus={true}
                                   sendButton={false}
                                   style={{
                                       width: "100%"

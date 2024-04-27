@@ -8,7 +8,8 @@ const initState: stateType = {
     pickedConversations: [undefined, undefined, undefined], // Mảng rỗng ban đầu
     curConversation: undefined,
     showChatBoxes: [false, false, false],
-    showConversations: false
+    showConversations: false,
+    showChatAlert: true
 }
 
 export type  stateType = {
@@ -17,9 +18,11 @@ export type  stateType = {
     curConversation: ConversationDto | undefined;
     showChatBoxes: boolean[];
     showConversations: boolean;
+    showChatAlert: boolean;
 }
 
 const enum ACTION_TYPE {
+
     SET_CONVERSATIONS = "SET_CONVERSATIONS",
     ADD_CONVERSATION = "ADD_CONVERSATION",
     UPDATE_CONVERSATIONS = "UPDATE_CONVERSATIONS",
@@ -27,7 +30,8 @@ const enum ACTION_TYPE {
     SET_PICKED_CONVERSATIONS = "SET_PICKED_CONVERSATIONS",
     UPDATE_MESSAGE = "UPDATE_MESSAGE",
     SHOW_CONVERSATIONS = "SHOW_CONVERSATIONS",
-    SHOW_CHAT_BOXES = "SHOW_CHAT_BOXES"
+    SHOW_CHAT_BOXES = "SHOW_CHAT_BOXES",
+    SHOW_CHAT_ALERT = "SHOW_CHAT_ALERT"
 
 }
 
@@ -138,6 +142,12 @@ const reducer = (state: any, action: any): stateType => {
             newState = {
                 ...state,
                 showChatBoxes: action.payload
+            }
+            break;
+        case ACTION_TYPE.SHOW_CHAT_ALERT:
+            newState = {
+                ...state,
+                showChatAlert: action.payload
             }
             break;
         default:

@@ -1,6 +1,6 @@
 'use client'
 import {Avatar, Conversation, ConversationList, Search, Sidebar} from "@chatscope/chat-ui-kit-react";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {CustomIcon} from "@components/ui/custom-icon";
 import useSWR from "swr";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
@@ -30,9 +30,18 @@ export function Conversations({closeConversations}: ConversationsProps) {
     const [friends, setFriends] = useState<ConversationDto[]>([])
     const isInMessagePage = usePathname() === "/message"
     const [isSearching, setIsSearching] = useState(false)
-    const handleCloseConversations = () => {
-        closeConversations?.();
-    }
+
+    useEffect(() => {
+        console.log("CONVERSATION MOUNT")
+        if (isInMessagePage) {
+            dispatch(ChatAction(false, ACTION_TYPE.SHOW_CHAT_ALERT))
+        }
+        return () => {
+            if (isInMessagePage) {
+                dispatch(ChatAction(true, ACTION_TYPE.SHOW_CHAT_ALERT))
+            }
+        }
+    }, []);
     const {
         isLoading,
     } = useSWR(currentUser && getConversationByUserId(currentUser.id), fetcherWithToken, {
@@ -51,7 +60,7 @@ export function Conversations({closeConversations}: ConversationsProps) {
                 return;
             }
             const response: MyResponse<ConversationDto[]> = await findFriend(search)
-            console.log("FRIENDS: ",response.data)
+            console.log("FRIENDS: ", response.data)
             setFriends(response.data)
         }
         clearTimeout(timeoutId)
@@ -89,17 +98,9 @@ export function Conversations({closeConversations}: ConversationsProps) {
             const newIndex = newPickedCon.findIndex(value => value?.id === curConversation.id)
             newShowChatBoxes[newIndex] = true
         }
-        dispatch(ChatAction(newShowChatBoxes, ACTION_TYPE.SHOW_CHAT_BOXES))
+        !isInMessagePage && dispatch(ChatAction(newShowChatBoxes, ACTION_TYPE.SHOW_CHAT_BOXES))
         setReRender(prev => prev + 1)
-        const payload = {
-            conversationId: curConversation.id,
-            senderId: currentUser!.id
-        }
-        console.log("Getting conversation")
-        stompClient?.publish({
-            destination: "/app/chat.getConversation",
-            body: JSON.stringify(payload)
-        })
+
     }
 
     return (
@@ -179,7 +180,8 @@ export function Conversations({closeConversations}: ConversationsProps) {
                     friends.length !== 0 ?
                         friends.map(value => {
                             return (
-                                <SearchUserCard key={value.id} conversation={value} onPickConversation={onPickConversation}/>
+                                <SearchUserCard key={value.id} conversation={value}
+                                                onPickConversation={onPickConversation}/>
                             )
                         })
                         :
