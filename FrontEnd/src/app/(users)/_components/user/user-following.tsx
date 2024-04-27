@@ -30,9 +30,9 @@ export function UserFollowing({
   );  
   return (
     <p className="rounded bg-main-search-background px-1 text-xs">
-      {data?.data.follow ? FollowButtonType.FOLLOW : FollowButtonType.UN_FOLLOW}
+      {data?.data?.follow ? FollowButtonType.FOLLOW : FollowButtonType.UN_FOLLOW}
 
-      {data?.data.friend ? ` | ${FollowButtonType.FRIEND}`:``}
+      {data?.data?.friend ? ` | ${FollowButtonType.FRIEND}`:``}
     </p>
   );
 }

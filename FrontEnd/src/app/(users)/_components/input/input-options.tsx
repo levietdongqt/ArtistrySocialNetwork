@@ -13,6 +13,7 @@ import {CustomIcon} from '@components/ui/custom-icon';
 import cn from "clsx";
 import {Popper} from "react-popper";
 import {Popover} from "antd";
+import * as repl from "node:repl";
 type Options = {
   name: string;
   iconName: IconName;
@@ -55,6 +56,7 @@ const options: Readonly<Options> = [
 
 type InputOptionsProps = {
   reply?: boolean;
+  childComments?:boolean;
   modal?: boolean;
   inputLimit: number;
   inputLength: number;
@@ -68,6 +70,7 @@ type InputOptionsProps = {
 
 export function InputOptions({
   reply,
+                               childComments,
   modal,
   inputLimit,
   inputLength,
@@ -106,7 +109,6 @@ export function InputOptions({
 
   const handleOptionClick = (event: React.MouseEvent, index: number) => {
     event.stopPropagation();
-    console.log('handleOptionClick called');
     if (index === 0) {
       onClick();
     } else if (index === 3) {
@@ -184,15 +186,30 @@ export function InputOptions({
             </>
           )}
         </motion.div>
-        <Button
-          type='submit'
-          className='accent-tab bg-main-accent px-4 py-1.5 font-bold text-white
+        {
+          childComments ? (
+                <Button
+                    type='submit'
+                    className='accent-tab bg-main-accent px-4 py-1.5 font-bold text-white
                      enabled:hover:bg-main-accent/90
                      enabled:active:bg-main-accent/75'
-          disabled={!isValidTweet}
-        >
-          {reply ? 'Reply' : 'Post'}
-        </Button>
+                    disabled={!isValidTweet}
+                >
+                  <HeroIcon iconName={'PaperAirplaneIcon'} className={'accent-accent-blue h-4 w-4'}/>
+                  <ToolTip tip='Comment' modal={modal} />
+                </Button>
+            ) : (
+              <Button
+                  type='submit'
+                  className='accent-tab bg-main-accent px-4 py-1.5 font-bold text-white
+                     enabled:hover:bg-main-accent/90
+                     enabled:active:bg-main-accent/75'
+                  disabled={!isValidTweet}
+              >
+                {'Post'}
+              </Button>
+          )
+        }
       </div>
     </motion.div>
   );

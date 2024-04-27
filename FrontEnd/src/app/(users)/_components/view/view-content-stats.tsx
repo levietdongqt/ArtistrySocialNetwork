@@ -7,7 +7,7 @@ type viewContentStats = {
   tagMove: number;
   commentMove: number;
   currentLikes: number;
-  currentTweets: number;
+  currentTag: number;
   currentComment: number;
   isStatsVisible: boolean;
   userPostLikes?: [];
@@ -25,21 +25,20 @@ export function ViewContentStats({
                                    commentMove,
   tagUserPosts,
   currentLikes,
-  currentTweets,
+                                   currentTag,
                                    currentComment,
   isStatsVisible
 }: viewContentStats): JSX.Element {
   const allStats: Readonly<Stats[]> = [
     ['Bình luận', commentMove, currentComment],
-    ['Retweet', tagMove, currentTweets],
-    ['Thích', likeMove, currentLikes]
+    ['Tag', tagMove, currentTag],
+    ['Đã Thích', likeMove, currentLikes]
   ];
 
   return (
     <>
       {isStatsVisible && (
         <motion.div
-
           className='flex gap-4 px-1 py-1 mt-1 text-light-secondary dark:text-dark-secondary
                      [&>button>div]:font-bold [&>button>div]:text-light-primary 
                      dark:[&>button>div]:text-dark-primary'

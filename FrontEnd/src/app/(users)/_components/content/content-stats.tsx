@@ -10,7 +10,11 @@ import {likeComment} from "../../../../services/realtime/ServerAction/CommentSer
 import {toast} from "react-toastify";
 import {HeroIcon} from "@components/ui/hero-icon";
 import {ToolTip} from "@components/ui/tooltip";
-import {mutate} from "swr";
+import useSWR, {mutate} from "swr";
+import {getTotalLikePostById} from "../../../../services/realtime/clientRequest/postClient";
+import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import {Button} from "@components/ui/button";
+import ChildComment from "../comment/ChildComment";
 
 
 type PostStatsProps =  {
@@ -31,6 +35,7 @@ type PostStatsProps =  {
     userPostLikes?: [];
     tagUserPosts?: [];
     totalComments?: number;
+    handleParentComment?: (isParent:boolean)=>void;
 };
 
 export function ContentStats({
@@ -47,30 +52,38 @@ export function ContentStats({
   openModal,
    comment,
  replyTags,
- commentsId
+ commentsId,
+                                 handleParentComment
 }: PostStatsProps): JSX.Element {
-    const totalLikes = userPostLikes?.map((data:any) => data?.id).length as number || 0;
+    const {data:totalPost,mutate} = useSWR(getTotalLikePostById(postId), fetcherWithToken);
     const totalTag = tagUserPosts?.length;
     const [isLiked, setIsLiked] = useState(true);
+    const [likeCount, setLikeCount] = useState<number>();
+    const [isParent, setIsParent] = useState(false);
   const [{ currentComment , currentTag, currentLikes }, setCurrentStats] =
     useState({
       currentComment: totalComments,
-      currentLikes: totalLikes,
+      currentLikes: likeCount,
         currentTag: totalTag
     });
     useEffect(() => {
         const postIsLiked = userPostLikes?.map((data:any) => data.id).includes(userId) as boolean;
         setIsLiked(postIsLiked);
-    }, [userPostLikes]);
+
+    }, [userPostLikes,postId,userId]);
     useEffect(() => {
+        setLikeCount(totalPost?.data?.totalLikes);
+    }, [totalPost]);
+    useEffect(() => {
+
         setCurrentStats({
             currentComment: totalComments,
-            currentLikes: totalLikes,
+            currentLikes: likeCount,
             currentTag: totalTag
         });
-    }, [totalComments, totalLikes, totalTag]);
-  const handleLikes = async (): Promise<void> => {
+    }, [totalComments, likeCount,totalTag]);
 
+  const handleLikes = async (): Promise<void> => {
       if(userId !== null){
           if(!replyTags){
               try {
@@ -86,6 +99,7 @@ export function ContentStats({
                       },
                   };
                   setIsLiked(!isLiked);
+                  await mutate(getTotalLikePostById(postId));
                   await likePosts(dataLike);
               } catch (error) {
                   console.error('Failed to update like status:', error);
@@ -116,23 +130,21 @@ export function ContentStats({
       }
 
   };
-
-
   const commentMove = useMemo(
     () => (totalComments as number > (currentComment as number)  ? -25 : 25),
     [totalComments]
   );
 
   const likeMove = useMemo(
-    () => (totalLikes > currentLikes ? -25 : 25),
-    [totalLikes]
+    () => (likeCount > currentLikes ? -25 : 25),
+    [likeCount]
   );
   const tagMove = useMemo(
     () => (totalTag as number > (currentTag as number) ? -25 : 25),
     [totalTag]
   );
   // const tweetIsPosts = tagUserPosts?.includes(userId);
-  const isStatsVisible = !!(totalComments || totalTag || totalLikes);
+  const isStatsVisible = !!(totalComments || totalTag || likeCount);
   return (
     <>
         {
@@ -141,8 +153,8 @@ export function ContentStats({
                     likeMove={likeMove}
                     tagMove={tagMove}
                     commentMove={commentMove}
-                    currentLikes={currentLikes}
-                    currentTweets={currentTag as number}
+                    currentLikes={likeCount}
+                    currentTag={currentTag as number}
                     currentComment={currentComment as number}
                     isStatsVisible={isStatsVisible}
                 />
@@ -184,15 +196,14 @@ export function ContentStats({
           }
           {
               replyTags && (
-                  <button className={cn(`group ml-3 flex items-center gap-1.5 p-0 transition-none 
+                  <Button onClick={() => handleParentComment ? handleParentComment(true) : null} className={cn(`group ml-3 flex items-center gap-1.5 p-0 transition-none 
                         disabled:cursor-not-allowed inner:transition inner:duration-200`)}>
                       <i className={'relative rounded-full p-1 not-italic group-focus-visible:ring-2'}>
                           <HeroIcon iconName={'ChatBubbleLeftRightIcon'} className={'h-5 w-5'} />
                           <ToolTip tip={'Phản hồi'} />
                       </i>
                       <p>Phản hồi</p>
-                  </button>
-
+                  </Button>
               )
           }
       </div>

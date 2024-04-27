@@ -147,6 +147,14 @@ public class PostService implements IPostService {
         var friendsFollow = friendForeignClient.getFollowFriends(userId);
         return friendsFollow.getData().stream().map(UserDTO::getId).collect(Collectors.toList());
     }
+
+    public PostResponse showTotalLikesByPostId(String postId){
+        Optional<Post> getPost = postRepository.showTotalLikesByPostId(postId);
+        if(getPost.isEmpty()){
+            throw new NotFoundException("No post with postId " + postId);
+        }
+        return modelMapper.map(getPost.get(), PostResponse.class);
+    }
     public long getCountPost(){
         return postRepository.count();
     }

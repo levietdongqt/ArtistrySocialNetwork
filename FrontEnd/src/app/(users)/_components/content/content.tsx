@@ -125,7 +125,7 @@ export function ContentPost(tweet: TweetProps) {
       >
         <div className='grid grid-cols-[auto,1fr] gap-x-3 gap-y-1'>
           <div className='flex flex-col items-center gap-2'>
-            <UserTooltip avatarCheck modal={modal} {...postUserData} >
+            <UserTooltip avatarCheck={true} modal={modal} {...postUserData} >
               <UserAvatar src={avatar} alt={fullName ?? 'tao nè 1'} username={fullName ?? 'Customer 1'} />
             </UserTooltip>
             {parentTweet && (
@@ -137,7 +137,8 @@ export function ContentPost(tweet: TweetProps) {
               <div className='flex gap-1 truncate xs:overflow-visible xs:whitespace-normal'>
                 <UserTooltip modal={modal} {...postUserData}>
                     <UserName
-                        name={fullName ?? 'tào nè 1'}
+                        id={ownerId}
+                        name={fullName ?? 'Customer'}
                         username={fullName}
                         verified={verified}
                         className='text-light-primary dark:text-dark-primary'

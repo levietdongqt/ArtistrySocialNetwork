@@ -4,8 +4,10 @@ import cn from 'clsx';
 import { Dialog } from '@headlessui/react';
 import { Button } from '@components/ui/button';
 import { CustomIcon } from '@components/ui/custom-icon';
-import {Input, Select, Space} from "antd";
+import {Form, Input, Select, Space,} from "antd";
 import TextArea from "react-textarea-autosize";
+import {useFormik} from "formik";
+
 
 
 type ActionModalProps = {
@@ -50,7 +52,6 @@ export function ActionModal({
     setValueSelect(value);
   };
 
-
   const options =[
     { value: 'Ảnh khỏa thân', label: 'Ảnh khỏa thân' },
     { value: 'Spam', label: 'Spam' },
@@ -62,65 +63,74 @@ export function ActionModal({
     { value: 'Vấn đề khác', label: 'Vấn đề khác' },
   ]
   return (
-    <div className='flex flex-col gap-6'>
-      <div className='flex flex-col gap-4'>
-        {useIcon && (
-          <i className='mx-auto'>
-            <CustomIcon
-              className='h-10 w-10 text-accent-blue dark:text-twitter-icon'
-              iconName='GameIcon'
-            />
-          </i>
-        )}
-        <div className='flex flex-col gap-2'>
-          <Dialog.Title className={cn(`text-xl font-bold`, report ? 'text-center ' : '')}>{title}</Dialog.Title>
-          <Dialog.Description className={cn(`text-light-secondary dark:text-dark-secondary`,
-              report ? 'text-sm text-gray-400' : '')}>
-            {description}
-          </Dialog.Description>
-        </div>
-        {report && (<div className={'flex flex-col gap-2'}>
-          <div>
-            <p className={'text-accent-blue mb-1'}>Tiêu đề</p>
-              <Select
-                  defaultValue="Chọn Tiêu đề bạn muốn báo cáo"
-                  className={'w-full'}
-                  onChange={handleSelectValue}
-                  options={options}
-              />
+      <div className='flex flex-col gap-6'>
+        <Form onFinish={() => {
+          report ? actionReport(valueSelect, valueTextArea) : action();
+        }}>
+          <div className='flex flex-col gap-4'>
+            {useIcon && (
+                <i className='mx-auto'>
+                  <CustomIcon
+                      className='h-10 w-10 text-accent-blue dark:text-twitter-icon'
+                      iconName='GameIcon'
+                  />
+                </i>
+            )}
+            <div className='flex flex-col gap-2'>
+              <Dialog.Title className={cn(`text-xl font-bold`, report ? 'text-center ' : '')}>{title}</Dialog.Title>
+              <Dialog.Description className={cn(`text-light-secondary dark:text-dark-secondary`,
+                  report ? 'text-sm text-gray-400' : '')}>
+                {description}
+              </Dialog.Description>
+            </div>
+
+            {report && (<div className={'flex flex-col gap-2'}>
+              <div>
+                <p className={'text-accent-blue mb-1'}>Tiêu đề</p>
+                <Form.Item name={'select'} rules={[{required:true,message:'Chọn tiêu đề muốn báo cáo'}]} >
+                  <Select
+                      defaultValue="Chọn Tiêu đề bạn muốn báo cáo"
+                      className={'w-full'}
+                      onChange={handleSelectValue}
+                      options={options}
+                  />
+                </Form.Item>
+              </div>
+              <div>
+                <p className={'text-accent-blue mb-1'}>Nội dung</p>
+                <TextArea onChange={(e) => setValueTextArea(e.target.value)}
+                          className={'w-full border-black border-solid border-[1.5px] rounded py-1 px-4 min-w-0 resize-none bg-transparent text-[17px] placeholder:text-light-secondary dark:placeholder:text-dark-secondary'}
+                          maxRows={6} minRows={6}/>
+              </div>
+            </div>)}
           </div>
-          <div>
-            <p className={'text-accent-blue mb-1'}>Nội dung</p>
-            <TextArea onChange={(e) => setValueTextArea(e.target.value)}  className={'w-full border-black border-solid border-[1.5px] rounded py-1 px-4 min-w-0 resize-none bg-transparent text-[17px] placeholder:text-light-secondary dark:placeholder:text-dark-secondary'} maxRows={6} minRows={6}/>
-          </div>
-        </div>)}
-      </div>
-      <div className='flex flex-col gap-3 inner:py-2 inner:font-bold'>
-        <button
-            className={cn(
-                'custom-button main-tab text-white',
-            mainBtnClassName ??
-              `bg-light-primary hover:bg-light-primary/90 focus-visible:bg-light-primary/90 active:bg-light-primary/80
+          <div className='flex flex-col gap-3 inner:py-2 inner:font-bold'>
+            <Button
+                type='submit'
+                ref={mainBtn}
+                className={cn(
+                    'custom-button main-tab text-white',
+                    mainBtnClassName ??
+                    `bg-light-primary hover:bg-light-primary/90 focus-visible:bg-light-primary/90 active:bg-light-primary/80
                dark:bg-light-border dark:text-light-primary dark:hover:bg-light-border/90
                dark:focus-visible:bg-light-border/90 dark:active:bg-light-border/75`
-          )}
-          ref={mainBtn}
-          onClick={() => report ? actionReport(valueSelect, valueTextArea) : action()}
-        >
-          {mainBtnLabel}
-        </button>
-        <Button
-          className={cn(
-            'border border-light-line-reply dark:border-light-secondary dark:text-light-border',
-            secondaryBtnClassName ??
-              `hover:bg-light-primary/10 focus-visible:bg-light-primary/10 active:bg-light-primary/20
+                )}
+            >
+              {mainBtnLabel}
+            </Button>
+            <Button
+                className={cn(
+                    'border border-light-line-reply dark:border-light-secondary dark:text-light-border',
+                    secondaryBtnClassName ??
+                    `hover:bg-light-primary/10 focus-visible:bg-light-primary/10 active:bg-light-primary/20
                dark:hover:bg-light-border/10 dark:focus-visible:bg-light-border/10 dark:active:bg-light-border/20`
-          )}
-          onClick={closeModal}
-        >
-          {secondaryBtnLabel ?? 'Cancel'}
-        </Button>
+                )}
+                onClick={closeModal}
+            >
+              {secondaryBtnLabel ?? 'Cancel'}
+            </Button>
+          </div>
+        </Form>
       </div>
-    </div>
   );
 }

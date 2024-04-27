@@ -14,7 +14,7 @@ public interface IPostService {
     List<PostResponse> findAll(int limit, int pageIndex, String userId);
     public boolean deleteAll();
     public Post findById(String id);
-
+    PostResponse showTotalLikesByPostId(String postId);
     public Post updateLikeForPost(String postId, User userLike);
 
     public Post updateDislikeForPost(String postId,User userLike);

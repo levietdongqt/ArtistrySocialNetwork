@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import cn from 'clsx';
-import { useAuth } from '../../../../context/oauth2-context';
 import { useModal } from '@lib/hooks/useModal';
 import { Modal } from '../modal/modal';
 import { ContentReplyModal } from '../modal/content-reply-modal';
@@ -87,6 +86,7 @@ export function ViewContent(post: ViewPostProps): JSX.Element {
             <div className='flex flex-col truncate xs:overflow-visible xs:whitespace-normal'>
               <UserTooltip {...postUserData}>
                 <UserName
+                    id={ownerId}
                     className='-mb-1'
                     name={fullName}
                     username={fullName}

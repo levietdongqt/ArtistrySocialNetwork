@@ -30,30 +30,6 @@ export function ContentShare({
   viewTweet
 }: PostShareProps): JSX.Element {
 
-  const handleBookmark =
-      (closeMenu: () => void, args:string, useid:string,postid:string) =>
-          async (): Promise<void> => {
-            const type = args;
-            const data = {
-              postId:  postid,
-              userId: useid
-            }
-              await bookmarksPost(data)
-
-            closeMenu();
-            toast.success(
-                type === 'bookmark'
-                    ? (): JSX.Element => (
-                        <span className='flex gap-2'>
-                Bài viết bạn đã lưu
-                <Link href='/bookmarks'>
-                  <p className='custom-underline font-bold'>View</p>
-                </Link>
-              </span>
-                    )
-                    : 'Bài post đã xóa khỏi danh sách lưu'
-            );
-          };
 
 
   const handleCopy = (closeMenu: () => void) => async (): Promise<void> => {
@@ -62,11 +38,6 @@ export function ContentShare({
     toast.success('Đã copy to clipboard');
   };
 
-  const {data: userBookmarks, isLoading} = useSWR(getBookmarksByUserId(userId) ,fetcherWithToken,{
-      refreshInterval: 3000,
-  });
-
-  const tweetIsBookmarked = !!userBookmarks?.data?.some((items:any) => items.postId === postId);
 
   return (
     <Popover className='relative'>
@@ -108,29 +79,7 @@ export function ContentShare({
                   <HeroIcon iconName='LinkIcon' />
                   Copy đường dẫn post
                 </Popover.Button>
-                {!tweetIsBookmarked ? (
-                  <Popover.Button
-                    className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
-                    as={Button}
-                    onClick={preventBubbling(
-                      handleBookmark(close, 'bookmark', userId, postId)
-                    )}
-                  >
-                    <HeroIcon iconName='BookmarkIcon' />
-                    Lưu bài post
-                  </Popover.Button>
-                ) : (
-                  <Popover.Button
-                    className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
-                    as={Button}
-                    onClick={preventBubbling(
-                      handleBookmark(close, 'unbookmark', userId, postId)
-                    )}
-                  >
-                    <HeroIcon iconName='BookmarkSlashIcon' />
-                    Xóa bài post đã lưu
-                  </Popover.Button>
-                )}
+
               </Popover.Panel>
             )}
           </AnimatePresence>

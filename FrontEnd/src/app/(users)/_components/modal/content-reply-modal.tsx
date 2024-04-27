@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef, useReducer} from "react";
 import useSWR, {mutate} from "swr";
 import { Loading } from "@components/ui/loading";
 import { AnimatePresence } from "framer-motion";
@@ -14,6 +14,8 @@ import {useSocket} from "../../../../context/websocket-context1";
 import SockJS from "sockjs-client";
 import {Client, over} from "webstomp-client";
 import {Stomp} from "@stomp/stompjs";
+import commentsReducer from "../comment/commentReducer";
+
 
 type TweetReplyModalProps = {
     post: TweetProps;
@@ -25,13 +27,12 @@ export function ContentReplyModal({
                                       closeModal
                                   }: TweetReplyModalProps): JSX.Element {
     const {stompClient} = useSocket();
-    const [replieDatas  ,setReplieData] = useState<any>([]);
-    const [joinCommentArray  ,setJoinCommentArray] = useState<any[]>([]);
+    const [state, dispatch] = useReducer(commentsReducer, { comments: [] });
     const socketRef =useRef<Client | null>(null);
 
     useEffect(() => {
        var subscription = stompClient?.subscribe('/topic/comments/' + post.id, function (comment) {
-           setReplieData(JSON.parse(comment.body));
+           dispatch({ type: 'ADD_REPLIES', payload: JSON.parse(comment.body) });
         });
     return () => {
         if (subscription) {
@@ -45,19 +46,16 @@ export function ContentReplyModal({
     );
     // Fetch comments, ensure that we don't re-fetch if hasFetched is true
     const { data: commentsData, isLoading: repliesLoading,mutate } = useSWR(
-        getCommentByPost(post?.id), fetcherWithToken,{
-            refreshInterval:3000
-        }
+        getCommentByPost(post?.id), fetcherWithToken
     );
-    console.log("show" ,joinCommentArray);
     useEffect(() => {
-        if (commentsData) {
-            setJoinCommentArray([...replieDatas, ...commentsData?.data]);
+        if (commentsData && commentsData.data) {
+            dispatch({ type: 'SET_INITIAL_COMMENTS', payload: commentsData.data });
         }
-    }, [commentsData, replieDatas]);
+    }, [commentsData]);
+
     const handleCloseModal = () => {
         closeModal();
-        mutate(getCommentByPost(post?.id)); // This will revalidate the data
     };
     return (
         <div className="relative">
@@ -89,11 +87,11 @@ export function ContentReplyModal({
                 }
                 <div className={`accent-tab hover-card relative flex flex-col gap-y-4 px-4 py-3 outline-none duration-200`}>
                     {
-                        repliesLoading ?(
+                        repliesLoading ? (
                             <Loading className='mt-5' />
                         ) : (
                             <AnimatePresence mode='popLayout'>
-                                {joinCommentArray?.map((commentData:any) => (
+                                {state.comments?.map((commentData:any) => (
                                     <Comment parentTweet comment replyTags {...commentData} key={commentData.id} />
                                 ))}
                             </AnimatePresence>

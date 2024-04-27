@@ -16,13 +16,10 @@ import {useUser} from "../../../../context/user-context";
 import { postPosts1} from "../../../../services/realtime/ServerAction/PostService";
 import {uploadImages} from "../../../../firebase/utils";
 import {postComment} from "../../../../services/realtime/ServerAction/CommentService";
-import {Popover} from "antd";
-import useSWR from "swr";
+import useSWR , {mutate}from "swr";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
-
 import {getFriendByUserId} from "../../../../services/main/clientRequest/friendsClient";
-
-
+import {getPostsLimit} from "../../../../services/realtime/clientRequest/postClient";
 type InputProps = {
   postID?: string;
   modal?: boolean;
@@ -33,6 +30,8 @@ type InputProps = {
   children?: ReactNode;
   replyModal?: boolean;
   closeModal?: () => void;
+  childComments?: boolean;
+  fullName?: string;
 };
 
 export const variants: Variants = {
@@ -49,7 +48,8 @@ export function Input({
   disabled,
   children,
   replyModal,
-  closeModal
+  closeModal,
+                        childComments,fullName
 }: InputProps): JSX.Element {
   const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
   const [imagesPreview, setImagesPreview] = useState<ImagesPreview>([]);
@@ -72,6 +72,7 @@ export function Input({
     },
     []
   );
+  const {mutate} = useSWR(getPostsLimit(currentUser?.id,7,0),fetcherWithToken);
 
   const sendPost = async (): Promise<void> => {
     try {
@@ -90,9 +91,10 @@ export function Input({
         sendUserCoverImage: currentUser?.coverImage || null,
         sendUserBio: currentUser?.bio || null,
         sendVerified: currentUser?.verified
-      } as any;
+      };
       await sleep(200);
       await postPosts1(postData);
+      await mutate();
     }else{
       const commentData = {
         postId: postID,
@@ -188,12 +190,13 @@ export function Input({
   const handleChange = ({
     target: { value }
   }: ChangeEvent<HTMLTextAreaElement>): void => {
+    if ((value.includes(' @') || value.startsWith('@')) && !value.includes('@ ')) {
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
     setInputValue(value)
   };
-
-  const {data:friends} = useSWR(getFriendByUserId(currentUser?.id as string),fetcherWithToken);
-
-
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -218,6 +221,7 @@ export function Input({
         '-mx-4': reply,
         'gap-2': replyModal,
         'cursor-not-allowed': disabled,
+
       })}
       onSubmit={handleSubmit}
     >
@@ -235,14 +239,20 @@ export function Input({
                         : 'border-b-2 border-light-border dark:border-dark-border',
                 (disabled || loading) && 'pointer-events-none opacity-50',
                 {
-                  'sticky z-10 bottom-[0px] bg-white dark:bg-white pt-2': comment
+                  'sticky z-10 bottom-[0px] bg-white dark:bg-white pt-2': comment,
+                  'px-0 !pl-10 !py-0' : childComments
                 }
             )}
             htmlFor={formId}
         >
           <UserAvatar src={currentUser?.avatar as string} alt={currentUser?.fullName as string} username={currentUser?.fullName as string} />
-          <div className='flex w-full flex-col gap-4'>
+          <div className={cn(`flex w-full flex-col gap-4`,{
+            '!gap-0': childComments
+          })}>
             <InputForm
+                fullName={fullName}
+                showSuggestion={showSuggestions}
+                childComments={childComments}
                 modal={modal}
                 reply={reply}
                 comment={comment}
@@ -271,6 +281,7 @@ export function Input({
             <AnimatePresence initial={false}>
               {(reply ? reply && visited && !loading : !loading) && (
                   <InputOptions
+                      childComments={childComments}
                       reply={reply}
                       modal={modal}
                       inputLimit={inputLimit}

@@ -15,10 +15,15 @@ import { CustomIcon } from '@components/ui/custom-icon';
 import type { Variants } from 'framer-motion';
 import type { Post } from '@models/post';
 import {useUser} from "../../../../context/user-context";
-import {mutate} from "swr";
+import useSWR, {mutate} from "swr";
 import {deletePosts1} from "../../../../services/realtime/ServerAction/PostService";
 import {deleteComment} from "../../../../services/realtime/ServerAction/CommentService";
 import {createReport} from "../../../../services/realtime/ServerAction/ReportService";
+import {getBookmarksByUserId} from "../../../../services/realtime/clientRequest/bookmarksClient";
+import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import {bookmarksPost} from "../../../../services/realtime/ServerAction/bookmarksService";
+import Link from "next/link";
+import {useEffect, useState} from "react";
 
 export const variants: Variants = {
   initial: { opacity: 0, y: -25 },
@@ -73,7 +78,7 @@ export function ContentAction({
   const { currentUser } = useUser();
   const { push } = useRouter();
   const userId = currentUser?.id as string;
-
+    const [isCheckBookmark, setIsCheckBookmark] = useState(false);
   const {
     open: removeOpen,
     openModal: removeOpenModal,
@@ -100,7 +105,6 @@ export function ContentAction({
                 // hasImages && manageTotalPhotos('decrement', createdBy),
                 // parentId && manageReply('decrement', parentId)
             ]);
-            await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/get-posts?limit=${20}&offset=${0}`, null, false);
             toast.success(
                 `bài viết bạn đã xóa`
             );
@@ -112,7 +116,6 @@ export function ContentAction({
                 // hasImages && manageTotalPhotos('decrement', createdBy),
                 // parentId && manageReply('decrement', parentId)
             ]);
-            await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/get-posts?limit=${20}&offset=${0}`, null, false);
             toast.success(
                 `bài viết bạn đã bình luận này`
             );
@@ -120,6 +123,43 @@ export function ContentAction({
         }
     }
   };
+    const {data: userBookmarks, isLoading} = useSWR(getBookmarksByUserId(userId),fetcherWithToken);
+    useEffect(() => {
+        mutate(getBookmarksByUserId(userId)).then(()=>{
+
+        });
+    }, [isCheckBookmark]);
+    const handleBookmark =
+        (closeMenu: () => void, args:string, useid:string,postid:string) =>
+            async (): Promise<void> => {
+                const type = args;
+                const data = {
+                    postId:  postid,
+                    userId: useid
+                }
+                    setIsCheckBookmark(prevState => !prevState);
+                    await mutate(async () =>{
+                        try{
+                            await bookmarksPost(data)
+                        }catch(error){
+                            console.log(error);
+                        }
+                    },false);
+                closeMenu();
+                toast.success(
+                    type === 'bookmark'
+                        ? (): JSX.Element => (
+                            <span className='flex gap-2'>
+                Bài viết bạn đã lưu
+                <Link href='/bookmarks'>
+                  <p className='custom-underline font-bold'>View</p>
+                </Link>
+              </span>
+                        )
+                        : 'Bài post đã xóa khỏi danh sách lưu'
+                );
+            };
+
  const handleReport = async (value:string, content:string) : Promise<void> =>{
      console.log("show post",postId);
     if(currentUser !== null){
@@ -129,7 +169,6 @@ export function ContentAction({
             postId: postId,
             content: content
         }
-        console.log("show report",reportData);
         await Promise.all([
             createReport(reportData)
         ]);
@@ -164,6 +203,12 @@ export function ContentAction({
 const  isInAdminControl = false;
 const  tweetIsPinned = false;
 const  userIsFollowed = false;
+    useEffect(() => {
+        const tweetIsBookmarked = !!userBookmarks?.data?.some((items:any) => items.postId === postId);
+        console.log("SHow tweetIsBookmarked",userBookmarks?.data);
+        if(tweetIsBookmarked)
+            setIsCheckBookmark(true);
+    }, [isCheckBookmark]);
   let currentPinModalData = {
     title: 'Pin Content to from profile?',
     description:
@@ -318,6 +363,29 @@ const  userIsFollowed = false;
                             </Popover.Button>
                         )
                     }
+                    {!isCheckBookmark ? (
+                        <Popover.Button
+                            className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
+                            as={Button}
+                            onClick={preventBubbling(
+                                handleBookmark(close, 'bookmark', userId, postId)
+                            )}
+                        >
+                            <HeroIcon iconName='BookmarkIcon' />
+                            Lưu bài post
+                        </Popover.Button>
+                    ) : (
+                        <Popover.Button
+                            className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
+                            as={Button}
+                            onClick={preventBubbling(
+                                handleBookmark(close, 'unbookmark', userId, postId)
+                            )}
+                        >
+                            <HeroIcon iconName='BookmarkSlashIcon' />
+                            Xóa bài post đã lưu
+                        </Popover.Button>
+                    )}
                 </Popover.Panel>
               )}
             </AnimatePresence>

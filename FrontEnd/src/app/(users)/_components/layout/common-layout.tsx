@@ -4,7 +4,7 @@ import { AsideTrends } from '../aside/aside-trends';
 import { Suggestions } from '../aside/suggestions';
 import { Placeholder } from '../common/placeholder';
 import type { ReactNode } from 'react';
-import { useAuth } from '../../../../context/oauth2-context';
+
 import {sleep} from "@lib/utils";
 import {getPostsCount} from "../../../../services/realtime/clientRequest/postClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";

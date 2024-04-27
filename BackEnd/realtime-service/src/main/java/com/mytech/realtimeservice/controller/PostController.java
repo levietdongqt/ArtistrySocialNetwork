@@ -52,6 +52,18 @@ public class PostController {
                         .build()
         );
     }
+
+    @GetMapping("/getTotalLike/{postId}")
+    public ResponseEntity<?> getTotalLikePostByPostId(@PathVariable String postId){
+        log.info("total like Post get by id " + postId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get post list OK")
+                        .data(postService.showTotalLikesByPostId(postId))
+                        .build()
+        );
+    }
     @GetMapping("/get-post/{postId}")
     public ResponseEntity<?> getPostById(@PathVariable String postId) {
         log.info("Post get by id " + postId);

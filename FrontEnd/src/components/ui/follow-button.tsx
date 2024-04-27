@@ -189,6 +189,7 @@ fetcherWithToken,{
         closeModal={closeUnFollowModal}
       >
         <ActionModal
+            actionReport={() =>{}}
           title={`Bỏ theo dõi @${userTargetUsername}?`}
           description='Bạn có chắc là muốn bỏ theo dõi người này chứ?'
           mainBtnLabel='Đồng ý'
@@ -203,6 +204,7 @@ fetcherWithToken,{
         closeModal={closeUnFriendModal}
       >
         <ActionModal
+            actionReport={() =>{}}
           title={`Huỷ kết bạn @${userTargetUsername}?`}
           description='Bạn có chắc là muốn hủy kết bạn với người này chứ?'
           mainBtnLabel='Đồng ý'
@@ -217,6 +219,7 @@ fetcherWithToken,{
         closeModal={closeReAcceptModal}
       >
         <ActionModal
+            actionReport={()=>{}}
           title={`Rút lại lời mời với @${userTargetUsername}?`}
           description='Bạn có chắc là muốn rút lại lời mời với người này chứ?'
           mainBtnLabel='Đồng ý'
@@ -225,7 +228,7 @@ fetcherWithToken,{
         />
       </Modal>
       <div className='flex flex-col'>
-      {data?.data.follow ? (
+      {data?.data?.follow ? (
         <Button
           className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
                      font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
@@ -248,7 +251,7 @@ fetcherWithToken,{
         </Button>
       )
       }
-      {data?.data.friend ? (
+      {data?.data?.friend ? (
         <Button
           className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
                      font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
@@ -258,7 +261,7 @@ fetcherWithToken,{
           <span>{FollowButtonType.FRIENDED_BUTTON}</span>
         </Button>
       ) : 
-      data?.data.pending ? (
+      data?.data?.pending ? (
         <Button
         className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
                    font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
@@ -269,7 +272,7 @@ fetcherWithToken,{
       </Button>
       )
       :
-      data?.data.acceptFriend ?(
+      data?.data?.acceptFriend ?(
         <Button
           className='self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90 
                      focus-visible:bg-light-primary/90 active:bg-light-border/75 dark:bg-light-border 

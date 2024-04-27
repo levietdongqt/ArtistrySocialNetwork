@@ -1,6 +1,6 @@
 import { getRandomId } from './random';
 import type { FilesWithId, FileWithId, ImagesPreview } from '@models/file';
-
+import * as yup from 'yup';
 const IMAGE_EXTENSIONS = [
   'apng',
   'avif',
@@ -28,6 +28,10 @@ function isValidImageExtension(
 export function isValidImage(name: string, bytes: number): boolean {
   return isValidImageExtension(name) && bytes < 20 * Math.pow(1024, 2);
 }
+
+export const isReportVali = yup.object().shape({
+  title: yup.string().required('Tiêu đề bài viết không phải chọn')
+});
 
 export function isValidUsername(
   username: string,

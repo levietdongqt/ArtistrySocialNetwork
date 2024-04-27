@@ -53,10 +53,7 @@ export function UserTooltip({
   }, [hovered]);
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
-  const allStats: Readonly<Stats[]> = [
-    ['following', 'Following',2],
-    ['followers', 'Followers',2]
-  ];
+
 
   return (
     <div

@@ -29,11 +29,11 @@ function ContainerHome() {
                 <Error message='Something went wrong' />
             ) : (
                 <>
-                    <InfiniteScroll style={{overflow: 'hidden'}} next={() => setSize(size as number + 1)}
+                    <InfiniteScroll style={{overflow:'initial',maxHeight: '100vh'}} className={'h-max'} next={() => setSize(size as number + 1)}
                                     hasMore={!isReachedEnd}
                                     loader={<LoadMore />}
                                     dataLength={Data?.length as number ?? 0}
-                                    endMessage={theEndPost()}>
+                                    endMessage={!isReachedEnd ? theEndPost() : ''}>
                         <AnimatePresence mode='popLayout'>
                             {Data?.map((content) =>
                                 <ContentPost {...content} key={content.id}/>

@@ -27,9 +27,8 @@ const ContainerBookmarks = () => {
 
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
     const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken,{
-        revalidateIfStale: false,
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false
+        refreshInterval:0,
+        dedupingInterval:0
     });
 
     const postId = useMemo(
@@ -55,8 +54,8 @@ const ContainerBookmarks = () => {
             >
                 <ActionModal
                     actionReport={()=>{}}
-                    title='Clear all Page?'
-                    description='This can’t be undone and you’ll remove all Tweets you’ve added to your Page.'
+                    title='Xóa tất cả bài post đẫ lưu'
+                    description='Có thể mất tất cả bài post đã lưu không thể hồi phục'
                     mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75 accent-tab
                             focus-visible:bg-accent-red/90'
                     mainBtnLabel='Clear'
@@ -89,8 +88,8 @@ const ContainerBookmarks = () => {
                     <Loading className='mt-5' />
                 ) : !bookmarksRef ? (
                     <StatsEmpty
-                        title='Save Tweets for later'
-                        description='Don’t let the good ones fly away! Bookmark Tweets to easily find them again in the future.'
+                        title='Lưu bài post '
+                        description='Đừng để bài post của bạn mất'
                         imageData={{ src: '/assets/no-bookmarks.png', alt: 'No bookmarks' }}
                     />
                 ) : (

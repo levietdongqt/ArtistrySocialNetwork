@@ -81,7 +81,7 @@ public class CommentsService implements ICommentsService {
             if (comment == null) {
                 throw new NotFoundException("Comment is not found");
             }
-            comments.setCommentId(comment.getId());
+            comments.setParentCommentId(comment.getId());
             var createdComment = commentsRepository.save(comments);
             //Update comments cho bài post
             comment.setTotalReply(comment.getTotalReply() + 1);
