@@ -88,7 +88,11 @@ export default function ServiceMainTable({ data }: DataTable) {
         {
             title: 'Mô tả',
             dataIndex: 'description',
-           
+            render: (description: string) => {
+                // Sử dụng dangerouslySetInnerHTML để render HTML
+                // Lưu ý rằng việc sử dụng dangerouslySetInnerHTML có thể tạo ra lỗ hổng bảo mật XSS
+                // nếu nội dung HTML chứa mã độc hại. Hãy đảm bảo rằng nội dung bạn đang render là an toàn
+                return <div dangerouslySetInnerHTML={{ __html: description }} />;}
         },
         {
             title: 'Ngày Tạo',

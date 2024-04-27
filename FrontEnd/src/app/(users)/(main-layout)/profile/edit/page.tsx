@@ -1,10 +1,12 @@
 'use client'
 
-
 import {UserEditProfile} from "../../../_components/user/user-edit-profile";
 
-export default function UserMedia(): JSX.Element {
+export default function UserEdit(): JSX.Element {
+    console.log('vao edit')
     return (
+
         <UserEditProfile/>
+
     );
 }
