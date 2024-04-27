@@ -13,7 +13,7 @@ import { ContentAction } from './content-action';
 import { ContentStats } from './content-stats';
 import { ContentDate } from './content-date';
 import type { Variants } from 'framer-motion';
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {User} from "@models/user";
 import {Post} from "@models/post";
 import {ImagesPreview} from "@models/file";

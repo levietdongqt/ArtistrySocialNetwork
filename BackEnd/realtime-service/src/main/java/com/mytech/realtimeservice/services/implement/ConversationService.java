@@ -64,6 +64,11 @@ public class ConversationService implements IConversationService {
         return null;
     }
 
+    @Override
+    public List<Conversation> searchConversationsByMemberName(String userId, String searchName) {
+        return null;
+    }
+
     private boolean isPrivateConversation(List<Conversation> conversations) {
         return conversations.size() == 1 && conversations.get(0).getMembers().size() == 2;
     }

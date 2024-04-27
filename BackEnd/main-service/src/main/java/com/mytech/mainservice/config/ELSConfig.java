@@ -4,10 +4,12 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
@@ -17,13 +19,18 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import javax.net.ssl.SSLContext;
 
 @Configuration
+@Slf4j
 public class ELSConfig extends ElasticsearchConfiguration {
+
+    @Value("${env.elasticsearch_pass}")
+    private String password;
     @Override
     public ClientConfiguration clientConfiguration() {
+        log.info(password);
         return ClientConfiguration.builder()
                 .connectedToLocalhost()
                 .usingSsl(buildSSLContext())
-                .withBasicAuth("elastic","HLG3DTzyWJGcHrJ2_MHz")
+                .withBasicAuth("elastic",password)
                 .build();
     }
     private static SSLContext buildSSLContext() {

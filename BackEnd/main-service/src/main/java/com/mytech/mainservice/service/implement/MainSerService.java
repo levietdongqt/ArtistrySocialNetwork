@@ -44,7 +44,7 @@ public class MainSerService implements IMainSerService {
 
     @Override
     public Set<MainServiceDTO> getMainServices(String userId) {
-        return mainServiceRepo.findMainServiceByProvider_IdAndStatus(userId, true).stream()
+        return mainServiceRepo.findMainServiceByProvider_Id(userId).stream()
                 .map(mainService -> modelMapper.map(mainService, MainServiceDTO.class))
                 .collect(Collectors.toSet());
     }

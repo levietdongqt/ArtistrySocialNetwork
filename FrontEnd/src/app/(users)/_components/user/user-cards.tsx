@@ -7,13 +7,14 @@ import { variants } from '../user/user-header';
 import { UserCard } from './user-card';
 import type { StatsType } from '../view/view-content-stats';
 import type { StatsEmptyProps } from '../content/stats-empty';
+import {User} from "@models/user";
 
 type FollowType = 'following' | 'followers';
 
 type CombinedTypes = StatsType | FollowType;
 
-type UserCardsProps = {
-  data: [] | null;
+type UserCardsProps ={
+  data: User[] | null;
   type: CombinedTypes;
   follow?: boolean;
   loading: boolean;
@@ -69,7 +70,7 @@ export function UserCards({
           {data?.length ? (
             data.map((userData,index) => (
               <motion.div layout='position' key={index} {...variants}>
-                <UserCard follow={follow} modal={modal} />
+                <UserCard {...userData} follow={follow} modal={modal} />
               </motion.div>
             ))
           ) : (

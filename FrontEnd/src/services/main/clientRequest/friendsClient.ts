@@ -1,8 +1,11 @@
-import { fetcherParams } from "@lib/config/SwrFetcherConfig";
-import { ServiceDestination } from "@lib/enum/ServiceDestination";
+'use client'
+import {fetcherParams} from "@lib/config/SwrFetcherConfig";
+import {ServiceDestination} from "@lib/enum/ServiceDestination";
+import axiosWithToken from "@lib/config/AxiosConfig";
+import {AxiosRequestConfig} from "axios";
 
 
-export function acceptFriend (body: any): fetcherParams {
+export function acceptFriend(body: any): fetcherParams {
     return [`/friends/acceptFriend`, 'POST', body, ServiceDestination.MAIN];
 }
 
@@ -18,10 +21,20 @@ export function getFriendByUserId (userId: string): fetcherParams {
     return [`/friends/is-friend/${userId}`, 'GET', null, ServiceDestination.MAIN];
 }
 
-export function unAcceptFriend (body: any): fetcherParams {
+export function unAcceptFriend(body: any): fetcherParams {
     return [`/friends/unAcceptFriend`, 'POST', body, ServiceDestination.MAIN];
 }
 
+export async function findFriend(search: string) {
+    const fullUrl = `${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/conversation/search?search=${search}`
+    const config: AxiosRequestConfig = {
+        data: null,
+        url: fullUrl,
+        method: 'GET',
+    };
+    const response = await axiosWithToken(config);
+    return response.data;
+}
 export function isFollowing (body: any): fetcherParams {
     return [`/friends/isFollow-isFriend`, 'POST', body, ServiceDestination.MAIN];
 }

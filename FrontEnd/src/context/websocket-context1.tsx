@@ -1,12 +1,15 @@
 "use client"
 import React, {createContext, useContext, useEffect, useRef, useState} from "react";
-import SockJS from 'sockjs-client';
 import {useChat} from "./chat-context";
 import {dateParse} from "@lib/helper/dateParse";
-import {Client, over} from 'webstomp-client';
 import {useNotification} from "./notification-context";
 import {ACTION_TYPE, ChatAction} from "@lib/reducer/chat-reducer";
 import {ConversationDto} from "@models/conversation";
+import {Client} from "@stomp/stompjs";
+import {getCookie} from "cookies-next";
+import {toast} from "react-toastify";
+import {ResponseSocket} from "@models/ResponseSocket";
+import {ResponseSocketType} from "@lib/enum/MessageType";
 
 type SocketContextType = {
     stompClient: Client | null;
@@ -19,43 +22,61 @@ export const SocketContext = createContext<SocketContextType | undefined>(
 
 export const SocketProvider = ({children}: any) => {
     const [stompClient, setStompClient] = useState<Client | null>(null);
-    const {dataCount, setDataCount, setNotificationsContent} = useNotification();
+    const {setDataCount, setNotificationsContent} = useNotification();
     const socketRef = useRef<Client | null>(null);
-    const {state, dispatch} = useChat()
+    const {dispatch} = useChat()
     // const { curConversation}  = state
     useEffect(() => {
         if (socketRef.current !== null) {
             return;
         }
-        const socket = new SockJS('http://localhost:8062/api/realtime/socket.io');
-        const client = over(socket);
-        socketRef.current = client;
-        client.connect({}, () => {
-            console.log('Connected');
-            client.subscribe(`/user/chat/message`, (message) => {
-                const conversation: ConversationDto = JSON.parse(message.body, dateParse);
-                console.log("Got new message: ", conversation.lastMessage.sendTime instanceof Date)
-                dispatch(ChatAction(conversation.lastMessage, ACTION_TYPE.UPDATE_MESSAGE))
-                dispatch(ChatAction(conversation,ACTION_TYPE.UPDATE_CONVERSATIONS))
-            });
-            client.subscribe(`/user/topic/private-notification`, (message) => {
-                if (message.body) {
-                    const newMessage = JSON.parse(message.body);
-                    setNotificationsContent(newMessage);
-                    setDataCount((prevDataCount: number) => prevDataCount + 1);
-                }
-            });
+        const access_token = getCookie("access_token")?.toString()
+        if (!access_token) {
+            toast.error("Có lỗi xảy ra, vui lòng tải lại trang!")
+        }
+        const client = new Client({
+            connectHeaders: {
+                access_token: access_token!,
+            },
+            brokerURL: 'ws://localhost:8060/api/realtime/socket.io',
+            onConnect: () => {
+                console.log('connected');
+                client.subscribe(`/user/chat/message`, (message) => {
+                    const conversation: ConversationDto = JSON.parse(message.body, dateParse);
+                    dispatch(ChatAction(conversation.lastMessage, ACTION_TYPE.UPDATE_MESSAGE))
+                    dispatch(ChatAction(conversation, ACTION_TYPE.UPDATE_CONVERSATIONS))
+                });
 
-            setStompClient(client);
-        }, error => {
-            console.log(error);
+                client?.subscribe(`/user/chat/conversation`, (message) => {
+                    const response: ResponseSocket = JSON.parse(message.body, dateParse)
+                    switch (response.type) {
+                        case ResponseSocketType.GET_CONVERSATION:
+                            response.data && dispatch(ChatAction(response.data, ACTION_TYPE.SET_NEW_MESSAGES))
+                            break;
+                    }
+
+                });
+
+
+                client.subscribe(`/user/topic/private-notification`, (message) => {
+                    if (message.body) {
+                        const newMessage = JSON.parse(message.body);
+                        setNotificationsContent(newMessage);
+                        setDataCount((prevDataCount: number) => prevDataCount + 1);
+                    }
+                });
+                setStompClient(client);
+            },
+
+            onWebSocketError(error: Error): void {
+                console.log(error);
+            }
         });
-
+        socketRef.current = client;
+        client.activate();
         return () => {
             if (client && client.connected) {
-                client.disconnect(() => {
-                    console.log('Disconnected');
-                });
+                client.deactivate().then(() => console.log('Disconnected'))
             }
         };
     }, []);

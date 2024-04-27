@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import {useWindow} from "../../../../context/window-context";
 import {useModal} from "@lib/hooks/useModal";
@@ -18,6 +19,8 @@ import {Conversations} from "@components/chat-box/conversations";
 import {useChat} from "../../../../context/chat-context";
 import {ACTION_TYPE, ChatAction} from "@lib/reducer/chat-reducer";
 import ChatBox from "@components/chat-box/chat-box";
+import {useUser} from "../../../../context/user-context";
+
 
 export type NavLink = {
     href: string;
@@ -59,6 +62,7 @@ const navLinksBot: Readonly<NavLink[]> = [
 ];
 
 export function Sidebar() {
+
     const {isMobile} = useWindow();
     const [api, contextHolder] = notification.useNotification();
     const {open, openModal, closeModal} = useModal();
@@ -93,7 +97,8 @@ export function Sidebar() {
         console.log("Voooooooooooooooo");
         testHeader().then((value) => console.log("OKEEEEEEEEEEEE"));
     };
-    return (
+    const {currentUser} = useUser()
+     return (
         <>
             <header
                 id="sidebar"
@@ -138,7 +143,7 @@ export function Sidebar() {
                                 <SidebarLink {...linkData} key={linkData.href}/>
                             ))}
                             <SidebarLink
-                                href={`/profile/${username}`}
+                                href={`/profile/${currentUser?.id}`}
                                 username={username}
                                 linkName="Tài khoản"
                                 iconName="UserIcon"

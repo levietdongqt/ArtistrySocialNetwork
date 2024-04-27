@@ -18,6 +18,7 @@ import { NotificationModel, NotificationTab } from "@models/notifications";
 import { UserTooltip } from "../user/user-tooltip";
 import { UserAvatar } from "../user/user-avatar";
 import NotificationPostCard from "./notification-like-post";
+import { set } from "lodash";
 
 export default function AllNotification() {
   const user = useUser();
@@ -39,10 +40,10 @@ export default function AllNotification() {
     useState<Map<string, any[]>>();
   const [notificationsTag, setNotificationsTag] = useState<any>([]);
   const [notificationsTagPost, setNotificationsTagPost] =
-      useState<Map<string, any[]>>();
+    useState<Map<string, any[]>>();
   const [notificationsComment, setNotificationsComment] = useState<any>([]);
   const [notificationsCommentPost, setNotificationsCommentPost] =
-          useState<Map<string, any[]>>();
+    useState<Map<string, any[]>>();
 
   const {
     data: data2,
@@ -94,35 +95,35 @@ export default function AllNotification() {
         break;
       case "TAG":
         if (
-            notificationsTagPost &&
-            notificationsTagPost.has(notificationsContent.link)
-          ) {
-            notificationsTagPost
-              .get(notificationsContent.link)
-              ?.push(notificationsContent);
-            setNotificationsTagPost(notificationsTagPost);
-          } else {
-            notificationsTagPost?.set(notificationsContent.link, [
-              notificationsContent,
-            ]);
-            setNotificationsTagPost(notificationsTagPost);
-          }
+          notificationsTagPost &&
+          notificationsTagPost.has(notificationsContent.link)
+        ) {
+          notificationsTagPost
+            .get(notificationsContent.link)
+            ?.push(notificationsContent);
+          setNotificationsTagPost(notificationsTagPost);
+        } else {
+          notificationsTagPost?.set(notificationsContent.link, [
+            notificationsContent,
+          ]);
+          setNotificationsTagPost(notificationsTagPost);
+        }
         break;
       case "COMMENT":
         if (
-            notificationsCommentPost &&
-            notificationsCommentPost.has(notificationsContent.link)
-          ) {
-            notificationsCommentPost
-              .get(notificationsContent.link)
-              ?.push(notificationsContent);
-            setNotificationsCommentPost(notificationsCommentPost);
-          } else {
-            notificationsCommentPost?.set(notificationsContent.link, [
-              notificationsContent,
-            ]);
-            setNotificationsCommentPost(notificationsCommentPost);
-          }
+          notificationsCommentPost &&
+          notificationsCommentPost.has(notificationsContent.link)
+        ) {
+          notificationsCommentPost
+            .get(notificationsContent.link)
+            ?.push(notificationsContent);
+          setNotificationsCommentPost(notificationsCommentPost);
+        } else {
+          notificationsCommentPost?.set(notificationsContent.link, [
+            notificationsContent,
+          ]);
+          setNotificationsCommentPost(notificationsCommentPost);
+        }
         break;
       default:
         break;
@@ -141,6 +142,15 @@ export default function AllNotification() {
           return { ...value, status: true };
         })
       );
+      setNotificationsLike(notificationsLike.map((value: any) => {
+        return { ...value, status: true };
+      }))
+      setNotificationsTag(notificationsLike.map((value: any) => {
+        return { ...value, status: true };
+      }))
+      setNotificationsComment(notificationsLike.map((value: any) => {
+        return { ...value, status: true };
+      }))
       setReRenderNotifications((prev) => false);
     }
   }, [reRenderNotifications]);
@@ -181,37 +191,37 @@ export default function AllNotification() {
     );
 
     setNotificationsLike(
-        data2 &&
-          data2.data.filter((value: any) => {
-            if (value.notificationType === "LIKE" && !value.status) {
-              var notificationDate = new Date(value.createdDate);
-              return notificationDate.setHours(0, 0, 0, 0) === today.getTime();
-            }
-            return false;
-          })
-      );
+      data2 &&
+        data2.data.filter((value: any) => {
+          if (value.notificationType === "LIKE" && !value.status) {
+            var notificationDate = new Date(value.createdDate);
+            return notificationDate.setHours(0, 0, 0, 0) === today.getTime();
+          }
+          return false;
+        })
+    );
 
-      setNotificationsTag(
-        data2 &&
-          data2.data.filter((value: any) => {
-            if (value.notificationType === "TAG" && !value.status) {
-              var notificationDate = new Date(value.createdDate);
-              return notificationDate.setHours(0, 0, 0, 0) === today.getTime();
-            }
-            return false;
-          })
-      );
+    setNotificationsTag(
+      data2 &&
+        data2.data.filter((value: any) => {
+          if (value.notificationType === "TAG" && !value.status) {
+            var notificationDate = new Date(value.createdDate);
+            return notificationDate.setHours(0, 0, 0, 0) === today.getTime();
+          }
+          return false;
+        })
+    );
 
-      setNotificationsComment(
-        data2 &&
-          data2.data.filter((value: any) => {
-            if (value.notificationType === "COMMENT"&& !value.status) {
-              var notificationDate = new Date(value.createdDate);
-              return notificationDate.setHours(0, 0, 0, 0) === today.getTime();
-            }
-            return false;
-          })
-      );
+    setNotificationsComment(
+      data2 &&
+        data2.data.filter((value: any) => {
+          if (value.notificationType === "COMMENT" && !value.status) {
+            var notificationDate = new Date(value.createdDate);
+            return notificationDate.setHours(0, 0, 0, 0) === today.getTime();
+          }
+          return false;
+        })
+    );
 
     setUpdatedNotifications((prev) =>
       data2?.data
@@ -234,7 +244,6 @@ export default function AllNotification() {
     }
   }, [notificationsLike]);
 
-
   useEffect(() => {
     if (notificationsTag) {
       const tempMap = new Map<string, any[]>();
@@ -249,7 +258,6 @@ export default function AllNotification() {
       setNotificationsTagPost(tempMap);
     }
   }, [notificationsTag]);
-
 
   useEffect(() => {
     if (notificationsComment) {
@@ -282,19 +290,44 @@ export default function AllNotification() {
               <AnimatePresence mode="popLayout">
                 {notificationsLikePost &&
                   Array.from(notificationsLikePost.keys()).map(
-                    (key: string, index: any) => notificationsLikePost && <NotificationPostCard data={notificationsLikePost.get(key) as NotificationModel[]}/>
+                    (key: string, index: any) =>
+                      notificationsLikePost && (
+                        <NotificationPostCard
+                          data={
+                            notificationsLikePost.get(
+                              key
+                            ) as NotificationModel[]
+                          }
+                        />
+                      )
                   )}
               </AnimatePresence>
               <AnimatePresence mode="popLayout">
                 {notificationsTagPost &&
                   Array.from(notificationsTagPost.keys()).map(
-                    (key: string, index: any) => notificationsTagPost && <NotificationPostCard data={notificationsTagPost.get(key) as NotificationModel[]}/>
+                    (key: string, index: any) =>
+                      notificationsTagPost && (
+                        <NotificationPostCard
+                          data={
+                            notificationsTagPost.get(key) as NotificationModel[]
+                          }
+                        />
+                      )
                   )}
               </AnimatePresence>
               <AnimatePresence mode="popLayout">
                 {notificationsCommentPost &&
                   Array.from(notificationsCommentPost.keys()).map(
-                    (key: string, index: any) => notificationsCommentPost && <NotificationPostCard data={notificationsCommentPost.get(key) as NotificationModel[]}/>
+                    (key: string, index: any) =>
+                      notificationsCommentPost && (
+                        <NotificationPostCard
+                          data={
+                            notificationsCommentPost.get(
+                              key
+                            ) as NotificationModel[]
+                          }
+                        />
+                      )
                   )}
               </AnimatePresence>
             </>

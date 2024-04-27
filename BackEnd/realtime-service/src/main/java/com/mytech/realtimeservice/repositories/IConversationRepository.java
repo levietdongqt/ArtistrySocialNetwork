@@ -11,10 +11,13 @@ import java.util.List;
 
 @Repository
 public interface IConversationRepository extends MongoRepository<Conversation, String> {
-    @Query(value = "{'members.id': ?0}",sort = "{'updatedAt' : -1}")
+    @Query(value = "{'members.id': ?0}", sort = "{'updatedAt' : -1}")
     List<Conversation> getConversationsByUserId(String userId);
 
     @Query("{'members.id': {$all: ?0}, 'type': ?1}")
     List<Conversation> findConversationsByMemberIdsAAndType(List<String> members, ConversationType type);
+
+    @Query("{ $text: { $search: ?1 } }")
+    List<Conversation> findByMemberName(String userId, String searchName);
 }
 

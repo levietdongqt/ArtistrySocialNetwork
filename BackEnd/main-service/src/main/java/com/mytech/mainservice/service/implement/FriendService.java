@@ -5,20 +5,23 @@ import com.mytech.mainservice.dto.FriendDTO;
 import com.mytech.mainservice.dto.IsCheckFriendDTO;
 import com.mytech.mainservice.dto.NotificationDTO;
 import com.mytech.mainservice.dto.UserDTO;
+import com.mytech.mainservice.dto.foreignClient.ConversationDTO;
 import com.mytech.mainservice.enums.FriendShipStatus;
+import com.mytech.mainservice.helper.JwtTokenHolder;
 import com.mytech.mainservice.model.Friendship;
 import com.mytech.mainservice.model.User;
 import com.mytech.mainservice.repository.IFriendshipRepository;
 import com.mytech.mainservice.repository.IUserRepository;
 import com.mytech.mainservice.service.IFriendService;
 import com.mytech.mainservice.service.IUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +33,8 @@ public class FriendService implements IFriendService {
     private IUserRepository userRepo;
     @Autowired
     private ModelMapper modelMapper;
-
+    @Autowired
+    private JwtTokenHolder jwtTokenHolder;
     @Autowired
     private IUserService userService;
 
@@ -38,7 +42,7 @@ public class FriendService implements IFriendService {
     private NotificationForeignClient notificationForeignClient;
 
     @Override
-    
+
     public void addFriend(String userId, String friendId) {
         if(userId.equals(friendId)){
             throw new RuntimeException("Bạn không thể kết bạn với chính mình");
@@ -62,6 +66,7 @@ public class FriendService implements IFriendService {
         //Trường hợp 3: chi có lời mời ngược
         if(reverseFriend.isPresent()){
             handleIfFriendshipExisted(reverseFriend.get(),"Đã tồn tại lời mời từ "+ friendId + " đến "+userId);
+            return;
         }
         //Trường hợp 4 : chưa tồn tại tạo mới
         Friendship newFriendship = Friendship.builder()
@@ -99,15 +104,36 @@ public class FriendService implements IFriendService {
             throw new RuntimeException("Bạn không thể kết bạn với chính mình");
         }
         Optional<Friendship> friendship = friendshipRepo.findByFromUser_IdAndFriend_Id(friendId, userId);
-        if (friendship.isPresent()) {
-            var status = handleListStatus(friendship.get());
-            status.add(FriendShipStatus.ISFRIEND);
-            friendship.get().setStatus(status);
-            friendshipRepo.save(friendship.get());
-            sendNotificationAfterAddFriendship(userId,friendId,"ACCEPT_FRIEND","đã chấp nhận lời mời kết bạn");
-            return true;
+        Optional<Friendship> reverseFriend  = friendshipRepo.findByFromUser_IdAndFriend_Id(userId, friendId);
+        if (friendship.isEmpty()) {
+            throw new RuntimeException("Bạn không thể tự chấp nhận lời mời kết bạn");
         }
-        throw new RuntimeException("Friendship is not found");
+        var status = handleListStatus(friendship.get());
+        status.add(FriendShipStatus.ISFRIEND);
+        friendship.get().setStatus(status);
+        friendshipRepo.save(friendship.get());
+        if (reverseFriend.isPresent()){
+            var checkIsFollow = checkStatusInFriendship(reverseFriend.get(),FriendShipStatus.FOLLOWING);
+            if (checkIsFollow){
+                var statusReverse = reverseFriend.get().getStatus();
+                statusReverse.add(FriendShipStatus.ISFRIEND);
+                reverseFriend.get().setStatus(statusReverse);
+                friendshipRepo.save(reverseFriend.get());
+                sendNotificationAfterAddFriendship(userId,friendId,"ACCEPT_FRIEND","đã chấp nhận lời mời kết bạn");
+                return true;
+            }
+        }
+        //Tạo friendship ngược lại
+        Friendship newFriendship = Friendship.builder()
+                .friend(User.builder().id(friendId).build())
+                .fromUser(User.builder().id(userId).build())
+                .status(List.of(FriendShipStatus.FOLLOWING,FriendShipStatus.ISFRIEND)).build();
+        friendshipRepo.save(newFriendship);
+
+        //Send notification
+        sendNotificationAfterAddFriendship(userId,friendId,"ACCEPT_FRIEND","đã chấp nhận lời mời kết bạn");
+        return true;
+
     }
 
     @Override
@@ -256,6 +282,11 @@ public class FriendService implements IFriendService {
     }
 
     @Override
+    public List<UserDTO> searchByName(String search) {
+        List<User> users = userRepo.findFriendByFullname(jwtTokenHolder.getUserId(), search);
+        return users.stream().map(user -> modelMapper.map(user, UserDTO.class)).toList();
+    }
+    @Override
     public IsCheckFriendDTO isFollowingAndIsFriend(String userId, String friendId) {
         if(userId.equals(friendId)){
             throw new RuntimeException("Không có quan hệ với chính mình");
@@ -267,17 +298,13 @@ public class FriendService implements IFriendService {
         Optional<Friendship> friendship= friendshipRepo.findByFromUser_IdAndFriend_Id(userId, friendId);
         Optional<Friendship> reverseFriendship =  friendshipRepo.findByFromUser_IdAndFriend_Id(friendId, userId);
         if (friendship.isPresent()) {
-            var checkFollowingStatus = checkStatusInFriendship(friendship.get(),FriendShipStatus.FOLLOWING);
-            isFollowing = checkFollowingStatus;
-            var checkFriendStatus = checkStatusInFriendship(friendship.get(),FriendShipStatus.ISFRIEND);
-            isFriend = checkFriendStatus;
-            var checkPendingStatus = checkStatusInFriendship(friendship.get(),FriendShipStatus.PENDING);
-            isPending = checkPendingStatus;
+            isFollowing = checkStatusInFriendship(friendship.get(),FriendShipStatus.FOLLOWING);
+            isFriend = checkStatusInFriendship(friendship.get(),FriendShipStatus.ISFRIEND);
+            isPending = checkStatusInFriendship(friendship.get(),FriendShipStatus.PENDING);
 
         }
         if(reverseFriendship.isPresent()){
-            var checkIsAcceptFriend = checkStatusInFriendship(reverseFriendship.get(),FriendShipStatus.PENDING);
-            isAcceptFriend = checkIsAcceptFriend;
+            isAcceptFriend = checkStatusInFriendship(reverseFriendship.get(),FriendShipStatus.PENDING);
         }
         if (isFriend) {
             return IsCheckFriendDTO.builder().isFriend(true).isFollow(isFollowing).isPending(isPending).isAcceptFriend(isAcceptFriend).build();
@@ -314,12 +341,7 @@ public class FriendService implements IFriendService {
     }
 
     private boolean checkStatusInFriendship(Friendship friendship,FriendShipStatus checkedStatus){
-        List<FriendShipStatus> status = friendship.getStatus();
-        var checkStatus = status.stream().filter(st -> st.equals(checkedStatus)).findFirst();
-        if(checkStatus.isPresent()) {
-            return true;
-        }
-        return false;
+        return friendship.getStatus().contains(checkedStatus);
     }
 
     private void handleIfFriendshipExisted(Friendship friendship,String messageIsPending){
@@ -371,4 +393,28 @@ public class FriendService implements IFriendService {
                 .build();
         notificationForeignClient.saveNotification(notificationDTO);
     }
+    private void createConversation(User friend, User user) {
+        HashMap<String, Object> member1 = new HashMap<String, Object>();
+        member1.put("id", friend.getId());
+        member1.put("fullName", friend.getFullName());
+        member1.put("avatar", friend.getAvatar());
+        member1.put("nickname", friend.getFullName());
+        member1.put("notSeen", false);
+
+        HashMap<String, Object> member2 = new HashMap<>();
+        member2.put("id", user.getId());
+        member2.put("fullName", user.getFullName());
+        member2.put("avatar", user.getAvatar());
+        member1.put("nickname", user.getFullName());
+        member1.put("notSeen", false);
+
+        ConversationDTO conversationDTO = ConversationDTO.builder()
+                .members(List.of(member1, member2))
+                .createAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .type("PRIVATE")
+                .build();
+        notificationForeignClient.createConversation(conversationDTO);
+    }
+
 }

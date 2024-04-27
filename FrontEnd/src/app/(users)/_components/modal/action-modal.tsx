@@ -34,7 +34,7 @@ export function ActionModal({
   mainBtnClassName,
   secondaryBtnLabel,
   secondaryBtnClassName,
-                              actionReport,
+  actionReport,
   action,
   closeModal,
                               report

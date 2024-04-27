@@ -5,16 +5,18 @@ export type ConversationDto = {
     name: string;
     members: ConversationMember[];
     memberMap?: Map<string, ConversationMember>;
-    lastMessage: MessageDto;
+    lastMessage?: MessageDto;
     updatedAt?: Date;
     createAt?: Date;
     messages: MessageDto[];
+    type: "PRIVATE" | "GROUP"
 
 }
 export type ConversationMember = {
     id: string,
     nickname: string,
-    fullName: string,
+    fullName?: string,
     avatar: string,
-    coverImage: string
+    coverImage?: string,
+    notSeen : boolean,
 }

@@ -30,4 +30,5 @@ public interface IFriendService {
 
     public List<FriendDTO> searchFriend(String userId, List<String> listIdSearch);
 
+    List<UserDTO> searchByName(String name);
 }

@@ -4,7 +4,7 @@ import { HeroIcon } from '@components/ui/hero-icon';
 
 type UserNameProps = {
   tag?: keyof JSX.IntrinsicElements;
-  id:string;
+  id?:string;
   name: string;
   verified: boolean;
   username?: string;

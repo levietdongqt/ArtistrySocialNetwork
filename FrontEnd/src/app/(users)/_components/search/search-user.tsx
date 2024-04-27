@@ -16,8 +16,6 @@ import { HeroIcon } from "@components/ui/hero-icon";
 import { EmptyPage } from "@models/search";
 
 
-
-
 export default function SearchUser() {
       const {currentUser} = useUser();
 

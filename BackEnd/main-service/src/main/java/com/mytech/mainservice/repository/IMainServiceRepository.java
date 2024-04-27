@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Repository
 public interface IMainServiceRepository extends JpaRepository<MainService, Long> {
-    Set<MainService> findMainServiceByProvider_IdAndStatus(String userId,boolean status);
+    Set<MainService> findMainServiceByProvider_Id(String userId);
 
     @Transactional
     @Modifying

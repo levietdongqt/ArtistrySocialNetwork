@@ -26,7 +26,8 @@ const Icons = {
     CloseIcon,
     MessageIcon,
     CloseMessage,
-    ArrowLeft
+    ArrowLeft,
+    CloseOIcon
 };
 
 export function CustomIcon({
@@ -39,19 +40,37 @@ export function CustomIcon({
 }
 
 
- function MinusIcon({className}: IconProps): JSX.Element {
+function MinusIcon({className}: IconProps): JSX.Element {
     return (
         <svg
             viewBox="0 0 1024 1024"
             fill="#6ea9d7"
-           className={"w-6 h-12 "}
+            className={"w-6 h-12 "}
         >
             <path d="M872 474H152c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h720c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z"/>
         </svg>
     );
 }
 
- function CloseMessage({className}: IconProps): JSX.Element {
+
+function CloseOIcon({className}: IconProps): JSX.Element {
+    return (
+        <svg fill="none" viewBox="0 0 24 24" height="1em" className={"w-5 h-10 "}>
+            <path
+                fill="currentColor"
+                d="M16.34 9.322a1 1 0 10-1.364-1.463l-2.926 2.728L9.322 7.66A1 1 0 007.86 9.024l2.728 2.926-2.927 2.728a1 1 0 101.364 1.462l2.926-2.727 2.728 2.926a1 1 0 101.462-1.363l-2.727-2.926 2.926-2.728z"
+            />
+            <path
+                fill="currentColor"
+                fillRule="evenodd"
+                d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12zm11 9a9 9 0 110-18 9 9 0 010 18z"
+                clipRule="evenodd"
+            />
+        </svg>
+    );
+}
+
+function CloseMessage({className}: IconProps): JSX.Element {
     return (
         <svg
             viewBox="0 0 512 512"
@@ -98,13 +117,15 @@ function FlagVietNam({className}: IconProps): JSX.Element {
     );
 }
 
-function ArrowLeft({className}: IconProps): JSX.Element {
+export function ArrowLeft({className}: IconProps): JSX.Element {
     return (
 
-        <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-             width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                  d="M5 12h14M5 12l4-4m-4 4 4 4"/>
+        <svg
+            viewBox="0 0 24 24"
+            fill="#6ea9d7"
+            className={"w-6 h-12 "}
+        >
+            <path d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z"/>
         </svg>
 
 

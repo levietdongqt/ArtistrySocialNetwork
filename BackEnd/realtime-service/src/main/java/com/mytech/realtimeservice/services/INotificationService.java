@@ -21,13 +21,15 @@ public interface INotificationService {
 
     public void saveNotification(Notification notification);
 
-    public void deleteAll();
-
     public int CountNotificationsUnread(String userFrom);
 
     public void sendNotification(User userFrom, User userTo, String notificationType, String message, String link);
 
     public void saveNopeNotification(NopeNotificationDTO nopeNotificationDTO);
+
+    public boolean getNopeNotification(String userId,String nopeId);
+
+    public void deleteNopeNotification(String userId,String nopeId);
 
 
 }

@@ -1,0 +1,6 @@
+export enum ResponseSocketType {
+    GET_CONVERSATION = 'GET_CONVERSATION',
+    READ_CONVERSATION = 'READ_CONVERSATION',
+    HEART_BEAT = 'HEART_BEAT',
+    DELETE = 'DELETE',
+}
