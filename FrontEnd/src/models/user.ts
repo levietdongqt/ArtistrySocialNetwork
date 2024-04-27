@@ -1,5 +1,6 @@
 import type { Theme, Accent } from './theme';
 import type { Timestamp } from 'firebase/firestore';
+import {UserRole} from "@lib/enum/UserRole";
 
 export type User = {
   id: string;
@@ -28,9 +29,11 @@ export type User = {
   totalPost: number;
   totalPhotos: number;
   pinnedPost: string;
-  roles: [];
+  roles: UserRole[];
   friendShipStatus: string;
 };
+
+
 
 export type EditableData = Extract<
   keyof User,

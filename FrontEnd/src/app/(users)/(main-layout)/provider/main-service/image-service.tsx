@@ -46,13 +46,11 @@ const UploadImages: FC<UploadImagesProps> = ({ onImageListChange }) => {
     };
 
     const handleChange = ({ fileList }: UploadChangeParam<UploadFile<any>>) => {
-        console.log("fileList",fileList)
         setFileList(fileList);
         const imageData = fileList.map((file) => ({
             id: file.uid,
-            src: file.name || '',
+            src: file.url || '',
         }));
-        console.log("imageData",imageData)
         onImageListChange(imageData);
     };
 
