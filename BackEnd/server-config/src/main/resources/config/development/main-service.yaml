@@ -54,7 +54,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka
 
 env:
-  elasticsearch_pass: "6oamFruO_jZXP7=4RBHL"
+  elasticsearch_pass: "JlqYg9P29w+Kmk29QdDa"
   secret_token: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
   firebaseConfig: |
     {
