@@ -17,6 +17,7 @@ public class User{
     private String coverImage;
     private String bio;
     private Boolean notSeen;
+    private Boolean isGroupOwner;
     private boolean verified;
 }
 

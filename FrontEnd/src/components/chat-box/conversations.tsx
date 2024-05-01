@@ -1,5 +1,5 @@
 'use client'
-import {Avatar, Conversation, ConversationList, Search, Sidebar} from "@chatscope/chat-ui-kit-react";
+import {Avatar, AvatarGroup, Conversation, ConversationList, Search, Sidebar} from "@chatscope/chat-ui-kit-react";
 import React, {useEffect, useState} from "react";
 import {CustomIcon} from "@components/ui/custom-icon";
 import useSWR from "swr";
@@ -9,46 +9,70 @@ import {useUser} from "../../context/user-context";
 import {ConversationDto, ConversationMember} from "@models/conversation";
 import {useChat} from "../../context/chat-context";
 import {useSocket} from "../../context/websocket-context1";
-import {ACTION_TYPE, ChatAction} from "@lib/reducer/chat-reducer";
+import {ACTION_TYPE, ChatAction, initMemberMapOfConversation} from "@lib/reducer/chat-reducer";
 import {handlePickedConversations} from "@components/chat-box/chat-box-helper";
-import {usePathname} from 'next/navigation'
-import {MyTooltip} from "@components/ui/my-tooltip";
+import {usePathname, useSearchParams} from 'next/navigation'
 import {findFriend} from "../../services/main/clientRequest/friendsClient";
 import {MyResponse} from "@models/responseObject";
 import {SearchUserCard} from "@components/chat-box/chat-search-user";
-import {formatDurationConversation} from "@lib/helper/dateParse";
+import {handleFormatDurationSendTime} from "@lib/helper/dateParse";
+import {checkNotSeen, sendSeenFlag} from "@components/chat-box/chat-box-socket-helper";
+import {
+    findConversationByFriendName,
+    findConversationById
+} from "../../services/realtime/clientRequest/conversationClient";
+import {Modal} from "../../app/(users)/_components/modal/modal";
+import MyAvatarGroup from "@components/chat-box/AvatarGroup";
 
 interface ConversationsProps {
     closeConversations?: () => void; // The callback prop is an optional function
+    callback?: () => void; // The callback prop is an optional function
 }
 
-export function Conversations({closeConversations}: ConversationsProps) {
+export function Conversations({closeConversations, callback}: ConversationsProps) {
+    const [searchString, setSearchString] = useState('')
+    const {stompClient} = useSocket()
     const {state, dispatch, setReRender} = useChat()
     const {conversations, showChatBoxes, pickedConversations} = state
-    const {stompClient} = useSocket()
+
     const {currentUser} = useUser()
     const [friends, setFriends] = useState<ConversationDto[]>([])
     const isInMessagePage = usePathname() === "/message"
     const [isSearching, setIsSearching] = useState(false)
-
+    const searchPramId = useSearchParams().get('id')
     useEffect(() => {
-        console.log("CONVERSATION MOUNT")
-        if (isInMessagePage) {
-            dispatch(ChatAction(false, ACTION_TYPE.SHOW_CHAT_ALERT))
-        }
-        return () => {
-            if (isInMessagePage) {
-                dispatch(ChatAction(true, ACTION_TYPE.SHOW_CHAT_ALERT))
-            }
-        }
+        // console.log("CONVERSATION MOUNT")
+        // if (isInMessagePage) {
+        //     dispatch(ChatAction(false, ACTION_TYPE.SHOW_CHAT_ALERT))
+        // }
+        // return () => {
+        //     if (isInMessagePage) {
+        //         dispatch(ChatAction(true, ACTION_TYPE.SHOW_CHAT_ALERT))
+        //     }
+        // }
     }, []);
-    const {
-        isLoading,
-    } = useSWR(currentUser && getConversationByUserId(currentUser.id), fetcherWithToken, {
+
+    const {isLoading} = useSWR(currentUser && getConversationByUserId(), fetcherWithToken, {
         revalidateOnFocus: false,
         refreshInterval: 0,
-        onSuccess: response => {
+        onSuccess: async response => {
+            console.log("GET CONVERSATIONS: ", response)
             dispatch(ChatAction(response.data, ACTION_TYPE.SET_CONVERSATIONS))
+            if (!isInMessagePage) {
+                return
+            }
+
+            let newPickedCon = [response.data[0], undefined, undefined]
+            if (searchPramId) {
+                const response = await findConversationById(searchPramId)
+                console.log("searchPramId: ", response)
+                if (response.status === 200) {
+                    newPickedCon[0] = response.data as ConversationDto
+                    initMemberMapOfConversation(newPickedCon[0])
+                }
+            }
+            dispatch(ChatAction(newPickedCon, ACTION_TYPE.SET_PICKED_CONVERSATIONS))
+            callback?.();
         }
     })
 
@@ -59,9 +83,9 @@ export function Conversations({closeConversations}: ConversationsProps) {
                 setFriends([])
                 return;
             }
-            const response: MyResponse<ConversationDto[]> = await findFriend(search)
-            console.log("FRIENDS: ", response.data)
+            const response: MyResponse<ConversationDto[]> = await findConversationByFriendName(search)
             setFriends(response.data)
+            setSearchString(search);
         }
         clearTimeout(timeoutId)
         timeoutId = setTimeout(() => {
@@ -77,37 +101,47 @@ export function Conversations({closeConversations}: ConversationsProps) {
         setFriends([])
     }
     const onPickConversation = (curConversation: ConversationDto) => {
-        console.log("onPickConversation", pickedConversations, curConversation)
-        const newShowChatBoxes = [...showChatBoxes]
+        console.group("onPickConversation")
+        const isNotSeen = checkNotSeen(curConversation, currentUser!)
+        if (isNotSeen) {
+            sendSeenFlag(curConversation, stompClient!, currentUser!)
+            dispatch(ChatAction(curConversation, ACTION_TYPE.UPDATE_CONVERSATION))
+        }
+
         const curIndex = pickedConversations.findIndex(value => value?.id === curConversation.id);
         //Conversation was picked and is showing
-        if (curIndex !== -1 && showChatBoxes[curIndex]) {
+        if (curIndex !== -1 && (showChatBoxes[curIndex] || isInMessagePage)) {
             console.log("Conversation is existing")
             return
         }
-        curConversation.members.forEach(member => {
-            if (member.id === currentUser?.id)
-                member.notSeen = false
-        })   // must send new update to server
+        if (isInMessagePage) {
+            console.log("Is in message page")
+            let newPickedCon = [...pickedConversations]
+            newPickedCon[0] = curConversation
+            dispatch(ChatAction(newPickedCon, ACTION_TYPE.SET_PICKED_CONVERSATIONS))
+            return;
+        }
         //Conversation was picked and not showing
+        let newShowChatBoxes = [...showChatBoxes]
         if (curIndex !== -1 && !showChatBoxes[curIndex]) {
+            console.log("Conversation was picked and not showing")
             newShowChatBoxes[curIndex] = true
         } else {
+            console.log("Conversation not picked and not showing")
             const newPickedCon = handlePickedConversations(curConversation, pickedConversations)
             dispatch(ChatAction(newPickedCon, ACTION_TYPE.SET_PICKED_CONVERSATIONS))
-            const newIndex = newPickedCon.findIndex(value => value?.id === curConversation.id)
-            newShowChatBoxes[newIndex] = true
+            newShowChatBoxes = [true, ...newShowChatBoxes].slice(0, 3)
         }
         !isInMessagePage && dispatch(ChatAction(newShowChatBoxes, ACTION_TYPE.SHOW_CHAT_BOXES))
-        setReRender(prev => prev + 1)
 
+        console.groupEnd();
     }
 
     return (
         <>
             <Sidebar className={isInMessagePage ? "" :
                 "rounded-2xl border-2 "}
-                     style={isInMessagePage ? {} : {
+                     style={isInMessagePage ? {height: '100vh'} : {
                          height: '60vh',
                          width: '20vw',
                          overflow: 'hidden'
@@ -138,13 +172,30 @@ export function Conversations({closeConversations}: ConversationsProps) {
                     <ConversationList loading={isLoading} key={"sdf"}>
                         {
                             conversations?.map((conversation: ConversationDto, index: number) => {
-                                if (!conversation.lastMessage) {
-                                    return
-                                }
-                                const lastSendMember: ConversationMember | undefined = conversation.memberMap?.get(conversation?.lastMessage?.senderId)
+
                                 const currentMember: ConversationMember | undefined = conversation.memberMap?.get(currentUser?.id!)
                                 const otherMembers = conversation.members.filter(value => value.id !== currentUser?.id)
-                                const isGroup: boolean = conversation.memberMap?.size !== 2
+                                const isGroup: boolean = conversation.type === "GROUP"
+
+                                if (!conversation.lastMessage) {
+                                    return (
+                                        <Conversation
+                                            key={conversation.id}
+                                            name={conversation.name || otherMembers[0].nickname}
+                                            onClick={() => onPickConversation(conversation)}
+                                            className={'mx-2 my-0.5 rounded-md'}
+                                            style={{
+                                                paddingTop: '4px'
+                                            }}
+                                        >
+                                            <div is={"AvatarGroup"} className={"mr-3"}>
+                                                <MyAvatarGroup members={otherMembers}/>
+                                            </div>
+                                        </Conversation>
+                                    )
+                                }
+
+                                const lastSendMember: ConversationMember | undefined = conversation.memberMap?.get(conversation?.lastMessage?.senderId)
                                 const content = conversation.lastMessage?.content
                                 const lastActivityTime = new Date(Date.now()).getTime() - new Date(conversation.lastMessage?.sendTime).getTime()
                                 return (
@@ -152,24 +203,20 @@ export function Conversations({closeConversations}: ConversationsProps) {
                                         <Conversation key={conversation.id}
                                                       active={currentMember?.notSeen}
                                                       unreadDot={currentMember?.notSeen}
-                                                      info={content.length < 20 ? content : content.substring(0, 30).concat(" ...")}
+                                                      info={content.length < 30 ? content : content.substring(0, 30).concat(" ...")}
                                                       lastSenderName={(lastSendMember?.id === currentUser?.id) ? "Bạn" : lastSendMember?.nickname}
-                                                      name={!isGroup ? otherMembers[0].nickname : "Group chat"}
+                                                      name={conversation.name || otherMembers[0].nickname}
                                                       onClick={() => onPickConversation(conversation)}
                                                       className={'mx-2 my-0.5 rounded-md'}
                                                       lastActivityTime={<span style={{
                                                           color: "teal"
-                                                      }}>{lastActivityTime < 60000 ? 'Hiện tại' : formatDurationConversation(lastActivityTime)}</span>}
+                                                      }}>{lastActivityTime < 60000 ? 'Hiện tại' : handleFormatDurationSendTime(lastActivityTime)}</span>}
                                         >
-                                            {
-                                                !isGroup &&
-                                                <Avatar key={index}
-                                                        title={otherMembers[0].fullName ? otherMembers[0].fullName : ""}
-                                                        name={otherMembers[0].nickname}
-                                                        src={otherMembers[0].avatar || "https://chatscope.io/storybook/react/assets/lilly-aj6lnGPk.svg"}
-                                                        status="available"
-                                                />
-                                            }
+
+                                            <div is={"AvatarGroup"} className={"mr-3"}>
+                                                <MyAvatarGroup members={otherMembers}/>
+                                            </div>
+
                                         </Conversation>
                                     </>
                                 )
@@ -186,7 +233,7 @@ export function Conversations({closeConversations}: ConversationsProps) {
                         })
                         :
                         <>
-                            <div>Không tìm thấy bạn bè</div>
+                            {searchString.length > 0 && <div className={"text-center mt-5"}>Không tìm thấy bạn bè</div>}
                         </>
                 }
 

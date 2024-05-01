@@ -16,6 +16,7 @@ import {getCookie, setCookie} from "cookies-next";
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {useRouter} from "next/navigation";
 import {toast} from "react-toastify";
+import {useUser} from "./user-context";
 
 declare global {
     interface Window {
@@ -44,6 +45,7 @@ export const Oauth2Context = createContext<Oauth2Context | null>(null);
 
 export function AuthContextProvider({children}: AuthContextProviderProps): JSX.Element {
     const router = useRouter();
+    const  {setCurrentUser} = useUser()
     const [verifyResult, setVerifyResult] = useState(undefined)
     auth.languageCode = 'it';
     const signInWithGoogle = async (): Promise<void> => {
@@ -65,6 +67,7 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
                 success: "Đăng nhập thành công!",
                 error: 'Thông tin đăng nhập không hợp lệ'
             }).then((oauth2Response) => {
+                setCurrentUser(oauth2Response.data.user)
                 handleSuccessResponse(oauth2Response, router)
             })
 
@@ -88,6 +91,7 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
     const signOut = async (): Promise<void> => {
         try {
             await signOutFirebase(auth);
+            // setCurrentUser(null);
         } catch (error) {
             console.log(error)
             throw error

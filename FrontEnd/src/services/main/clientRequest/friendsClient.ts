@@ -26,7 +26,7 @@ export function unAcceptFriend(body: any): fetcherParams {
 }
 
 export async function findFriend(search: string) {
-    const fullUrl = `${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/conversation/search?search=${search}`
+    const fullUrl = `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/friends/search-by-name?search=${search}`
     const config: AxiosRequestConfig = {
         data: null,
         url: fullUrl,
