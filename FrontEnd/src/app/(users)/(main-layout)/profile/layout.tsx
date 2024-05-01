@@ -15,9 +15,7 @@ export default function ProfileLayout({
         <>
             <UserLayout>
                 <UserDataLayout>
-                    <UserHomeLayout>
                         {children}
-                    </UserHomeLayout>
                 </UserDataLayout>
             </UserLayout>
         </>

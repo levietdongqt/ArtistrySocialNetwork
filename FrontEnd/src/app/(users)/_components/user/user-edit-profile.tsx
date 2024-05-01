@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import cn from 'clsx';
@@ -38,13 +39,13 @@ type UserEditProfileProps = {
 
 export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
   const { currentUser } = useUser();
-  console.log("Edit User", currentUser)
+  console.log("Edit User", currentUser?.id)
   const { open, openModal, closeModal } = useModal();
   const [loading, setLoading] = useState(false);
   const { bio, fullName, location, avatar, coverImage, phoneNumber,dateOfBirth } =
     currentUser as User;
   const { ID } = useParams();
-  const {data,isLoading} = useSWR(getUserById(ID as string));
+  const {data,isLoading} = useSWR(getUserById(currentUser?.id as string));
 
   const [editUserData, setEditUserData] = useState<EditableUserData>({
     bio,

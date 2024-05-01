@@ -12,8 +12,9 @@ export  type ExtraService = {
     description: string;
     createDate: Date;
     updateDate: Date;
-    promotionId: number|null ;
+    promotionDTO: any|null ;
     status: boolean;
+    rowNumber?: number;
 }
 
 export const fieldExtraService = [
