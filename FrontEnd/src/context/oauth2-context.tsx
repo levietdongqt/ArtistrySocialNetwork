@@ -143,5 +143,16 @@ async function handleSuccessResponse(oauth2Response: any, router: any) {
     setCookieHandler(oauth2Response.data)
     console.log("LOGIN GOOGLE SUCCESSFUL: ")
     const prevPage = getCookie("prev_page")?.toString();
-    prevPage ? router.push(prevPage) : router.push("/home")
+    console.log("Previous: ",prevPage)
+    if(prevPage){
+        console.log("Voooo 1");
+        window.location.href = prevPage
+        window.location.reload()
+        return
+    }else{
+        console.log("Voooo 2");
+        window.location.href = "/home"
+        window.location.reload()
+    }
+    // prevPage ? router.push(prevPage) : router.push("/home")
 }

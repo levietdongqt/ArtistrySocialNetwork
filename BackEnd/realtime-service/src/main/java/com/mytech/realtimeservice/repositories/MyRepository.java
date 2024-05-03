@@ -30,7 +30,7 @@ public class MyRepository {
         }
         if (conversation.getLastMessage() == null) {
             update.set("lastMessage", null);
-        }
+        }   
         mongoTemplate.updateFirst(query, update, Conversation.class);
     }
 
