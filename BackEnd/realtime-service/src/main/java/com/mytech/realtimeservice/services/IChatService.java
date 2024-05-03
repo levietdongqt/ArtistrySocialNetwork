@@ -12,4 +12,6 @@ public interface IChatService {
     MessageDTO saveNewMessage(MessageDTO message);
 
     void updateConversation(ConversationDTO conversation);
+
+    ConversationDTO seenFlag(ConversationDTO conversationDTO);
 }

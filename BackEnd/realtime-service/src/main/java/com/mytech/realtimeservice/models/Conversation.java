@@ -25,5 +25,6 @@ public class Conversation {
     private Message lastMessage;
     private LocalDateTime updatedAt;
     private LocalDateTime createAt;
+    private String name;
     private ConversationType type;
 }

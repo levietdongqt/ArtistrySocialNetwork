@@ -33,7 +33,7 @@ export function MoreSettings(): JSX.Element {
         console.log("SIGN OUT")
        await deleteCookieTokenSSR();
        await signOut();
-        router.push("/login");
+       router.push("/login");
     }
     return (
         <>

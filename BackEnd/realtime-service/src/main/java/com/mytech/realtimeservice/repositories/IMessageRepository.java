@@ -13,4 +13,6 @@ public interface IMessageRepository extends MongoRepository<Message,String> {
 
     @Query(value = "{'conversationId': ?0}",sort = "{'sendTime':  1}")
     LinkedList<Message> findAllByConversationId(String conversationId);
+
+    void deleteAllByConversationId(String conversationId);
 }

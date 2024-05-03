@@ -27,5 +27,6 @@ public class ConversationDTO {
     private LocalDateTime updatedAt;
     private LocalDateTime createAt;
     private List<MessageDTO> messages = new ArrayList<>();
+    private String name;
     private ConversationType type;
 }

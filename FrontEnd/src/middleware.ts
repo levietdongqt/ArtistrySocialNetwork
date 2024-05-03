@@ -11,18 +11,19 @@ import {isTokenExpired} from "@lib/config/ServerHeaderConfig";
 const middleware = async (request: NextRequest) => {
     console.log("middleware is running:  ", request.nextUrl.pathname);
     const isLoginOrRoot = ["/login", "/"].includes(request.nextUrl.pathname)
-    const isLogin = "/login" === request.nextUrl.pathname
+    // const isLogin = "/login" === request.nextUrl.pathname
     const response = NextResponse.next()
     const accessToken = getCookie('access_token', {cookies})?.toString();
     if (!accessToken) {
-        if (isLogin) {
-            return NextResponse.next();
-        }
         console.log("ACCESS_TOKEN IS NOT FOUND")
+        // if (isLogin) {
+        //     return NextResponse.next();
+        // }
         return redirectToLogin(request);
     }
     const payload = jwtDecode<JwtPayload>(accessToken)
     if (!isTokenExpired(payload)) {
+        console.log("Request Valid: ", request.nextUrl.pathname)
         return ["/login", "/",].includes(request.nextUrl.pathname) ? redirectToHome(request) : response;
     }
     try {
@@ -32,10 +33,12 @@ const middleware = async (request: NextRequest) => {
             await resetCookieTokenSSR(result, request, response)
             return isLoginOrRoot ? redirectToHome(request) : response;
         }
-        return isLogin ? NextResponse.next() : redirectToLogin(request);
+        // return isLogin ? NextResponse.next() : redirectToLogin(request);
+        return redirectToLogin(request);
     } catch (err) {
         console.log("ERROR: " + err)
-        return isLogin ? NextResponse.next() : redirectToLogin(request);
+        // return isLogin ? NextResponse.next() : redirectToLogin(request);
+        return redirectToLogin(request);
     }
 };
 
@@ -44,7 +47,8 @@ export const config = {
     matcher: [
         '/home',
         '/',
-        '/login',
+        '/message',
+        // '/login',
         '/profile/edit',
         // '/profile/create/main-service',
         '/notifications',
@@ -62,13 +66,13 @@ function redirectToLogin(req: NextRequest) {
     console.log("redirect To Login from: ", req.nextUrl.pathname)
     // Gửi thông tin trang trước thông qua query string
     const res = NextResponse.next({
-        status: 303,//
+        status: 307,//
         headers: {
             Location: loginUrl.toString(),
         },
     });
     deleteCookieTokenMiddleware(req, res);
-    setCookie("prev_page", req.nextUrl.pathname, {res, req, maxAge: 60 * 10, path: "/login"})
+    setCookie("prev_page", req.nextUrl.pathname, {res, req, maxAge: 60 * 10, path: "/"})
     return res;
 }
 

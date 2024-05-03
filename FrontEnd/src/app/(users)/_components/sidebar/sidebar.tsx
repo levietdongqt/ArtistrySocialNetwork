@@ -134,10 +134,9 @@ export function Sidebar() {
                                 <SidebarLink {...linkData} key={linkData.href}/>
                             ))}
                             <SidebarLink
-                                href={`#`}
+                                href={`/message`}
                                 linkName="Tin nhắn"
                                 iconName="EnvelopeIcon"
-                                callBack={() => dispatch(ChatAction(null, ACTION_TYPE.SHOW_CONVERSATIONS))}
                             />
                             {navLinksBot.map(({...linkData}) => (
                                 <SidebarLink {...linkData} key={linkData.href}/>
