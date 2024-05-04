@@ -30,8 +30,6 @@ export default function SearchUser() {
       <Content style={{ background: "#fff"}}>
         {isLoading ? (
           <Loading className="mt-5" />
-        ) : !data.data ? (
-          <Error message="Không tìm thấy kết quả" />
         ) : (
           <div>
             <AnimatePresence mode="popLayout">

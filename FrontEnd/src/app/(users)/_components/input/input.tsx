@@ -79,6 +79,7 @@ export function Input({
     setLoading(true);
     const userId = currentUser?.id as string;
     const uploadedImagesData = await uploadImages(userId, selectedImages);
+    console.log("Uploaded images: ",uploadedImagesData)
   if(currentUser !== null){
     if(!comment){
       const postData = {
@@ -156,7 +157,7 @@ export function Input({
 
     setImagesPreview([...imagesPreview, ...imagesPreviewData]);
     setSelectedImages([...selectedImages, ...selectedImagesData]);
-
+    console.log("selectedImages11",selectedImages)
     inputRef.current?.focus();
   };
 
