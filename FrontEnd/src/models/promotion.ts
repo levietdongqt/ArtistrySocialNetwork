@@ -1,5 +1,7 @@
+import { User } from "./user";
+
 export type Promotion= {
-    id?: number;
+    id: number;
     name: string;
     discountPercent: number;
     startDate: Date;
@@ -7,13 +9,12 @@ export type Promotion= {
     description: string;
     type: PromotionType;
     status: boolean;
-
+    user :User
 }
 
-enum PromotionType {
+export enum PromotionType {
     FOR_ORDER,
-    FOR_SERVICE // Đổi TYPE2 thành lựa chọn thực tế của bạn
-    // Thêm thêm các kiểu khuyến mãi bổ sung vào đây nếu cần
+    FOR_SERVICE
 }
 
 

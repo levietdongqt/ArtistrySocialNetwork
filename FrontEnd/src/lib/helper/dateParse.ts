@@ -6,7 +6,7 @@ export function dateParse(key: any, value: any) {
     return value; // Trả về giá trị không đổi nếu không phải là chuỗi ngày tháng
 }
 
-export function formatDurationConversation(duration : number) {
+export function handleFormatDurationSendTime(duration : number) {
     if (duration < 0) return "Invalid Date";
 
     const millisecondsPerMinute = 60 * 1000;

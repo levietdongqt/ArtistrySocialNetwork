@@ -1,12 +1,8 @@
 package com.mytech.realtimeservice.exception.handler;
 
 
-
 import com.mytech.realtimeservice.dto.ResponseObject;
-import com.mytech.realtimeservice.exception.myException.InvalidPropertyException;
-import com.mytech.realtimeservice.exception.myException.NotFoundException;
-import com.mytech.realtimeservice.exception.myException.TokenExpiredException;
-import com.mytech.realtimeservice.exception.myException.UnAuthenticationException;
+import com.mytech.realtimeservice.exception.myException.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +64,6 @@ public class AuthExceptionHandler {
     }
 
 
-
     @ExceptionHandler(UnAuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<?> AuthExceptionHandle2(UnAuthenticationException exception) {
@@ -77,6 +72,18 @@ public class AuthExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 ResponseObject.builder().
                         status(HttpStatus.UNAUTHORIZED)
+                        .message(exception.getMessage())
+                        .data(null).build());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<?> AuthExceptionHandle2(ForbiddenException exception) {
+        log.error(exception.toString());
+        log.error(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                ResponseObject.builder().
+                        status(HttpStatus.FORBIDDEN)
                         .message(exception.getMessage())
                         .data(null).build());
     }

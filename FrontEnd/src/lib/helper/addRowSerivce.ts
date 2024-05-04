@@ -1,6 +1,6 @@
 import { MainService } from "@models/main-service";
 
-export const addRowNumber = (data: MainService[]) => {
+export const addRowNumber = (data: any[]) => {
     // Tạo một bản sao của dữ liệu để giữ nguyên trạng gốc
     const newData = [...data];
     // Thêm một cột mới để giữ giá trị số thứ tự tăng dần

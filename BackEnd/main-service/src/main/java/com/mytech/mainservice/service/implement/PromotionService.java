@@ -74,7 +74,7 @@ public class PromotionService implements IPromotionService {
     }
 
     @Override
-    public List<PromotionDTO> getPromotions(String userId,boolean status,boolean isExpired){
+    public List<PromotionDTO> getPromotionsForServiceAndOrder(String userId,boolean status,boolean isExpired){
         var promotions = promotionRepository.getPromotionsByUser(userId,status);
         if(isExpired){
             return promotions
@@ -87,6 +87,14 @@ public class PromotionService implements IPromotionService {
                 .map((promotion -> modelMapper.map(promotion, PromotionDTO.class)))
                 .collect(Collectors.toList());
 
+    }
+
+    public List<PromotionDTO> getAllPromotions(String userId){
+        var promotions = promotionRepository.getAllPromotionsByUser(userId);
+        return promotions
+               .stream()
+               .map(promotion -> modelMapper.map(promotion, PromotionDTO.class))
+               .collect(Collectors.toList());
     }
 
     @Override
