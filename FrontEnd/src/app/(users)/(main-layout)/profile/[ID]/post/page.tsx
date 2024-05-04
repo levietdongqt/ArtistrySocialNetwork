@@ -5,7 +5,7 @@ import {UserLayout} from "../../../../_components/layout/common-layout";
 import {UserHomeLayout} from "../../../../_components/layout/user-home-layout";
 import {SEO} from "../../../../_components/common/seo";
 import {Loading} from "@components/ui/loading";
-import {ServiceMini} from "../../../../services/[id]/service-mini";
+import {ServiceProvider} from "../../../../services/[id]/service-provider";
 
 
 export default function UserMedia(): JSX.Element {
@@ -32,7 +32,7 @@ export default function UserMedia(): JSX.Element {
                                   : (
                                   <AnimatePresence mode='popLayout'>
                                       {/*{sortedTweets.map((content) => (*/}
-                                      <ServiceMini  />
+                                      <ServiceProvider  />
                                       {/*))}*/}
                                   </AnimatePresence>
                               )}

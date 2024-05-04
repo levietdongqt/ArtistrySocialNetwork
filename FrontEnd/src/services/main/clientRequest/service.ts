@@ -50,6 +50,7 @@ export async function createExtraService(data: ExtraService): Promise<any> {
     }
 }
 
+
 export function GetAllMainService (userId :string): fetcherParams {
     return [`/main-service/get-all/${userId}`, 'GET', null, ServiceDestination.MAIN];
 }
