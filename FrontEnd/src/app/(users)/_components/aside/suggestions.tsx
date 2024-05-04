@@ -1,7 +1,6 @@
 'use client'
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useAuth } from '../../../../context/oauth2-context';
 import { UserCard } from '../user/user-card';
 import { Loading } from '@components/ui/loading';
 import { Error } from '@components/ui/error';
@@ -38,7 +37,7 @@ const adminLoading = false;
           {/*{suggestionsData?.map((userData) => (*/}
             <UserCard follow />
           {/*))}*/}
-          <Link href='/people' className='custom-button accent-tab hover-card block w-full rounded-2xl
+          <Link href='#' className='custom-button accent-tab hover-card block w-full rounded-2xl
                          rounded-t-none text-center text-main-accent'>
               Show more
           </Link>

@@ -16,7 +16,7 @@ import {variants} from '../user/user-header';
 import {UserEditProfile} from '../user/user-edit-profile';
 import {UserShare} from '../user/user-share';
 import type {LayoutProps} from './common-layout';
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import useSWR from "swr";
 import {getUserById} from "../../../../services/main/clientRequest/userClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
@@ -25,18 +25,26 @@ import {SidebarLink} from "../sidebar/sidebar-link";
 import {EditOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import Link from "next/link";
 import { Dropdown, Menu } from 'antd';
+import {Modal} from "../modal/modal";
+import ChangePass from "../user/change-pass";
+import {UserRole} from "@lib/enum/UserRole";
+import CreateExtraServiceForm from "../../(main-layout)/provider/extra-service/create-service";
+import {EditProfileModal} from "../modal/edit-profile-modal";
 
 
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
+    const [openModal    , setOpenModal    ] = useState(false)
+    const [openModalProvider    , setOpenModalProvider    ] = useState(false)
+    const {currentUser} = useUser();
     const router = useRouter();
 
     const handleClickEdit = ({event}: { event: any }) => {
         event.preventDefault(); // Ngăn chặn sự kiện mặc định
         router.push('/profile/edit');
     };
-    const {currentUser} = useUser();
+
     //console.log("currentUser",currentUser)
-    const {ID} = useParams();
+    const {ID} = useParams()|| currentUser?.id;
     console.log("currentUser",ID)
     const {
         isLoading: loading,
@@ -44,7 +52,7 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
         error,
         isValidating: checkTrue
     } = useSWR(getUserById(ID as string), fetcherWithToken);
-
+    const isProvider =  response?.data.roles.includes(UserRole.ROLE_PROVIDER)
     const coverData = response?.data.coverImage
         ? {src: response?.data.coverImage, alt: response?.data.fullName}
         : null;
@@ -57,32 +65,54 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
 
     const isOwner = response?.data?.id === currentUser?.id;
 
+    const handleMenuClick = async () => {
+
+
+        if (isProvider) {
+            console.log('Chuyển đến trang nhà cung cấp');
+            await router.push('/provider');
+        } else {
+            setOpenModalProvider(true);
+        }
+    };
+
     const menu = (
         <Menu>
             <Menu.Item>
-                <Link href="/profile/edit/user">
+
+                <Link href="#" onClick={()=>setOpenModal(true)}>
                     <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
                     Đổi mật khẩu
                 </Link>
+
             </Menu.Item>
+
             <Menu.Item>
-                <Link href="/edit/user">
+                <Link href="/profile/edit">
 
                         <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
                         Sửa thông tin
 
                 </Link>
             </Menu.Item>
-            <Menu.Item>
-                <Link href="/provider">
+            <Menu.Item  onClick={handleMenuClick}>
+
                         <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5" />
                         Nhà cung cấp
-                </Link>
+
             </Menu.Item>
         </Menu>
     );
        return (
         <>
+            <Modal open={openModal} closeModal={()=>setOpenModal(false)}>
+            <ChangePass phoneNum={currentUser?.phoneNumber!} callback={()=>setOpenModal(false)}/>
+            </Modal>
+
+            <Modal open={openModalProvider} closeModal={()=>setOpenModalProvider(false)}>
+                <CreateExtraServiceForm />
+            </Modal>
+
             {response?.data && (
                 <SEO
                     title={`${`${response?.data.fullName} (@${response?.data.fullName})`} / Social`}
@@ -147,7 +177,11 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
             </motion.section>
             {response?.data && (
                 <>
-                    <UserNav/>
+
+                    {
+                       isProvider &&  <UserNav/>
+                    }
+
                     {children}
                 </>
             )}

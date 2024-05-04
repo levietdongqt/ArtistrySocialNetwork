@@ -6,7 +6,7 @@ import {getCookie, setCookie} from "cookies-next";
 
 type UserContextProps = {
     currentUser: User | null;
-    setCurrentUser: (user: User) => void;
+    setCurrentUser: (user: User | null) => void;
 };
 
 export const UserContext = createContext<UserContextProps | null>(null);
@@ -18,12 +18,11 @@ export function UserContextProvider({children}: any): JSX.Element {
     }, []);
     const userCookies = getCookie('user')?.toString()
     const user: User = userCookies ? JSON.parse(userCookies) : null;
-    const [currentUser, setCurrentUser] = useState(user);
+    const [currentUser, setCurrentUser] = useState<User | null>(user || null);
     const values = {
         currentUser,
         setCurrentUser,
     }
-    setCookie("userId", currentUser?.id)
     return <UserContext.Provider value={values}>{children}</UserContext.Provider>;
 }
 

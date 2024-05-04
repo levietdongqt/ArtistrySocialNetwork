@@ -28,14 +28,39 @@ public class ConversationController {
     @Autowired
     private JwtTokenHolder jwtTokenHolder;
 
-    @PreAuthorize("hasRole('USER') && @jwtTokenHolder.isValidUserId(#userId)")
-    @GetMapping("/by-user/{userId}")
-    public ResponseEntity<?> getByUser(@PathVariable String userId) {
-        log.info("getByUser" + userId);
-        List<Conversation> conversations = conversationService.getConversationsByUserId(userId);
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/by-user")
+    public ResponseEntity<?> getByUser() {
+        log.info("getByUser");
+        List<Conversation> conversations = conversationService.getByUserIdAndIgnoreTypeHide(jwtTokenHolder.getUserId());
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .data(conversations)
+                        .status(HttpStatus.OK)
+                        .message("Get conversation successfully").build()
+        );
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable String id) {
+        Conversation conversation = conversationService.getConversationById(id);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .data(conversation)
+                        .status(HttpStatus.OK)
+                        .message("Get conversation successfully").build()
+        );
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/create-group")
+    public ResponseEntity<?> createGroup(@RequestBody ConversationDTO conversation) {
+        conversationService.checkValidRequest(conversation);
+        ConversationDTO conversationDTO = conversationService.createConversation(conversation);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .data(conversationDTO)
                         .status(HttpStatus.OK)
                         .message("Get conversation successfully").build()
         );
@@ -56,12 +81,50 @@ public class ConversationController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/search")
     public ResponseEntity<?> search(@RequestParam("search") String name) {
-        List<Conversation> conversations = conversationRepo.findByMemberName(jwtTokenHolder.getUserId(), name);
+        List<Conversation> conversations = conversationRepo.findByMemberIdAndOtherMembersNicknameContains(jwtTokenHolder.getUserId(), name);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .data(conversations)
                         .status(HttpStatus.OK)
                         .message("Get conversation successfully").build()
+        );
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/un-read")
+    public ResponseEntity<?> findUnRead() {
+        List<Conversation> conversations = conversationService.findUnReads(jwtTokenHolder.getUserId());
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .data(conversations)
+                        .status(HttpStatus.OK)
+                        .message("Get conversation successfully").build()
+        );
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/update")
+    public ResponseEntity<?> updateConversation(@RequestBody ConversationDTO conversationDTO) {
+        conversationService.checkValidRequest(conversationDTO);
+        conversationService.update(conversationDTO);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .data(null)
+                        .status(HttpStatus.OK)
+                        .message("Update conversation successfully").build()
+        );
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/delete")
+    public ResponseEntity<?> delete(@RequestBody ConversationDTO conversationDTO) {
+        conversationService.checkValidRequest(conversationDTO);
+        conversationService.deleteConversation(conversationDTO);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .data(null)
+                        .status(HttpStatus.OK)
+                        .message("Delete conversation successfully").build()
         );
     }
 }

@@ -160,5 +160,5 @@ export default function ServiceMainTable({ data }: DataTable) {
     },
   ];
 
-  return <Table columns={columns} dataSource={data} />;
+  return <Table columns={columns} dataSource={data} />
 }

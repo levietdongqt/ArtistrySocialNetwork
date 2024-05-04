@@ -1,58 +1,74 @@
 'use client'
-import {
-    Avatar,
-    AvatarGroup,
-    ChatContainer,
-    ConversationHeader,
-    Message,
-    MessageInput,
-    MessageList,
-    TypingIndicator,
-    InfoButton
-} from "@chatscope/chat-ui-kit-react";
-import React, {useEffect, useState} from "react";
+import {Avatar, ChatContainer, Message, MessageInput, MessageList} from "@chatscope/chat-ui-kit-react";
+import React, {memo, useEffect, useState} from "react";
 import {useSocket} from "../../context/websocket-context1";
 import {MessageDto} from "@models/message";
 import {ConversationDto, ConversationMember} from "@models/conversation";
 import {useUser} from "../../context/user-context"
-import {getMessageDirection, getReceiverIds, MyMessageSeparator} from "@components/chat-box/chat-box-helper";
+import {
+    getMessageDirection,
+    handleFormatSendTime,
+    isLastMessageOutGoing,
+    MyMessageSeparator
+} from "@components/chat-box/chat-box-helper";
 import {useChat} from "../../context/chat-context";
-import {dateParse} from "@lib/helper/dateParse";
 import {ACTION_TYPE, ChatAction} from "@lib/reducer/chat-reducer";
 import {CustomIcon} from "@components/ui/custom-icon";
-import {ToolTip} from "@components/ui/tooltip";
-import {MyTooltip} from "@components/ui/my-tooltip";
 import {Tooltip} from "antd";
 import MiniChatBox from "@components/chat-box/mini-chat-box";
+import MyConversationHeader from "@components/chat-box/conversation-header";
+import {usePathname} from "next/navigation";
+import {checkNotSeen, sendSeenFlag} from "@components/chat-box/chat-box-socket-helper";
 
 interface ChatBoxProps {
     isMinusChatBox?: boolean; // The callback prop is an optional function
     curConversation: ConversationDto | undefined
 }
 
-export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps) {
+function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps) {
     const {currentUser} = useUser();
-    const [memberMap, setMemberMap] = useState(new Map<string, ConversationMember>())
-    const {state, dispatch, reRender} = useChat()
-    const {pickedConversations, showChatBoxes} = state!;
+    const isInMessagePage = usePathname() === "/message"
     const {stompClient} = useSocket();
+    const {state, dispatch, reRender} = useChat()
+
+    const {pickedConversations, showChatBoxes, conversations} = state!;
     const [messageIdFooter, setMessageIdFooter] = useState("")
+    const [isOnFocus, setIsOnFocus] = useState(false)
     const otherMembers = curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id);
+
     useEffect(() => {
+        console.log("CHAT box mount")
+        // if (!curConversation) {
+        //     console.log("SET CURRENT CONVERSATION")
+        //     curConversation = conversations[0]
+        // }
     }, []);
 
+    useEffect(() => {
+        console.log("ChatBox mount", curConversation)
+        if (!curConversation?.messages) {
+            const payload = {
+                conversationId: curConversation?.id,
+                senderId: currentUser!.id
+            }
+            console.log("Getting conversation", curConversation)
+            stompClient?.publish({
+                destination: "/app/chat.getConversation",
+                body: JSON.stringify(payload)
+            })
+        }
+
+    }, [curConversation]);
 
     useEffect(() => {
-        console.log("CHANGE MEMBER CONVERSATION")
-        if (curConversation) {
-            // const payload = {
-            //     conversationId: curConversation?.id,
-            //     senderId: currentUser!.id
-            // }
-            // stompClient?.send("/app/chat.getConversation", JSON.stringify(payload))
-            handleMembersConversation()
+        if (curConversation && isOnFocus) {
+            const isNotSeen = checkNotSeen(curConversation, currentUser!)
+            if (isNotSeen) {
+                sendSeenFlag(curConversation, stompClient!, currentUser!)
+                dispatch(ChatAction(curConversation, ACTION_TYPE.UPDATE_CONVERSATION))
+            }
         }
-    }, [curConversation]);
+    }, [isOnFocus])
 
     const sendMessage = (innerHtml: string) => {
         const message: MessageDto = {
@@ -60,21 +76,18 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
             seen: false,
             sendTime: new Date(Date.now()),
             senderId: currentUser!.id,
-            type: "text",
+            type: "html",
             conversationId: curConversation?.id,
         }
         const members = curConversation?.members.map(member => {
-            if (member.id !== currentUser!.id) {
-                member.notSeen = true
-            } else {
-                member.notSeen = false
-            }
+            member.notSeen = member.id !== currentUser!.id;
             return member
         })
         const payload = {
             members: members,
             name: curConversation?.name,
             id: curConversation?.id!,
+            type: curConversation?.type,
             messages: [message],
         }
         console.log("ONSUBMIT send message")
@@ -103,13 +116,12 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
 
     }
 
-    function handleMembersConversation() {
-        const members = new Map<string, ConversationMember>();
-        curConversation!.members?.map(value => {
-            members.set(value.id, value)
-        })
-        setMemberMap(members)
-    }
+    // function handleMembersConversation() {
+    //     const members = new Map<string, ConversationMember>();
+    //     curConversation!.members?.map(value => {
+    //         members.set(value.id, value)
+    //     })
+    // }
 
     const onClickCloseMessage = () => {
         const currIndex = pickedConversations.findIndex(value => value?.id === curConversation?.id)
@@ -131,10 +143,26 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
     }
 
     const onClickMinusChatBox = (toggle: boolean) => {
+        const isNotSeen = checkNotSeen(curConversation!, currentUser!)
+        if (isNotSeen) {
+            sendSeenFlag(curConversation!, stompClient!, currentUser!)
+            dispatch(ChatAction(curConversation, ACTION_TYPE.UPDATE_CONVERSATION))
+        }  //
         const newShowChatBoxes = [...showChatBoxes]
         const currIndex = pickedConversations.findIndex(value => value?.id === curConversation?.id);
         newShowChatBoxes[currIndex] = toggle
         dispatch(ChatAction(newShowChatBoxes, ACTION_TYPE.SHOW_CHAT_BOXES))
+    }
+
+    const onFocusChatContainer = () => {
+        if (isOnFocus) {
+            return
+        }
+        const isNotSeen = checkNotSeen(curConversation!, currentUser!)
+        if (isNotSeen) {
+            sendSeenFlag(curConversation!, stompClient!, currentUser!)
+            dispatch(ChatAction(curConversation, ACTION_TYPE.UPDATE_CONVERSATION))
+        }
     }
 
     if (!curConversation) {
@@ -150,15 +178,18 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
     }
 
     if (isMinusChatBox) {
-        return <MiniChatBox curConversation={curConversation}
-                            onClickCloseMessage={onClickCloseMessage}
-                            onClickMinusChatBox={onClickMinusChatBox}
-        />
+        return <>
+            <MiniChatBox curConversation={curConversation}
+                         onClickCloseMessage={onClickCloseMessage}
+                         onClickMinusChatBox={onClickMinusChatBox}
+            />
+        </>
     }
     return (
         <>
             <ChatContainer className={"border-2 overflow-auto  "}
-                           style={{
+                           onClick={onFocusChatContainer}
+                           style={isInMessagePage ? {fontSize: "16px", height: "100vh"} : {
                                fontSize: "16px",
                                borderTopLeftRadius: "20px",
                                borderTopRightRadius: "20px",
@@ -169,65 +200,12 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
                                height: "60vh"
                            }}>
 
-                <ConversationHeader>
-                    {
-                        otherMembers?.length === 1 ?
-                            <Avatar
-                                name={otherMembers[0].nickname}
-                                src={otherMembers[0].avatar}
-                            />
-                            :
-                            <AvatarGroup size={"md"} hoverToFront={true} style={{
-                                display: 'flex', flexDirection: 'row'
-                            }}>
-                                <div is={"Avatar"}>
-                                    <Avatar
-                                        name={"Nhóm"}
-                                        src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"
-                                    />
-                                </div>
-                                <div is={"Avatar"}>
-                                    <Avatar
-                                        name={"Nhóm"}
-                                        src="https://chatscope.io/storybook/react/assets/zoe-E7ZdmXF0.svg"
-                                    />
-                                </div>
-                            </AvatarGroup>
-                    }
-                    <ConversationHeader.Content
-                        title={"HELLO"}
-                        info="Active 10 mins ago"
-                        userName={curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id).pop()?.nickname}
-                    />
-                    <ConversationHeader.Actions>
-                        <MyTooltip content={"Thêm"}>
-                            <button className="relative overflow-hidden">
-                            <span
-                                className="block w-full h-full bg-gray-200 rounded-full opacity-0 transition-opacity duration-300 absolute inset-0 hover:opacity-50">
-                            </span>
-                                <InfoButton/>
-                            </button>
-                        </MyTooltip>
-                        <MyTooltip content={"Thu nhỏ"}>
-                            <button className="relative overflow-hidden"
-                                    onClick={() => onClickMinusChatBox(false)}
-                            >
-                            <span
-                                className="block w-full h-full bg-gray-200 rounded-full opacity-0 transition-opacity duration-300 absolute inset-0 hover:opacity-50">
-                            </span>
-                                <CustomIcon iconName={"MinusIcon"}/>
-                            </button>
-                        </MyTooltip>
-                        <MyTooltip content={"Đóng"}>
-                            <button className="relative overflow-hidden" onClick={onClickCloseMessage}>
-                                <span
-                                    className="block w-full h-full bg-gray-200 rounded-full opacity-0 transition-opacity duration-300 absolute inset-0 hover:opacity-50">
-                                </span>
-                                <CustomIcon iconName={"CloseMessage"}/>
-                            </button>
-                        </MyTooltip>
-                    </ConversationHeader.Actions>
-                </ConversationHeader>
+                <div is={"ConversationHeader"}>
+                    <MyConversationHeader conversation={curConversation}
+                                          otherMembers={otherMembers}
+                                          onClickCloseMessage={onClickCloseMessage}
+                                          onClickMinusChatBox={onClickMinusChatBox}/>
+                </div>
                 <MessageList
                     className="flex flex-col justify-end  h-full pb-3 text-center text-lg"
                     scrollBehavior="smooth"
@@ -242,15 +220,15 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
                     {!!curConversation ?
                         (
                             curConversation?.messages?.map((message, index) => {
-                                const sender: ConversationMember = curConversation.memberMap?.get(message.senderId)!
-                                const prevMessage: MessageDto | undefined = index > 0 ? curConversation.messages?.[index - 1] : undefined
+                                const sender: ConversationMember = curConversation?.memberMap?.get(message.senderId)!
+                                const prevMessage: MessageDto | undefined = index > 0 ? curConversation?.messages?.[index - 1] : undefined
                                 // console.log("current time: ", message.sendTime.toLocaleDateString())
                                 let timeDifference: number | undefined = undefined;
                                 if (prevMessage) {
                                     timeDifference = (message.sendTime.getTime() - prevMessage.sendTime.getTime()) / (1000 * 60);
                                 }
                                 return (
-                                    <div className={"items-center"} key={index}>
+                                    <div className={"items-center"} key={index} is={"MessageGroup"}>
                                         <MyMessageSeparator timeDifference={timeDifference}
                                                             currentTime={message.sendTime}/>
                                         {/*    'twitter-chirp': ['TwitterChirp', 'sans-serif'],*/}
@@ -271,7 +249,7 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
                                                 direction: getMessageDirection(message.senderId, currentUser!.id),
                                                 message: message.content,
                                                 position: 'first',
-                                                type: message.type,
+                                                type: 'html',
                                                 sender: "Dong",
                                                 sentTime: '15 mins ago'
                                             }}
@@ -286,6 +264,18 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
 
                                             }
                                             {
+                                                (isLastMessageOutGoing(index === curConversation.messages.length - 1, getMessageDirection(message.senderId, currentUser!.id)))
+                                                && <Message.Footer
+                                                    style={{
+                                                        left: '0px',
+                                                        marginBottom: "0px",
+                                                        marginTop: "0px",
+                                                        paddingBottom: "0px",
+                                                        paddingTop: "0px",
+                                                    }}
+                                                    sentTime={otherMembers?.every(member => member.notSeen) ? 'Đã gửi' : 'Đã xem'}/>
+                                            }
+                                            {
                                                 (messageIdFooter === message.id) && <Message.Footer
                                                     style={{
                                                         left: '0px',
@@ -294,7 +284,7 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
                                                         paddingBottom: "0px",
                                                         paddingTop: "0px",
                                                     }}
-                                                    sentTime={`${message.sendTime.getHours()}:${message.sendTime.getMinutes()}`}/>
+                                                    sentTime={handleFormatSendTime(message.sendTime)}/>
 
                                             }
                                         </Message>
@@ -315,10 +305,18 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
                 <div is={"MessageInput"} className={"flex items-center"}>
                     <MessageInput placeholder="Type message here"
                                   fancyScroll={true}
-                                  autoFocus = {true}
+                                  autoFocus={true}
                                   sendButton={false}
                                   style={{
                                       width: "100%"
+                                  }}
+                                  onFocus={event => {
+                                      console.log("onFocus input message")
+                                      setIsOnFocus(true)
+                                  }}
+                                  onBlur={event => {
+                                      console.log("onBlur input message")
+                                      setIsOnFocus(false)
                                   }}
                                   onSend={sendMessage}/>
                     <CustomIcon iconName={"MinusIcon"}/>
@@ -328,3 +326,5 @@ export default function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps)
         </>
     )
 }
+
+export default memo(ChatBox)

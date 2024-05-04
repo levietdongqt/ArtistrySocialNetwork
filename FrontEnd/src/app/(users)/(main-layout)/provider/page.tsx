@@ -7,6 +7,8 @@ import {useRouter} from "next/navigation";
 import {Input} from "../../_components/input/input";
 import ServiceMain from "../../_components/main-service/servcie-main";
 import Promotions from "app/(users)/_components/main-service/promotions";
+import ServiceExtra from "../../_components/extra-service/servcie-extra";
+import Link from "next/link";
 
 const items = [
     {
@@ -18,12 +20,12 @@ const items = [
     {
         key: "2",
         label: "Dịch vụ chính",
-        children: <ServiceMain/>,
+        children:<ServiceMain/> ,
     },
     {
         key: "3",
         label: "Dịch vụ Thêm",
-        children: <CreateMainServiceForm/>,
+        children: <ServiceExtra/>,
     },
     {
         key: "4",

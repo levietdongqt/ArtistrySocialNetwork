@@ -75,7 +75,6 @@ const CreateMainServiceForm = () => {
         onSubmit: async (values: MainService, {setSubmitting, resetForm }) => {
             const uploadedImagesData = await uploadImages(currentUser?.id as string,files as FilesWithId);
             const imageUrls = uploadedImagesData?.map((upload: any,index: any)=> upload.src);
-            console.log("imageUrls",imageUrls)
             
             const newService = {
 

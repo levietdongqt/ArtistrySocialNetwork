@@ -2,6 +2,8 @@ package com.mytech.realtimeservice.services.implement;
 
 import com.mytech.realtimeservice.dto.ConversationDTO;
 import com.mytech.realtimeservice.dto.MessageDTO;
+import com.mytech.realtimeservice.dto.UserDTO;
+import com.mytech.realtimeservice.exception.myException.NotFoundException;
 import com.mytech.realtimeservice.models.Conversation;
 import com.mytech.realtimeservice.models.Message;
 import com.mytech.realtimeservice.repositories.IConversationRepository;
@@ -44,5 +46,21 @@ public class ChatService implements IChatService {
     public void updateConversation(ConversationDTO conversationDto) {
         Conversation conversation = mapper.map(conversationDto, Conversation.class);
         conversationRepo.save(conversation);
+    }
+
+    @Override
+    public ConversationDTO seenFlag(ConversationDTO conversationDTO) {
+        Conversation conversation = conversationRepo.findById(conversationDTO.getId()).orElse(null);
+        List<String> partMemberIds = conversationDTO.getMembers().stream().map(UserDTO::getId).toList();
+        if (conversation != null) {
+            conversation.getMembers().forEach(user -> {
+                if (!partMemberIds.contains(user.getId())) {
+                    user.setNotSeen(false);
+                }
+            });
+
+            return mapper.map(conversationRepo.save(conversation),ConversationDTO.class);
+        }
+        throw new NotFoundException("Could not find conversation");
     }
 }

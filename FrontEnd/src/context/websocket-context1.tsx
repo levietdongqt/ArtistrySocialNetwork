@@ -3,13 +3,15 @@ import React, {createContext, useContext, useEffect, useRef, useState} from "rea
 import {useChat} from "./chat-context";
 import {dateParse} from "@lib/helper/dateParse";
 import {useNotification} from "./notification-context";
-import {ACTION_TYPE, ChatAction} from "@lib/reducer/chat-reducer";
+import {ACTION_TYPE, ChatAction, findIndexOfConversation} from "@lib/reducer/chat-reducer";
 import {ConversationDto} from "@models/conversation";
 import {Client} from "@stomp/stompjs";
 import {getCookie} from "cookies-next";
 import {toast} from "react-toastify";
 import {ResponseSocket} from "@models/ResponseSocket";
 import {ResponseSocketType} from "@lib/enum/MessageType";
+import {sendSeenFlag} from "@components/chat-box/chat-box-socket-helper";
+import {useUser} from "./user-context";
 
 type SocketContextType = {
     stompClient: Client | null;
@@ -24,8 +26,8 @@ export const SocketProvider = ({children}: any) => {
     const [stompClient, setStompClient] = useState<Client | null>(null);
     const {setDataCount, setNotificationsContent} = useNotification();
     const socketRef = useRef<Client | null>(null);
-    const {dispatch} = useChat()
-    // const { curConversation}  = state
+    const {state: {showChatBoxes, pickedConversations}, dispatch} = useChat()
+    const {currentUser} = useUser()
     useEffect(() => {
         if (socketRef.current !== null) {
             return;
@@ -41,18 +43,31 @@ export const SocketProvider = ({children}: any) => {
             brokerURL: 'ws://localhost:8060/api/realtime/socket.io',
             onConnect: () => {
                 console.log('connected');
-                client.subscribe(`/user/chat/message`, (message) => {
-                    const conversation: ConversationDto = JSON.parse(message.body, dateParse);
-                    dispatch(ChatAction(conversation.lastMessage, ACTION_TYPE.UPDATE_MESSAGE))
-                    dispatch(ChatAction(conversation, ACTION_TYPE.UPDATE_CONVERSATIONS))
-                });
+                // client.subscribe(`/user/chat/message`, (message) => {
+                //     const conversation: ConversationDto = JSON.parse(message.body, dateParse);
+                //     dispatch(ChatAction(conversation.lastMessage, ACTION_TYPE.UPDATE_PICKED_CONVERSATION))
+                //     dispatch(ChatAction(conversation, ACTION_TYPE.UPDATE_CONVERSATION))
+                // });
 
-                client?.subscribe(`/user/chat/conversation`, (message) => {
+                client?.subscribe(`/user/chat/message`, (message) => {
                     const response: ResponseSocket = JSON.parse(message.body, dateParse)
+                    console.log("Callback from chat: ", response.type, ' - ', response.data)
                     switch (response.type) {
+
+                        case ResponseSocketType.SEND_MESSAGE:
+                            dispatch(ChatAction(response.data, ACTION_TYPE.UPDATE_PICKED_CONVERSATION))
+                            dispatch(ChatAction(response.data, ACTION_TYPE.UPDATE_CONVERSATION))
+                            break;
+
                         case ResponseSocketType.GET_CONVERSATION:
                             response.data && dispatch(ChatAction(response.data, ACTION_TYPE.SET_NEW_MESSAGES))
                             break;
+
+                        case ResponseSocketType.SEEN_FLAG:
+                            dispatch(ChatAction(response.data, ACTION_TYPE.UPDATE_SEEN_FLAG))
+                            break;
+
+
                     }
 
                 });
@@ -80,7 +95,6 @@ export const SocketProvider = ({children}: any) => {
             }
         };
     }, []);
-
     return (
         <SocketContext.Provider
             value={{stompClient, setStompClient}}
