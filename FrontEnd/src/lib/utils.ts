@@ -1,6 +1,7 @@
 'use client'
 import type { SyntheticEvent } from 'react';
 import type { MotionProps } from 'framer-motion';
+import { FilesWithId } from '@models/file';
 
 export function preventBubbling(
   callback?: ((...args: never[]) => unknown) | null,
@@ -46,3 +47,11 @@ export function getStatsMove(movePixels: number): MotionProps {
 export function isPlural(count: number): string {
   return count > 1 ? 's' : '';
 }
+
+export const transformToFilesWithId = (files: File[]): FilesWithId => {
+  const filesWithId: FilesWithId = files.map((file, index) => {
+    return { ...file as File,id:file.name,alt:file.name };
+});
+
+return filesWithId;
+};

@@ -15,6 +15,9 @@ public interface IPromotionRepository extends JpaRepository<Promotion, Long> {
     @Query("SELECT r FROM Promotion r WHERE r.user.id = :userId and r.status= :status")
     List<Promotion> getPromotionsByUser(@Param("userId") String userId, @Param("status") boolean status);
 
+    @Query("SELECT r FROM Promotion r WHERE r.user.id = :userId")
+    List<Promotion> getAllPromotionsByUser(@Param("userId") String userId);
+
     @Query("SELECT r FROM Promotion r WHERE r.user.id = :userId and r.id = :promotionId")
     Optional<Promotion> getPromotionByUser(@Param("userId") String userId, @Param("promotionId") long promotionId);
 }
