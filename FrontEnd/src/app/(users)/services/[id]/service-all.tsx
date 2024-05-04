@@ -17,10 +17,10 @@ import {ServiceCard} from "../../_components/main-service/service-card";
 
 
 
-export function ServiceProvider(): JSX.Element {
+export function ServiceAll(): JSX.Element {
 
     const { currentUser } = useUser();
-    const id = '1cb1c09e-79be-484b-9a6a-4d5728e04727'
+    const id = '8c35d989-785c-4d18-909e-1792d62628ad'
     const {
         data: response,
         isLoading: isLoading,

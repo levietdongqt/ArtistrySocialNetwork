@@ -74,13 +74,14 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
         }
     }
 
-    const sendVerifyCode = async (phoneNumber: string, destination: string) => {
+    const sendVerifyCode = async (phoneNumber: string, destination?: string, callback?: () => void) => {
         signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier!)
             .then((confirmationResult) => {
                 window.confirmationResult = confirmationResult;
                 console.log("Result: ", confirmationResult)
                 setCookie("phone_number", phoneNumber)
-                router.push(destination)
+                destination && router.push(destination)
+                callback?.()
             }).catch((error) => {
             throw error;
         });
@@ -94,18 +95,17 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
         }
     };
 
-    const captchaVerifier = async ({phoneNumber, destination = "/verify/continue", callBack}: captchaVerifierParam) => {
+    const captchaVerifier = async ({phoneNumber, destination, callBack}: captchaVerifierParam) => {
         window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
             'size': 'normal',
             'callback': async (response: any) => {
                 console.log("CAPCHA OK!");
                 console.log("Destination: " + destination)
-                router.prefetch(destination)
+                destination && router.prefetch(destination)
                 // reCAPTCHA solved, allow signInWithPhoneNumber.
-                toast.promise(sendVerifyCode(phoneNumber, destination), {
+                toast.promise(sendVerifyCode(phoneNumber, destination,callBack), {
                     pending: "Đang xác thực.... ",
                 })
-                callBack?.(); //
             },
             'expired-callback': () => {
                 toast.error("CAPTCHA đã quá hạn!")

@@ -10,6 +10,8 @@ import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import useSWR from "swr";
 import {useEffect, useState} from "react";
 import {useRouter} from "next/router";
+import {ServiceProvider} from "../../services/[id]/service-provider";
+import {ServiceAll} from "../../services/[id]/service-all";
 
 export type LayoutProps = {
   children: ReactNode;
@@ -29,6 +31,7 @@ export function HomeLayout({ children }: LayoutProps): JSX.Element {
       <Aside>
         <AsideTrends />
         <Suggestions />
+          <ServiceAll />
       </Aside>
     </>
   );
@@ -40,7 +43,7 @@ export function UserLayout({ children }: LayoutProps): JSX.Element {
       {children}
       <Aside>
         <Suggestions />
-        <AsideTrends />
+        <ServiceProvider />
       </Aside>
     </>
   );

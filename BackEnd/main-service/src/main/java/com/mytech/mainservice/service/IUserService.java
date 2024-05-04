@@ -32,6 +32,6 @@ public interface IUserService {
 
     public void deleteAllHistory(String userId);
 
-    public void updateUser(UserDTO user);
+    public UserDTO updateUser(UserDTO user);
 
 }
