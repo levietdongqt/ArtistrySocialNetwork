@@ -12,6 +12,8 @@ public interface IPromotionService {
 
     void deletePromotion(String userId, long promotionId);
 
+    void updatePromotion(String userId, long workingTimeId);
+
     public PromotionDTO getPromotionById(String userId, long promotionId);
 
     public Promotion getDBPromotionById(String userId, long promotionId);

@@ -1,13 +1,6 @@
 import * as yup from 'yup';
 
-const PromotionValidation = yup.object({
-    name: yup.string()
-        .required("Tên tả dịch vụ không được để trống")
-        .max(50, "tên quá dài!"),
-    discountPercent: yup.number()
-        .required("Phần trăm giảm giá không được để trống!")
-        .positive("Phần trăm giảm giá không được nhỏ hơn 0")
-        .max(100, "Phần trăm giảm giá không được lớn hơn 100%"),
+const WorkingTimeValidation = yup.object({
     startDate: yup.date()
         .required("Ngày bắt đầu không được để trống!")
         .test('is-not-greater', 'Ngày bắt đầu không được lớn hơn ngày kết thúc', function(value) {
@@ -29,21 +22,22 @@ const PromotionValidation = yup.object({
         .required("Ngày kết thúc không được để trống!")
         .test('is-less-than', 'Ngày kết thúc không được nhỏ hơn ngày bắt đầu', function(value) {
             const startDate = this.parent.startDate;
+            const currentDate = new Date();
             if (startDate) {
-                return value >= startDate;
+                return value >= startDate
             }
             return true;
-        }).test('is-less-than-now', 'Ngày kết thúc không được nhỏ hơn ngày hiện tại', function(value) {
+        })
+        .test('is-less-than-now', 'Ngày kết thúc không được nhỏ hơn ngày hiện tại', function(value) {
             const endDate = this.parent.endDate;
             const currentDate = new Date();
             if (endDate) {
                 return value >= currentDate;
             }
             return true;
-        }),
-    description: yup.string()
-        .required("Mô tả khuyến mãi không được để trống")
-        .max(500, "Mô tả quá dài!")
+        })
+
+
 });
 
-export default PromotionValidation;
+export default WorkingTimeValidation;

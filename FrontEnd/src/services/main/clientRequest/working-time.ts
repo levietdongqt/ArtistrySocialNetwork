@@ -1,21 +1,20 @@
 import axiosWithToken from "@lib/config/AxiosConfig";
 import { fetcherParams } from "@lib/config/SwrFetcherConfig";
 import { ServiceDestination } from "@lib/enum/ServiceDestination";
-import { Promotion } from "@models/promotion";
+import { WorkingTime } from "@models/workingTime";
 import { AxiosRequestConfig } from "axios";
 
-
-export function getPromotions (userId: string,status: boolean,expired: boolean): fetcherParams {
-    return [`/promotions/${userId}/get-all-by-status?status=${status}&isExpired=${expired}`, 'GET',null, ServiceDestination.MAIN];
+export function getWorkingTimes (userId: string,status: boolean,expired: boolean): fetcherParams {
+    return [`/working-time/${userId}/get-all-by-status?status=${status}&isExpired=${expired}`, 'GET',null, ServiceDestination.MAIN];
 }
 
-export function getAllPromotions (userId: string): fetcherParams {
-    return [`/promotions/${userId}/get-all`, 'GET',null, ServiceDestination.MAIN];
+export function getAllWorkingTimes (userId: string): fetcherParams {
+    return [`/working-time/${userId}/get-all`, 'GET',null, ServiceDestination.MAIN];
 }
 
-export async function createPromotion(userId : string,data: Promotion): Promise<any> {
+export async function createWorkingTime(userId : string,data: WorkingTime): Promise<any> {
     const config: AxiosRequestConfig = {
-        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/promotions/${userId}/save`,
+        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/working-time/${userId}/save`,
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
@@ -32,9 +31,9 @@ export async function createPromotion(userId : string,data: Promotion): Promise<
     }
 }
 
-export async function updatePromotion(userId : string,data: Promotion): Promise<any> {
+export async function updateWorkingTime(userId : string,data: WorkingTime): Promise<any> {
     const config: AxiosRequestConfig = {
-        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/promotions/${userId}/update`,
+        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/working-time/${userId}/update`,
         method: "PUT",
         headers: {
             'Content-Type': 'application/json',
@@ -51,9 +50,9 @@ export async function updatePromotion(userId : string,data: Promotion): Promise<
     }
 }
 
-export async function deletePromotion(userId : string,promotionId: Number): Promise<any> {
+export async function deleteWorkingTime(userId : string,workingTimeId: Number): Promise<any> {
     const config: AxiosRequestConfig = {
-        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/promotions/${userId}/delete/${promotionId}`,
+        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/working-time/${userId}/delete/${workingTimeId}`,
         method: "Delete",
         headers: {
             'Content-Type': 'application/json',
@@ -64,14 +63,14 @@ export async function deletePromotion(userId : string,promotionId: Number): Prom
         const response = await axiosWithToken(config);
         return response.data.data;
     } catch (error) {
-        console.error('Error deleted promotion:', error);
+        console.error('Error deleted working time:', error);
         throw error;
     }
 }
 
-export async function reworkPromotion(userId : string,promotionId: Number): Promise<any> {
+export async function reworkWorkingTime(userId : string,workingTimeId: Number): Promise<any> {
     const config: AxiosRequestConfig = {
-        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/promotions/${userId}/rework/${promotionId}`,
+        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/working-time/${userId}/rework/${workingTimeId}`,
         method: "PUT",
         headers: {
             'Content-Type': 'application/json',
@@ -82,7 +81,7 @@ export async function reworkPromotion(userId : string,promotionId: Number): Prom
         const response = await axiosWithToken(config);
         return response.data.data;
     } catch (error) {
-        console.error('Error rework promotion:', error);
+        console.error('Error rework working time:', error);
         throw error;
     }
 }

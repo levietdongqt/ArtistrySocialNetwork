@@ -60,14 +60,15 @@ export default function ServiceMainTable({ data }: DataTable) {
       dataIndex: "imageUrls",
       render: (imageUrls: any) => {
         return (
-          <div className="rounded-lg overflow-hidden z-1">
+          <div className="overflow-hidden w-100">
             <Carousel autoplay>
               {imageUrls?.map((img : any, idx: number) => {
                 return (
-                  <div key={idx} className="relative">
+                  <div key={idx} className="relative w-50">
                     <Image
                       src={img}
                       alt={`Service Image ${idx + 1}`}
+                      width={200}
                     />
                   </div>
                 );
@@ -146,7 +147,7 @@ export default function ServiceMainTable({ data }: DataTable) {
       },
     },
     {
-      title: "Action",
+      title: "Công cụ",
       dataIndex: "",
       key: "x",
       render: (record: any) => (

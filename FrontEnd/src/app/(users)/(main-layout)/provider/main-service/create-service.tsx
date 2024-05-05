@@ -96,15 +96,6 @@ const CreateMainServiceForm = () => {
             }
         },
     });
-    // const handleImageListChange = (newImageList: ImageItem[]) => {
-    //     console.log("newImageList",newImageList)
-    //     // Chỉ cần cập nhật mService imageUrl thay vì gọi setFieldValue tại đây.
-    //     setMService({
-    //         ...mService,
-    //         imageUrls: newImageList.map((imageItem) => imageItem.src),
-    //     });
-    // };
-
 
     return (
         <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded shadow mr-10">

@@ -1,6 +1,7 @@
 package com.mytech.mainservice.config;
 
 import com.mytech.mainservice.converter.ClaimsTokenConverter;
+import com.mytech.mainservice.converter.DayOfWeekToIntegerConverter;
 import com.mytech.mainservice.converter.RoletoStringConverter;
 import com.mytech.mainservice.converter.StringToRoleConverter;
 import org.modelmapper.Condition;
@@ -17,6 +18,7 @@ public class ModelMapperConfig {
         modelMapper.addConverter(new RoletoStringConverter());
         modelMapper.addConverter(new StringToRoleConverter());
         modelMapper.addConverter(new ClaimsTokenConverter());
+        modelMapper.addConverter(new DayOfWeekToIntegerConverter());
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         return modelMapper;
     }

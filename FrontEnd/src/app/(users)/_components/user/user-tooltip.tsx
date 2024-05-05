@@ -11,6 +11,7 @@ import { UserUsername } from './user-username';
 import type { ReactNode } from 'react';
 import {User} from "@models/user";
 import {useEffect, useState} from "react";
+import { useUser } from 'context/user-context';
 
 
 type UserTooltipProps = Pick<
@@ -44,6 +45,7 @@ export function UserTooltip({
 }: UserTooltipProps):JSX.Element {
   const { isMobile } = useWindow();
   const [hovered, setHovered] = useState(false);
+  const {currentUser} = useUser();
   // if (isMobile || modal) return <>{children}</>;
   const userLink = `/profile/${id}`;
 
@@ -107,7 +109,7 @@ export function UserTooltip({
                   username={fullName}
                 />
               </div>
-              { hovered &&
+              {((currentUser?.id !== id) && hovered) &&
                 <FollowButton userTargetId={id} userTargetUsername={fullName} hovered={hovered}/>
               }
               

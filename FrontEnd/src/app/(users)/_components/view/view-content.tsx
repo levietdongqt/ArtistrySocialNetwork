@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import cn from 'clsx';
-import { useAuth } from '../../../../context/oauth2-context';
 import { useModal } from '@lib/hooks/useModal';
 import { Modal } from '../modal/modal';
 import { ContentReplyModal } from '../modal/content-reply-modal';
@@ -17,7 +16,6 @@ import { ContentStats } from '../content/content-stats';
 import { ContentDate } from '../content/content-date';
 import { Input } from '../input/input';
 import type { RefObject } from 'react';
-import boolean from "async-validator/dist-types/validator/boolean";
 import {Timestamp} from "firebase/firestore";
 import {Post} from "@models/post";
 import {useUser} from "../../../../context/user-context";

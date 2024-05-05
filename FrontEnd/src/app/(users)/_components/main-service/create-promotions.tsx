@@ -1,17 +1,15 @@
 'use client'
 import React, {useEffect, useState} from 'react';
-import { MainService } from "@models/main-service";
 import { useFormik } from 'formik';
-import ServiceValidation from "@lib/validations/ServiceValidation";
 import {Promotion, PromotionType} from "@models/promotion";
 import { useUser } from 'context/user-context';
 import { User } from '@models/user';
 import PromotionValidation from '@lib/validations/PromotionValidation';
-import { createPromotion, updatePromotion } from 'services/main/clientRequest/promotion';
+import { createPromotion, getAllPromotions, updatePromotion } from 'services/main/clientRequest/promotion';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import { toast } from 'react-toastify';
-import UploadFile from './upload-file';
+import { mutate } from 'swr';
 
 interface CreatePromotionsFromParams  {
     data?: Promotion
@@ -48,6 +46,7 @@ const CreatePromotionsForm = ({data} : CreatePromotionsFromParams) => {
                 }
 
                 toast.success(data !== undefined ? "Chỉnh sửa khuyến mãi thành công" :"Tạo khuyến mãi thành công")
+                mutate(getAllPromotions);
                 resetForm();
             } catch (error) {
                 if (data !== undefined){
