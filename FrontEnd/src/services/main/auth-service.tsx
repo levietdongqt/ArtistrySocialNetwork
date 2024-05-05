@@ -80,7 +80,7 @@ export async function verifyPhoneNumber(phoneNumber: string): Promise<boolean> {
                 },
             })
         const data: any = await res.json();
-        console.log(data)
+        console.log('verifyPhoneNumber',data)
         if (res.ok) {
             return data.data;
         } else {
@@ -88,7 +88,7 @@ export async function verifyPhoneNumber(phoneNumber: string): Promise<boolean> {
             throw new Error("Server error: " + res.statusText)
         }
     } catch (error) {
-        console.log(error)
+        console.log('verifyPhoneNumber',error)
         throw error
     }
 }

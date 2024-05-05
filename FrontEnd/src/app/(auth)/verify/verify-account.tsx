@@ -8,10 +8,11 @@ import {isExistAccount} from "../../../services/main/auth-service";
 import {useOAuth2} from "../../../context/oauth2-context";
 
 interface verifyAccountParam {
-    destination: string
+    destination?: string
+    callback?: () => void;
 }
 
-export function VerifyAccount({destination}: verifyAccountParam) {
+export function VerifyAccount({destination, callback}: verifyAccountParam) {
     const [phoneNumber, setPhoneNumber] = useState("")
     const [error, setError] = useState(false)
     const {captchaVerifier} = useOAuth2()
@@ -33,7 +34,8 @@ export function VerifyAccount({destination}: verifyAccountParam) {
                 if (isExist) {
                     await captchaVerifier({
                         phoneNumber: phoneNumberFinal,
-                        destination: destination? destination : "/verify/continue"
+                        destination: destination,
+                        callBack: callback,
                     })
                     return
                 } else {

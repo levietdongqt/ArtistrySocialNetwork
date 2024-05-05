@@ -13,10 +13,11 @@ import type { User } from '../../../../models/user';
 type EditProfileModalProps = Pick<
   User,
   'fullName' | 'avatar' | 'coverImage'
-> & {}&{
+> & {
   loading: boolean;
   children: ReactNode;
   inputNameError: string;
+
   editImage: (
     type: 'cover' | 'profile'
   ) => ({ target: { files } }: ChangeEvent<HTMLInputElement>) => void;
@@ -27,7 +28,7 @@ type EditProfileModalProps = Pick<
 };
 
 export function EditProfileModal({
-                                   fullName,
+  fullName,
   loading,
   avatar,
   children,
@@ -75,6 +76,8 @@ export function EditProfileModal({
           </Button>
         </div>
       </MainHeader>
+
+
       <section
         className={cn(
           'h-full overflow-y-auto transition-opacity',
@@ -89,6 +92,7 @@ export function EditProfileModal({
             ref={coverInputFileRef}
             onChange={editImage('cover')}
           />
+
           {coverImage ? (
             <NextImage
               useSkeleton
@@ -102,6 +106,7 @@ export function EditProfileModal({
           ) : (
             <div className='h-full bg-light-line-reply dark:bg-dark-line-reply' />
           )}
+
           <div className='absolute left-1/2 top-1/2 flex -translate-y-1/2 -translate-x-1/2 gap-4'>
             <Button
               className='group/inner relative bg-light-primary/60 p-2 hover:bg-image-preview-hover/50
@@ -128,6 +133,7 @@ export function EditProfileModal({
               </Button>
             )}
           </div>
+
         </div>
         <div className='relative flex flex-col gap-6 px-4 py-3'>
           <div className='mb-8 xs:mb-12 sm:mb-14'>
@@ -165,20 +171,22 @@ export function EditProfileModal({
               </Button>
             </div>
           </div>
-          {children}
-          <Button
-            className='accent-tab -mx-4 mb-4 flex cursor-not-allowed items-center justify-between rounded-none
-                       py-2 hover:bg-light-primary/10 active:bg-light-primary/20 disabled:brightness-100
-                       dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20'
-          >
-            <span className='mx-2 text-xl'>Switch to professional</span>
-            <i>
-              <HeroIcon
-                className='h-6 w-6 text-light-secondary dark:text-dark-secondary'
-                iconName='ChevronRightIcon'
-              />
-            </i>
-          </Button>
+
+          {/*{children}*/}
+          {/*<Button*/}
+          {/*  className='accent-tab -mx-4 mb-4 flex cursor-not-allowed items-center justify-between rounded-none*/}
+          {/*             py-2 hover:bg-light-primary/10 active:bg-light-primary/20 disabled:brightness-100*/}
+          {/*             dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20'*/}
+          {/*>*/}
+          {/*  <span className='mx-2 text-xl'>Switch to professional</span>*/}
+          {/*  <i>*/}
+          {/*    <HeroIcon*/}
+          {/*      className='h-6 w-6 text-light-secondary dark:text-dark-secondary'*/}
+          {/*      iconName='ChevronRightIcon'*/}
+          {/*    />*/}
+          {/*  </i>*/}
+          {/*</Button>*/}
+
         </div>
       </section>
     </>

@@ -7,6 +7,7 @@ import RegisterValidation from "@lib/validations/ForgotPassValidation";
 import {toast} from "react-toastify";
 import {getCookie} from "cookies-next";
 import {changePassword} from "../../../../services/main/auth-service";
+import ChangePassValidation from "@lib/validations/ChangePassValidation";
 interface  Proptype {
     phoneNum: string;
     callback:()=> void;
@@ -18,6 +19,7 @@ export default function ChangePass({phoneNum,callback}: Proptype) {
 
     const {values, touched, handleSubmit, handleChange, errors, isValid, resetForm} = useFormik({
         initialValues: {
+            oldPassword:'',
             rePassword: '',
             password: ''
         },
@@ -26,7 +28,7 @@ export default function ChangePass({phoneNum,callback}: Proptype) {
 
             showConfirmation({password: values.password, phoneNumber: phoneNum})
         },
-        validationSchema: RegisterValidation,
+        validationSchema: ChangePassValidation,
     });
 
     const showConfirmation = (data: {}) => {
@@ -53,10 +55,26 @@ export default function ChangePass({phoneNum,callback}: Proptype) {
             <div className="flex-auto px-4 lg:px-10 py-10 pt-0 bg-amber-50">
                 <div>
                     <h1 className="uppercase text-slate-800 text-xl font-bold pt-10 text-center ">
-                        Tạo mật khẩu mới
+                        Đổi Mật Khẩu
                     </h1>
                 </div>
                 <form method="post" onSubmit={handleSubmit}>
+                    <div className="relative w-full mb-3">
+                        <label
+                            className="block uppercase text-slate-600 text-xs font-bold mb-2"
+                            htmlFor="grid-password"
+                        >
+                            Mật khẩu cũ
+                        </label>
+                        <input
+                            type="password" id="oldPassword" name="oldPassword"
+                            className="border-0 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                            placeholder="Mật khẩu"
+                            onChange={handleChange}
+                            value={values.oldPassword}/>
+                        {errors.oldPassword && touched.oldPassword ?
+                            <div className="text-red-700 text-sm">{errors.oldPassword}</div> : null}
+                    </div>
                     <div className="relative w-full mb-3">
                         <label
                             className="block uppercase text-slate-600 text-xs font-bold mb-2"
