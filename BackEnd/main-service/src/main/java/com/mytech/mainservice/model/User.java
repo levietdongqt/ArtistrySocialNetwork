@@ -91,11 +91,11 @@ public class User implements Serializable {
     @JdbcTypeCode(SqlTypes.JSON)
     private Queue<String> searchHistory;
     @Enumerated(EnumType.STRING)
-    private Theme theme;
+    private Theme theme = Theme.LIGHT;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "accent")
-    private AccentType accent;
+    private AccentType accent = AccentType.BLUE;
 
     @Column(name = "bio")
     private String bio;
@@ -116,6 +116,10 @@ public class User implements Serializable {
     @Column(name = "pinned_Post", length = 250)
     private String pinnedPost;
 
+    @Size(max = 250)
+    @Column(name = "address", length = 250)
+    private String address;
+    
     @JsonManagedReference
     @ManyToMany( cascade =
             {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}

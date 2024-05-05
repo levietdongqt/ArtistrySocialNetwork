@@ -32,12 +32,14 @@ public class UserDTO implements Serializable {
     private String fullName;
     private String email;
     private String phoneNumber;
+    private String address;
     private boolean gender;
     private LocalDate dateOfBirth;
     private UserStatus status;
     private String avatar;
     private String coverImage;
     private Map<String, Object> userDetails;
+    private Map<String, Object> location;
     private String password;
     private List<String> roles;
     private AccentType accent;

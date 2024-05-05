@@ -10,11 +10,23 @@ import {Promotion} from "@models/promotion";
 import useSWR from 'swr';
 import { getPromotions } from 'services/main/clientRequest/promotion';
 import { fetcherWithToken } from '@lib/config/SwrFetcherConfig';
+import UploadFile from 'app/(users)/_components/main-service/upload-file';
+import { useUpload } from 'context/uploadfile-context';
+import { FilesWithId } from '@models/file';
+import { transformToFilesWithId } from '@lib/utils';
+import {uploadImages} from "../../../../../firebase/utils";
+
+
+
+
+
 
 
 const CreateMainServiceForm = () => {
     const {currentUser} = useUser();
+    const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
     const [promotions, setPromotions] = useState<Promotion[]>([]);
+    const {files} = useUpload();
 
     const {
         data: dataPromotion,
@@ -61,14 +73,15 @@ const CreateMainServiceForm = () => {
         initialValues: mService,
         validationSchema: ServiceValidation,
         onSubmit: async (values: MainService, {setSubmitting, resetForm }) => {
+            const uploadedImagesData = await uploadImages(currentUser?.id as string,files as FilesWithId);
+            const imageUrls = uploadedImagesData?.map((upload: any,index: any)=> upload.src);
+            
             const newService = {
 
                 ...values,
-                imageUrls: mService.imageUrls,
+                imageUrls: imageUrls as string[],
                 promotionDTO: applyPromotion
-
             };
-            console.log('newservice:',newService);
 
             try {
                 const response = await createMainService(newService);
@@ -83,19 +96,20 @@ const CreateMainServiceForm = () => {
             }
         },
     });
-    const handleImageListChange = (newImageList: ImageItem[]) => {
-        console.log("newImageList",newImageList)
-        // Chỉ cần cập nhật mService imageUrl thay vì gọi setFieldValue tại đây.
-        setMService({
-            ...mService,
-            imageUrls: newImageList.map((imageItem) => imageItem.src),
-        });
-    };
+    // const handleImageListChange = (newImageList: ImageItem[]) => {
+    //     console.log("newImageList",newImageList)
+    //     // Chỉ cần cập nhật mService imageUrl thay vì gọi setFieldValue tại đây.
+    //     setMService({
+    //         ...mService,
+    //         imageUrls: newImageList.map((imageItem) => imageItem.src),
+    //     });
+    // };
 
 
     return (
         <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded shadow mr-10">
-            <ImageService onImageListChange={handleImageListChange}/>
+            <UploadFile />
+            {/* <ImageService onImageListChange={handleImageListChange}/> */}
             <div className="mb-4">
                 <label htmlFor="serviceName" className="block text-gray-700 text-sm font-bold mb-2">
                     Tên Dịch Vụ
@@ -225,8 +239,10 @@ const CreateMainServiceForm = () => {
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                         Tạo Dịch Vụ
                     </button>
+                    
                 </div>
         </form>
+    
 );
 };
 

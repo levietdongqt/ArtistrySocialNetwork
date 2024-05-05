@@ -16,6 +16,7 @@ import {getCookie, setCookie} from "cookies-next";
 import {setCookieHandler} from "@lib/helper/clientCookieHandle";
 import {useRouter} from "next/navigation";
 import {toast} from "react-toastify";
+import {useUser} from "./user-context";
 
 declare global {
     interface Window {
@@ -44,6 +45,7 @@ export const Oauth2Context = createContext<Oauth2Context | null>(null);
 
 export function AuthContextProvider({children}: AuthContextProviderProps): JSX.Element {
     const router = useRouter();
+    const  {setCurrentUser} = useUser()
     const [verifyResult, setVerifyResult] = useState(undefined)
     auth.languageCode = 'it';
     const signInWithGoogle = async (): Promise<void> => {
@@ -65,6 +67,7 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
                 success: "Đăng nhập thành công!",
                 error: 'Thông tin đăng nhập không hợp lệ'
             }).then((oauth2Response) => {
+                setCurrentUser(oauth2Response.data.user)
                 handleSuccessResponse(oauth2Response, router)
             })
 
@@ -74,13 +77,14 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
         }
     }
 
-    const sendVerifyCode = async (phoneNumber: string, destination: string) => {
+    const sendVerifyCode = async (phoneNumber: string, destination?: string, callback?: () => void) => {
         signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier!)
             .then((confirmationResult) => {
                 window.confirmationResult = confirmationResult;
                 console.log("Result: ", confirmationResult)
                 setCookie("phone_number", phoneNumber)
-                router.push(destination)
+                destination && router.push(destination)
+                callback?.()
             }).catch((error) => {
             throw error;
         });
@@ -88,24 +92,24 @@ export function AuthContextProvider({children}: AuthContextProviderProps): JSX.E
     const signOut = async (): Promise<void> => {
         try {
             await signOutFirebase(auth);
+            // setCurrentUser(null);
         } catch (error) {
             console.log(error)
             throw error
         }
     };
 
-    const captchaVerifier = async ({phoneNumber, destination = "/verify/continue", callBack}: captchaVerifierParam) => {
+    const captchaVerifier = async ({phoneNumber, destination, callBack}: captchaVerifierParam) => {
         window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
             'size': 'normal',
             'callback': async (response: any) => {
                 console.log("CAPCHA OK!");
                 console.log("Destination: " + destination)
-                router.prefetch(destination)
+                destination && router.prefetch(destination)
                 // reCAPTCHA solved, allow signInWithPhoneNumber.
-                toast.promise(sendVerifyCode(phoneNumber, destination), {
+                toast.promise(sendVerifyCode(phoneNumber, destination,callBack), {
                     pending: "Đang xác thực.... ",
                 })
-                callBack?.(); //
             },
             'expired-callback': () => {
                 toast.error("CAPTCHA đã quá hạn!")
@@ -139,5 +143,16 @@ async function handleSuccessResponse(oauth2Response: any, router: any) {
     setCookieHandler(oauth2Response.data)
     console.log("LOGIN GOOGLE SUCCESSFUL: ")
     const prevPage = getCookie("prev_page")?.toString();
-    prevPage ? router.push(prevPage) : router.push("/home")
+    console.log("Previous: ",prevPage)
+    if(prevPage){
+        console.log("Voooo 1");
+        window.location.href = prevPage
+        window.location.reload()
+        return
+    }else{
+        console.log("Voooo 2");
+        window.location.href = "/home"
+        window.location.reload()
+    }
+    // prevPage ? router.push(prevPage) : router.push("/home")
 }

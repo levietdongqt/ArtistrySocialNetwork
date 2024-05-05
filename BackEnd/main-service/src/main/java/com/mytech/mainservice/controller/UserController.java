@@ -1,6 +1,7 @@
 package com.mytech.mainservice.controller;
 
 import com.mytech.mainservice.dto.ResponseObject;
+import com.mytech.mainservice.dto.UserDTO;
 import com.mytech.mainservice.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -41,5 +42,13 @@ public class UserController {
                         .build());
     }
 
-
+    @PostMapping("/update")
+    public ResponseEntity<ResponseObject> update(@RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get test ID OK")
+                        .data(userService.updateUser(userDTO))
+                        .build());
+    }
 }

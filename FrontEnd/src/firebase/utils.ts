@@ -90,8 +90,8 @@ export async function uploadImages(
 
     const imagesPreview = await Promise.all(
         files.map(async (file) => {
+          console.log("uploading",file);
             let src: string;
-
             const { id, name: alt } = file;
 
             const storageRef = ref(storage, `images/${userId}/${alt}`);
@@ -108,6 +108,8 @@ export async function uploadImages(
     );
     return imagesPreview;
 }
+
+
 
 /*
 export async function manageReply(
@@ -220,3 +222,5 @@ export function manageLike(
   };
 }
 */
+
+

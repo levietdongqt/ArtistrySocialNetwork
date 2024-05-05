@@ -29,14 +29,15 @@ CREATE TABLE IF NOT EXISTS users (
     password varchar(128) CHARACTER SET utf8mb4,
     change_password boolean default 0,
     search_history JSON,
-     theme ENUM('LIGHT', 'DIM', 'DARK') DEFAULT NULL,
-        accent ENUM('BLUE', 'YELLOW', 'PINK', 'PURPLE', 'ORANGE', 'GREEN') DEFAULT NULL,
+     theme ENUM('LIGHT', 'DIM', 'DARK') DEFAULT 'LIGHT',
+        accent ENUM('BLUE', 'YELLOW', 'PINK', 'PURPLE', 'ORANGE', 'GREEN') DEFAULT 'BLUE',
     bio text null,
     update_At datetime null,
     verified boolean default 0,
     total_Post int default 0,
     total_Photos int default 0,
     pinned_Post varchar(250) null,
+    address varchar(250) null,
     primary key(id)
 );
 

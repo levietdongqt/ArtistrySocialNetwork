@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const footerLinks = [
   ['Terms of ServerAction', '/terms'],
   ['Privacy Policy', '/privacy'],
@@ -14,7 +16,7 @@ export function AsideFooter(): JSX.Element {
     >
       <nav className='flex flex-wrap justify-center gap-2'>
         {footerLinks.map(([linkName, href],index) => (
-          <a
+          <Link
             className='custom-underline'
             target='_blank'
             rel='noreferrer'
@@ -22,7 +24,7 @@ export function AsideFooter(): JSX.Element {
             key={index}
           >
             {linkName}
-          </a>
+          </Link>
         ))}
       </nav>
       <p>© 2024 Team2, Inc.</p>

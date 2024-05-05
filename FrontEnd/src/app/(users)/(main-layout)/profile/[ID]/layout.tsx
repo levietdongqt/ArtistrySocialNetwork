@@ -10,7 +10,9 @@ export default function ProfileLayout({
 }) {
     return (
         <>
+            <UserHomeLayout>
             {children}
+            </UserHomeLayout>
         </>
     );
 }

@@ -24,6 +24,7 @@ public class MessageService implements IMessageService {
         List<Message> messages = messageRepos.findAllByConversationId(conversationId);
         return messages.stream().map(message -> mapper.map(message, MessageDTO.class)).toList();
     }
+
     @Override
     public void saveMessage(MessageDTO messageDTO) {
 
@@ -35,8 +36,8 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void deleteMessageById(String id) {
-
+    public void deleteMessageByConversationId(String conversationId) {
+        messageRepos.deleteAllByConversationId(conversationId);
     }
 
     @Override

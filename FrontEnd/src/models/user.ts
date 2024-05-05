@@ -1,18 +1,22 @@
 import type { Theme, Accent } from './theme';
 import type { Timestamp } from 'firebase/firestore';
+import {UserRole} from "@lib/enum/UserRole";
 
 export type User = {
   id: string;
   fullName: string;
   email: string;
-  phoneNumber: string;
+  phoneNumber: string| null;
   gender: boolean;
   dateOfBirth: string;
   emailConfirmed: boolean;
   phoneConfirmed: boolean;
   createDate: string;
   status: string;
-  location: Map<string, any>;
+  location: {
+    latitude: string;
+    longitude: string;
+} | {} ;
   avatar: string;
   coverImage: string | null;
   authProvider: string;
@@ -22,19 +26,29 @@ export type User = {
   changePassword: boolean;
   theme: Theme;
   accent: Accent;
-  bio: string;
+  bio: string| null;
   updateAt: string;
   verified: boolean;
   totalPost: number;
   totalPhotos: number;
   pinnedPost: string;
-  roles: [];
+  address:string| null;
+  roles: UserRole[];
   friendShipStatus: string;
 };
 
+
+
 export type EditableData = Extract<
   keyof User,
-  'bio' | 'fullName' | 'avatar' | 'location' | 'coverImage'|'phoneNumber'|'dateOfBirth'
+  'bio' | 'fullName' | 'avatar' | 'location' | 'coverImage'|
+    'phoneNumber'|'dateOfBirth'|'address'|'email'
+>;
+export  type ProviderData = Extract<
+keyof  User,
+    'id'|'bio' | 'phoneNumber'|'roles'| 'location'|'address'
 >;
 
+
 export type EditableUserData = Pick<User, EditableData>;
+export type EditableProviderData = Pick<User, ProviderData>;

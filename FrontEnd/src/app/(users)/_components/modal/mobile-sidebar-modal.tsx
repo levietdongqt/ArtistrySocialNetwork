@@ -36,7 +36,7 @@ const topNavLinks: Readonly<MobileNavLink[]> = [
     disabled: true
   },
   {
-    href: '/people',
+    href: '/profile',
     linkName: 'Social Circle',
     iconName: 'UserGroupIcon'
   }

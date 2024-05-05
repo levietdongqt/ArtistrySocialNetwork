@@ -36,7 +36,7 @@ function ContainerHome() {
                                     endMessage={!isReachedEnd ? theEndPost() : ''}>
                         <AnimatePresence mode='popLayout'>
                             {Data?.map((content) =>
-                                <ContentPost {...content} key={content.id}/>
+                                <ContentPost {...content} key={content?.id}/>
                             )}
                         </AnimatePresence>
                     </InfiniteScroll>

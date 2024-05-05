@@ -34,11 +34,10 @@ public class ChatController {
     private IChatService chatService;
     @Autowired
     private IConversationService conversationService;
-
+    private final String CHAT_DESTINATION = "/chat/message";
     @MessageMapping("/chat.sendPrivate")
 //    @SendTo("/chat/message")
     public void handleSingleChat(@Payload ConversationDTO conversation) {
-        String destination = "/chat/message";
         log.info("FROM SEND MESSAGE" + conversation);
         MessageDTO savedMessage = chatService.saveNewMessage(conversation.getMessages().get(0));
 
@@ -48,27 +47,47 @@ public class ChatController {
         chatService.updateConversation(conversation);
 
         conversation.getMembers().forEach(member -> {
-            simpMessagingTemplate.convertAndSendToUser(member.getId(), destination, conversation);
+            simpMessagingTemplate.convertAndSendToUser(member.getId(), CHAT_DESTINATION,
+                    ResponseSocket.builder()
+                            .type(ResponseSocketType.SEND_MESSAGE)
+                            .data(conversation)
+                            .build());
         });
     }
 
     @MessageMapping("/chat.getConversation")
     public void getMessages(@Payload MessageDTO message) {
-        String destination = "/chat/conversation";
-        log.info("FROM getConversation" + message);
+        log.info("FROM getConversation " + message);
         List<MessageDTO> messages = chatService.getMessagesByConversation(message.getConversationId());
-        simpMessagingTemplate.convertAndSendToUser(message.getSenderId(), destination,
+        simpMessagingTemplate.convertAndSendToUser(message.getSenderId(), CHAT_DESTINATION,
                 ResponseSocket.builder()
                         .type(ResponseSocketType.GET_CONVERSATION)
                         .data(messages)
                         .build());
     }
 
+    @MessageMapping("/chat.seenFlag")
+    public void seenFlag(@Payload ConversationDTO conversationDTO) {
+        log.info("FROM seenFlag " + conversationDTO);
+        ConversationDTO saved = chatService.seenFlag(conversationDTO);
+        saved.setLastMessage(null);
+        saved.setType(null);
+        saved.setCreateAt(null);
+        saved.setUpdatedAt(null);
+        conversationDTO.getMembers().forEach(member -> {
+            simpMessagingTemplate.convertAndSendToUser(member.getId(), CHAT_DESTINATION,
+                    ResponseSocket.builder()
+                            .type(ResponseSocketType.SEEN_FLAG)
+                            .data(saved)
+                            .build());
+        });
+    }
+
     @MessageMapping("/chat.checkConversation")
 //    @SendTo("/chat/message")
     public void checkConversation(@Payload ConversationDTO conversationDTO) {
         ConversationDTO savedConversation = conversationService.checkConversation(conversationDTO);
-        simpMessagingTemplate.convertAndSend("/chat/conversation", savedConversation);
+        simpMessagingTemplate.convertAndSend(CHAT_DESTINATION, savedConversation);
     }
 
     @MessageMapping("/chat.sendGroup")

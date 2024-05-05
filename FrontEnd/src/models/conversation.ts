@@ -1,4 +1,5 @@
 import {MessageDto} from "@models/message";
+import {UserStatus} from "@chatscope/chat-ui-kit-react";
 
 export type ConversationDto = {
     id: string;
@@ -9,7 +10,7 @@ export type ConversationDto = {
     updatedAt?: Date;
     createAt?: Date;
     messages: MessageDto[];
-    type: "PRIVATE" | "GROUP"
+    type: "PRIVATE" | "GROUP" | 'HIDE'
 
 }
 export type ConversationMember = {
@@ -18,5 +19,7 @@ export type ConversationMember = {
     fullName?: string,
     avatar: string,
     coverImage?: string,
-    notSeen : boolean,
+    notSeen: boolean,
+    status?: UserStatus | undefined
+    isGroupOwner?: boolean | undefined
 }

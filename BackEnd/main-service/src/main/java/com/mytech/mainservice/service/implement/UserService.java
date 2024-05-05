@@ -146,6 +146,7 @@ public class UserService implements IUserService {
             user.get().setPhoneConfirmed(true);
             user.get().setStatus(UserStatus.ACTIVED);
             userRepo.save(user.get());
+            return;
         }
         throw new NotFoundException("User not found");
     }
@@ -196,10 +197,15 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void updateUser(UserDTO userDto) {
+    public UserDTO updateUser(UserDTO userDto) {
+        List<UserRole> userRoles = userDto.getRoles().stream().map(UserRole::valueOf).toList();
+        List<Role> roles = roleRepo.findByListName(userRoles);
         User user = userRepo.findById(userDto.getId()).orElseThrow(() -> new NotFoundException("User not Found"));
-        user = modelMapper.map(userDto,User.class);
-        userRepo.save(user);
+        modelMapper.map(userDto,user);
+        user.setRoles(roles);
+        User saved = userRepo.save(user);
+        return modelMapper.map(saved,UserDTO.class);
+
     }
     public User existUser(UserInfo userInfo) throws UnAuthenticationException {
         Optional<User> user = userRepo.findByEmailOrPhoneNumber(userInfo.getEmail(), userInfo.getPhoneNumber());

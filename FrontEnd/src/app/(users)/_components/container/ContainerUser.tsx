@@ -2,25 +2,24 @@
 import React from 'react';
 import {Loading} from "@components/ui/loading";
 import {AnimatePresence} from "framer-motion";
+import {ContentPost} from "../content/content";
+import {useUser} from "@nextui-org/user";
+import {useParams} from "next/navigation";
 
 
 class ContainerUser extends React.Component<{  }> {
+
     render() {
-
-
-        const ownerLoading = false;
+        // const { currentUser } = useUser();
+        // const {ID} = useParams();
+        const isProvider = false;
         const peopleLoading = false;
 
         return (
             <section>
-                {ownerLoading || peopleLoading ? (
+                {isProvider ? (
                     <Loading className='mt-5'/>
-                ) /*: !mergedTweets ? (
-                      <StatsEmpty
-                          title={`@${username as string} hasn't tweeted`}
-                          description='When they do, their Tweets will show up here.'
-                      />
-                  )*/ : (
+                ): (
                     <AnimatePresence mode='popLayout'>
                         {/* {pinnedData && (*/}
                         {/*<Content pinned {...pinnedData} key={`pinned-${pinnedData.id}`} />*/}
@@ -32,6 +31,8 @@ class ContainerUser extends React.Component<{  }> {
                     </AnimatePresence>
                 )}
             </section>
+
+
         );
     }
 }
