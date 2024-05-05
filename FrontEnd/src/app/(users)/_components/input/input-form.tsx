@@ -121,7 +121,6 @@ export function   InputForm({
     discardTweet();
     closeModal();
   };
-  const{data:friends} = useSWR(getFriendByUserId(currentUser?.id as string),fetcherWithToken);
   const isVisibilityShown = visited && !reply && !replyModal && !loading;
   const options:SelectProps['options'] = [
     {
@@ -140,8 +139,6 @@ export function   InputForm({
   const selectOptions = (
       <Select options={options} style={{ width: '100%' }} mode="tags"/>
   );
-
-  console.log("Show input ",friends);
   return (
     <div className={cn(`flex min-h-[48px] w-full flex-col justify-center gap-4 `)} >
       <Modal

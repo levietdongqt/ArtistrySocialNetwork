@@ -10,4 +10,5 @@ export default function commentsReducer(state:any, action:any) {
         default:
             throw new Error();
     }
+
 }

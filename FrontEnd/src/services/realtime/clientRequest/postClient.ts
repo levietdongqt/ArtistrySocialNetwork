@@ -21,7 +21,4 @@ export function getPostById(postId: string): fetcherParams {
     return [`/posts/get-post/${postId}`, 'GET', null, ServiceDestination.REALTIME];
 }
 
-export function getTotalLikePostById(postId: string): fetcherParams {
-    return [`/posts/getTotalLike/${postId}`, 'GET', null, ServiceDestination.REALTIME];
-}
 

@@ -28,7 +28,6 @@ public class BookmarksService implements IBookmarksService {
         if(bookmarks.isEmpty()){
             return Collections.emptyList();
         }
-        System.out.println(bookmarks);
         return bookmarks.stream()
                 .map(bookmark -> modelMapper.map(bookmark, BookmarkDTO.class))
                 .collect(Collectors.toList());

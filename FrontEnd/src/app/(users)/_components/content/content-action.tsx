@@ -126,7 +126,6 @@ export function ContentAction({
     const {data: userBookmarks, isLoading} = useSWR(getBookmarksByUserId(userId),fetcherWithToken);
     useEffect(() => {
         mutate(getBookmarksByUserId(userId)).then(()=>{
-
         });
     }, [isCheckBookmark]);
     const handleBookmark =
@@ -205,7 +204,6 @@ const  tweetIsPinned = false;
 const  userIsFollowed = false;
     useEffect(() => {
         const tweetIsBookmarked = !!userBookmarks?.data?.some((items:any) => items.postId === postId);
-        console.log("SHow tweetIsBookmarked",userBookmarks?.data);
         if(tweetIsBookmarked)
             setIsCheckBookmark(true);
     }, [isCheckBookmark]);

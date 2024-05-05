@@ -28,8 +28,6 @@ export function ContentReplyModal({
                                   }: TweetReplyModalProps): JSX.Element {
     const {stompClient} = useSocket();
     const [state, dispatch] = useReducer(commentsReducer, { comments: [] });
-    const socketRef =useRef<Client | null>(null);
-
     useEffect(() => {
        var subscription = stompClient?.subscribe('/topic/comments/' + post.id, function (comment) {
            dispatch({ type: 'ADD_REPLIES', payload: JSON.parse(comment.body) });

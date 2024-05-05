@@ -139,7 +139,6 @@ export function Comment(comments: CommentProps) {
                           )}
                           <ContentStats
                               handleParentComment={handleParentComment}
-                              totalLikes={totalLikes}
                               commentsId={id}
                               viewTweet={false}
                               avatar={currentUser?.avatar as string}

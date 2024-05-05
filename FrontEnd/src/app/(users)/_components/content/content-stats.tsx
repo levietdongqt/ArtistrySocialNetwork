@@ -10,11 +10,8 @@ import {likeComment} from "../../../../services/realtime/ServerAction/CommentSer
 import {toast} from "react-toastify";
 import {HeroIcon} from "@components/ui/hero-icon";
 import {ToolTip} from "@components/ui/tooltip";
-import useSWR, {mutate} from "swr";
-import {getTotalLikePostById} from "../../../../services/realtime/clientRequest/postClient";
-import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {Button} from "@components/ui/button";
-import ChildComment from "../comment/ChildComment";
+
 
 
 type PostStatsProps =  {
@@ -55,97 +52,98 @@ export function ContentStats({
  commentsId,
                                  handleParentComment
 }: PostStatsProps): JSX.Element {
-    const {data:totalPost,mutate} = useSWR(getTotalLikePostById(postId), fetcherWithToken);
+    const totalLikes = userPostLikes?.map((data:any) => data?.id).length as number || 0;
     const totalTag = tagUserPosts?.length;
     const [isLiked, setIsLiked] = useState(true);
-    const [likeCount, setLikeCount] = useState<number>();
-    const [isParent, setIsParent] = useState(false);
-  const [{ currentComment , currentTag, currentLikes }, setCurrentStats] =
-    useState({
-      currentComment: totalComments,
-      currentLikes: likeCount,
-        currentTag: totalTag
-    });
-    useEffect(() => {
-        const postIsLiked = userPostLikes?.map((data:any) => data.id).includes(userId) as boolean;
-        setIsLiked(postIsLiked);
-
-    }, [userPostLikes,postId,userId]);
-    useEffect(() => {
-        setLikeCount(totalPost?.data?.totalLikes);
-    }, [totalPost]);
-    useEffect(() => {
-
-        setCurrentStats({
+    const [countLiked, setCountLiked] = useState<number>();
+    const [{ currentComment , currentTag, currentLikes }, setCurrentStats] =
+        useState({
             currentComment: totalComments,
-            currentLikes: likeCount,
+            currentLikes: totalLikes,
             currentTag: totalTag
         });
-    }, [totalComments, likeCount,totalTag]);
+    useEffect(() => {
+        const postIsLiked = userPostLikes?.map((data:any) => data.id).includes(userId) as boolean;
+        setIsLiked(postIsLiked || false);
+    }, [userPostLikes]);
 
-  const handleLikes = async (): Promise<void> => {
-      if(userId !== null){
-          if(!replyTags){
-              try {
-                  const dataLike = {
-                      postId: postId,
-                      byUser: {
-                          id: userId,
-                          fullName: username,
-                          avatar: avatar,
-                          coverImage: coverImage,
-                          bio: bio,
-                          verified: verified
-                      },
-                  };
-                  setIsLiked(!isLiked);
-                  await mutate(getTotalLikePostById(postId));
-                  await likePosts(dataLike);
-              } catch (error) {
-                  console.error('Failed to update like status:', error);
-                  setIsLiked(currentIsLiked => !currentIsLiked);
-              }
-          }else{
-              try {
-                  const dataLike = {
-                      commentId: commentsId,
-                      byUser: {
-                          id: userId,
-                          fullName: username,
-                          avatar: avatar,
-                          coverImage: coverImage,
-                          bio: bio,
-                          verified: verified
-                      },
-                  };
-                  setIsLiked(!isLiked);
-                  await likeComment(dataLike)
-              } catch (error) {
-                  console.error('Failed to update like status:', error);
-                  setIsLiked(currentIsLiked => !currentIsLiked);
-              }
-          }
-      }else{
-          toast.error("Bạn cần đăng mới like được");
-      }
+    useEffect(() => {
+        setCurrentStats({
+            currentComment: totalComments,
+            currentLikes: totalLikes,
+            currentTag: totalTag
+        });
+    }, [totalComments, totalLikes, totalTag]);
+    useEffect(() => {
+        setCountLiked(currentLikes);
 
-  };
-  const commentMove = useMemo(
-    () => (totalComments as number > (currentComment as number)  ? -25 : 25),
-    [totalComments]
-  );
+    }, []);
+    const handleLikes = async (): Promise<void> => {
+        if(userId !== null){
+            if(!replyTags){
+                try {
+                    const dataLike = {
+                        postId: postId,
+                        byUser: {
+                            id: userId,
+                            fullName: username,
+                            avatar: avatar,
+                            coverImage: coverImage,
+                            bio: bio,
+                            verified: verified
+                        },
+                    };
+                    setIsLiked(!isLiked);
+                    console.log("showLike",isLiked);
+                    setCountLiked(prev => (prev || 0) + (!isLiked ? 1 : -1));
+                    await likePosts(dataLike)
+                } catch (error) {
+                    console.error('Failed to update like status:', error);
+                    setIsLiked(currentIsLiked => !currentIsLiked);
+                    setCountLiked((prev:any) => (isLiked ? prev + 1 : prev - 1));
+                }
+            }else{
+                try {
+                    const dataLike = {
+                        commentId: commentsId,
+                        byUser: {
+                            id: userId,
+                            fullName: username,
+                            avatar: avatar,
+                            coverImage: coverImage,
+                            bio: bio,
+                            verified: verified
+                        },
+                    };
+                    setIsLiked(!isLiked);
+                    await likeComment(dataLike)
+                } catch (error) {
+                    console.error('Failed to update like status:', error);
+                    setIsLiked(currentIsLiked => !currentIsLiked);
+                }
+            }
+        }else{
+            toast.error("Bạn cần đăng mới like được");
+        }
 
-  const likeMove = useMemo(
-    () => (likeCount > currentLikes ? -25 : 25),
-    [likeCount]
-  );
-  const tagMove = useMemo(
-    () => (totalTag as number > (currentTag as number) ? -25 : 25),
-    [totalTag]
-  );
-  // const tweetIsPosts = tagUserPosts?.includes(userId);
-  const isStatsVisible = !!(totalComments || totalTag || likeCount);
-  return (
+    };
+
+    const commentMove = useMemo(
+        () => (totalComments as number > (currentComment as number)  ? -25 : 25),
+        [totalComments]
+    );
+
+    const likeMove = useMemo(
+        () => (totalLikes > currentLikes ? -25 : 25),
+        [totalLikes]
+    );
+    const tagMove = useMemo(
+        () => (totalTag as number > (currentTag as number) ? -25 : 25),
+        [totalTag]
+    );
+    // const tweetIsPosts = tagUserPosts?.includes(userId);
+    const isStatsVisible = !!(totalComments || totalTag || totalLikes);
+    return (
     <>
         {
          !replyTags &&  (<AnimatePresence>
@@ -153,7 +151,7 @@ export function ContentStats({
                     likeMove={likeMove}
                     tagMove={tagMove}
                     commentMove={commentMove}
-                    currentLikes={likeCount}
+                    currentLikes={countLiked as number}
                     currentTag={currentTag as number}
                     currentComment={currentComment as number}
                     isStatsVisible={isStatsVisible}

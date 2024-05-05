@@ -75,9 +75,9 @@ public class CommentsService implements ICommentsService {
                 .tagUserComments(commentDTO.getUserTags())
                 .build();
         //Nếu nó là 1 comments đã tồn tại khác
-        if (commentDTO.getCommentsId() != null ) {
+        if (commentDTO.getCommentsParentId() != null ) {
             //Check xem id của comments đã tồn tại đó đúng hay chưa
-            var comment = commentsRepository.findById(commentDTO.getCommentsId()).orElse(null);
+            var comment = commentsRepository.findById(commentDTO.getCommentsParentId()).orElse(null);
             if (comment == null) {
                 throw new NotFoundException("Comment is not found");
             }
