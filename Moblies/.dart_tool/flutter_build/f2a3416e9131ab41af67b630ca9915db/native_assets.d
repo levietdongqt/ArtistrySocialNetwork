@@ -1,0 +1,1 @@
+ C:\\Users\\DONG\\OneDrive\\Desktop\\ProjectSem4\\ArtistrySocialNetwork\\Moblie\\.dart_tool\\flutter_build\\f2a3416e9131ab41af67b630ca9915db\\native_assets.yaml: 

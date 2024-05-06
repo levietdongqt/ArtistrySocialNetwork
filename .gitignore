@@ -7,7 +7,7 @@
 # BlueJ files
 /BackEnd/**/*.ctxt
 
-# Mobile Tools for Java (J2ME)
+# Mobiles Tools for Java (J2ME)
 /BackEnd/**/.mtj.tmp/
 
 # Package Files #
@@ -68,29 +68,29 @@
 /FrontEnd/next-env.d.ts
 
 #Moblie
-/Mobile/!**/ios/**/default.mode1v3
-/Mobile/!**/ios/**/default.mode2v3
-/Mobile/!**/ios/**/default.pbxuser
-/Mobile/!**/ios/**/default.perspectivev3
-/Mobile/!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-/Mobile/.flutter-plugins-dependencies
-/Mobile/android/app/google-services.json
-/Mobile/google-services.json
+/Mobiles/!**/ios/**/default.mode1v3
+/Mobiles/!**/ios/**/default.mode2v3
+/Mobiles/!**/ios/**/default.pbxuser
+/Mobiles/!**/ios/**/default.perspectivev3
+/Mobiles/!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+/Mobiles/.flutter-plugins-dependencies
+/Mobiles/android/app/google-services.json
+/Mobiles/google-services.json
 
-/Mobile/android/.settings/org.eclipse.buildship.core.prefs
-/Mobile/android/app/.classpath
-/Mobile/android/.project
-/Mobile/android/app/.project
-/Mobile/android/app/.settings/org.eclipse.buildship.core.prefs
-/Mobile/android/app/.settings/org.eclipse.jdt.core.prefs
-/Mobile/android/app/google-services-dev.json
-/Mobile/android/app/google-services-pro.json
+/Mobiles/android/.settings/org.eclipse.buildship.core.prefs
+/Mobiles/android/app/.classpath
+/Mobiles/android/.project
+/Mobiles/android/app/.project
+/Mobiles/android/app/.settings/org.eclipse.buildship.core.prefs
+/Mobiles/android/app/.settings/org.eclipse.jdt.core.prefs
+/Mobiles/android/app/google-services-dev.json
+/Mobiles/android/app/google-services-pro.json
 
-/Mobile/**/doc/api/
-/Mobile/.dart_tool/
-/Mobile/.flutter-plugins
-/Mobile/.packages
-/Mobile/.pub-cache/
-/Mobile/.pub/
-/Mobile/build/
+/Mobiles/**/doc/api/
+/Mobiles/.dart_tool/
+/Mobiles/.flutter-plugins
+/Mobiles/.packages
+/Mobiles/.pub-cache/
+/Mobiles/.pub/
+/Mobiles/build/
 

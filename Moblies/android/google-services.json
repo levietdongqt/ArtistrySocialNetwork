@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "652921802450",
+    "project_id": "artistrysocialnetwork",
+    "storage_bucket": "artistrysocialnetwork.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652921802450:android:f182e63a08bd840d6be70b",
+        "android_client_info": {
+          "package_name": "com.thealphamerc.flutter_twitter_clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652921802450-dv7pvtlellh4fp141ao47rmjqsit8f6v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thealphamerc.flutter_twitter_clone",
+            "certificate_hash": "b829903336faec4baed6155284422b573db99087"
+          }
+        },
+        {
+          "client_id": "652921802450-subk1agdgphu5pk4hi242p8l942l1u40.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB44I0yI1x5LBNOcpb2TNqehqdO3Wp_-qo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652921802450-subk1agdgphu5pk4hi242p8l942l1u40.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
