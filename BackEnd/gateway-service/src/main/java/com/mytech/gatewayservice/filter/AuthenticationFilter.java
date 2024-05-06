@@ -31,8 +31,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
         return ((exchange, chain) -> {
             log.warn("Request from: " + exchange.getRequest().getPath());
 //            log.warn("IP: " + exchange.getRequest().getRemoteAddress());
-//            String userAgent = exchange.getRequest().getHeaders().getFirst(HttpHeaders.USER_AGENT);
-//            log.warn("User Agent: " + userAgent);
+            String userAgent = exchange.getRequest().getHeaders().getFirst(HttpHeaders.USER_AGENT);
+            log.warn("User Agent: " + userAgent);
             exchange.getRequest().getLocalAddress();
             if (validator.isSecured.test(exchange.getRequest())) {
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {

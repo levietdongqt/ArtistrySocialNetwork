@@ -67,3 +67,6 @@
 /FrontEnd/*.tsbuildinfo
 /FrontEnd/next-env.d.ts
 
+#Moblie
+./Mobile/build
+

@@ -56,6 +56,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     // Tìm và xác thực token.
                     String accessToken = accessor.getFirstNativeHeader("access_token");
+                    if(accessToken == null) {
+                        accessToken = accessor.getFirstNativeHeader("Authorization").substring(7);
+                    }
                     try {
                         jwtService.validateToken(accessToken);
                     } catch (Exception e) {
