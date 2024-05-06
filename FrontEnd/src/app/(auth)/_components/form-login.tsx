@@ -37,7 +37,8 @@ export function FormLogin() {
             setCookieHandler(result.data).then(value => {
                 const prevPage = getCookie("prev_page")?.toString();
                 console.log("prevPage: ", prevPage);
-                (prevPage && prevPage !== '/login') ? router.push(prevPage) : router.push("/home")
+                (prevPage && prevPage !== '/login') ? window.location.href = prevPage : window.location.href = '/home'
+                window.location.reload()
                 return
             });
             return;
@@ -96,7 +97,7 @@ export function FormLogin() {
                             Email
                         </label>
                         <input
-                            type="email"  id="email" name="email"
+                            type="email" id="email" name="email"
                             className="border-0 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                             placeholder="Email hoặc số điện thoại"
                             onChange={handleChange}
