@@ -47,6 +47,8 @@
 
 # production
 /FrontEnd/build
+/Mobiles/build
+/Moblies/.dart_tool
 
 # misc
 /FrontEnd/.DS_Store
