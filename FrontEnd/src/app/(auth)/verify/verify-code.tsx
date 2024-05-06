@@ -9,9 +9,10 @@ import {verifyPhoneNumber} from "../../../services/main/auth-service";
 
 interface verifyCodeParam {
     destination?: string;
+    callback?: () => void;
 }
 
-export function VerifyCode({destination = "/login"}: verifyCodeParam) {
+export function VerifyCode({destination, callback}: verifyCodeParam) {
     const router = useRouter()
     const [secretCode, setSecretCode] = useState("")
     const [error, setError] = useState(false)
@@ -50,7 +51,8 @@ export function VerifyCode({destination = "/login"}: verifyCodeParam) {
             }).then(result => {
                 destination === "/login" ? verifyPhoneNumber(result.user.phoneNumber!) : false
                 console.log("Verification Result: ", result)
-                router.push(destination)
+                destination && router.push(destination)
+                callback?.()
                 window.close()
                 return
             })

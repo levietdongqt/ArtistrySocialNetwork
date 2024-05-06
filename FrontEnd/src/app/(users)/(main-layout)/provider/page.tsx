@@ -6,6 +6,7 @@ import {MainHeader} from "../../_components/home/main-header";
 import {useRouter} from "next/navigation";
 import {Input} from "../../_components/input/input";
 import ServiceMain from "../../_components/main-service/servcie-main";
+import Promotions from "app/(users)/_components/main-service/promotions";
 import ServiceExtra from "../../_components/extra-service/servcie-extra";
 import Link from "next/link";
 
@@ -29,7 +30,7 @@ const items = [
     {
         key: "4",
         label: "Khuyến mãi",
-        children: "sdsdf",
+        children: <Promotions/>,
     },
 ];
 export default function AdminMain() {

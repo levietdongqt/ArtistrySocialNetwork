@@ -30,6 +30,7 @@ import ChangePass from "../user/change-pass";
 import {UserRole} from "@lib/enum/UserRole";
 import CreateExtraServiceForm from "../../(main-layout)/provider/extra-service/create-service";
 import {EditProfileModal} from "../modal/edit-profile-modal";
+import RegisterProviderForm from "../../(main-layout)/profile/[ID]/register-provider";
 
 
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
@@ -110,7 +111,7 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
             </Modal>
 
             <Modal open={openModalProvider} closeModal={()=>setOpenModalProvider(false)}>
-                <CreateExtraServiceForm />
+                <RegisterProviderForm closeModal={()=>setOpenModalProvider(false)}/>
             </Modal>
 
             {response?.data && (

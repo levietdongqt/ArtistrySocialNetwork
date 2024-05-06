@@ -44,12 +44,11 @@ public class UserController {
 
     @PostMapping("/update")
     public ResponseEntity<ResponseObject> update(@RequestBody UserDTO userDTO) {
-        userService.updateUser(userDTO);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
                         .message("Get test ID OK")
-                        .data(null)
+                        .data(userService.updateUser(userDTO))
                         .build());
     }
 }
