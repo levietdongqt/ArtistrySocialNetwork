@@ -20,6 +20,7 @@ import java.util.Map;
 public class UserHandshakeHandler extends DefaultHandshakeHandler {
     private JwtService jwtService;
 
+
     UserHandshakeHandler(JwtService jwtService) {
         this.jwtService = jwtService;
     }
@@ -27,11 +28,21 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
     @Override
     protected Principal determineUser(
             ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        var cookies = request.getHeaders().get("cookie").get(0).split(";");
-        var accessToken = Arrays.stream(cookies)
-                .filter(s -> s.contains("access_token"))
-                .findAny().get()
-                .split("=")[1];
+
+        var cookies = request.getHeaders().get("cookie");
+        String accessToken;
+
+        if (cookies != null) {
+            var cookie = cookies.get(0).split(";");
+            accessToken = Arrays.stream(cookie)
+                    .filter(s -> s.contains("access_token"))
+                    .findAny().get()
+                    .split("=")[1];
+        } else {
+            var authorizationHeader = request.getHeaders().get("authorization");
+            accessToken = authorizationHeader.get(0).substring(7);
+        }
+
         try {
             String userId = jwtService.extractUserId(accessToken);
             log.info("User with id '{}' opened ", userId);
@@ -40,5 +51,6 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
             log.error(e.getMessage());
             return null;
         }
+
     }
 }

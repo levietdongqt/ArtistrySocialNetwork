@@ -47,7 +47,6 @@
 
 # production
 /FrontEnd/build
-
 # misc
 /FrontEnd/.DS_Store
 /FrontEnd/*.pem
@@ -66,4 +65,35 @@
 # typescript
 /FrontEnd/*.tsbuildinfo
 /FrontEnd/next-env.d.ts
+
+#Moblie
+/Mobile/!**/ios/**/default.mode1v3
+/Mobile/!**/ios/**/default.mode2v3
+/Mobile/!**/ios/**/default.pbxuser
+/Mobile/!**/ios/**/default.perspectivev3
+/Mobile/!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+/Mobile/.flutter-plugins-dependencies
+
+/Mobile/android/.settings/org.eclipse.buildship.core.prefs
+/Mobile/android/app/.classpath
+/Mobile/android/.project
+/Mobile/android/app/.project
+/Mobile/android/app/.settings/org.eclipse.buildship.core.prefs
+/Mobile/android/app/.settings/org.eclipse.jdt.core.prefs
+
+/Mobile/**/doc/api
+/Mobile/.dart_tool
+/Mobile/.flutter-plugins
+/Mobile/.packages
+/Mobile/.pub-cache
+/Mobile/.pub
+/Mobile/build
+/Mobile/android/**/gradle-wrapper.jar
+/Mobile/android/.gradle
+/Mobile/android/captures/
+/Mobile/android/gradlew
+/Mobile/android/gradlew.bat
+/Mobile/android/local.properties
+/Mobile/android/**/GeneratedPluginRegistrant.java
+/Mobile/android/app/key.jks
 
