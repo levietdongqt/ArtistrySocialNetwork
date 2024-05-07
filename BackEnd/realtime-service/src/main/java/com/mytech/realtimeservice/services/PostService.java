@@ -22,13 +22,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,7 +57,7 @@ public class PostService implements IPostService {
     @Autowired
     private JwtTokenHolder jwtTokenHolder;
 
-    public Post create(PostDTO postDTO) {
+    public PostResponse create(PostDTO postDTO) {
         // Lưu bài post
         Post post = Post.builder()
                 .user(User.builder()
@@ -104,7 +103,7 @@ public class PostService implements IPostService {
                notificationService.sendNotification(userFrom, userTo,"NORMAL","đã tạo một bài post mới với nội dụng là: "+postDTO.getContent(),createdPost.getId());
            }
         }
-        return createdPost;
+        return modelMapper.map(createdPost,PostResponse.class);
     }
     public Boolean deletePost(String postId) {
         boolean detected = false;
@@ -128,21 +127,45 @@ public class PostService implements IPostService {
         if (!friendsIds.contains(userId)) {
             friendsIds.add(userId);
         }
+
+        List<Post> trending = postRepository.findAll()
+                .stream()
+                .filter(post -> post.getPriorityScore() > 0)
+                .sorted(Comparator.comparing(Post::getLastInteractionAt).reversed())
+                .toList();
+
         Set<String> reportedPostIds = reportService.findReportsByUserId(userId)
                 .stream()
                 .filter(status->status.getStatus().equals(ReportStatus.UNDO))
                 .map(Report::getPostId)
                 .collect(Collectors.toSet());
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Sort sort = Sort.by(Arrays.asList(new Sort.Order(Sort.Direction.DESC, "engagementScore"), new Sort.Order(Sort.Direction.DESC, "createdAt"))); // add sorting by engagementScore
         Pageable pageable = PageRequest.of(pageIndex, limit, sort);
         Page<Post> pagePosts = postRepository.findByOrderByCreatedAtDesc(friendsIds,reportedPostIds, pageable);
         List<PostResponse> postResponses = pagePosts.getContent().stream()
                 .map(post -> modelMapper.map(post, PostResponse.class))
                 .collect(Collectors.toList());
+        // interleave trending posts
+        postResponses.addAll(trending.stream().limit(limit - postResponses.size()).map(post -> modelMapper.map(post, PostResponse.class)).toList());
         log.info( "page inndex: " + pageIndex+ "post response: " + postResponses.size() );
         return postResponses;
     }
+
+    public double calculateEngagementScore(Post post) {
+        double score = 0.0;
+        double like = 2.0;
+        double comment = 1.0;
+        double share = 3.0;
+        score += post.getTotalLikes() * like;
+        score += post.getTotalComments() * comment;
+        score += post.getTotalShares() * share; // giả định bạn đã thêm trường totalShares vào model Post.
+        long hoursSinceCreation = ChronoUnit.HOURS.between(post.getCreatedAt(), LocalDateTime.now());
+        double freshnessFactor = Math.max(0, 1 - (hoursSinceCreation / 24.0)); // giảm giá trị sau 24 tiếng
+        score *= freshnessFactor;
+        return score;
+    }
+
     public List<String> filterFollowFriends(String userId){
         var friendsFollow = friendForeignClient.getFollowFriends(userId);
         return friendsFollow.getData().stream().map(UserDTO::getId).collect(Collectors.toList());
@@ -193,9 +216,15 @@ public class PostService implements IPostService {
         });
     }
     //Service xử lý like cho 1 bài Post
+
+
     public Post updateLikeForPost(String postId,User userLike) {
         var post = findById(postId);
+        double engagementScore = calculateEngagementScore(post);
+        post.setEngagementScore(engagementScore);
         post.setTotalLikes(post.getTotalLikes() + 1);
+        post.setPriorityScore(post.getPriorityScore() + 2);
+        post.setLastInteractionAt(LocalDateTime.now());
         List<User> users = post.getUserPostLikes();
         users.add(userLike);
         post.setUserPostLikes(users);
@@ -209,6 +238,7 @@ public class PostService implements IPostService {
         var post = findById(postId);
 
         post.setTotalLikes(post.getTotalLikes() - 1);
+        post.setPriorityScore(post.getPriorityScore() - 2);
         List<User> users = post.getUserPostLikes();
         deletedUser = users
                 .stream()

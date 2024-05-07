@@ -32,8 +32,8 @@ export function useInfiniteScroll(
     const {data:posts,size,setSize,error,mutate} = useSWRInfinite(getKey,fetcherWithToken,{
         ...options
     });
-    const paginatedPosts = posts?.map(post =>post.data).flat();
-    const isReachedEnd = posts?.map(post =>post.data) && posts?.map(post =>post.data)[posts?.map(post =>post.data).length -1]?.length < PAGE_SIZE - 1;
+    const paginatedPosts = posts?.map(post =>post?.data).flat();
+    const isReachedEnd = posts?.map(post =>post?.data) && posts?.map(post =>post?.data)[posts?.map(post =>post?.data).length -1]?.length < PAGE_SIZE - 1;
     const isLoadingMore = posts && typeof posts[size -1] === 'undefined';
     const LoadMore = () => (
         <motion.div>

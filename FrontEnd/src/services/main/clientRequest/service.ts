@@ -24,7 +24,7 @@ export async function createMainService(data: MainService): Promise<any> {
         return response.data.data; // Giả định rằng cấu trúc phản hồi có dạng { data: { data: ... } }
     } catch (error) {
         // Xử lý lỗi ở đây
-        console.error('Error creating main service:', error);
+        console.error('Error creating main services:', error);
         throw error; // Hoặc return thứ gì đó cho ngữ cảnh của bạn
     }
 }
@@ -45,7 +45,7 @@ export async function createExtraService(data: ExtraService): Promise<any> {
         return response.data.data; // Giả định rằng cấu trúc phản hồi có dạng { data: { data: ... } }
     } catch (error) {
         // Xử lý lỗi ở đây
-        console.error('Error creating main service:', error);
+        console.error('Error creating main services:', error);
         throw error; // Hoặc return thứ gì đó cho ngữ cảnh của bạn
     }
 }

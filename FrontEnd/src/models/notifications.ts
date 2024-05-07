@@ -48,7 +48,9 @@ export enum FollowButtonType {
     PENDING_BUTTON= "Đang chờ",
     FRIENDED_BUTTON = "Bạn bè",
     REMOVE_FRIEND_BUTTON ="Hủy kết bạn",
-    ACCEPT_FRIEND_BUTTON = "Đồng ý kết bạn"
+    ACCEPT_FRIEND_BUTTON = "Đồng ý kết bạn",
+    ACCEPT_FRIEND_BUTTON_BASIC = "Đồng ý",
+    REJECT_FRIEND_BUTTON = "Xóa",
 }
 
 export enum NotificationTab {

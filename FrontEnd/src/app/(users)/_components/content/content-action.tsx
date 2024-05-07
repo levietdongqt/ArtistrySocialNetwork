@@ -24,6 +24,9 @@ import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {bookmarksPost} from "../../../../services/realtime/ServerAction/bookmarksService";
 import Link from "next/link";
 import {useEffect, useState} from "react";
+import {useRecoilValue} from "recoil";
+import {mutateState} from "@lib/hooks/mutateState";
+import {mutateDeleteComment} from "@lib/hooks/mutateDelete";
 
 export const variants: Variants = {
   initial: { opacity: 0, y: -25 },
@@ -94,31 +97,35 @@ export function ContentAction({
     openModal: pinOpenModal,
     closeModal: pinCloseModal
   } = useModal();
+  const mutatePost = useRecoilValue(mutateState);
+  const muatateComment = useRecoilValue(mutateDeleteComment);
   // const isInAdminControl = isAdmin && !isOwner;
   // const postIsPinned = pinnedTweet === postId;
  const handleRemove = async (): Promise<void> => {
     if(currentUser !== null){
         if(!comment){
-            await Promise.all([
-                deletePosts1(postId)
-                // manageTotalTweets('decrement', ownerId),
-                // hasImages && manageTotalPhotos('decrement', createdBy),
-                // parentId && manageReply('decrement', parentId)
-            ]);
-            toast.success(
-                `bài viết bạn đã xóa`
-            );
+            if (mutatePost) {
+                await Promise.all([
+                    deletePosts1(postId),
+                    mutatePost(),
+                ]);
+                toast.success(
+                    `bài viết bạn đã xóa`
+                );
+            }
+
             removeCloseModal();
         }else{
-            await Promise.all([
-                deleteComment(commentId as string)
-                // manageTotalTweets('decrement', ownerId),
-                // hasImages && manageTotalPhotos('decrement', createdBy),
-                // parentId && manageReply('decrement', parentId)
-            ]);
-            toast.success(
-                `bài viết bạn đã bình luận này`
-            );
+            if (muatateComment) {
+                await Promise.all([
+                    deleteComment(commentId as string),
+                    muatateComment()
+                ]);
+                toast.success(
+                    `bài viết bạn đã bình luận này`
+                );
+            }
+
             removeCloseModal();
         }
     }
@@ -305,7 +312,7 @@ const  userIsFollowed = false;
                       onClick={preventBubbling(removeOpenModal)}
                     >
                       <HeroIcon iconName='TrashIcon' />
-                      Delete
+                      Xóa
                     </Popover.Button>
                   )}
                   {isOwner && !comment ? (

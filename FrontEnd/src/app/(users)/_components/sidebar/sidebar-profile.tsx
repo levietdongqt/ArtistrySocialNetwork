@@ -62,10 +62,9 @@ export function SidebarProfile(): JSX.Element {
                             )}
                         >
                             <div className='flex gap-3 truncate'>
-                                <UserAvatar src={'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg'} alt={'name'}
+                                <UserAvatar src={ currentUser?.avatar ? currentUser?.avatar :'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg'} alt={currentUser?.fullName!}
                                             size={40}/>
-                                <div className='hidden truncate text-start leading-5 xl:block'>
-                                    {/*<UserName name={'name'} className='start' verified={verified} />*/}
+                                <div className='hidden truncate text-start leading-5 xl:block mt-[1.15rem]'>
                                     <UserName name={currentUser?.fullName!} className='start' verified={!!currentUser?.verified}/>
                                 </div>
                             </div>
@@ -89,7 +88,7 @@ export function SidebarProfile(): JSX.Element {
                                         disabled
                                     >
                                         <div className='flex items-center gap-3 truncate'>
-                                            <UserAvatar src={ 'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg'}
+                                            <UserAvatar src={ currentUser?.avatar ? currentUser?.avatar :'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg'}
                                                         alt={currentUser?.fullName ? currentUser?.fullName : ""}/>
                                             <div className='truncate'>
                                                 {/*<UserName name={'name'} verified={verified} />*/}

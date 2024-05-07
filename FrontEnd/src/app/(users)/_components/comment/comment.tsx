@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion';
+import {AnimatePresence, motion} from 'framer-motion';
 import cn from 'clsx';
 import { useModal } from '@lib/hooks/useModal';
 import { delayScroll } from '@lib/utils';
@@ -11,7 +11,7 @@ import { UserName } from '../user/user-name';
 
 
 import type { Variants } from 'framer-motion';
-import React, {useState} from "react";
+import React, {useEffect, useReducer, useState} from "react";
 import {User} from "@models/user";
 
 import {Comments} from "@models/comment";
@@ -21,6 +21,13 @@ import {ContentAction} from "../content/content-action";
 import {ContentStats} from "../content/content-stats";
 import ChildComment from "./ChildComment";
 import {Input} from "../input/input";
+import {useSocket} from "../../../../context/websocket-context1";
+import commentsChildReducer from "./commentChildReducer";
+import useSWR from "swr";
+import {getCommentByParentId,getCountCommentByParentId} from "../../../../services/realtime/clientRequest/commentClient";
+import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import {Loading} from "@components/ui/loading";
+import {Button} from "@components/ui/button";
 
 export type CommentProps = Comments & {
   user?: User;
@@ -30,6 +37,9 @@ export type CommentProps = Comments & {
   parentTweet?: boolean;
   comment?: boolean;
   replyTags?: boolean;
+    childComment?:boolean;
+    onOpenChild?: () =>void;
+    isOpened?: boolean;
 };
 
 export const variants: Variants = {
@@ -58,10 +68,38 @@ export function Comment(comments: CommentProps) {
     profile,
     parentTweet,
     comment,
-    replyTags
+    replyTags,
+      childComment,
+      onOpenChild,
+      isOpened
   } = comments;
+
+    const {stompClient} = useSocket();
+    const [state, dispatch] = useReducer(commentsChildReducer, { comments: [] });
+    useEffect(() => {
+        var subscription2 = stompClient?.subscribe('/topic/commentsChild/' + id as string , (comment) =>{
+            dispatch({ type: 'ADD_COMMENT', payload: JSON.parse(comment.body) });
+        });
+        return () => {
+            if (subscription2) {
+                subscription2.unsubscribe();
+            }
+        };
+    }, [id,stompClient]);
+    const { data: commentsChildData, isLoading: commentLoading } = useSWR(
+        getCommentByParentId(id as string), fetcherWithToken
+    );
+    const { data: countCommentChild, isLoading: commentChildLoading } = useSWR(
+        getCountCommentByParentId(id as string), fetcherWithToken
+    );
+    useEffect(() => {
+        if (commentsChildData && commentsChildData?.data) {
+            dispatch({ type: 'SET_INITIAL', payload: commentsChildData?.data });
+        }
+    }, [commentsChildData?.data]);
     const [showCommentChild, setShowCommentChild] = useState(false);
-  const handleParentComment = (isParent:boolean) =>{
+
+  const handleParentComment = () =>{
       setShowCommentChild(true );
     }
   const { currentUser } = useUser();
@@ -71,6 +109,11 @@ export function Comment(comments: CommentProps) {
   const { id: parentId, fullName: parentUsername = fullName } = postUserData ?? {};
   const isOwner = userId === postUserData.id;
   const { open, openModal, closeModal } = useModal();
+  const handleOpenChildComment = () =>{
+      if (typeof onOpenChild === 'function') {
+          onOpenChild(); // Gọi hàm này để thông báo với component cha.
+      }
+  }
   return (
       <motion.article
           {...(!modal ? {...variants, layout: 'position'} : {})}
@@ -80,11 +123,13 @@ export function Comment(comments: CommentProps) {
           }}
       >
           <div className={cn(
-              `accent-tab hover-card relative max-h-[500px] flex flex-col z-10
+              `accent-tab hover-card relative max-h-[100%] flex flex-col
        gap-y-4 px-4 py-3 outline-none duration-200`,
               parentTweet
                   ? 'mt-0.5 pt-2.5 pb-0'
-                  : 'border-b border-light-border dark:border-dark-border'
+                  : 'border-b border-light-border dark:border-dark-border',{
+                  '!pr-0 !pl-[3.813rem]' : childComment
+              }
           )}
                onClick={delayScroll(200)}
           >
@@ -155,15 +200,34 @@ export function Comment(comments: CommentProps) {
                               totalComments={totalReply}
                               openModal={openModal}
                               replyTags={replyTags}
+                              childComments={childComment}
                           />
                       </div>
                   </div>
               </div>
-              <div className={cn(`ml-20`)}>
-                  {<Comment {...comments} />}
-              </div>
-              <div className={'mt-0'}>
-                  {showCommentChild && <Input childComments fullName={fullName}/>}
+              <div className={cn(`mt-0`)}>
+                  {
+
+                      state.comments?.length > 0 ?
+                          isOpened ?
+                          commentLoading ?
+                              (<Loading className='mt-5'/>)
+                              : (
+                                  <div className={'h-max'}>
+                                      {state.comments?.map((commentData:any) => (
+                                          <Comment parentTweet comment childComment  replyTags {...commentData} key={commentData.id} />
+                                      ))}
+                                  </div>
+                              )
+                          : commentChildLoading ? (<Loading className='mt-2' />) :
+                          (
+                              <Button onClick={handleOpenChildComment} className={'underline p-0 ml-[3.7rem] absolute bottom-[-9px] text-gray-500 text-sm hover:text-accent-blue'}>Xem tất cả {countCommentChild?.data} phản hồi </Button>
+                          ) : (<div></div>)
+                  }
+                  {
+                      showCommentChild &&
+                      <Input comment childComments fullName={fullName} idComment={id} postID={postId} />
+                  }
               </div>
           </div>
 

@@ -11,10 +11,9 @@ import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
 import {getPostById} from "../../../../services/realtime/clientRequest/postClient";
 import {getCommentByPost} from "../../../../services/realtime/clientRequest/commentClient";
 import {useSocket} from "../../../../context/websocket-context1";
-import SockJS from "sockjs-client";
-import {Client, over} from "webstomp-client";
-import {Stomp} from "@stomp/stompjs";
 import commentsReducer from "../comment/commentReducer";
+import {useRecoilState} from "recoil";
+import {mutateDeleteComment} from "@lib/hooks/mutateDelete";
 
 
 type TweetReplyModalProps = {
@@ -28,29 +27,45 @@ export function ContentReplyModal({
                                   }: TweetReplyModalProps): JSX.Element {
     const {stompClient} = useSocket();
     const [state, dispatch] = useReducer(commentsReducer, { comments: [] });
+    const [lastOpenedCommentId, setLastOpenedCommentId] = useState(null);
     useEffect(() => {
-       var subscription = stompClient?.subscribe('/topic/comments/' + post.id, function (comment) {
+       var subscription1 = stompClient?.subscribe('/topic/comments/' + post?.id,  (comment) =>{
            dispatch({ type: 'ADD_REPLIES', payload: JSON.parse(comment.body) });
         });
     return () => {
-        if (subscription) {
-            subscription.unsubscribe();
+        if (subscription1) {
+            subscription1.unsubscribe();
         }
-        };
-    }, [post.id,stompClient]);
+    };
+    }, [post?.id,stompClient]);
 
     const { data: postData,isLoading:loadingPost } = useSWR(
         getPostById(post?.id), fetcherWithToken
     );
     // Fetch comments, ensure that we don't re-fetch if hasFetched is true
-    const { data: commentsData, isLoading: repliesLoading,mutate } = useSWR(
+    const { data: commentsData, isLoading: repliesLoading,mutate:mutateComment } = useSWR(
         getCommentByPost(post?.id), fetcherWithToken
     );
+    const [,setMutateCommentData] = useRecoilState(mutateDeleteComment);
     useEffect(() => {
-        if (commentsData && commentsData.data) {
-            dispatch({ type: 'SET_INITIAL_COMMENTS', payload: commentsData.data });
+        if (commentsData) {
+            setMutateCommentData(() => mutateComment);
         }
-    }, [commentsData]);
+    }, [mutateComment,setMutateCommentData]);
+    const handleOpenChild = (commentId:any) => {
+        if (lastOpenedCommentId === commentId) {
+            // Nếu comment hiện tại đã mở, nhấn một lần nữa sẽ đóng nó lại
+            setLastOpenedCommentId(null);
+        } else {
+            // Mở comment theo id mới
+            setLastOpenedCommentId(commentId );
+        }
+    };
+    useEffect(() => {
+        if (commentsData && commentsData?.data) {
+            dispatch({ type: 'SET_INITIAL_COMMENTS', payload: commentsData?.data });
+        }
+    }, [commentsData?.data]);
 
     const handleCloseModal = () => {
         closeModal();
@@ -79,7 +94,7 @@ export function ContentReplyModal({
                         <Loading className='mt-5' />
                     ) : (
                         <AnimatePresence mode='popLayout'>
-                            <ContentPost modal comment={true} {...post} {...postData} />
+                            <ContentPost modal comment={true} {...postData?.data} />
                         </AnimatePresence>
                     )
                 }
@@ -90,7 +105,10 @@ export function ContentReplyModal({
                         ) : (
                             <AnimatePresence mode='popLayout'>
                                 {state.comments?.map((commentData:any) => (
-                                    <Comment parentTweet comment replyTags {...commentData} key={commentData.id} />
+                                    <Comment parentTweet comment replyTags {...commentData} key={commentData.id}
+                                             onOpenChild={() => handleOpenChild(commentData.id)}
+                                             isOpened={commentData.id === lastOpenedCommentId}
+                                    />
                                 ))}
                             </AnimatePresence>
                         )

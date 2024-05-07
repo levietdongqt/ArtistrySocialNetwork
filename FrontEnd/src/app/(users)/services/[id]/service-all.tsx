@@ -31,7 +31,7 @@ export function ServiceAll(): JSX.Element {
     if (!Array.isArray(response?.data)) {
         return <div>Dữ liệu không hợp lệ.</div>;
     }
-    // console.log('service',response)
+    // console.log('services',response)
     // State để quản lý trạng thái mở/đóng của Modal
     // const [open, setOpen] = useState(false);
     //
@@ -49,7 +49,7 @@ export function ServiceAll(): JSX.Element {
     };
 
 
-    const servicePagePath = '/service/123';
+    const servicePagePath = '/services/123';
 
     return (
         <>

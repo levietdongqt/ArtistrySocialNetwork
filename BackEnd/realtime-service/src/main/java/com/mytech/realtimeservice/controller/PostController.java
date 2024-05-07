@@ -114,7 +114,7 @@ public class PostController {
     @PostMapping("/post-create")
     public ResponseEntity<?> savePost(@RequestBody PostDTO postDTO) {
         log.info("post create ",postService.getCountPost());
-        Post savedPost = postService.create(postDTO);
+        PostResponse savedPost = postService.create(postDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
@@ -153,15 +153,41 @@ public class PostController {
     @GetMapping("/comments/{PostId}")
     public ResponseEntity<?> getPostComments(@PathVariable String PostId) {
         List<Comments> comments = commentsService.getCommentsByPostId(PostId);
+        log.info("Get comments list by post id: " + PostId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Get comments list OK")
+                        .message("Get comments list by post id: " + PostId)
                         .data(comments)
                         .build()
         );
     }
 
+    @GetMapping("/commentsParentId/{commentParentId}")
+    public ResponseEntity<?> getCommentsParent(@PathVariable String commentParentId) {
+        List<Comments> comments = commentsService.getCommentsByParentCommentId(commentParentId);
+        log.info("Get comments list by post id: " + commentParentId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get comments parent list by post id: " + commentParentId)
+                        .data(comments)
+                        .build()
+        );
+    }
+
+    @GetMapping("/commentsParentIdCount/{commentParentId}")
+    public ResponseEntity<?> getCommentsParentCount(@PathVariable String commentParentId) {
+        Long comments = commentsService.countCommentsParentId(commentParentId);
+        log.info("Get comments list by post id: " + commentParentId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get comments parent list by commentParent id: " + commentParentId)
+                        .data(comments)
+                        .build()
+        );
+    }
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#commentDTO.byUser.id) && hasRole('USER')")
     @PostMapping("/comments")

@@ -33,6 +33,7 @@ type PostStatsProps =  {
     tagUserPosts?: [];
     totalComments?: number;
     handleParentComment?: (isParent:boolean)=>void;
+    childComments?: boolean;
 };
 
 export function ContentStats({
@@ -50,7 +51,7 @@ export function ContentStats({
    comment,
  replyTags,
  commentsId,
-                                 handleParentComment
+                                 handleParentComment,childComments
 }: PostStatsProps): JSX.Element {
     const totalLikes = userPostLikes?.map((data:any) => data?.id).length as number || 0;
     const totalTag = tagUserPosts?.length;
@@ -181,8 +182,10 @@ export function ContentStats({
             'hover:text-accent-pink focus-visible:text-accent-pink',
               isLiked ? 'text-accent-pink [&>i>svg]:fill-accent-pink' : ''
           )}
-          iconClassName='group-hover:bg-accent-pink/10 group-active:bg-accent-pink/20
-                         group-focus-visible:bg-accent-pink/10 group-focus-visible:ring-accent-pink/80'
+          iconClassName={cn(`group-hover:bg-accent-pink/10 group-active:bg-accent-pink/20
+                         group-focus-visible:bg-accent-pink/10 group-focus-visible:ring-accent-pink/80`,{
+              '!p-0' : comment
+          })}
           tip={isLiked ? 'Unlike' : 'Like'}
           name={'Thích'}
           iconName='HeartIcon'
@@ -193,6 +196,7 @@ export function ContentStats({
             !replyTags &&  (<ContentShare userId={userId} postId={postId} viewTweet={viewTweet}  name={'Chia sẻ'}/>)
           }
           {
+              !childComments &&
               replyTags && (
                   <Button onClick={() => handleParentComment ? handleParentComment(true) : null} className={cn(`group ml-3 flex items-center gap-1.5 p-0 transition-none 
                         disabled:cursor-not-allowed inner:transition inner:duration-200`)}>

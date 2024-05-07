@@ -8,6 +8,7 @@ type UserAvatarProps = {
   size?: number;
   username?: string;
   className?: string;
+  friend?: boolean;
 };
 
 export function UserAvatar({
@@ -15,15 +16,19 @@ export function UserAvatar({
   alt,
   size,
   username,
-  className
+  className,
+                             friend
 }: UserAvatarProps): JSX.Element {
   const pictureSize = size ?? 48;
 
   return (
     <Link href={username ? `/profile/${username}` : '#'} className={cn(
-        'blur-picture flex self-start',
+        'blur-picture flex self-start mt-[0.938rem]',
         !username && 'pointer-events-none',
-        className
+        className,
+        {
+          'mt-[0.938rem]' :friend
+        }
     )}
           tabIndex={username ? 0 : -1}>
         <NextImage

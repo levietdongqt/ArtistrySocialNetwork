@@ -9,7 +9,7 @@ import com.mytech.realtimeservice.models.users.User;
 import java.util.List;
 
 public interface IPostService {
-    public Post create(PostDTO postDTO);
+    public PostResponse create(PostDTO postDTO);
 
     List<PostResponse> findAll(int limit, int pageIndex, String userId);
     public boolean deleteAll();

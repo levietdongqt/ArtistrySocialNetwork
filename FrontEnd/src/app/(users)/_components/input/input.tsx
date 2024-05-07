@@ -16,10 +16,13 @@ import {useUser} from "../../../../context/user-context";
 import { postPosts1} from "../../../../services/realtime/ServerAction/PostService";
 import {uploadImages} from "../../../../firebase/utils";
 import {postComment} from "../../../../services/realtime/ServerAction/CommentService";
-import useSWR , {mutate}from "swr";
+import useSWR from "swr";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {getFriendByUserId} from "../../../../services/main/clientRequest/friendsClient";
 import {getPostsLimit} from "../../../../services/realtime/clientRequest/postClient";
+import {useSearch} from "../../../../context/search-context";
+import {useRecoilValue} from "recoil";
+import {mutateState} from "@lib/hooks/mutateState";
 type InputProps = {
   postID?: string;
   modal?: boolean;
@@ -32,6 +35,7 @@ type InputProps = {
   closeModal?: () => void;
   childComments?: boolean;
   fullName?: string;
+  idComment?: string;
 };
 
 export const variants: Variants = {
@@ -49,7 +53,8 @@ export function Input({
   children,
   replyModal,
   closeModal,
-                        childComments,fullName
+                        childComments,fullName,
+                        idComment
 }: InputProps): JSX.Element {
   const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
   const [imagesPreview, setImagesPreview] = useState<ImagesPreview>([]);
@@ -57,10 +62,8 @@ export function Input({
   const [loading, setLoading] = useState(false);
   const [visited, setVisited] = useState(false);
   const [selectedEmoji, setSelectedEmoji] = useState(null);
-  const [options, setOptions] = useState("");
   const {currentUser} = useUser();
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isCheckTrigger, setIsCheckTrigger] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const previewCount = imagesPreview.length;
   const isUploadingImages = !!previewCount;
@@ -72,15 +75,13 @@ export function Input({
     },
     []
   );
-  const {mutate} = useSWR(getPostsLimit(currentUser?.id,7,0),fetcherWithToken);
-
+  const mutate = useRecoilValue(mutateState);
   const sendPost = async (): Promise<void> => {
     try {
     inputRef.current?.blur();
     setLoading(true);
     const userId = currentUser?.id as string;
     const uploadedImagesData = await uploadImages(userId, selectedImages);
-    console.log("Uploaded images: ",uploadedImagesData)
   if(currentUser !== null){
     if(!comment){
       const postData = {
@@ -94,13 +95,16 @@ export function Input({
         sendVerified: currentUser?.verified
       };
       await sleep(200);
-      await postPosts1(postData);
-      await mutate();
+      var savedPost = await postPosts1(postData);
+      if(mutate) {
+        await mutate((currentData: any) => [savedPost,...currentData?.data]);
+      }
     }else{
       const commentData = {
         postId: postID,
         content: inputValue.trim() || null,
         mediaUrl: uploadedImagesData ? uploadedImagesData.map(imageObject => imageObject) : [],
+        commentsParentId: childComments ? idComment as string : null,
         byUser: {
           id: currentUser?.id as string,
           fullName: currentUser?.fullName as string || null,
@@ -110,7 +114,7 @@ export function Input({
           verified: currentUser?.verified
         }
       };
-      await sleep(200);
+      await sleep(1000);
       await postComment(commentData);
     }
   }else{
@@ -156,10 +160,8 @@ export function Input({
       return;
     }
     const { imagesPreviewData, selectedImagesData } = imagesData;
-
     setImagesPreview([...imagesPreview, ...imagesPreviewData]);
     setSelectedImages([...selectedImages, ...selectedImagesData]);
-    console.log("selectedImages11",selectedImages)
     inputRef.current?.focus();
   };
 
@@ -184,7 +186,6 @@ export function Input({
     setInputValue('');
     setVisited(false);
     cleanImage();
-
     inputRef.current?.blur();
   };
 
@@ -199,9 +200,8 @@ export function Input({
     setInputValue(value)
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    void sendPost();
+  const handleSubmit = async () => {
+    await sendPost();
   };
   const handleFocus = (): void => setVisited(!loading);
 
@@ -224,7 +224,6 @@ export function Input({
         'cursor-not-allowed': disabled,
 
       })}
-      onSubmit={handleSubmit}
     >
       {loading && (
         <motion.i className='h-1 animate-pulse bg-main-accent' {...variants} />
@@ -241,7 +240,7 @@ export function Input({
                 (disabled || loading) && 'pointer-events-none opacity-50',
                 {
                   'sticky z-10 bottom-[0px] bg-white dark:bg-white pt-2': comment,
-                  'px-0 !pl-10 !py-0' : childComments
+                  'px-0 !pl-[3.8rem] !py-0 !pr-0' : childComments
                 }
             )}
             htmlFor={formId}
@@ -282,6 +281,7 @@ export function Input({
             <AnimatePresence initial={false}>
               {(reply ? reply && visited && !loading : !loading) && (
                   <InputOptions
+                      callBack={handleSubmit}
                       childComments={childComments}
                       reply={reply}
                       modal={modal}

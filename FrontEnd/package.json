@@ -44,11 +44,13 @@
     "react-select": "^5.8.0",
     "react-textarea-autosize": "^8.5.3",
     "react-toastify": "^10.0.1",
+    "recoil": "^0.7.7",
     "sweetalert2": "^11.10.7",
     "swr": "^2.2.5",
     "tailwind-scrollbar": "^3.1.0",
     "tw-elements-react": "^1.0.0-alpha2",
     "typescript-eslint": "^7.7.0",
+    "vn-badwords": "^1.2.1-fix-2",
     "yup": "^1.4.0"
   },
   "devDependencies": {

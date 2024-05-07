@@ -27,7 +27,6 @@ export const SocketProvider = ({children}: any) => {
     const {setDataCount, setNotificationsContent} = useNotification();
     const socketRef = useRef<Client | null>(null);
     const {state: {showChatBoxes, pickedConversations}, dispatch} = useChat()
-    const {currentUser} = useUser()
     useEffect(() => {
         if (socketRef.current !== null) {
             return;
@@ -71,8 +70,6 @@ export const SocketProvider = ({children}: any) => {
                     }
 
                 });
-
-
                 client.subscribe(`/user/topic/private-notification`, (message) => {
                     if (message.body) {
                         const newMessage = JSON.parse(message.body);
@@ -81,6 +78,7 @@ export const SocketProvider = ({children}: any) => {
                     }
                 });
                 setStompClient(client);
+
             },
 
             onWebSocketError(error: Error): void {

@@ -7,4 +7,5 @@ public interface IWSSocket {
     public void sendGlobalNotification();
     void sendGlobalComment(final String postId, Comments comments);
     public void sendPrivateNotification(final String userId,Notification notification);
+    void sendGlobalCommentChild(final String parentComment,Comments comments);
 }

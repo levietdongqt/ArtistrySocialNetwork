@@ -33,6 +33,7 @@ public interface PostRepository extends MongoRepository<Post,String> {
     @Query(value = "{'id': {$in: ?0}}")
     List<Post> findByPostIdsIn(List<String> postIds);
 
+
     @Query(value = "{'_id': ?0}",fields = "{'totalLikes': 1}")
     Optional<Post> showTotalLikesByPostId(String postId);
 

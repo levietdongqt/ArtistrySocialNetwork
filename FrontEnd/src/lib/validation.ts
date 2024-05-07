@@ -26,7 +26,7 @@ function isValidImageExtension(
 }
 
 export function isValidImage(name: string, bytes: number): boolean {
-  return isValidImageExtension(name) && bytes < 20 * Math.pow(1024, 2);
+  return isValidImageExtension(name) && bytes < 20 * Math.pow(1024, 3);
 }
 
 export const isReportVali = yup.object().shape({

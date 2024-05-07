@@ -66,6 +66,7 @@ type InputOptionsProps = {
     e: ChangeEvent<HTMLInputElement> | ClipboardEvent<HTMLTextAreaElement>
   ) => void;
   handleEmojiClick: (emoji: any) => void;
+  callBack?: () => void;
 };
 
 export function InputOptions({
@@ -78,6 +79,7 @@ export function InputOptions({
   isCharLimitExceeded,
   handleImageUpload,
    handleEmojiClick,
+                               callBack
 }: InputOptionsProps): JSX.Element {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -95,8 +97,8 @@ export function InputOptions({
     const handleClickOutside = (event: any) => {
       if (
         showEmojiPicker &&
-        emojiPickerRef.current &&
-        !emojiPickerRef.current.contains(event.target)
+        emojiPickerRef?.current &&
+        !emojiPickerRef.current?.contains(event.target)
       ) {
         setShowEmojiPicker(false);
       }
@@ -189,22 +191,22 @@ export function InputOptions({
         {
           childComments ? (
                 <Button
-                    type='submit'
                     className='accent-tab bg-main-accent px-4 py-1.5 font-bold text-white
                      enabled:hover:bg-main-accent/90
                      enabled:active:bg-main-accent/75'
                     disabled={!isValidTweet}
+                    onClick={callBack}
                 >
                   <HeroIcon iconName={'PaperAirplaneIcon'} className={'accent-accent-blue h-4 w-4'}/>
                   <ToolTip tip='Comment' modal={modal} />
                 </Button>
             ) : (
               <Button
-                  type='submit'
                   className='accent-tab bg-main-accent px-4 py-1.5 font-bold text-white
                      enabled:hover:bg-main-accent/90
                      enabled:active:bg-main-accent/75'
                   disabled={!isValidTweet}
+                  onClick={callBack}
               >
                 {'Post'}
               </Button>

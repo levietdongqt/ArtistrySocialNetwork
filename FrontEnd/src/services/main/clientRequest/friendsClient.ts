@@ -17,6 +17,10 @@ export function returnAddFriend (body: any): fetcherParams {
     return [`/friends/return-addFriend`, 'POST', body, ServiceDestination.MAIN];
 }
 
+export function getPendingFriend (userId: string): fetcherParams {
+    return [`/friends/pending/${userId}`, 'GET', null, ServiceDestination.MAIN];
+}
+
 export function getFriendByUserId (userId: string): fetcherParams {
     return [`/friends/is-friend/${userId}`, 'GET', null, ServiceDestination.MAIN];
 }

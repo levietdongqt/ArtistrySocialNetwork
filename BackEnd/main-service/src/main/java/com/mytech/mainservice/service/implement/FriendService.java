@@ -371,12 +371,21 @@ public class FriendService implements IFriendService {
 
     private List<User> FilterUserByStatus(String userId, FriendShipStatus status) {
         List<User> friends = new ArrayList<User>();
-        List<Friendship> friendships = friendshipRepo.getFriendShipByUserId(userId);
+        List<Friendship> friendships = new ArrayList<Friendship>();
+        if(FriendShipStatus.PENDING.equals(status)){
+            friendships= friendshipRepo.findByFriend_Id(userId);
+        }else{
+            friendships = friendshipRepo.getFriendShipByUserId(userId);
+        }
         List<Friendship> friendshipWithPending = friendships
                 .stream()
                 .filter(friendship -> checkStatusInFriendship(friendship, status))
-                .collect(Collectors.toList());
-        friendshipWithPending.forEach(friendship -> friends.add(friendship.getFriend()));
+                .toList();
+        if(FriendShipStatus.PENDING.equals(status)){
+            friendshipWithPending.forEach(friendship -> friends.add(friendship.getFromUser()));
+        }else{
+            friendshipWithPending.forEach(friendship -> friends.add(friendship.getFriend()));
+        }
         return friends;
 
     }

@@ -20,6 +20,7 @@ export default function RootLayout({
                 <NotificationContextProvider>
                     <SocketProvider>
                         <SearchContextProvider>
+
                             <UploadContextProvider>
                             <ThemeContextProvider>
                                 <ChatAlert/>

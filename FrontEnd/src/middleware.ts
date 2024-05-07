@@ -50,7 +50,7 @@ export const config = {
         '/message',
         // '/login',
         '/profile/edit',
-        // '/profile/create/main-service',
+        // '/profile/create/main-services',
         '/notifications',
         // '/login',
         // '/testClient',

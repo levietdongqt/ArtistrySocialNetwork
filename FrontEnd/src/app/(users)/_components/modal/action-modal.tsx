@@ -20,7 +20,7 @@ type ActionModalProps = {
   mainBtnClassName?: string;
   secondaryBtnLabel?: string;
   secondaryBtnClassName?: string;
-  actionReport: (value:string , content:string) => void;
+  actionReport?: (value:string , content:string) => void;
   action: () => void;
   closeModal: () => void;
 };
