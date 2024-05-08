@@ -2,9 +2,9 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import {useState} from "react";
+import React, {useState} from "react";
 import Slider from "react-slick";
-import { Carousel } from 'antd';
+import {Button, Carousel} from 'antd';
 
 import {UserCard} from "../../_components/user/user-card";
 import useSWR from "swr";
@@ -13,6 +13,9 @@ import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {useUser} from "../../../../context/user-context";
 // import * as console from "node:console";
 import {MainService} from "@models/main-service";
+import {Modal} from "../modal/modal";
+import CreateReview from "../../(main-layout)/profile/[ID]/review/create-review";
+import {EditOutlined, PlusCircleOutlined} from "@ant-design/icons";
 
 interface ProServiceCard{
     data: MainService
@@ -20,12 +23,18 @@ interface ProServiceCard{
 
 
 export function ServiceCard({data}:ProServiceCard): JSX.Element {
+    const [openModalCreateReview, setOpenModalCreateReview] = React.useState(false);
 
+    const handleOpenCreateReview =()=>{
+        setOpenModalCreateReview(true)
+    }
 
     return (
         <>
-
-                <Link href={`/service/${data.id}`} passHref>
+            <Modal open={openModalCreateReview} closeModal={()=>setOpenModalCreateReview(false)}>
+                <CreateReview closeModal={()=>setOpenModalCreateReview(false)} service={data}/>
+            </Modal>
+                {/*<Link href={`/service/${data.id}`} passHref>*/}
                     <motion.div className="block cursor-pointer z-1"  whileTap={{scale: 0.97}}>
                         <div className="block cursor-pointer">
                             <div
@@ -33,7 +42,7 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
                                 <div className="rounded-lg overflow-hidden z-1">
                                     <Carousel autoplay>
                                         {data?.imageUrls?.map((img, idx) => {
-                                            console.log('image url', img)
+
                                             return <div key={idx} className="w-full h-[300px] relative">
                                                 <Image
                                                     src={img}
@@ -61,10 +70,17 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
                                         </p>
                                     </div>
                                 </div>
+                                <Button  onClick={handleOpenCreateReview}>
+
+                                    <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5" />
+                                    Viết đánh giá
+
+                                </Button>
+
                             </div>
                         </div>
                     </motion.div>
-                </Link>
+                {/*</Link>*/}
 
 
         </>

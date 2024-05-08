@@ -11,16 +11,18 @@ export interface RatingProps {
 
 const Rating: React.FC<RatingProps> = ({ reviews }) => {
     const [expanded, setExpanded] = useState(false);
-
-    const overallRating = reviews.reduce((total, review) => total + review.reviewDetails.star, 0) / reviews.length;
+    let overallRating = 0;
+    if (Array.isArray(reviews)) {
+        overallRating = reviews.reduce((total, review) => total + review.reviewDetails.STAR, 0) / reviews.length;
+    }
 
     const serviceRatings = reviews.reduce((acc, review) => {
-        const { serviceName, star } = review.reviewDetails;
-        if (!acc[serviceName]) acc[serviceName] = { total: 0, count: 0 };
-        acc[serviceName].total += star;
-        acc[serviceName].count += 1;
+        const { SERVICE_NAME, STAR } = review.reviewDetails;
+        if (!acc[SERVICE_NAME]) acc[SERVICE_NAME] = { total: 0, count: 0 };
+        acc[SERVICE_NAME].total += STAR;
+        acc[SERVICE_NAME].count += 1;
         return acc;
-    }, {} as { [serviceName: string]: { total: number; count: number } });
+    }, {} as { [SERVICE_NAME: string]: { total: number; count: number } });
 
     const toggleExpanded = () => {
         setExpanded(!expanded);
@@ -59,6 +61,10 @@ const Rating: React.FC<RatingProps> = ({ reviews }) => {
             }
         },
     };
+    if (!Array.isArray(reviews) || reviews.length === 0) {
+        console.error('The reviews prop is not an array or it is empty!', reviews);
+        return <div>No reviews available.</div>;
+    }
 
     return (
         <motion.div  initial="hidden"
@@ -86,14 +92,14 @@ const Rating: React.FC<RatingProps> = ({ reviews }) => {
                             <div className={`mt-5 w-full ${expanded ? 'block' : 'hidden'}`}>
                                 <h4 className="font-semibold text-lg text-gray-800 mb-3">Service Ratings:</h4>
                                 <ul className="space-y-2">
-                                    {Object.keys(serviceRatings).map((serviceName) => (
-                                        <li key={serviceName} className="bg-gray-50 p-3 rounded-lg">
+                                    {Object.keys(serviceRatings).map((SERVICE_NAME) => (
+                                        <li key={SERVICE_NAME} className="bg-gray-50 p-3 rounded-lg">
                                             <div className="flex justify-between items-center">
-                                                <span className="text-gray-700 font-medium">{serviceName}</span>
+                                                <span className="text-gray-700 font-medium">{SERVICE_NAME}</span>
                                                 <Rate
                                                     allowHalf
                                                     disabled
-                                                    value={serviceRatings[serviceName].total / serviceRatings[serviceName].count}
+                                                    value={serviceRatings[SERVICE_NAME].total / serviceRatings[SERVICE_NAME].count}
                                                 />
                                             </div>
                                         </li>

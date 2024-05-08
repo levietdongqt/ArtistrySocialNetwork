@@ -1,6 +1,7 @@
 import type { Theme, Accent } from './theme';
 import type { Timestamp } from 'firebase/firestore';
 import {UserRole} from "@lib/enum/UserRole";
+import {date} from "yup";
 
 export type User = {
   id: string;
@@ -8,7 +9,7 @@ export type User = {
   email: string;
   phoneNumber: string| null;
   gender: boolean;
-  dateOfBirth: string;
+  dateOfBirth: string | null;
   emailConfirmed: boolean;
   phoneConfirmed: boolean;
   createDate: string;
@@ -41,8 +42,8 @@ export type User = {
 
 export type EditableData = Extract<
   keyof User,
-  'bio' | 'fullName' | 'avatar' | 'location' | 'coverImage'|
-    'phoneNumber'|'dateOfBirth'|'address'|'email'
+    'id'|'bio' | 'fullName' | 'avatar' | 'location' | 'coverImage'|
+    'phoneNumber'|'dateOfBirth'|'address'|'email'|'roles'|'gender'
 >;
 export  type ProviderData = Extract<
 keyof  User,

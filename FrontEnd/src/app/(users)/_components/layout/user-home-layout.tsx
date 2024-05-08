@@ -46,7 +46,6 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
 
     //console.log("currentUser",currentUser)
     const {ID} = useParams()|| currentUser?.id;
-    console.log("currentUser",ID)
     const {
         isLoading: loading,
         data: response,
@@ -79,14 +78,14 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
 
     const menu = (
         <Menu>
-            <Menu.Item>
-
-                <Link href="#" onClick={()=>setOpenModal(true)}>
-                    <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
-                    Đổi mật khẩu
-                </Link>
-
-            </Menu.Item>
+            {currentUser?.authProvider !== 'google.com' && currentUser?.authProvider !== 'facebook.com' && (
+                <Menu.Item>
+                    <Link href="#" onClick={()=>setOpenModal(true)}>
+                        <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
+                        Đổi mật khẩu
+                    </Link>
+                </Menu.Item>
+            )}
 
             <Menu.Item>
                 <Link href="/profile/edit">

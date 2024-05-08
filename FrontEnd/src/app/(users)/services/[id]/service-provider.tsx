@@ -14,18 +14,19 @@ import {useUser} from "../../../../context/user-context";
 // import * as console from "node:console";
 import {MainService} from "@models/main-service";
 import {ServiceCard} from "../../_components/main-service/service-card";
+import {useParams} from "next/navigation";
 
 
 
 export function ServiceProvider(): JSX.Element {
 
     const { currentUser } = useUser();
-    const id = '1cb1c09e-79be-484b-9a6a-4d5728e04727'
+    const {ID} = useParams()
     const {
         data: response,
         isLoading: isLoading,
         error: error2,
-    } = useSWR(GetAllMainService(id), fetcherWithToken);
+    } = useSWR(GetAllMainService(ID as string), fetcherWithToken);
     if (isLoading) return <div>Loading...</div>;
     if (error2) return <div>Error: {error2.message}</div>;
     if (!Array.isArray(response?.data)) {

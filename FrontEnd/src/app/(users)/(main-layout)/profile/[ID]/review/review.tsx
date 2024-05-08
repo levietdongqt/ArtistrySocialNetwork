@@ -5,20 +5,21 @@ import Rating from "./rating";
 import ReviewCard from "./reviewcard";
 import {useUser} from "../../../../../../context/user-context";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import {getAllReviewsByUserId} from "../../../../../../services/main/clientRequest/userClient";
+import {useParams} from "next/navigation";
 
 interface ReviewComponentProps {
     id: string;
 }
 
 const ReviewComponent: React.FC<ReviewComponentProps> = ({ id }) => {
-    const { data: reviews, error } = useSWR(`/api/reviews?id=${id}`, fetcherWithToken)
+    const { data: reviews, error } = useSWR(getAllReviewsByUserId(id),fetcherWithToken);
     console.log('Review',reviews?.data)
-
     return (
         <>
             <div className="review-component">
                 {reviews?.data.length > 0 ? (
-                    <Rating reviews={reviews}/>
+                    <Rating reviews={reviews?.data}/>
                 ) : (
                     <p>No reviews to display</p>
                 )}

@@ -8,7 +8,7 @@ export  type ExtraService = {
     priceType: string;
     duration: number;
     restTime: number;
-    imageUrl: string[];
+    imageUrls: string[];
     description: string;
     createDate: Date;
     updateDate: Date;

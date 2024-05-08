@@ -24,15 +24,13 @@ import {isExistAccount} from "../../../../../services/main/auth-service";
 import {useOAuth2} from "../../../../../context/oauth2-context";
 
 type RegisterProviderFormProps = {
-    closeModal: () => void; // closeModal là một hàm không nhận đối số và không trả về giá trị
+    closeModal: () => void;
 };
 
 const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal}) => {
     const {captchaVerifier} = useOAuth2()
 
     const {currentUser,setCurrentUser} = useUser();
-    const [isClient, setIsClient] = useState(false);
-
     const [user, setUser] = useState<EditableProviderData>({
         id: currentUser!.id,
         bio: currentUser?.bio ?? "",
@@ -264,9 +262,9 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
                     />
 
                 </div>
-                <div className="mx-auto">
-                    <div id="recaptcha-container" className="my-5"></div>
-                </div>
+                {/*<div className="mx-auto">*/}
+                {/*    <div id="recaptcha-container" className="my-5"></div>*/}
+                {/*</div>*/}
                 <div className="flex items-center justify-between">
                     <button type="submit"
                             disabled={errorLocation !== null && errorLocation !== ''}
