@@ -148,9 +148,10 @@ class _SignInState extends State<SignIn> {
         if (userId != null) {
           print("LOGIN OKE: ");
           loader.hideLoader();
-          Navigator.pop(context);
+          // Navigator.pop(context);
           widget.loginCallback!();
         } else {
+          Utility.customSnackBar(context, 'Thông tin đăng nhập không hợp lệ!');
           cprint('Unable to login', errorIn: '_phoneLoginButton');
           loader.hideLoader();
         }

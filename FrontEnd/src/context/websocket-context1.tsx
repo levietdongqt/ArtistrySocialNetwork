@@ -5,7 +5,7 @@ import {dateParse} from "@lib/helper/dateParse";
 import {useNotification} from "./notification-context";
 import {ACTION_TYPE, ChatAction, findIndexOfConversation} from "@lib/reducer/chat-reducer";
 import {ConversationDto} from "@models/conversation";
-import {Client} from "@stomp/stompjs";
+import {Client, StompHeaders} from "@stomp/stompjs";
 import {getCookie} from "cookies-next";
 import {toast} from "react-toastify";
 import {ResponseSocket} from "@models/ResponseSocket";
@@ -26,7 +26,8 @@ export const SocketProvider = ({children}: any) => {
     const [stompClient, setStompClient] = useState<Client | null>(null);
     const {setDataCount, setNotificationsContent} = useNotification();
     const socketRef = useRef<Client | null>(null);
-    const {state: {showChatBoxes, pickedConversations}, dispatch} = useChat()
+    const { dispatch} = useChat()
+    const {currentUser} = useUser()
     useEffect(() => {
         if (socketRef.current !== null) {
             return;
@@ -35,6 +36,7 @@ export const SocketProvider = ({children}: any) => {
         if (!access_token) {
             toast.error("Có lỗi xảy ra, vui lòng tải lại trang!")
         }
+
         const client = new Client({
             connectHeaders: {
                 access_token: access_token!,
@@ -51,6 +53,9 @@ export const SocketProvider = ({children}: any) => {
                 client?.subscribe(`/user/chat/message`, (message) => {
                     const response: ResponseSocket = JSON.parse(message.body, dateParse)
                     console.log("Callback from chat: ", response.type, ' - ', response.data)
+                    if(!response.data || response.data.length === 0){
+                        return;
+                    }
                     switch (response.type) {
 
                         case ResponseSocketType.SEND_MESSAGE:

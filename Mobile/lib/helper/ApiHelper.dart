@@ -3,7 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter_twitter_clone/dto/responseObject.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
+import 'package:flutter_twitter_clone/helper/shared_prefrence_helper.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
+import 'package:flutter_twitter_clone/ui/page/common/locator.dart';
 import 'package:http/http.dart' as http;
 
 class ApiHelper {
@@ -23,7 +25,7 @@ class ApiHelper {
   });
 
   static Future<ResponseObject> callApi(HttpMethod method, String path,
-      String? jsonBody, ServerDestination destination) async {
+      String? jsonBody, ServerDestination destination,bool isAuth) async {
     if (destination == ServerDestination.Realtime_Service) {
       path = '/api/realtime${path}';
     } else {
@@ -31,7 +33,10 @@ class ApiHelper {
     }
     Map<String, String> headers = HashMap();
     headers['Content-Type'] = 'application/json';
-    // headers['Authorization'] = 'Bearer ${accessToken}';
+    if(isAuth){
+      String? accessToken = await getIt<SharedPreferenceHelper>().getAccessToken();
+      headers['Authorization'] = 'Bearer ${accessToken}';
+    }
     headers['Accept'] = 'application/json';
     var url = Uri(scheme: _scheme, host: _host, port: _port, path: path);
     var response;

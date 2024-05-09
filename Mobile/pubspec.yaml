@@ -55,6 +55,7 @@ dependencies:
   json_annotation: ^4.9.0
   web_socket_channel: ^2.4.5
   stomp_dart_client: ^2.0.0
+  avatar_stack: ^1.2.0
   # link_preview_generator: ^1.2.0
 
 dev_dependencies:

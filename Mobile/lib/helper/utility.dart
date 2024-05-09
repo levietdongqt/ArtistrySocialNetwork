@@ -77,26 +77,28 @@ class Utility {
     String msg = '';
     var dt = DateTime.parse(date).toLocal();
 
-    if (DateTime.now().toLocal().isBefore(dt)) {
-      return DateFormat.jm().format(DateTime.parse(date).toLocal()).toString();
-    }
+    // if (DateTime.now().toLocal().isBefore(dt)) {
+    //   return DateFormat.jm().format(DateTime.parse(date).toLocal()).toString();
+    // }
+    final DateFormat formatter1 = DateFormat('dd/MM/yyyy');
+    final DateFormat formatter2 = DateFormat('dd/MM');
 
     var dur = DateTime.now().toLocal().difference(dt);
     if (dur.inDays > 365) {
-      msg = DateFormat.yMMMd().format(dt);
+      msg = formatter1.format(dt);
     } else if (dur.inDays > 30) {
-      msg = DateFormat.yMMMd().format(dt);
+      msg = formatter2.format(dt);
     } else if (dur.inDays > 0) {
-      msg = '${dur.inDays} d';
-      return dur.inDays == 1 ? '1d' : DateFormat.MMMd().format(dt);
+      msg = '${dur.inDays} ngày';
     } else if (dur.inHours > 0) {
-      msg = '${dur.inHours} h';
-    } else if (dur.inMinutes > 0) {
-      msg = '${dur.inMinutes} m';
-    } else if (dur.inSeconds > 0) {
-      msg = '${dur.inSeconds} s';
-    } else {
-      msg = 'now';
+      String minus  = dt.minute<10 ? '0${dt.minute}' : dt.minute.toString();
+      String hour = dt.hour<10 ? '0${dt.hour}': dt.hour.toString();
+      msg = '${hour}:${minus}';
+    }else if(dur.inMinutes > 1){
+      msg = '${dur.inMinutes} phút';
+    }
+    else {
+      msg = 'Hiện tại';
     }
     return msg;
   }
