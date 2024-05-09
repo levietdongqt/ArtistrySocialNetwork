@@ -15,6 +15,7 @@ import {
 import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
 import { useUser } from "context/user-context";
 import { NotificationButton } from "@components/ui/notification-button";
+import { toast } from "react-toastify";
 const { Title } = Typography;
 
 export default function NotificationHeader() {
@@ -34,21 +35,33 @@ export default function NotificationHeader() {
     fetcherWithToken,
     {
       revalidateOnFocus: false,
+      onSuccess(data, key, config) {
+        toast.success("Chuyển trạng thái thành công!!")
+    },
+    onError(err, key, config) {
+      toast.error("Chuyển trạng thái thất bại!!")
+    },
     }
   );
 
-  const {} = useSWR(
-    shouldUpdate
-      ? saveNopeNotifications(
-          currentUser?.id as string,
-          data as NopeNotificationModel
-        )
-      : null,
-    fetcherWithToken,
-    {
-      revalidateOnFocus: false,
-    }
-  );
+  // const {} = useSWR(
+  //   shouldUpdate
+  //     ? saveNopeNotifications(
+  //         currentUser?.id as string,
+  //         data as NopeNotificationModel
+  //       )
+  //     : null,
+  //   fetcherWithToken,
+  //   {
+  //     revalidateOnFocus: false,
+  //     onSuccess(data, key, config) {
+  //         toast.success("Chặn thông báo thành công!!")
+  //     },
+  //     onError(err, key, config) {
+  //       toast.error("Chặn thông báo thất bại!!")
+  //     },
+  //   }
+  // );
 
   const handleUpdateAll = () => {
     setShouldUpdate(true);

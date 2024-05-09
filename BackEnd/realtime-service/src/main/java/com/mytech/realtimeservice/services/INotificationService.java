@@ -17,6 +17,10 @@ public interface INotificationService {
 
     public Notification changeNotifStatusToRead(String notifID);
 
+    public void deleteNotification(String notifID);
+
+    public void changeListNotifications(List<String> listId);
+
     public void changeNotifiDelivory(String userFrom);
 
     public void saveNotification(Notification notification);

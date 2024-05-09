@@ -74,6 +74,24 @@ public class NotificationService implements INotificationService {
         return notificationRepository.save(notif);
     }
 
+    @Override
+    public void deleteNotification(String notifID) {
+        var notif = notificationRepository.findById(notifID)
+                .orElseThrow(() -> new NotFoundException("not found!"));
+        notificationRepository.delete(notif);
+    }
+
+    @Override
+    public void changeListNotifications(List<String> listId) {
+        for (String id : listId){
+            var notif = notificationRepository.findById(id);
+            if(notif.isPresent()){
+                notif.get().setStatus(true);
+                notificationRepository.save(notif.get());
+            }
+        }
+    }
+
     public void changeNotifiDelivory(String userFrom) {
         var notif = getNotificationsByDelivory(userFrom);
         notif.forEach(notification -> {

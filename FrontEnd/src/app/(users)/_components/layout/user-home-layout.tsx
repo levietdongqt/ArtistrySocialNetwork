@@ -165,7 +165,7 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                                         <FollowButton
                                             userTargetId={response?.data?.id}
                                             userTargetUsername={response?.data?.fullName}
-                                            hovered={false}
+                                            hovered={true}
                                         />
                                         {/*{isOwner && <UserEditProfile hide/>}*/}
                                     </div>

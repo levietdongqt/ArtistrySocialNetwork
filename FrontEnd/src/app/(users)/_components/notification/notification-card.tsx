@@ -9,8 +9,8 @@ import {
   EyeOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
-import useSWR from "swr";
-import { updateNotification } from "services/main/clientRequest/notificationsClient";
+import useSWR, { mutate } from "swr";
+import { deleteNotification, getAllNotifications, updateNotification } from "services/main/clientRequest/notificationsClient";
 import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
 import { useEffect, useState } from "react";
 import { useUser } from "context/user-context";
@@ -26,6 +26,7 @@ import {
 import { UserTooltip } from "../user/user-tooltip";
 import { useNotification } from "context/notification-context";
 import { NotificationButton } from "@components/ui/notification-button";
+import { toast } from "react-toastify";
 const { Text } = Typography;
 
 interface NotificationCardParams {
@@ -34,6 +35,7 @@ interface NotificationCardParams {
 
 export default function NotificationCard({ data }: NotificationCardParams) {
   const [shouldUpdateFetch, setShouldUpdateFetch] = useState(false);
+  const [shouldDeleteFetch, setShouldDeleteFetch] = useState(false);
   const [shouldAcceptFriend, setShouldAcceptFriend] = useState(false);
   const [shouldUnAcceptFriend, setShouldUnAcceptFriend] = useState(false);
   const [successAccept, setSuccessAccept] = useState(false);
@@ -46,11 +48,16 @@ export default function NotificationCard({ data }: NotificationCardParams) {
   var timeDifference = currentDate.getTime() - specificDate.getTime();
   var timeDifferenceInSeconds = formatElapsedTime(timeDifference);
   const handleMouseEnter = () => setHovered(!hovered);
+  
   const content = (
     <div className="flex flex-col">
       <Button
         className="dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
                        font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
+        onClick={(e)=> {
+          e.preventDefault();
+          setShouldUpdateFetch(true);
+        }}
       >
         Gỡ thông báo này
       </Button>
@@ -61,7 +68,7 @@ export default function NotificationCard({ data }: NotificationCardParams) {
       />
     </div>
   );
-
+  
   useEffect(() => {
     setStatus(data?.status);
   }, [data]);
@@ -75,7 +82,19 @@ export default function NotificationCard({ data }: NotificationCardParams) {
   const user = useUser();
   const {} = useSWR(
     shouldUpdateFetch ? updateNotification(data?.id) : null,
-    fetcherWithToken
+    fetcherWithToken,{
+      onSuccess(data, key, config) {
+          setShouldDeleteFetch(true);
+          mutate(getAllNotifications)
+      },
+    }
+  );
+
+  const {} = useSWR(
+    shouldDeleteFetch ? deleteNotification(data?.id) : null,
+    fetcherWithToken,{
+
+    }
   );
 
   useEffect(() => {
@@ -91,7 +110,14 @@ export default function NotificationCard({ data }: NotificationCardParams) {
           friendId: data.userTo?.id as string,
         })
       : null,
-    fetcherWithToken
+    fetcherWithToken,{
+      onSuccess(data, key, config) {
+          toast.success("Kết bạn thành công")
+      },
+      onError(err, key, config) {
+          toast.error("Kết bạn thất bại")
+      },
+    }
   );
   const { data: undataAcceptFriend } = useSWR(
     shouldUnAcceptFriend
@@ -100,7 +126,14 @@ export default function NotificationCard({ data }: NotificationCardParams) {
           friendId: data.userTo?.id as string,
         })
       : null,
-    fetcherWithToken
+    fetcherWithToken,{
+      onSuccess(data, key, config) {
+          toast.success("Từ chối kết bạn thành công")
+      },
+      onError(err, key, config) {
+          toast.error("Từ chối kết bạn thất bại")
+      },
+    }
   );
 
   const handleAcceptFriend = () => {
@@ -127,9 +160,15 @@ export default function NotificationCard({ data }: NotificationCardParams) {
     }
   }, [shouldUnAcceptFriend]);
 
+  useEffect(() => {
+    if (shouldDeleteFetch) {
+      setShouldDeleteFetch(false);
+    }
+  }, [shouldDeleteFetch]);
+
   return (
     <Link
-      href={`/user/${data?.link}`}
+      href={data?.notificationType === "NORMAL" ? `post/${data?.link}` : `/profile/${data?.link}`}
       className="accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4 py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5"
       onClick={(e) => {
         if (data?.notificationType === "FRIEND") {

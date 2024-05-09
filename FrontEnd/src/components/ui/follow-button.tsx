@@ -20,6 +20,7 @@ import useSWR, { mutate } from "swr";
 import { FollowButtonType } from "@models/notifications";
 import { Typography } from "antd";
 import { toast } from "react-toastify";
+import { getUserSearch } from "services/main/clientRequest/searchClient";
 
 const { Text } = Typography;
 
