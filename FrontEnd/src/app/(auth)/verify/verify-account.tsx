@@ -16,12 +16,18 @@ export function VerifyAccount({destination, callback}: verifyAccountParam) {
     const [phoneNumber, setPhoneNumber] = useState("")
     const [error, setError] = useState(false)
     const {captchaVerifier} = useOAuth2()
+    const [isShowCaptcha, setIsShowCaptcha] = useState(true)
     const router = useRouter()
     useEffect(() => {
         if (error) {
             setError(false)
         }
     }, [phoneNumber]);
+
+    const myCallBack = () => {
+        setIsShowCaptcha(false)
+        callback?.();
+    }
     const handleSubmit = async () => {
         const phoneNumberFinal = checkPhoneFormat(phoneNumber);
         console.log(phoneNumberFinal)
@@ -35,7 +41,7 @@ export function VerifyAccount({destination, callback}: verifyAccountParam) {
                     await captchaVerifier({
                         phoneNumber: phoneNumberFinal,
                         destination: destination,
-                        callBack: callback,
+                        callBack: myCallBack,
                     })
                     return
                 } else {
@@ -87,7 +93,7 @@ export function VerifyAccount({destination, callback}: verifyAccountParam) {
 
                 </div>
                 {error && <div className="text-red-700 mt-2 text-sm">Số điện thoại không hợp lệ</div>}
-                <div id="recaptcha-container"></div>
+                {isShowCaptcha && <div id="recaptcha-container"></div>}
             </div>
         </>
     )

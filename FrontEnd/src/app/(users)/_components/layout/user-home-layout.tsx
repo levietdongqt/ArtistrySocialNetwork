@@ -24,7 +24,7 @@ import {User} from "@models/user";
 import {SidebarLink} from "../sidebar/sidebar-link";
 import {EditOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import Link from "next/link";
-import { Dropdown, Menu } from 'antd';
+import {Dropdown, Menu} from 'antd';
 import {Modal} from "../modal/modal";
 import ChangePass from "../user/change-pass";
 import {UserRole} from "@lib/enum/UserRole";
@@ -34,8 +34,8 @@ import RegisterProviderForm from "../../(main-layout)/profile/[ID]/register-prov
 
 
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
-    const [openModal    , setOpenModal    ] = useState(false)
-    const [openModalProvider    , setOpenModalProvider    ] = useState(false)
+    const [openModal, setOpenModal] = useState(false)
+    const [openModalProvider, setOpenModalProvider] = useState(false)
     const {currentUser} = useUser();
     const router = useRouter();
 
@@ -45,15 +45,15 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
     };
 
     //console.log("currentUser",currentUser)
-    const {ID} = useParams()|| currentUser?.id;
-    console.log("currentUser",ID)
+    const {ID} = useParams() || currentUser?.id;
+    console.log("currentUser", ID)
     const {
         isLoading: loading,
         data: response,
         error,
         isValidating: checkTrue
     } = useSWR(getUserById(ID as string), fetcherWithToken);
-    const isProvider =  response?.data.roles.includes(UserRole.ROLE_PROVIDER)
+    const isProvider = response?.data.roles.includes(UserRole.ROLE_PROVIDER)
     const coverData = response?.data.coverImage
         ? {src: response?.data.coverImage, alt: response?.data.fullName}
         : null;
@@ -81,8 +81,8 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
         <Menu>
             <Menu.Item>
 
-                <Link href="#" onClick={()=>setOpenModal(true)}>
-                    <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
+                <Link href="#" onClick={() => setOpenModal(true)}>
+                    <EditOutlined className="h-4 w-4 md:h-5 md:w-5"/>
                     Đổi mật khẩu
                 </Link>
 
@@ -91,28 +91,30 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
             <Menu.Item>
                 <Link href="/profile/edit">
 
-                        <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
-                        Sửa thông tin
+                    <EditOutlined className="h-4 w-4 md:h-5 md:w-5"/>
+                    Sửa thông tin
 
                 </Link>
             </Menu.Item>
-            <Menu.Item  onClick={handleMenuClick}>
+            <Menu.Item onClick={handleMenuClick}>
 
-                        <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5" />
-                        Nhà cung cấp
+                <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5"/>
+                Nhà cung cấp
 
             </Menu.Item>
         </Menu>
     );
-       return (
+    return (
         <>
-            <Modal open={openModal} closeModal={()=>setOpenModal(false)}>
-            <ChangePass phoneNum={currentUser?.phoneNumber!} callback={()=>setOpenModal(false)}/>
+            <Modal open={openModal} closeModal={() => setOpenModal(false)}>
+                <ChangePass phoneNum={currentUser?.phoneNumber!} callback={() => setOpenModal(false)}/>
             </Modal>
 
-            <Modal open={openModalProvider} closeModal={()=>setOpenModalProvider(false)}>
-                <RegisterProviderForm closeModal={()=>setOpenModalProvider(false)}/>
-            </Modal>
+            {
+                openModalProvider && <Modal open={openModalProvider} closeModal={() => setOpenModalProvider(false)}>
+                    <RegisterProviderForm closeModal={() => setOpenModalProvider(false)}/>
+                </Modal>
+            }
 
             {response?.data && (
                 <SEO
@@ -146,11 +148,11 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                             <div className='flex justify-between'>
                                 <UserHomeAvatar profileData={profileData}/>
                                 {isOwner ? (
-                                        <div className="text-right">
-                                            <Dropdown.Button overlay={menu}placement="bottomRight" trigger={['click']}>
-                                                Tùy chọn
-                                            </Dropdown.Button>
-                                        </div>
+                                    <div className="text-right">
+                                        <Dropdown.Button overlay={menu} placement="bottomRight" trigger={['click']}>
+                                            Tùy chọn
+                                        </Dropdown.Button>
+                                    </div>
                                 ) : (
                                     <div className='flex gap-2 self-start'>
                                         <UserShare username={response?.data?.fullName}/>
@@ -180,7 +182,7 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                 <>
 
                     {
-                       isProvider &&  <UserNav/>
+                        isProvider && <UserNav/>
                     }
 
                     {children}

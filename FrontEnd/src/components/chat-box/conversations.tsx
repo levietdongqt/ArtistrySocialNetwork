@@ -183,6 +183,7 @@ export function Conversations({closeConversations, callback}: ConversationsProps
                                             key={conversation.id}
                                             name={conversation.name || otherMembers[0].nickname}
                                             onClick={() => onPickConversation(conversation)}
+                                            lastSenderName={'Hãy bắt đầu trò chuyện nào!'}
                                             className={'mx-2 my-0.5 rounded-md'}
                                             style={{
                                                 paddingTop: '4px'

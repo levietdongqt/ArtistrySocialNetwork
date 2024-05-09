@@ -22,6 +22,9 @@ import {EditOutlined} from "@ant-design/icons";
 import {checkPhoneFormat} from "../../../../(auth)/_components/phone-validate";
 import {isExistAccount} from "../../../../../services/main/auth-service";
 import {useOAuth2} from "../../../../../context/oauth2-context";
+import {setCookie} from "cookies-next";
+import {useRouter} from "next/navigation";
+import {refresh_token_options} from "@lib/config/TokenConfig";
 
 type RegisterProviderFormProps = {
     closeModal: () => void; // closeModal là một hàm không nhận đối số và không trả về giá trị
@@ -29,19 +32,18 @@ type RegisterProviderFormProps = {
 
 const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal}) => {
     const {captchaVerifier} = useOAuth2()
-
-    const {currentUser,setCurrentUser} = useUser();
+    const {prefetch,push} = useRouter()
+    const {currentUser, setCurrentUser} = useUser();
     const [isClient, setIsClient] = useState(false);
-
+    console.log('currentUser', currentUser);
     const [user, setUser] = useState<EditableProviderData>({
         id: currentUser!.id,
         bio: currentUser?.bio ?? "",
-        phoneNumber: currentUser?.phoneNumber?  "0".concat(currentUser.phoneNumber.substring(3)) : "",
-        roles: currentUser?.roles ??[],
-        location: currentUser?.location ?? {} ,
+        phoneNumber: currentUser?.phoneNumber ? "0".concat(currentUser.phoneNumber.substring(3)) : "",
+        roles: currentUser?.roles ?? [],
+        location: currentUser?.location ?? {},
         address: currentUser?.address ?? ""
     });
-    console.log('userr', user);
     const [newbio, setNewBio] = useState(user.bio)
     const roleOptions = [
         {label: 'Studio', value: UserRole.ROLE_STUDIO},
@@ -51,45 +53,64 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
     ];
     const [addressn, setAddressn] = useState(user.address);
     const [errorLocation, setErrorLocation] = useState('');
-    const [openVerifyAccount, setOpenVerifyAccount] = useState(false);
+    const [isShowCaptcha, setIsShowCaptcha] = useState(true)
     const [openVerifyCode, setOpenVerifyCode] = useState(false);
     const [errorExistAccount, setErrorExistAccount] = useState(false)
     const [showValidPhone, setShowValidPhone] = useState(false)
+    const [newProviderData, setNewProviderData] = useState({})
     const [finalPhone, setFinalPhone] = useState("")
     const {values, touched, handleSubmit, handleChange, errors, setValues} = useFormik({
         initialValues: user,
         validationSchema: RegisterProviderValidation,
         onSubmit: async (values: EditableProviderData, {}) => {
             const phoneNumberFinal = checkPhoneFormat(values.phoneNumber!)!;
-            if(phoneNumberFinal !== currentUser?.phoneNumber){
+
+            const providerData = {
+                ...values,
+                phoneNumber: phoneNumberFinal,
+                bio: newbio,
+                address: addressn
+            };
+            console.log('new ProviderData:', providerData);
+            setNewProviderData(providerData)
+
+            if (phoneNumberFinal !== currentUser?.phoneNumber) {
                 await captchaVerifier({
                     phoneNumber: phoneNumberFinal,
                     callBack: () => {
-                        setOpenVerifyAccount(true)
+                        console.log("Register provider callback")
+                        setOpenVerifyCode(true)
+                        setIsShowCaptcha(false)
                     },
                 })
+            } else {
+                await registerProvider(providerData);
             }
 
-            // const providerdata = {
-            //
-            //     ...values,
-            //     bio: newbio,
-            //     address: addressn
-            // };
-            // console.log('vị trí adasd:', providerdata.location);
-            //
-            // try {
-            //     const response = await updateUser(providerdata);
-            //     toast.success('Đăng ký nhà phân phối thành công');
-            //     console.log("Provider Register successfully", response);
-            //     setCurrentUser(response.data)
-            //     closeModal();
-            // } catch (error) {
-            //
-            //     console.error("Failed to Provider Register", error);
-            // }
+
         },
     });
+
+    const registerProvider = async (provider: any) => {
+        try {
+            const response = await updateUser(provider);
+            toast.success('Đăng ký nhà cung cấp thành công');
+            console.log("Provider Register successfully", response);
+            const updatedUser = response.data as User;
+            setCurrentUser(updatedUser)
+            setCookie('user', JSON.stringify(updatedUser),refresh_token_options );
+            push("/provider")
+        } catch (error) {
+            console.error("Failed to Provider Register", error);
+        }
+    }
+
+    const verifyCodeCallBack = async (provider: any) => {
+        setOpenVerifyCode(false)
+        console.log("Verifying Code callBack: ", provider)
+        await registerProvider(provider)
+    }
+
     let timeoutId: any;
     const handleAddressComplete = async (compAddress: any) => {
         clearTimeout(timeoutId)
@@ -174,7 +195,7 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
             <Modal
                 modalClassName='max-w-xl bg-main-background w-full p-8 rounded-2xl hover-animation'
                 open={openVerifyCode} closeModal={() => setOpenVerifyCode(false)}>
-                <VerifyCode callback={() => setOpenVerifyCode(false)}/>
+                <VerifyCode callback={() => verifyCodeCallBack(newProviderData)}/>
             </Modal>
 
             <form onSubmit={handleSubmit} className="w-full h-full mx-auto p-6 bg-white rounded shadow">
@@ -264,9 +285,11 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
                     />
 
                 </div>
-                <div className="mx-auto">
-                    <div id="recaptcha-container" className="my-5"></div>
-                </div>
+                {
+                    isShowCaptcha && <div className="mx-auto">
+                        <div id="recaptcha-container" className="my-5"></div>
+                    </div>
+                }
                 <div className="flex items-center justify-between">
                     <button type="submit"
                             disabled={errorLocation !== null && errorLocation !== ''}
