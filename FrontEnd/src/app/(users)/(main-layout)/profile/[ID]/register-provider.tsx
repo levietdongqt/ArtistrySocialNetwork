@@ -24,6 +24,7 @@ import {isExistAccount} from "../../../../../services/main/auth-service";
 import {useOAuth2} from "../../../../../context/oauth2-context";
 import {setCookie} from "cookies-next";
 import {useRouter} from "next/navigation";
+import {refresh_token_options} from "@lib/config/TokenConfig";
 
 type RegisterProviderFormProps = {
     closeModal: () => void; // closeModal là một hàm không nhận đối số và không trả về giá trị
@@ -97,7 +98,7 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
             console.log("Provider Register successfully", response);
             const updatedUser = response.data as User;
             setCurrentUser(updatedUser)
-            setCookie('user', JSON.stringify(updatedUser));
+            setCookie('user', JSON.stringify(updatedUser),refresh_token_options );
             push("/provider")
         } catch (error) {
             console.error("Failed to Provider Register", error);

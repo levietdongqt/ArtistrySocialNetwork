@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/model/user.dart';
+import 'package:flutter_twitter_clone/myModel/MyConversation.dart';
 import 'package:flutter_twitter_clone/ui/page/profile/profilePage.dart';
 import 'package:flutter_twitter_clone/ui/page/profile/widgets/circular_image.dart';
 import 'package:flutter_twitter_clone/ui/page/settings/widgets/headerWidget.dart';
@@ -15,7 +16,7 @@ import 'package:provider/provider.dart';
 class ConversationInformation extends StatelessWidget {
   const ConversationInformation({Key? key}) : super(key: key);
 
-  Widget _header(BuildContext context, UserModel user) {
+  Widget _header(BuildContext context, MyConversation conversation) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 25),
       child: Column(
@@ -28,17 +29,17 @@ class ConversationInformation extends StatelessWidget {
                 child: RippleButton(
                   onPressed: () {
                     Navigator.push(
-                        context, ProfilePage.getRoute(profileId: user.userId!));
+                        context, ProfilePage.getRoute(profileId: conversation.members[0].id!));
                   },
                   borderRadius: BorderRadius.circular(40),
-                  child: CircularImage(path: user.profilePic, height: 80),
+                  child: CircularImage(path: "user.profilePic", height: 80),
                 )),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               UrlText(
-                text: user.displayName!,
+                text: conversation.name ?? conversation.members[0].fullName!,
                 style: TextStyles.onPrimaryTitleText.copyWith(
                   color: Colors.black,
                   fontSize: 20,
@@ -47,7 +48,7 @@ class ConversationInformation extends StatelessWidget {
               const SizedBox(
                 width: 3,
               ),
-              user.isVerified!
+              true!
                   ? customIcon(
                       context,
                       icon: AppIcon.blueTick,
@@ -60,7 +61,7 @@ class ConversationInformation extends StatelessWidget {
             ],
           ),
           customText(
-            user.userName,
+            "AAA",
             style: TextStyles.onPrimarySubTitleText.copyWith(
               color: Colors.black54,
               fontSize: 15,
@@ -73,7 +74,7 @@ class ConversationInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<ChatState>(context).chatUser ?? UserModel();
+    var currentConversation = Provider.of<ChatState>(context).currentConversation;
     return Scaffold(
       backgroundColor: TwitterColor.white,
       appBar: CustomAppBar(
@@ -84,7 +85,7 @@ class ConversationInformation extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
-          _header(context, user),
+          _header(context, currentConversation!),
           const HeaderWidget('Notifications'),
           const SettingRowWidget(
             "Mute conversation",
@@ -95,11 +96,11 @@ class ConversationInformation extends StatelessWidget {
             color: TwitterColor.mystic,
           ),
           SettingRowWidget(
-            "Block ${user.userName}",
+            "Block A",
             textColor: TwitterColor.dodgeBlue,
             showDivider: false,
           ),
-          SettingRowWidget("Report ${user.userName}",
+          SettingRowWidget("Report A",
               textColor: TwitterColor.dodgeBlue, showDivider: false),
           SettingRowWidget("Delete conversation",
               textColor: TwitterColor.ceriseRed, showDivider: false),

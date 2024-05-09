@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/model/user.dart';
+import 'package:flutter_twitter_clone/state/WebSocketState.dart';
 import 'package:flutter_twitter_clone/state/authState.dart';
 import 'package:flutter_twitter_clone/ui/page/settings/widgets/headerWidget.dart';
 import 'package:flutter_twitter_clone/ui/page/settings/widgets/settingsAppbar.dart';
@@ -50,6 +51,8 @@ class AccountSettingsPage extends StatelessWidget {
             textColor: TwitterColor.ceriseRed,
             onPressed: () {
               Navigator.popUntil(context, ModalRoute.withName('/'));
+              final socketState = Provider.of<WebSocketState>(context,listen: false);
+              socketState.disconnect();
               final state = Provider.of<AuthState>(context);
               state.logoutCallback();
             },

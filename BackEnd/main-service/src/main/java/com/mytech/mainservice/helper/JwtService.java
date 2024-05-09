@@ -77,7 +77,7 @@ public class JwtService {
     }
 
     private String createToken(Map<String, Object> claims, String userName) {
-        int EXPIRE_TIME_TOKEN = 1000 * 60 * 60;
+        int EXPIRE_TIME_TOKEN = 1000 * 60 * 60 * 2;
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userName)

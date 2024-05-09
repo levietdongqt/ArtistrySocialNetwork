@@ -81,7 +81,7 @@ class ProfileState extends ChangeNotifier {
     //   }
     // });
     ApiHelper.callApi(HttpMethod.GET, '/user/get/${userId}', null,
-            ServerDestination.Main_Service)
+            ServerDestination.Main_Service,true)
         .then((response) {
       if (response.status == 200) {
         // _userModel = MyUser.fromJson(response.data);

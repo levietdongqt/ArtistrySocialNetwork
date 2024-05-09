@@ -41,17 +41,6 @@ public class ConversationController {
         );
     }
 
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable String id) {
-        Conversation conversation = conversationService.getConversationById(id);
-        return ResponseEntity.ok().body(
-                ResponseObject.builder()
-                        .data(conversation)
-                        .status(HttpStatus.OK)
-                        .message("Get conversation successfully").build()
-        );
-    }
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/create-group")
@@ -125,6 +114,17 @@ public class ConversationController {
                         .data(null)
                         .status(HttpStatus.OK)
                         .message("Delete conversation successfully").build()
+        );
+    }
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable String id) {
+        Conversation conversation = conversationService.getConversationById(id);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .data(conversation)
+                        .status(HttpStatus.OK)
+                        .message("Get conversation successfully").build()
         );
     }
 }

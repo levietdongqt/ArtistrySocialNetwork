@@ -46,9 +46,7 @@ enum AccentType {
   GREEN,
 }
 
-enum ThemeType { LIGHT,
-  DARK,
-  DIM}
+enum ThemeType { LIGHT, DARK, DIM }
 
 enum HttpMethod {
   GET,
@@ -57,3 +55,17 @@ enum HttpMethod {
   DELETE,
   PATCH,
 }
+
+enum ConversationType {
+  PRIVATE,
+  GROUP,
+  HIDE,
+}
+
+ enum ResponseSocketType {
+  GET_CONVERSATION,
+  SEND_MESSAGE,
+  SEEN_FLAG,
+  HEART_BEAT,
+}
+

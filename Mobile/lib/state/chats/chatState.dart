@@ -1,6 +1,12 @@
 import 'dart:convert';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_twitter_clone/helper/ApiHelper.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
+import 'package:flutter_twitter_clone/myModel/MiniUser.dart';
+import 'package:flutter_twitter_clone/myModel/MyConversation.dart';
+import 'package:flutter_twitter_clone/myModel/myMessage.dart';
+import 'package:flutter_twitter_clone/state/WebSocketState.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -8,20 +14,36 @@ import 'package:flutter_twitter_clone/model/chatModel.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/model/user.dart';
 import 'package:flutter_twitter_clone/state/appState.dart';
+import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 
 class ChatState extends AppState {
   late bool setIsChatScreenOpen; //!obsolete
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
+  bool isLoading = false;
   List<ChatMessage>? _messageList;
   List<ChatMessage>? _chatUserList;
+
+  List<MyMessage>? _myMessageList;
+  List<MyConversation>? _myChatUserList;
+  MyConversation? currentConversation;
+
+  List<MiniUser>? _otherMembers;
   UserModel? _chatUser;
   String serverToken = "<FCM SERVER KEY>";
 
   /// Get FCM server key from firebase project settings
   UserModel? get chatUser => _chatUser;
+
+  List<MiniUser>? get otherMembers => _otherMembers;
+
   set setChatUser(UserModel model) {
     _chatUser = model;
+  }
+
+  set setOtheMembers(List<MiniUser>? model) {
+    _otherMembers = model;
   }
 
   String? _channelName;
@@ -47,6 +69,14 @@ class ChatState extends AppState {
       return null;
     } else {
       return List.from(_chatUserList!);
+    }
+  }
+
+  List<MyConversation>? get myChatUserList {
+    if (_myChatUserList == null) {
+      return null;
+    } else {
+      return List.from(_myChatUserList!);
     }
   }
 
@@ -95,39 +125,29 @@ class ChatState extends AppState {
   }
 
   /// Fetch users list to who have ever engaged in chat message with logged-in user
-  void getUserChatList(String userId) {
+  void getUserChatList(String userId, BuildContext context) {
+    final socketSate = Provider.of<WebSocketState>(context, listen: false);
     try {
-      kDatabase
-          .child('chatUsers')
-          .child(userId)
-          .once()
-          .then((DatabaseEvent event) {
-        final snapshot = event.snapshot;
-        _chatUserList = <ChatMessage>[];
-        if (snapshot.value != null) {
-          var map = snapshot.value as Map?;
-          if (map != null) {
-            map.forEach((key, value) {
-              var model = ChatMessage.fromJson(value);
-              model.key = key;
-              _chatUserList!.add(model);
+      isLoading = true;
+      ApiHelper.callApi(HttpMethod.GET, '/conversation/by-user', null,
+              ServerDestination.Realtime_Service, true)
+          .then((response) {
+        _myChatUserList = <MyConversation>[];
+        if (response.status == 200) {
+          var list = response.data as List<dynamic>?;
+          if (list != null) {
+            list.forEach((item) {
+              var model = MyConversation.fromJson(item);
+              _myChatUserList!.add(model);
             });
+            socketSate.myConversations = _myChatUserList;
           }
-          _chatUserList!.sort((x, y) {
-            if (x.createdAt != null && y.createdAt != null) {
-              return DateTime.parse(y.createdAt!)
-                  .compareTo(DateTime.parse(x.createdAt!));
-            } else {
-              if (x.createdAt != null) {
-                return 0;
-              } else {
-                return 1;
-              }
-            }
-          });
         } else {
-          _chatUserList = null;
+          _myChatUserList = null;
         }
+        cprint('Conversations list: ${_myChatUserList?.length}',
+            label: "ChatState");
+        isLoading = false;
         notifyListeners();
       });
     } catch (error) {
@@ -139,6 +159,34 @@ class ChatState extends AppState {
   /// `_channelName` is used as primary key for chat message table
   /// `_channelName` is created from  by combining first 5 letters from user ids of two users
   void getChatDetailAsync() async {
+    try {
+      // kDatabase
+      //     .child('chats')
+      //     .child(_channelName!)
+      //     .once()
+      //     .then((DatabaseEvent event) {
+      //   final snapshot = event.snapshot;
+      //   _messageList = <ChatMessage>[];
+      //   if (snapshot.value != null) {
+      //     var map = snapshot.value as Map<dynamic, dynamic>?;
+      //     if (map != null) {
+      //       map.forEach((key, value) {
+      //         var model = ChatMessage.fromJson(value);
+      //         model.key = key;
+      //         _messageList!.add(model);
+      //       });
+      //     }
+      //   } else {
+      //     _messageList = null;
+      //   }
+      //   notifyListeners();
+      // });
+    } catch (error) {
+      cprint(error);
+    }
+  }
+
+  void getMyChatDetailAsync() async {
     try {
       kDatabase
           .child('chats')
@@ -328,5 +376,29 @@ class ChatState extends AppState {
       return;
     }
     cprint(response.body.toString());
+  }
+
+  void initConversations(BuildContext context) {
+    final socketSate = Provider.of<WebSocketState>(context, listen: false);
+    ApiHelper.callApi(HttpMethod.POST, '/conversation/un-read', null,
+            ServerDestination.Realtime_Service, true)
+        .then((response) {
+      socketSate.myConversations = <MyConversation>[];
+      if (response.status == 200) {
+        var list = response.data as List<dynamic>?;
+        if (list != null) {
+          list.forEach((item) {
+            var model = MyConversation.fromJson(item);
+            socketSate.myConversations!.add(model);
+          });
+        }
+      } else {
+        _myChatUserList = null;
+      }
+      cprint('Conversations list: ${socketSate.myConversations?.length}',
+          label: "ChatState");
+      isLoading = false;
+      notifyListeners();
+    });
   }
 }

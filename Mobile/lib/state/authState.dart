@@ -112,7 +112,7 @@ class AuthState extends AppState {
       });
       cprint(jsonBody, errorIn: 'AuthState');
       final response = await ApiHelper.callApi(HttpMethod.POST, "/auth/login",
-          jsonBody, ServerDestination.Main_Service);
+          jsonBody, ServerDestination.Main_Service,false);
       if (response.status == 200) {
         String accessToken = response.data['accessToken'];
         String refreshToken = response.data['refreshToken'];
@@ -278,6 +278,7 @@ class AuthState extends AppState {
       // user = _firebaseAuth.currentUser;
       if (user != null) {
         await getProfileUser(userProfileId: user.id);
+        myUser = user;
         authStatus = AuthStatus.LOGGED_IN;
         userId = user.id!;
       } else {
@@ -416,7 +417,7 @@ class AuthState extends AppState {
     // }
     MyUser myUser;
     var response = await ApiHelper.callApi(HttpMethod.GET,
-        '/user/get/${userId}', null, ServerDestination.Main_Service);
+        '/user/get/${userId}', null, ServerDestination.Main_Service,false);
     if (response.status == 200) {
       myUser = MyUser.fromJson(response.data);
       return myUser;
@@ -430,7 +431,7 @@ class AuthState extends AppState {
     try {
       userProfileId = userProfileId ?? myUser?.id;
       ApiHelper.callApi(HttpMethod.GET, '/user/get/${userProfileId}', null,
-              ServerDestination.Main_Service)
+              ServerDestination.Main_Service,false)
           .then((response) {
         if (response.status == 200) {
           MyUser myUser = MyUser.fromJson(response.data);
