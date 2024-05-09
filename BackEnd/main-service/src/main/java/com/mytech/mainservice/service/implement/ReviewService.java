@@ -42,7 +42,6 @@ public class ReviewService implements IReviewService {
         reviewRepo.save(review);
 
     }
-   @Cacheable(value = "userCache",key = "#userId" )
     @Override
     public List<ReviewDTO> getReviewsByUserId(String userId) {
         Set<Review> reviews = reviewRepo.findByProviderUser_Id(userId);

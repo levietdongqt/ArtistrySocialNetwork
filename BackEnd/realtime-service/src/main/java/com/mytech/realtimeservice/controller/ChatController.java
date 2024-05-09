@@ -40,7 +40,6 @@ public class ChatController {
     public void handleSingleChat(@Payload ConversationDTO conversation) {
         log.info("FROM SEND MESSAGE" + conversation);
         MessageDTO savedMessage = chatService.saveNewMessage(conversation.getMessages().get(0));
-
         conversation.setLastMessage(savedMessage);
         conversation.setUpdatedAt(LocalDateTime.now());
         conversation.setMessages(null);

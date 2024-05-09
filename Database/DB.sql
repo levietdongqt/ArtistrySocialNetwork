@@ -4,7 +4,7 @@ use projectsem4;
 
 CREATE TABLE IF NOT EXISTS roles (
 	id Bigint auto_increment,
-    name enum('ROLE_USER','ROLE_ADMIN','ROLE_PROVIDER','ROLE_STUDIO','ROLE_MAKEUP') unique,
+    name enum('ROLE_USER','ROLE_ADMIN','ROLE_PROVIDER','ROLE_STUDIO','ROLE_MAKEUP','ROLE_MODEL','ROLE_PHOTO') unique,
     description varchar(255) CHARACTER SET utf8mb4,
     primary key(id) 
 );

@@ -3,8 +3,6 @@ import {UserRole} from "@lib/enum/UserRole";
 
 const RegisterProviderValidation = yup.object({
 
-
-
     phoneNumber: yup.string().required(" Số điện thoại không được để trống!")
         .matches(/(^0\d{9}$)|(^[1-9][0-9]{8}$)/, 'Số điện thoại  không hợp lệ!'),
 
@@ -19,8 +17,8 @@ const RegisterProviderValidation = yup.object({
         .min(2, 'Phải chọn ít nhất một vai trò'),
 
 
-
-
+    address: yup.string()
+        .required('Địa chỉ không được để trống') // Không được để trống
 });
 
 export default RegisterProviderValidation;

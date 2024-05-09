@@ -27,7 +27,7 @@ public class Order implements Serializable {
 
     @Column(name = "additional_Service")
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<String> additonalService;
+    private List<String> additionalService;
 
     @NotNull
     @Column(name = "start_Date", nullable = false)

@@ -23,7 +23,7 @@ export default function Register() {
     const [showValidPhone, setShowValidPhone] = useState(false)
     const [isShowCapcha, setIsShowCapcha] = useState(false)
     const [finalPhone, setFinalPhone] = useState("")
-    const [isGetGeolocation, setIsGetGeolocation] = useState(false)
+
     let {values, touched, handleSubmit, handleChange, errors, isValid, resetForm} = useFormik({
         initialValues: {
             phoneNumber: '',
@@ -70,6 +70,7 @@ export default function Register() {
     };
     const registerHandler = async (data: any) => {
         const register = () => {
+            setIsShowCapcha(false)
             toast.promise(registerService(data), {
                 pending: 'Đang đăng kí tài khoản .....',
                 success: "Đăng kí tài khoản thành công!",
@@ -84,8 +85,6 @@ export default function Register() {
         await captchaVerifier({
             phoneNumber: finalPhone,
             callBack: register
-        }).then(value => {
-            setIsShowCapcha(true)
         })
     }
     const checkExistAccount = async (phoneNumber: string) => {
@@ -244,9 +243,11 @@ export default function Register() {
                        Chia sẻ ví trị của bạn cho trải nghiệm tốt hơn
                       </span>}
                     </label>
-                    <div className="mx-auto">
+
+                    {isShowCapcha && <div className="mx-auto">
                         <div id="recaptcha-container" className="my-5"></div>
-                    </div>
+                    </div>}
+
                     {!isShowCapcha &&
                         <div className="text-center mt-6">
                             <button

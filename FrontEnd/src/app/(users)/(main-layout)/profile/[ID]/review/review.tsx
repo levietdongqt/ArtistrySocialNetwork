@@ -7,6 +7,7 @@ import {useUser} from "../../../../../../context/user-context";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {getAllReviewsByUserId} from "../../../../../../services/main/clientRequest/userClient";
 import {useParams} from "next/navigation";
+import {Loading} from "@components/ui/loading";
 
 interface ReviewComponentProps {
     id: string;
@@ -21,7 +22,7 @@ const ReviewComponent: React.FC<ReviewComponentProps> = ({ id }) => {
                 {reviews?.data.length > 0 ? (
                     <Rating reviews={reviews?.data}/>
                 ) : (
-                    <p>No reviews to display</p>
+                    <Loading className='mt-5' />
                 )}
             </div>
             <div className="container mx-auto p-4 space-y-4">

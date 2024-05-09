@@ -9,6 +9,7 @@ import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {ContentPost} from "../content/content";
 import PostUser from "../../(main-layout)/profile/[ID]/post/post-user";
 import DOMPurify from 'dompurify';
+import {ServiceProvider} from "../../services/[id]/service-provider";
 
 const ContainerUser = () => {
 
@@ -20,14 +21,17 @@ const ContainerUser = () => {
     return (
         <section>
             {loading ? (
-                <Loading className='mt-5' />
+                <Loading className='mt-5'/>
             ) : isProvider ? (
-                <div dangerouslySetInnerHTML={{__html: cleanBioContent}}/>
-            ) : (
+
                 <AnimatePresence mode='popLayout'>
-                  <PostUser/>
+                    <div className="pt-2.5" dangerouslySetInnerHTML={{__html: cleanBioContent}}/>
                 </AnimatePresence>
-            )}
+                ) : (
+                <div className="border border-gray-300 rounded p-4 shadow">
+                <ServiceProvider/>
+                </div>
+                )}
         </section>
     );
 };

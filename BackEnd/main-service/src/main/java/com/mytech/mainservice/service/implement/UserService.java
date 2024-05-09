@@ -4,6 +4,8 @@ import com.google.firebase.auth.UserInfo;
 import com.mytech.mainservice.dto.UserDTO;
 import com.mytech.mainservice.dto.request.LoginDTO;
 import com.mytech.mainservice.dto.request.RegisterDto;
+import com.mytech.mainservice.enums.AccentType;
+import com.mytech.mainservice.enums.Theme;
 import com.mytech.mainservice.enums.UserRole;
 import com.mytech.mainservice.enums.UserStatus;
 import com.mytech.mainservice.exception.myException.NotFoundException;
@@ -85,6 +87,8 @@ public class UserService implements IUserService {
                 .createDate(LocalDateTime.now())
                 .avatar(DEFAULT_AVATAR)
                 .coverImage(DEFAULT_BACKGROUND)
+                .theme(Theme.LIGHT)
+                .accent(AccentType.BLUE)
                 .build();
         User savedUser = userRepo.save(user);
         log.info("User added to this system");
@@ -113,6 +117,8 @@ public class UserService implements IUserService {
                 .coverImage(DEFAULT_BACKGROUND)
                 .roles(roles)
                 .status(UserStatus.ACTIVED)
+                .theme(Theme.LIGHT)
+                .accent(AccentType.BLUE)
                 .build();
         User savedUser = userRepo.save(user);
         log.info("User added to this system");

@@ -65,9 +65,12 @@ const CreateReview = ({service,closeModal}:PropReview) => {
             };
                 console.log('newReview',newReview);
             try {
-                const response = await createReview(newReview);
-                toast.success('Review thành công');
-                resetForm();
+                toast.promise(createReview(newReview),{
+                    pending: 'Đang tạo đánh giá...',
+                    success: "Tạo đánh giá thành công!",
+                    error: "Tạo đánh giá thất bại!"
+                });
+                closeModal();
             } catch (error) {
 
                 console.error("Failed to create service", error);

@@ -41,9 +41,10 @@ const PostUser = () => {
                     <Loading className='mt-5' />
                 ) :(
                     <AnimatePresence mode='popLayout'>
-                        {postData?.data?.map((post:any) => (
-                            <ContentPost {...post} key={post.id} />
-                        ))}
+                        {/*{postData?.data?.map((post:any) => (*/}
+                        {/*    <ContentPost {...post} key={post.id} />*/}
+                        {/*))}*/}
+
                     </AnimatePresence>
                 )}
             </section>

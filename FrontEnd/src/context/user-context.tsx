@@ -13,9 +13,7 @@ export const UserContext = createContext<UserContextProps | null>(null);
 
 
 export function UserContextProvider({children}: any): JSX.Element {
-    useEffect(() => {
-        console.log("UserContextProvider is running")
-    }, []);
+
     const userCookies = getCookie('user')?.toString()
     const user: User = userCookies ? JSON.parse(userCookies) : null;
     const [currentUser, setCurrentUser] = useState<User | null>(user || null);
@@ -23,6 +21,9 @@ export function UserContextProvider({children}: any): JSX.Element {
         currentUser,
         setCurrentUser,
     }
+    useEffect(() => {
+        console.log("Current User Changed: ",currentUser)
+    }, [currentUser]);
     return <UserContext.Provider value={values}>{children}</UserContext.Provider>;
 }
 

@@ -3,53 +3,59 @@ import React, {useState, useEffect, useRef} from 'react';
 import { toast } from 'react-toastify';
 import cn from 'clsx';
 import { useUser } from '../../../../context/user-context';
-import { useModal } from '@lib/hooks/useModal';
-import { getImagesData } from '@lib/validation';
-import { Button } from '@components/ui/button';
-import type { ChangeEvent, KeyboardEvent } from 'react';
 import type { FilesWithId } from '@models/file';
 import {User, EditableData, EditableUserData, EditableProviderData} from '@models/user';
-import type { InputFieldProps } from '../input/input-field';
 import useSWR from "swr";
 import {getUserById, updateUser} from "../../../../services/main/clientRequest/userClient";
-import {useParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import {useFormik} from "formik";
 import RegisterProviderValidation from "@lib/validations/RegisterProviderValidation";
-import {DatePicker, Radio, RadioChangeEvent, Select} from "antd";
+import {DatePicker, Radio, RadioChangeEvent, Select, Tooltip} from "antd";
 import InputAddress from "../input/input-address";
 import DescriptionInput from "../input/input-description";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
-import {NextImage} from "@components/ui/next-image";
-import {HeroIcon} from "@components/ui/hero-icon";
-import {ToolTip} from "@components/ui/tooltip";
 import moment from 'moment';
 import {UserRole} from "@lib/enum/UserRole";
 import {checkPhoneFormat} from "../../../(auth)/_components/phone-validate";
 import {isExistAccount} from "../../../../services/main/auth-service";
 import EditUserValidation from "@lib/validations/EditUserValidation";
-import dayjs from "dayjs";
 import UploadProfileImage from "../../(main-layout)/profile/edit/upload-avatar-cover";
 import {useUpload} from "../../../../context/uploadfile-context";
 import {uploadImages} from "../../../../firebase/utils";
 import {AxiosError} from "axios";
+import {Modal} from "../modal/modal";
+import {VerifyCode} from "../../../(auth)/verify/verify-code";
+import {setCookie} from "cookies-next";
+import {refresh_token_options} from "@lib/config/TokenConfig";
+import {useOAuth2} from "../../../../context/oauth2-context";
+import {differenceInMonths} from "date-fns";
+
 interface FormValues {
   coverImage: string | null;
   avatar: string | null;
   fullName: string;
 }
 type UserEditProfileProps = {
-  hide?: boolean;
+  closeModal: () => void;
 };
 
-export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
-  const { currentUser } = useUser();
-  const { open, openModal, closeModal } = useModal();
+export function UserEditProfile(): JSX.Element {
+  const {captchaVerifier} = useOAuth2()
+  const {currentUser, setCurrentUser} = useUser();
   const { ID } = useParams();
   const {data: response,isLoading:loading} = useSWR(getUserById(currentUser!.id ), fetcherWithToken);
   const coverInputFileRef = useRef<HTMLInputElement>(null);
   const profileInputFileRef = useRef<HTMLInputElement>(null);
+  const [isShowCaptcha, setIsShowCaptcha] = useState(true)
   const {files} = useUpload();
-
+  const [newUpdateData, setNewUpdateData] = useState({})
+  const {prefetch,push,back} = useRouter()
+  const [openVerifyAccount, setOpenVerifyAccount] = useState(false);
+  const [openVerifyCode, setOpenVerifyCode] = useState(false);
+  const [errorExistAccount, setErrorExistAccount] = useState(false)
+  const [showValidPhone, setShowValidPhone] = useState(false)
+  const [finalPhone, setFinalPhone] = useState("")
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [editUserData, setEditUserData] = useState<EditableUserData>({
     id: currentUser!.id,
     bio:response?.data.bio,
@@ -63,6 +69,7 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
     email:response?.data.email,
     roles:response?.data.roles,
     gender:response?.data.gender,
+    updateAt:response?.data.updateAt
   });
   const resetUserEditData = (): void =>
       setEditUserData({
@@ -78,15 +85,13 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
         email:response?.data.email,
         roles:response?.data.roles,
         gender:response?.data.gender,
+        updateAt:response?.data.updateAt
       });
   const [addressn, setAddressn] = useState(editUserData.address);
   const [errorLocation, setErrorLocation] = useState('');
   const [newbio, setNewBio] = useState(editUserData.bio);
-  const [openVerifyAccount, setOpenVerifyAccount] = useState(false);
-  const [openVerifyCode, setOpenVerifyCode] = useState(false);
-  const [errorExistAccount, setErrorExistAccount] = useState(false)
-  const [showValidPhone, setShowValidPhone] = useState(false)
-  const [finalPhone, setFinalPhone] = useState("")
+  const updateAtDate = new Date(editUserData.updateAt);
+  const canUpdateFullName = differenceInMonths(Date.now(), updateAtDate) >= 6;
 
   const roleOptions = [
     {label: 'Studio', value: UserRole.ROLE_STUDIO},
@@ -120,44 +125,69 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
 
     return { avatarUrl, coverImageUrl };
   }
-
+  function toLocalDateTimeFormat(date:any) {
+    return date.toISOString().slice(0, 19).replace('T', ' ');
+  }
 // Sử dụng hàm mới trong onSubmit
   const { values, touched, handleSubmit, handleChange, errors, setValues } = useFormik({
     initialValues: editUserData,
     validationSchema: EditUserValidation,
     onSubmit: async (values: EditableUserData, {}) => {
-      try {
-        // Gọi hàm và lấy kết quả
+      let updateDateName;
+      if (values.fullName !== response?.data.fullName) {
+        updateDateName = toLocalDateTimeFormat(new Date()).replace(' ', 'T');
+      }
+        const phoneNumberFinal = checkPhoneFormat(values.phoneNumber!)!;
         const { avatarUrl, coverImageUrl } = await uploadAndClassifyImages(currentUser?.id as string, files as FilesWithId);
-
         const editData = {
           ...values,
-          bio: newbio,  // Lưu ý: đảm bảo `newbio` và `addressn` đã được định nghĩa
+          bio: newbio,
+          phoneNumber: phoneNumberFinal,
           address: addressn,
           avatar: avatarUrl,
-          coverImage: coverImageUrl
+          coverImage: coverImageUrl,
+          updateAt :updateDateName,
         };
+      setNewUpdateData(editData)
 
-        // Gọi API để cập nhật thông tin
-        const response = await updateUser(editData);
-        toast.success('Cập nhật thông tin thành công');
-        console.log("Cập nhật thành công", response);
-        closeModal();
-      } catch (error: unknown) {
-        if (error instanceof Error && 'response' in error) {
-          // Nếu bạn biết lỗi là đối tượng nào đó, hãy ép kiểu để tránh lỗi TS18046
-          const axiosError = error as AxiosError;
-          if (axiosError.response) {
-            console.error("Error response from server:", axiosError.response);
-            // Bạn có thể truy xuất chi tiết lỗi từ axiosError.response.data
-          }
-        } else {
-          console.error("Lỗi không xác định khi cập nhật thông tin");
-          toast.error('Cập nhật thông tin thất bại do lỗi không xác định');
-        }
+      if (phoneNumberFinal !== currentUser?.phoneNumber) {
+        console.log(phoneNumberFinal,'vả',response?.phoneNumber)
+        await captchaVerifier({
+          phoneNumber: phoneNumberFinal,
+          callBack: () => {
+            console.log("Register provider callback")
+            setOpenVerifyCode(true)
+            setIsShowCaptcha(false)
+          },
+        })
+      } else {
+        await toast.promise(
+            updateProfile(editData), // Hàm async để thực thi
+            {
+              pending: 'Đang cập nhật thông tin...', // Thông báo khi đang xử lý
+              success: 'Cập nhật thông tin thành công', // Thông báo khi thành công
+              error: 'Cập nhật thông tin thất bại!' // Thông báo khi có lỗi
+            }
+        );
+
       }
+
     },
   });
+  const updateProfile = async (provider: any) => {
+    try {
+      const response = await updateUser(provider);
+      const updatedUser = response.data as User;
+      console.log('updatedUser', updatedUser);
+      setCurrentUser(updatedUser);
+      setCookie('user', JSON.stringify(updatedUser), refresh_token_options);
+      back();
+    } catch (error) {
+      console.error("Failed to Provider Register", error);
+    }
+  };
+
+
 
   let timeoutId: any;
   const handleAddressComplete = async (compAddress: any) => {
@@ -246,8 +276,21 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
     setValues(newValues);
   };
 
+  const verifyCodeCallBack = async (provider: any) => {
+    setOpenVerifyCode(false)
+    console.log("Verifying Code callBack: ", provider)
+    await updateProfile(provider)
+  }
+
+
   return (
-      <form onSubmit={handleSubmit} className={cn(hide && 'w-full h-full mx-auto p-6 bg-white rounded shadow')}>
+      <>
+        <Modal
+            modalClassName='max-w-xl bg-main-background w-full p-8 rounded-2xl hover-animation'
+            open={openVerifyCode} closeModal={() => setOpenVerifyCode(false)}>
+          <VerifyCode callback={() => verifyCodeCallBack(newUpdateData)}/>
+        </Modal>
+      <form onSubmit={handleSubmit} className={cn( 'w-full h-full mx-auto p-6 bg-white rounded shadow')}>
 
         <section
             className={cn(
@@ -260,29 +303,68 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
 
           <div className="mb-4 flex flex-col sm:flex-row">
             <div className="mr-2 flex-grow mb-2 sm:mb-0">
-              <label htmlFor="fullName" className="block text-gray-700 text-sm font-bold mb-2">Họ & Tên</label>
-              <input type="text" id="fullName" name="fullName"
-                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-
-                     required onChange={handleChange} value={values.fullName || ''}/>
-              {errors.fullName && touched.fullName ?
-                  <div className="text-red-700 text-sm">{errors.fullName}</div> : null}
+              <label htmlFor="phoneNumber" className="block text-gray-700 text-sm font-bold mb-2">
+                Họ và Tên
+              </label>
+              {canUpdateFullName ? (
+                  <input
+                      type="text"
+                      id="fullName"
+                      name="fullName"
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      required
+                      onChange={handleChange}
+                      value={values.fullName || ''}
+                  />
+              ) : (
+                  <Tooltip title="Họ tên chỉ được phép đổi 6 tháng một lần">
+                    <input
+                        type="text"
+                        id="fullName"
+                        name="fullName"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        required
+                        onChange={handleChange}
+                        value={values.fullName || ''}
+                        disabled={!canUpdateFullName} // Khóa input nếu chưa đủ 6 tháng
+                    />
+                  </Tooltip>
+              )}
+              {errors.fullName && touched.fullName ? (
+                  <div className="text-red-700 text-sm">{errors.fullName}</div>
+              ) : null}
             </div>
 
             <div className="mr-2 flex-grow mb-2 sm:mb-0">
               <label htmlFor="phoneNumber" className="block text-gray-700 text-sm font-bold mb-2">
                 Email
               </label>
-              <input
-                  type="text"
-                  id="email"
-                  name="email"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  required
-                  onChange={handleChange}
-                  value={values.email || ''}
-                  disabled={currentUser?.authProvider === 'google.com'} // Thêm dòng này để disable input nếu phoneNumber đã có giá trị
-              />
+              {currentUser?.authProvider === 'google.com' ? (
+                  <Tooltip title="Vì bạn đăng nhập bằng tài khoản Google nên bạn không thể thay đổi email">
+                    <input
+                        type="text"
+                        id="email"
+                        name="email"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        required
+                        onChange={handleChange}
+                        value={values.email || ''}
+                        disabled// Thêm dòng này để disable input nếu phoneNumber đã có giá trị
+                    />
+                  </Tooltip>
+              ) : (
+                  <input
+                      type="text"
+                      id="email"
+                      name="email"
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      required
+                      onChange={handleChange}
+                      value={values.email || ''}
+                  />
+              )}
+
+
               {errors.email && touched.email ?
                   <div className="text-red-700 text-sm">{errors.email}</div> : null}
             </div>
@@ -309,8 +391,9 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
                 />
               </div>
               {
-                  errorExistAccount &&
-                  <div className="text-red-700 text-sm ">Số điện thoại đã được đăng kí</div>
+                  errorExistAccount && values.phoneNumber !== editUserData.phoneNumber && (
+                      <div className="text-red-700 text-sm">Số điện thoại đã được đăng kí</div>
+                  )
               }
               {
                   showValidPhone &&
@@ -380,15 +463,38 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
 
 
           <div className="bg-white p-4 rounded-lg shadow-md mb-4">
-            {values.address && (
-                <label htmlFor="role" className="block text-gray-700 text-sm font-bold mb-2">
-                  Địa chỉ hiện tại:
-                  <span>{values.address}</span>
-                </label>
+            {values.address && !isEditingAddress && (
+                <div className="flex justify-between items-center">
+                  <label htmlFor="role" className="block text-gray-700 text-sm font-bold mb-2">
+                    Địa chỉ hiện tại: <span>{values.address}</span>
+                  </label>
+                  {/* Nút để kích hoạt chế độ chỉnh sửa địa chỉ */}
+                  <button
+                      onClick={() => setIsEditingAddress(true)}
+                      className="text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                  >
+                    Sửa
+                  </button>
+                </div>
             )}
-            <InputAddress onAddressComplete={handleAddressComplete}/>
-            {errorLocation &&
-                <div className="text-red-700 text-sm">{errorLocation}</div>}
+            {/* Hiển thị InputAddress nếu không có giá trị địa chỉ hoặc đang trong chế độ chỉnh sửa */}
+            {(isEditingAddress || !values.address) && (
+                <>
+                  <label htmlFor="role" className="block text-gray-700 text-sm font-bold mb-2">
+                    Địa chỉ hiện tại: <span>{values.address}</span>
+                  </label>
+                  <InputAddress onAddressComplete={(address) => {
+                    handleAddressComplete(address);
+                  }}/>
+                  <button
+                      onClick={() => setIsEditingAddress(false)}
+                      className="text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                  >
+                    Hủy
+                  </button>
+                  {errorLocation && <div className="text-red-700 text-sm">{errorLocation}</div>}
+                </>
+            )}
           </div>
 
           <div className="mb-4 ">
@@ -401,17 +507,21 @@ export function UserEditProfile({ hide }: UserEditProfileProps): JSX.Element {
             />
 
           </div>
+          {
+              isShowCaptcha && <div className="mx-auto">
+                <div id="recaptcha-container" className="my-5"></div>
+              </div>
+          }
         </section>
-        {/*<div className="mx-auto">*/}
-        {/*  <div id="recaptcha-container" className="my-5"></div>*/}
-        {/*</div>*/}
+
         <div className="flex items-center justify-between">
           <button type="submit"
                   disabled={errorLocation !== null && errorLocation !== ''}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Đăng ký làm nhà cung cấp
+            cập nhật thông tin
           </button>
         </div>
       </form>
+      </>
   );
 }

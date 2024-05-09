@@ -1,21 +1,18 @@
 'use client'
-import Link from 'next/link';
+
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import React, {useState} from "react";
-import Slider from "react-slick";
-import {Button, Carousel} from 'antd';
-
-import {UserCard} from "../../_components/user/user-card";
-import useSWR from "swr";
-import {GetAllMainService} from "../../../../services/main/clientRequest/service";
-import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
-import {useUser} from "../../../../context/user-context";
-// import * as console from "node:console";
+import {Button, Carousel, ConfigProvider, Dropdown, Menu, MenuProps, Typography} from 'antd';
 import {MainService} from "@models/main-service";
 import {Modal} from "../modal/modal";
 import CreateReview from "../../(main-layout)/profile/[ID]/review/create-review";
-import {EditOutlined, PlusCircleOutlined} from "@ant-design/icons";
+import {CalendarOutlined, EditOutlined, EllipsisOutlined, HeartOutlined, PlusCircleOutlined} from "@ant-design/icons";
+import { TinyColor } from '@ctrl/tinycolor';
+import Link from "next/link";
+import {UserTooltip} from "../user/user-tooltip";
+import {UserAvatar} from "../user/user-avatar";
+import {User} from "@models/user";
 
 interface ProServiceCard{
     data: MainService
@@ -24,10 +21,39 @@ interface ProServiceCard{
 
 export function ServiceCard({data}:ProServiceCard): JSX.Element {
     const [openModalCreateReview, setOpenModalCreateReview] = React.useState(false);
-
     const handleOpenCreateReview =()=>{
         setOpenModalCreateReview(true)
     }
+    const provider: User | null = data?.provider ;
+
+    const menu = (
+        <Menu items={[
+            {
+                key: '1',
+                label: (
+                    <Link href="">
+                        <div className="flex items-center">
+                            <HeartOutlined className="mr-2" />
+                            Lưu dịch vụ
+                        </div>
+                    </Link>
+                ),
+            },
+            {
+                key: '2',
+                label: (
+                    <div onClick={handleOpenCreateReview} className="flex items-center">
+                        <PlusCircleOutlined className="mr-2" />
+                        Viết đánh giá
+                    </div>
+                ),
+            },
+        ]} />
+    );
+
+
+
+
 
     return (
         <>
@@ -35,7 +61,7 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
                 <CreateReview closeModal={()=>setOpenModalCreateReview(false)} service={data}/>
             </Modal>
                 {/*<Link href={`/service/${data.id}`} passHref>*/}
-                    <motion.div className="block cursor-pointer z-1"  whileTap={{scale: 0.97}}>
+                    <motion.div className="block cursor-pointer z-1 py-2.5"  whileTap={{scale: 0.97}}>
                         <div className="block cursor-pointer">
                             <div
                                 className=" flex-col rounded-lg  border border-gray-200 dark:border-gray-700 shadow-sm transition-shadow hover:shadow-lg">
@@ -55,32 +81,65 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
                                         })}
                                     </Carousel>
                                 </div>
+                                <div className="flex justify-center">
+                                    <div className="text-lg font-semibold text-light-primary dark:text-dark-primary">
+                                        {data?.name} {/* Tên dịch vụ từ API */}
+                                    </div>
+                                </div>
                                 <div
-                                    className="accent-tab hover-animation grid grid-cols-1 gap-3 p-4 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5">
+                                    className="accent-tab hover-animation grid grid-cols-2 gap-3 p-4 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5">
+                                    {/* Cột thứ nhất: Tên dịch vụ, Giá và Mô tả */}
                                     <div className="flex flex-col gap-1">
-                                        <div
-                                            className="text-lg font-semibold text-light-primary dark:text-dark-primary">
-                                            {data?.name} {/* Tên dịch vụ từ API */}
+
+
+                                        <div className="text-sm text-light-secondary dark:text-dark-secondary">
+                                            <UserTooltip
+                                                avatar={provider!.avatar}
+                                                id={provider!.id}         // Lấy giá trị id từ API hoặc data của bạn
+                                                bio={''}       // Lấy giá trị bio từ API hoặc data của bạn
+                                                fullName={provider!.fullName} // Lấy giá trị fullName từ API hoặc data của bạn
+                                                verified={provider?.verified ?? true} // Lấy giá trị verified từ API hoặc data của bạn
+                                                coverImage={provider?.coverImage ?? ''} // Lấy giá trị coverImage từ API hoặc data của bạn
+                                            >
+                                                    <UserAvatar
+                                                        src={provider!.avatar}
+                                                        alt={provider!.fullName}
+                                                        username={provider!.fullName}
+                                                    />
+
+                                            </UserTooltip>
                                         </div>
                                         <div className="text-sm text-light-secondary dark:text-dark-secondary">
                                             Giá: {data?.price} {/* Giá của dịch vụ từ API */}
                                         </div>
+
                                         <p className="whitespace-normal text-sm mt-2">
-                                            {data?.description} {/* Mô tả dịch vụ từ API */}
+                                            {data?.description && data.description.length > 30
+                                                ? data.description.substring(0, 30) + "..."
+                                                : data.description}
                                         </p>
                                     </div>
+
+
+                                    <div className="flex flex-col justify-between">
+
+                                        <div className="text-right">
+                                            <Dropdown overlay={menu} placement="bottomRight">
+                                                <EllipsisOutlined/>
+                                            </Dropdown>
+                                        </div>
+
+                                        <button type="submit"
+                                                className="self-end bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                            Đặt Dịch vụ
+                                        </button>
+                                    </div>
                                 </div>
-                                <Button  onClick={handleOpenCreateReview}>
-
-                                    <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5" />
-                                    Viết đánh giá
-
-                                </Button>
 
                             </div>
                         </div>
                     </motion.div>
-                {/*</Link>*/}
+            {/*</Link>*/}
 
 
         </>

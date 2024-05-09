@@ -11,6 +11,7 @@ import { UserUsername } from './user-username';
 import type { ReactNode } from 'react';
 import {User} from "@models/user";
 import {useEffect, useState} from "react";
+import {useUser} from "../../../../context/user-context";
 
 
 type UserTooltipProps = Pick<
@@ -46,7 +47,7 @@ export function UserTooltip({
   const [hovered, setHovered] = useState(false);
   // if (isMobile || modal) return <>{children}</>;
   const userLink = `/profile/${id}`;
-
+  const {currentUser, } = useUser();
   useEffect(() => {
     if (hovered) {
     }
@@ -107,9 +108,9 @@ export function UserTooltip({
                   username={fullName}
                 />
               </div>
-              { hovered &&
-                <FollowButton userTargetId={id} userTargetUsername={fullName} hovered={hovered}/>
-              }
+                {hovered && currentUser?.id !== id && (
+                    <FollowButton userTargetId={id} userTargetUsername={fullName} hovered={hovered} />
+                )}
               
             </div>
             <div>

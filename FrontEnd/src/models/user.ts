@@ -43,7 +43,7 @@ export type User = {
 export type EditableData = Extract<
   keyof User,
     'id'|'bio' | 'fullName' | 'avatar' | 'location' | 'coverImage'|
-    'phoneNumber'|'dateOfBirth'|'address'|'email'|'roles'|'gender'
+    'phoneNumber'|'dateOfBirth'|'address'|'email'|'roles'|'gender'|'updateAt'
 >;
 export  type ProviderData = Extract<
 keyof  User,

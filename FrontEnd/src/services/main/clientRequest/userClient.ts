@@ -17,7 +17,7 @@ export async function updateUser(data: any): Promise<any> {
         method: "POST",
     };
     const response = await axiosWithToken(config);
-    return response.data.data;
+    return response.data;
 }
 
 export  function getAllReviewsByUserId(userId: string):fetcherParams  {

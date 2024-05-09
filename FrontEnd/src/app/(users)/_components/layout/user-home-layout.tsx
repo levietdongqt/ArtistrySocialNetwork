@@ -24,7 +24,7 @@ import {User} from "@models/user";
 import {SidebarLink} from "../sidebar/sidebar-link";
 import {EditOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import Link from "next/link";
-import { Dropdown, Menu } from 'antd';
+import {Dropdown, Menu} from 'antd';
 import {Modal} from "../modal/modal";
 import ChangePass from "../user/change-pass";
 import {UserRole} from "@lib/enum/UserRole";
@@ -34,8 +34,8 @@ import RegisterProviderForm from "../../(main-layout)/profile/[ID]/register-prov
 
 
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
-    const [openModal    , setOpenModal    ] = useState(false)
-    const [openModalProvider    , setOpenModalProvider    ] = useState(false)
+    const [openModal, setOpenModal] = useState(false)
+    const [openModalProvider, setOpenModalProvider] = useState(false)
     const {currentUser} = useUser();
     const router = useRouter();
 
@@ -43,16 +43,15 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
         event.preventDefault(); // Ngăn chặn sự kiện mặc định
         router.push('/profile/edit');
     };
-
-    //console.log("currentUser",currentUser)
-    const {ID} = useParams()|| currentUser?.id;
+    const {ID} = useParams() || currentUser?.id;
+    console.log("currentUser", ID)
     const {
         isLoading: loading,
         data: response,
         error,
         isValidating: checkTrue
     } = useSWR(getUserById(ID as string), fetcherWithToken);
-    const isProvider =  response?.data.roles.includes(UserRole.ROLE_PROVIDER)
+    const isProvider = response?.data.roles.includes(UserRole.ROLE_PROVIDER)
     const coverData = response?.data.coverImage
         ? {src: response?.data.coverImage, alt: response?.data.fullName}
         : null;
@@ -78,10 +77,11 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
 
     const menu = (
         <Menu>
+
             {currentUser?.authProvider !== 'google.com' && currentUser?.authProvider !== 'facebook.com' && (
                 <Menu.Item>
-                    <Link href="#" onClick={()=>setOpenModal(true)}>
-                        <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
+                    <Link href="#" onClick={() => setOpenModal(true)}>
+                        <EditOutlined className="h-4 w-4 md:h-5 md:w-5"/>
                         Đổi mật khẩu
                     </Link>
                 </Menu.Item>
@@ -90,28 +90,30 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
             <Menu.Item>
                 <Link href="/profile/edit">
 
-                        <EditOutlined className="h-4 w-4 md:h-5 md:w-5" />
-                        Sửa thông tin
+                    <EditOutlined className="h-4 w-4 md:h-5 md:w-5"/>
+                    Sửa thông tin
 
                 </Link>
             </Menu.Item>
-            <Menu.Item  onClick={handleMenuClick}>
+            <Menu.Item onClick={handleMenuClick}>
 
-                        <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5" />
-                        Nhà cung cấp
+                <PlusCircleOutlined className="h-4 w-4 md:h-5 md:w-5"/>
+                Nhà cung cấp
 
             </Menu.Item>
         </Menu>
     );
-       return (
+    return (
         <>
-            <Modal open={openModal} closeModal={()=>setOpenModal(false)}>
-            <ChangePass phoneNum={currentUser?.phoneNumber!} callback={()=>setOpenModal(false)}/>
+            <Modal open={openModal} closeModal={() => setOpenModal(false)}>
+                <ChangePass phoneNum={currentUser?.phoneNumber!} callback={() => setOpenModal(false)}/>
             </Modal>
 
-            <Modal open={openModalProvider} closeModal={()=>setOpenModalProvider(false)}>
-                <RegisterProviderForm closeModal={()=>setOpenModalProvider(false)}/>
-            </Modal>
+            {
+                openModalProvider && <Modal open={openModalProvider} closeModal={() => setOpenModalProvider(false)}>
+                    <RegisterProviderForm closeModal={() => setOpenModalProvider(false)}/>
+                </Modal>
+            }
 
             {response?.data && (
                 <SEO
@@ -119,67 +121,69 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                 />
             )}
             <motion.section {...variants} exit={undefined}>
-                {loading &&
+                {loading ?
                     <Loading className='mt-5'/>
-                }
-                {!response?.data ? (
-                    <>
-                        <UserHomeCover/>
-                        <div className='flex flex-col gap-8'>
+                    :
+                    (!response?.data ? (
+                        <>
+                            <UserHomeCover/>
+                            <div className='flex flex-col gap-8'>
+                                <div className='relative flex flex-col gap-3 px-4 py-3'>
+                                    <UserHomeAvatar/>
+                                    <p className='text-xl font-bold'>@{ID}</p>
+                                </div>
+                                <div className='p-8 text-center'>
+                                    <p className='text-3xl font-bold'>This account doesn’t exist</p>
+                                    <p className='text-light-secondary dark:text-dark-secondary'>
+                                        Try searching for another.
+                                    </p>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <UserHomeCover coverData={coverData}/>
                             <div className='relative flex flex-col gap-3 px-4 py-3'>
-                                <UserHomeAvatar/>
-                                <p className='text-xl font-bold'>@{ID}</p>
-                            </div>
-                            <div className='p-8 text-center'>
-                                <p className='text-3xl font-bold'>This account doesn’t exist</p>
-                                <p className='text-light-secondary dark:text-dark-secondary'>
-                                    Try searching for another.
-                                </p>
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <UserHomeCover coverData={coverData}/>
-                        <div className='relative flex flex-col gap-3 px-4 py-3'>
-                            <div className='flex justify-between'>
-                                <UserHomeAvatar profileData={profileData}/>
-                                {isOwner ? (
+                                <div className='flex justify-between'>
+                                    <UserHomeAvatar profileData={profileData}/>
+                                    {isOwner ? (
                                         <div className="text-right">
-                                            <Dropdown.Button overlay={menu}placement="bottomRight" trigger={['click']}>
+                                            <Dropdown.Button overlay={menu} placement="bottomRight" trigger={['click']}>
                                                 Tùy chọn
                                             </Dropdown.Button>
                                         </div>
-                                ) : (
-                                    <div className='flex gap-2 self-start'>
-                                        <UserShare username={response?.data?.fullName}/>
-                                        <Button
-                                            className='dark-bg-tab group relative cursor-not-allowed border border-light-line-reply p-2
-                                 hover:bg-light-primary/10 active:bg-light-primary/20 dark:border-light-secondary 
+                                    ) : (
+                                        <div className='flex gap-2 self-start'>
+                                            <UserShare username={response?.data?.fullName}/>
+                                            <Button
+                                                className='dark-bg-tab group relative cursor-not-allowed border border-light-line-reply p-2
+                                 hover:bg-light-primary/10 active:bg-light-primary/20 dark:border-light-secondary
                                  dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20'
-                                        >
-                                            <HeroIcon className='h-5 w-5' iconName='EnvelopeIcon'/>
-                                            <ToolTip tip='Message'/>
-                                        </Button>
-                                        <FollowButton
-                                            userTargetId={response?.data?.id}
-                                            userTargetUsername={response?.data?.fullName}
-                                            hovered={false}
-                                        />
-                                        {/*{isOwner && <UserEditProfile hide/>}*/}
-                                    </div>
-                                )}
+                                            >
+                                                <HeroIcon className='h-5 w-5' iconName='EnvelopeIcon'/>
+                                                <ToolTip tip='Message'/>
+                                            </Button>
+                                            <FollowButton
+                                                userTargetId={response?.data?.id}
+                                                userTargetUsername={response?.data?.fullName}
+                                                hovered={false}
+                                            />
+                                            {/*{isOwner && <UserEditProfile hide/>}*/}
+                                        </div>
+                                    )}
+                                </div>
+                                <UserDetails {...response?.data} />
                             </div>
-                            <UserDetails {...response?.data} />
-                        </div>
-                    </>
-                )}
+                        </>
+                    ))
+                }
+
             </motion.section>
             {response?.data && (
                 <>
 
                     {
-                       isProvider &&  <UserNav/>
+                        isProvider && <UserNav/>
                     }
 
                     {children}
