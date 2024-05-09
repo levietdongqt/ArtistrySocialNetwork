@@ -41,7 +41,6 @@ class MyUser {
     this.updatedAt,
   });
   factory MyUser.fromJson(Map<String, dynamic> json) {
-    print("FROM MYUSER: ${json}");
     return MyUser(
       id: json['id'],
       fullName: json['fullName'],

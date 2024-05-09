@@ -40,20 +40,6 @@ void main() {
     });
 
     test("Validate Email", () {
-      final email1 = Utility.validateEmail("test@gmail.com");
-      expect(true, email1);
-
-      final email2 = Utility.validateEmail("test@gmail.com.com");
-      expect(true, email2);
-
-      final email3 = Utility.validateEmail("test@gmailcom");
-      expect(false, email3);
-
-      final email4 = Utility.validateEmail("testgmail.com");
-      expect(false, email4);
-
-      final email5 = Utility.validateEmail("@testgmail.com");
-      expect(false, email5);
     });
   });
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/constant.dart';
+import 'package:flutter_twitter_clone/state/WebSocketState.dart';
 import 'package:flutter_twitter_clone/state/authState.dart';
 import 'package:flutter_twitter_clone/ui/page/bookmark/bookmarkPage.dart';
 import 'package:flutter_twitter_clone/ui/page/profile/follow/followerListPage.dart';
@@ -234,6 +235,8 @@ class _SidebarMenuState extends State<SidebarMenu> {
   }
 
   void _logOut() {
+    final socketState = Provider.of<WebSocketState>(context,listen: false);
+    socketState.disconnect();
     final state = Provider.of<AuthState>(context, listen: false);
     Navigator.pop(context);
     state.logoutCallback();
