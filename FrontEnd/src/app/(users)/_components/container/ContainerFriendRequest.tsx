@@ -27,7 +27,7 @@ const ContainerFriendRequest = () => {
                     <Error message='Something went wrong' />
                 ) : friends?.data.length === 0 ?
                     (
-                        <div className={cn(`flex items-center justify-center mt-30`)}>
+                        <div className={cn(`flex items-center justify-center mt-20`)}>
                             <p className={'text-center text-2xl font-bold'}>Không có lời mời kết bạn nào</p>
                         </div>
                     )

@@ -51,7 +51,7 @@ export function ContentStats({
    comment,
  replyTags,
  commentsId,
-                                 handleParentComment,childComments
+ handleParentComment,childComments
 }: PostStatsProps): JSX.Element {
     const totalLikes = userPostLikes?.map((data:any) => data?.id).length as number || 0;
     const totalTag = tagUserPosts?.length;
@@ -95,7 +95,6 @@ export function ContentStats({
                         },
                     };
                     setIsLiked(!isLiked);
-                    console.log("showLike",isLiked);
                     setCountLiked(prev => (prev || 0) + (!isLiked ? 1 : -1));
                     await likePosts(dataLike)
                 } catch (error) {

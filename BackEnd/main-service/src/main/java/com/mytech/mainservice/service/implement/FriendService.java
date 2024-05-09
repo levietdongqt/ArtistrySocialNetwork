@@ -186,11 +186,8 @@ public class FriendService implements IFriendService {
 
     @Override
     public List<UserDTO> getFollowedFriends(String userId) {
-        List<User> friends = FilterUserByStatus(userId, FriendShipStatus.FOLLOWING);
-        return friends
-                .stream()
-                .map(friend -> modelMapper.map(friend, UserDTO.class))
-                .collect(Collectors.toList());
+        List<UserDTO> friends = FilterUserByStatus(userId, FriendShipStatus.FOLLOWING);
+        return friends;
     }
 
     @Override
@@ -222,11 +219,7 @@ public class FriendService implements IFriendService {
 
     @Override
     public List<UserDTO> getPendingFriends(String userId) {
-        List<User> friends = FilterUserByStatus(userId, FriendShipStatus.PENDING);
-        return friends
-                .stream()
-                .map(friend -> modelMapper.map(friend, UserDTO.class))
-                .collect(Collectors.toList());
+        return FilterUserByStatus(userId, FriendShipStatus.PENDING);
     }
 
     @Override
@@ -369,11 +362,11 @@ public class FriendService implements IFriendService {
         }
     }
 
-    private List<User> FilterUserByStatus(String userId, FriendShipStatus status) {
-        List<User> friends = new ArrayList<User>();
-        List<Friendship> friendships = new ArrayList<Friendship>();
+    private List<UserDTO> FilterUserByStatus(String userId, FriendShipStatus status) {
+        List<User> friends = new ArrayList<>();
+        List<Friendship> friendships;
         if(FriendShipStatus.PENDING.equals(status)){
-            friendships= friendshipRepo.findByFriend_Id(userId);
+            friendships= friendshipRepo.getFriendById(userId);
         }else{
             friendships = friendshipRepo.getFriendShipByUserId(userId);
         }
@@ -386,8 +379,7 @@ public class FriendService implements IFriendService {
         }else{
             friendshipWithPending.forEach(friendship -> friends.add(friendship.getFriend()));
         }
-        return friends;
-
+        return friends.stream().map(friend -> modelMapper.map(friend, UserDTO.class)).toList();
     }
 
     private void sendNotificationAfterAddFriendship(String userId, String friendId, String type, String message) {

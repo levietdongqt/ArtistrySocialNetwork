@@ -26,7 +26,7 @@ public class Friendship implements Serializable {
     @JdbcTypeCode(SqlTypes.JSON)
     private List<FriendShipStatus> status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "from_User_Id")
     private User fromUser;
 
