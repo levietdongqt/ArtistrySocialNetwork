@@ -11,6 +11,7 @@ import { fetcherWithToken } from '@lib/config/SwrFetcherConfig';
 import useSWR from 'swr';
 import { FollowButtonType } from '@models/notifications';
 import {Typography} from "antd";
+import { toast } from 'react-toastify';
 
 const { Text } = Typography;
 
@@ -55,6 +56,9 @@ export function SearchButton({
       }):null,
   fetcherWithToken,{
     revalidateOnFocus: false,
+    onSuccess(data, key, config) {
+        toast.success("Hủy theo dõi thành công");
+    },
   }
 );
 
@@ -67,6 +71,9 @@ const {} = useSWR(
     }):null,
 fetcherWithToken,{
   revalidateOnFocus: false,
+  onSuccess(data, key, config) {
+    toast.success("Theo dõi thành công");
+},
 }
 );
 
@@ -102,6 +109,9 @@ const {} = useSWR(
     }):null,
 fetcherWithToken,{
   revalidateOnFocus: false,
+  onSuccess(data, key, config) {
+    toast.success("Kết bạn thành công");
+},
 }
 );
 const {} = useSWR(
@@ -112,6 +122,9 @@ const {} = useSWR(
     }):null,
 fetcherWithToken,{
   revalidateOnFocus: false,
+  onSuccess(data, key, config) {
+    toast.success("Hủy kết bạn thành công");
+},
 }
 );
 
@@ -123,6 +136,9 @@ const {} = useSWR(
     }):null,
 fetcherWithToken,{
   revalidateOnFocus: false,
+  onSuccess(data, key, config) {
+    toast.success("Rút lời mời kết bạn thành công");
+},
 }
 );
 
@@ -134,6 +150,9 @@ const {} = useSWR(
     }):null,
 fetcherWithToken,{
   revalidateOnFocus: false,
+  onSuccess(data, key, config) {
+    toast.success("Chấp nhận lời mời kết bạn thành công");
+},
 }
 );
 
@@ -200,6 +219,7 @@ fetcherWithToken,{
           mainBtnLabel='Đồng ý'
           action={()=> handleUnfollow()}
           closeModal={closeUnFollowModal}
+          actionReport={()=>{}}
         />
       </Modal>
       <Modal
@@ -214,6 +234,7 @@ fetcherWithToken,{
           mainBtnLabel='Đồng ý'
           action={()=> handleRemoveFriend()}
           closeModal={closeUnFriendModal}
+          actionReport={()=>{}}
         />
       </Modal>
       <Modal
@@ -228,6 +249,7 @@ fetcherWithToken,{
           mainBtnLabel='Đồng ý'
           action={()=> handleReAcceptFriend()}
           closeModal={closeReAcceptModal}
+          actionReport={()=>{}}
         />
       </Modal>
       <div className='flex flex-col'>

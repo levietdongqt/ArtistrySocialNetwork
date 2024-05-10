@@ -206,13 +206,8 @@ public class FriendService implements IFriendService {
                 .toList();
         //Add dữ liệu vào mảng
         friendsWithStatusIsFriendship.forEach(friendship -> {
-            if (friendship.getFriend().getId().equals(userId)) {
-                var fromUser = friendship.getFromUser();
-                friends.add(fromUser);
-            } else {
                 var friend = friendship.getFriend();
                 friends.add(friend);
-            }
         });
         return friends
                 .stream()
@@ -360,6 +355,7 @@ public class FriendService implements IFriendService {
         if (checkStatusInFriendship(friendship, FriendShipStatus.ISFRIEND)) {
             var status = friendship.getStatus();
             status.remove(FriendShipStatus.ISFRIEND);
+            status.remove(FriendShipStatus.FOLLOWING);
             if (status.isEmpty()) {
                 friendshipRepo.delete(friendship);
                 return;

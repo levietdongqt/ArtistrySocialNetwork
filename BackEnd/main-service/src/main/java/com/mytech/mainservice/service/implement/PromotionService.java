@@ -54,6 +54,13 @@ public class PromotionService implements IPromotionService {
         promotionRepository.save(promotion);
     }
 
+    @Override
+    public void updatePromotion(String userId, long promotionId) {
+        var promotion = getDBPromotionById(userId,promotionId);
+        promotion.setStatus(true);
+        promotionRepository.save(promotion);
+    }
+
 
     @Override
     public PromotionDTO getPromotionById(String userId,long promotionId) {

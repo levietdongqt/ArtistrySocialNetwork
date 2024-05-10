@@ -11,6 +11,7 @@ import { UserUsername } from './user-username';
 import type { ReactNode } from 'react';
 import {User} from "@models/user";
 import {useEffect, useState} from "react";
+import { useUser } from 'context/user-context';
 
 
 type UserTooltipProps = Pick<
@@ -44,6 +45,7 @@ export function UserTooltip({
 }: UserTooltipProps):JSX.Element {
   const { isMobile } = useWindow();
   const [hovered, setHovered] = useState(false);
+  const {currentUser} = useUser();
   // if (isMobile || modal) return <>{children}</>;
   const userLink = `/profile/${id}`;
 
@@ -107,7 +109,7 @@ export function UserTooltip({
                   username={fullName}
                 />
               </div>
-              { hovered &&
+              {((currentUser?.id !== id) && hovered) &&
                 <FollowButton userTargetId={id} userTargetUsername={fullName} hovered={hovered}/>
               }
               
@@ -131,16 +133,6 @@ export function UserTooltip({
           </div>
           {bio && <p>{bio}</p>}
           <div className='text-secondary flex gap-4'>
-            {/* {allStats.map(([id, label, stat]) => (
-              <Link href={`${userLink}/${id}`} key={id}  className='hover-animation flex h-4 items-center gap-1 border-b border-b-transparent
-                             outline-none hover:border-b-light-primary focus-visible:border-b-light-primary
-                             dark:hover:border-b-dark-primary dark:focus-visible:border-b-dark-primary'>
-                  <p className='font-bold'>{stat}</p>
-                  <p className='text-light-secondary dark:text-dark-secondary'>
-                    {label}
-                  </p>
-              </Link>
-            ))} */}
           </div>
         </div>
       </div>

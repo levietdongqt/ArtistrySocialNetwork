@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/myModel/MyConversation.dart';
+import 'package:flutter_twitter_clone/myModel/MyNotification.dart';
 import 'package:flutter_twitter_clone/myModel/myMessage.dart';
 import 'package:flutter_twitter_clone/myModel/responseSocket.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
@@ -14,6 +15,8 @@ class WebSocketState extends ChangeNotifier {
 
   List<MyConversation>? myConversations = <MyConversation>[];
   List<MyMessage>? myMessages = <MyMessage>[];
+  List<MyNotification>? myNotifications = <MyNotification>[];
+  
 
   initWebSocket(String token) {
     stompClient = StompClient(
@@ -89,6 +92,8 @@ class WebSocketState extends ChangeNotifier {
     //     body: json.encode({'a': 123}),
     //   );
     // });
+    
+
   }
 
   void disconnect() {

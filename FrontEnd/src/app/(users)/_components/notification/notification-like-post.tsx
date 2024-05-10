@@ -6,6 +6,10 @@ import { Button } from "@components/ui/button";
 import { DashOutlined, EyeOutlined } from "@ant-design/icons";
 import { NotificationModel } from "@models/notifications";
 import { UserTooltip } from "../user/user-tooltip";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
+import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
+import { updateListNotification } from "services/main/clientRequest/notificationsClient";
 const { Text } = Typography;
 
 interface NotificationCardParams {
@@ -13,11 +17,26 @@ interface NotificationCardParams {
 }
 
 export default function NotificationPostCard({ data }: NotificationCardParams) {
+  const [shouldUpdateFetch, setShouldUpdateFetch] = useState(false);
+  const notifysId = data.map((notify: any,index: number)=> notify.id)
+  const {} = useSWR(
+    shouldUpdateFetch ? updateListNotification(notifysId) : null,
+    fetcherWithToken
+  );
+
+  useEffect(() => {
+    if (shouldUpdateFetch) {
+      setShouldUpdateFetch(false);
+    }
+  }, [shouldUpdateFetch]);
   const content = (
     <div className="flex flex-col">
       <Button
         className="dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
                        font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
+        onClick={() => {
+          setShouldUpdateFetch(true);
+        }}
       >
         Gỡ thông báo này
       </Button>
@@ -28,7 +47,9 @@ export default function NotificationPostCard({ data }: NotificationCardParams) {
     <Link
       href={`/post/${data[0]?.link}`}
       className="accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4 py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5"
-      onClick={(e) => {}}
+      onClick={(e) => {
+        setShouldUpdateFetch(true);
+      }}
     >
       <div className="flex items-center justify-between w-full">
         <div className="flex flex-col">

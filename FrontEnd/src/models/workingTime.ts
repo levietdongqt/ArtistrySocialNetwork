@@ -1,4 +1,5 @@
 import {DayOfWeek} from "@lib/enum/WorkingDay";
+import { User } from "./user";
 
 export type WorkingTime = {
     id: number;
@@ -6,5 +7,5 @@ export type WorkingTime = {
     endDate: Date;
     workingDays: DayOfWeek[];
     status: boolean;
-    providerId: string;
+    provider: User;
 }
