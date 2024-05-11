@@ -79,7 +79,6 @@ export default function BookingPage() {
                     return (!timeSlotStart.isAfter(order.startTime) && !timeSlotEnd.isAfter(order.startTime))
                         || (!timeSlotStart.isBefore(order.endTime) && !timeSlotEnd.isBefore(order.endTime))
                 })
-
                 // if (!isNotOverlapOrders) {
                 //     handlePushDisableTime(disabledHours, [hour])
                 // }

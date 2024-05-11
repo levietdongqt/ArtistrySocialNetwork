@@ -4,6 +4,46 @@ networks:
     driver: bridge
 services:
 
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    networks:
+      - my_network
+    environment:
+      MYSQL_ROOT_PASSWORD: RHUowB1w__*e3MBZGAf0
+      MYSQL_DATABASE: snap_connectDb
+    ports:
+     - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    # restart: unless-stopped
+    networks:
+      - my_network
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "3308:9200"
+
+  mongodb:
+    image: mongo:7.0  
+    restart: unless-stopped
+    networks:
+      - my_network
+    container_name: mongodb
+    ports:
+      - "3309:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: RHUowB1w__*e3MBZGAf0
+      MONGO_INITDB_DATABASE: snap_connectDb
+    
   # Config for Server-Config
   server-config:
     build: ./server-config/
@@ -31,7 +71,7 @@ services:
   main-service:
     build: ./main-service/
     image: main-service
-    entrypoint: ./wait-for-it.sh server-registry:8761 --strict -- java -jar main-service.jar
+    entrypoint: ./wait-for-it.sh server-registry:8761 --strict -- ./wait-for-it.sh mysql:3306 --strict -- ./wait-for-it.sh elasticsearch:9200 --strict -- java -jar main-service.jar
     networks:
       - my_network
     restart: always
@@ -45,7 +85,7 @@ services:
   realtime-service:
     build: ./realtime-service/
     image: realtime-service
-    entrypoint: ./wait-for-it.sh server-registry:8761 --strict  -- java -jar realtime-service.jar
+    entrypoint: ./wait-for-it.sh server-registry:8761 --strict  -- ./wait-for-it.sh mongodb:27017 --strict -- java -jar realtime-service.jar
     networks:
       - my_network
     restart: always
@@ -68,3 +108,6 @@ services:
     depends_on:
       - main-service
       - realtime-service
+
+volumes:
+  db-data:

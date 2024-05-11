@@ -26,7 +26,7 @@ export default function MyConversationHeader({
     return (
         <ConversationHeader>
             {
-                <div is={"AvatarGroup"}>
+                <div is={"AvatarGroup"} className={""}>
                     <MyAvatarGroup members={otherMembers!}/>
                 </div>
             }

@@ -21,4 +21,6 @@ public interface IConversationService {
     void update(ConversationDTO conversationDTO);
 
     void checkValidRequest(ConversationDTO conversationDTO);
+
+    void outConversation(String userId, String conversationId);
 }

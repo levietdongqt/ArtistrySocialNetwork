@@ -55,6 +55,7 @@ class WebSocketState extends ChangeNotifier {
             }else{
               myConversations![index] = conversation;
             }
+            myConversations!.sort((a, b) => a.updateAt!.isAfter(b.updateAt!)? 0: 1);
             notifyListeners();
             break;
 

@@ -127,4 +127,16 @@ public class ConversationController {
                         .message("Get conversation successfully").build()
         );
     }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/out-group/{conversationId}")
+    public ResponseEntity<?> outConversation(@PathVariable String conversationId) {
+        conversationService.outConversation(jwtTokenHolder.getUserId(),conversationId);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .data(null)
+                        .status(HttpStatus.OK)
+                        .message("out conversation successfully").build()
+        );
+    }
 }

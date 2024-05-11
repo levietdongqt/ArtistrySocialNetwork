@@ -108,6 +108,14 @@ public class ConversationService implements IConversationService {
         }
     }
 
+    @Override
+    public void outConversation(String userId, String conversationId) {
+        Conversation conversation = conversationRepo.findById(conversationId)
+                .orElseThrow(() -> new NotFoundException("Conversation not found: " + conversationId));
+        conversation.getMembers().removeIf(userDTO -> userDTO.getId().equals(userId));
+        conversationRepo.save(conversation);
+    }
+
     private boolean isPrivateConversation(List<Conversation> conversations) {
         return conversations.size() == 1 && conversations.get(0).getMembers().size() == 2;
     }

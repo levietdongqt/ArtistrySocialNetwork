@@ -24,11 +24,13 @@ public class ELSConfig extends ElasticsearchConfiguration {
 
     @Value("${env.elasticsearch_pass}")
     private String password;
+    @Value("${env.elasticsearch_host_and_port}")
+    private String hostAndPort;
     @Override
     public ClientConfiguration clientConfiguration() {
         log.info(password);
         return ClientConfiguration.builder()
-                .connectedToLocalhost()
+                .connectedTo(hostAndPort)
                 .usingSsl(buildSSLContext())
                 .withBasicAuth("elastic",password)
                 .build();
