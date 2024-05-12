@@ -6,15 +6,17 @@ import React, {useState} from "react";
 import {Button, Carousel, ConfigProvider, Dropdown, Menu, MenuProps, Typography} from 'antd';
 import {MainService} from "@models/main-service";
 import {Modal} from "../modal/modal";
-import CreateReview from "../../(main-layout)/profile/[ID]/review/create-review";
+
 import {CalendarOutlined, EditOutlined, EllipsisOutlined, HeartOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import { TinyColor } from '@ctrl/tinycolor';
 import Link from "next/link";
 import {UserTooltip} from "../user/user-tooltip";
 import {UserAvatar} from "../user/user-avatar";
 import {User} from "@models/user";
-import ServiceDetail from "./servicer-detail";
+
 import DOMPurify from "dompurify";
+import CreateReview from "../../(main-layout)/profile/[ID]/review/create-review";
+import ServiceDetail from "./servicer-detail";
 
 
 interface ProServiceCard{
