@@ -50,3 +50,39 @@ export async function updatePromotion(userId : string,data: Promotion): Promise<
         throw error;
     }
 }
+
+export async function deletePromotion(userId : string,promotionId: Number): Promise<any> {
+    const config: AxiosRequestConfig = {
+        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/promotions/${userId}/delete/${promotionId}`,
+        method: "Delete",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    try {
+        const response = await axiosWithToken(config);
+        return response.data.data;
+    } catch (error) {
+        console.error('Error deleted promotion:', error);
+        throw error;
+    }
+}
+
+export async function reworkPromotion(userId : string,promotionId: Number): Promise<any> {
+    const config: AxiosRequestConfig = {
+        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/promotions/${userId}/rework/${promotionId}`,
+        method: "PUT",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    try {
+        const response = await axiosWithToken(config);
+        return response.data.data;
+    } catch (error) {
+        console.error('Error rework promotion:', error);
+        throw error;
+    }
+}

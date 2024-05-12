@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8062
   servlet:
     context-path: /api/realtime
 
@@ -14,14 +14,7 @@ spring:
     exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   data:
     mongodb:
-      data:
-        mongodb:
-          host: mongodb
-          port: 27017
-          database: snap_connectDb
-          username: root
-          password: RHUowB1w__*e3MBZGAf0
-
+      uri: mongodb://root:RHUowB1w__*e3MBZGAf0@mongodb:27017/snap_connectDb?authSource=admin
 eureka:
   client:
     service-url:

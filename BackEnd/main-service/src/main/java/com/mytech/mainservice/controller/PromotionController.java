@@ -67,4 +67,28 @@ public class PromotionController {
                         .data(null).build()
         );
     }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('PROVIDER')")
+    @DeleteMapping("/{userId}/delete/{promotionId}")
+    public ResponseEntity<?> deletePromotion(@PathVariable("userId") String userId,@PathVariable("promotionId") Long promotionId){
+        promotionService.deletePromotion(userId,promotionId);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Delete Promotion successfully")
+                        .data(null).build()
+        );
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('PROVIDER')")
+    @PutMapping("/{userId}/rework/{promotionId}")
+    public ResponseEntity<?> reworkPromotion(@PathVariable("userId") String userId,@PathVariable("promotionId") Long promotionId){
+        promotionService.updatePromotion(userId,promotionId);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Delete Promotion successfully")
+                        .data(null).build()
+        );
+    }
 }

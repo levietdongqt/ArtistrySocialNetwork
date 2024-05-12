@@ -32,7 +32,7 @@ public class ConversationController {
     @GetMapping("/by-user")
     public ResponseEntity<?> getByUser() {
         log.info("getByUser");
-        List<Conversation> conversations = conversationService.getByUserIdAndIgnoreTypeHide(jwtTokenHolder.getUserId());
+        List<ConversationDTO> conversations = conversationService.getByUserIdAndIgnoreTypeHide(jwtTokenHolder.getUserId());
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .data(conversations)

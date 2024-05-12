@@ -26,8 +26,8 @@ export default function MyConversationHeader({
     return (
         <ConversationHeader>
             {
-                <div is={"AvatarGroup"} className={""}>
-                    <MyAvatarGroup members={otherMembers!}/>
+                <div is={"AvatarGroup"} className={otherMembers?.length == 1 ? "mt-1" : "mt-2 pr-1"}>
+                    <MyAvatarGroup size={otherMembers?.length == 1 ? "large" : 'default'} members={otherMembers!}/>
                 </div>
             }
             <ConversationHeader.Content

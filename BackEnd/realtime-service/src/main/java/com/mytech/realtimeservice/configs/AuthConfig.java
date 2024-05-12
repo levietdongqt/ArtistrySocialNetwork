@@ -30,10 +30,8 @@ public class AuthConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf
-                        // ignore our stomp endpoints since they are protected using Stomp headers
-                       .disable()
-                )
+        // ignore our stomp endpoints since they are protected using Stomp headers
+        http.csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorze -> {
                     authorze

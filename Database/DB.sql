@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS projectsem4;
-CREATE DATABASE projectsem4;
-use projectsem4;
+DROP DATABASE IF EXISTS snap_connectDb;
+CREATE DATABASE snap_connectDb;
+use snap_connectDb;
 
 CREATE TABLE IF NOT EXISTS roles (
 	id Bigint auto_increment,
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS friendships (
 	id Bigint auto_increment,
     from_User_Id VARCHAR(36) not null,
     to_User_Id VARCHAR(36),
-    status ENUM('PENDING', 'ISFRIEND', 'FOLLOWING', 'BLOCKED') DEFAULT 'PENDING',
+    status json DEFAULT NULL,
     primary key(id),
     foreign key(from_User_Id) references users(id),
     foreign key(to_User_Id) references users(id)
@@ -88,10 +88,11 @@ CREATE TABLE IF NOT EXISTS promotions (
     discount_Percent float default 0,
     start_Date datetime not null,
     end_Date datetime not null,
+    user_id VARCHAR(36),
     description TEXT,
     type enum('FOR_ORDER','FOR_SERVICE'),
     status boolean default 1,
-    
+	Foreign key(user_id) references users(id),
     primary key(id)
 );
 CREATE TABLE IF NOT EXISTS extra_services (
@@ -155,6 +156,7 @@ CREATE TABLE IF NOT EXISTS working_time (
     end_Date datetime not null,
     working_Day varchar(20) CHARACTER SET utf8mb4,
     status boolean default 1,
+	working_Days json DEFAULT NULL,
     primary key(id),
     Foreign key(user_Id) references users(id)
 );
@@ -206,13 +208,21 @@ BEGIN
 END; $$
 
 INSERT INTO users
-(`full_name`, `email`, `phone_number`, `gender`, `email_confirmed`, `phone_confirmed`, `password`,`status`)
- VALUES ('Trần Thụ Huy', 'huy@gmail.com', '1234567891',b'1', b'1', b'1', '123','ACTIVED'),
- ('Lê Viết Đông', 'dong@gmail.com', '1234567892',b'1', b'1', b'1', '123','ACTIVED'); 
-INSERT INTO roles (`name`, `description`) 
+(`id`,`full_name`, `email`, `phone_number`, `gender`, `email_confirmed`, `phone_confirmed`, `password`,`status`)
+ VALUES ('e32a7a1c-98e2-498c-97e2-65404e4fd356','Trần Thụ Huy', 'huy@gmail.com', '+84398713844',b'1', b'1', b'1', '$2a$10$JtnC7NwMNMKK3UeW7awdFuymSQsRJSwnm6UrttGHlc07ZDJSJLqwO','ACTIVED'),
+ ('7aac6b78-49b0-492a-a653-976bc56df03d','Lê Viết Đông', 'dong@gmail.com', '+84398713843',b'1', b'1', b'1', '$2a$10$JtnC7NwMNMKK3UeW7awdFuymSQsRJSwnm6UrttGHlc07ZDJSJLqwO','ACTIVED'); 
+
+INSERT INTO roles(`id`,`name`,`description`)	
 VALUES
- ('ROLE_ADMIN', 'This is role for admin page'),
- ('ROLE_USER', 'This is role for normal user'),
- ('ROLE_PROVIDER', 'This is role for service  provider'),
-('ROLE_STUDIO', 'This is role for studio provider'),
- ('ROLE_MAKEUP', 'This is role for provider Makeup');
+ (1,'ROLE_ADMIN', 'This is role for admin page'),
+ (2,'ROLE_USER', 'This is role for normal user'),
+ (3,'ROLE_PROVIDER', 'This is role for service  provider'),
+(4,'ROLE_STUDIO', 'This is role for studio provider'),
+ (5,'ROLE_MAKEUP', 'This is role for provider Makeup'),
+ (6,'ROLE_PHOTO', 'This is role for provider photo'),
+ (7,'ROLE_MODEL', 'This is role for provider model');
+ 
+INSERT INTO users_roles (`user_Id`,`role_Id`)
+values 
+	('e32a7a1c-98e2-498c-97e2-65404e4fd356','2'),
+    	('7aac6b78-49b0-492a-a653-976bc56df03d','2');

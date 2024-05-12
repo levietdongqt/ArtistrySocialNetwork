@@ -34,7 +34,7 @@ function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps) {
     const {pickedConversations, showChatBoxes, conversations} = state!;
     const [messageIdFooter, setMessageIdFooter] = useState("")
     const [isOnFocus, setIsOnFocus] = useState(false)
-    const otherMembers = curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id);
+    const otherMembers = curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id && !memberMap.isExited);
 
     useEffect(() => {
         console.log("CHAT box mount")
@@ -46,7 +46,7 @@ function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps) {
 
     useEffect(() => {
         console.log("ChatBox mount", curConversation)
-        if (!curConversation?.messages) {
+        if (!curConversation?.messages || curConversation?.messages.length === 0) {
             const payload = {
                 conversationId: curConversation?.id,
                 senderId: currentUser!.id
@@ -167,11 +167,9 @@ function ChatBox({isMinusChatBox, curConversation}: ChatBoxProps) {
 
     if (!curConversation) {
         return (
-            <div>
-                <div className={"flex justify-center items-center h-screen"}>
-                    <div className={"text-center"}>
-                        Hãy kết nối bạn bè và trò chuyện ngay!
-                    </div>
+            <div className="flex mx-auto justify-center items-center h-screen">
+                <div className="text-center text-2xl">
+                    <h3>Hãy kết nối bạn bè và trò chuyện ngay!</h3>
                 </div>
             </div>
         )

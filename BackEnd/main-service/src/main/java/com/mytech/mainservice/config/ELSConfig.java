@@ -26,19 +26,26 @@ public class ELSConfig extends ElasticsearchConfiguration {
     private String password;
     @Value("${env.elasticsearch_host_and_port}")
     private String hostAndPort;
+
     @Override
     public ClientConfiguration clientConfiguration() {
-        log.info(password);
+        if (hostAndPort.contains("elastic")) {
+            return ClientConfiguration.builder()
+                    .connectedTo(hostAndPort)
+                    .withBasicAuth("elastic", password)
+                    .build();
+        }
         return ClientConfiguration.builder()
                 .connectedTo(hostAndPort)
                 .usingSsl(buildSSLContext())
-                .withBasicAuth("elastic",password)
+                .withBasicAuth("elastic", password)
                 .build();
     }
+
     private static SSLContext buildSSLContext() {
-        try{
+        try {
             return new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build();
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

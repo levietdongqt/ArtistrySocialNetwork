@@ -56,7 +56,7 @@ export function ConversationHeaderDropdown({isInMessage, isGroup, conversation, 
                     type: conversation.type
                 }), {
                     pending: "Đang xóa...",
-                    success: "Xóa thành công!",
+                    success: `${isGroupMember? 'Thoát': 'Xoá'} nhóm thành công!`,
                     error: "Xóa thất bại!"
                 }).then(() => {
                     const pickedIndex = pickedConversations.findIndex(item => item?.id === conversation.id)

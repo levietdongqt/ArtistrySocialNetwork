@@ -24,7 +24,7 @@ export function UserName({
   const CustomTag = tag ? tag : 'p';
 
   return (
-    <Link href={username ? `/user/${id}` : '#'}  className={cn(
+    <Link href={username ? `/profile/${id}` : '#'}  className={cn(
         'flex items-center gap-1 truncate font-bold',
         username ? 'custom-underline' : 'pointer-events-none',
         className

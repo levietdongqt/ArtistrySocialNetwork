@@ -16,6 +16,14 @@ const PromotionValidation = yup.object({
                 return value <= endDate;
             }
             return true;
+        })
+        .test('is-less-than-now', 'Ngày bắt đầu không được nhỏ hơn ngày hiện tại', function(value) {
+            const startDate = this.parent.startDate;
+            const currentDate = new Date();
+            if (startDate) {
+                return value >= currentDate;
+            }
+            return true;
         }),
     endDate: yup.date()
         .required("Ngày kết thúc không được để trống!")
@@ -23,6 +31,13 @@ const PromotionValidation = yup.object({
             const startDate = this.parent.startDate;
             if (startDate) {
                 return value >= startDate;
+            }
+            return true;
+        }).test('is-less-than-now', 'Ngày kết thúc không được nhỏ hơn ngày hiện tại', function(value) {
+            const endDate = this.parent.endDate;
+            const currentDate = new Date();
+            if (endDate) {
+                return value >= currentDate;
             }
             return true;
         }),

@@ -10,7 +10,7 @@ public interface IConversationService {
     ConversationDTO createConversation(ConversationDTO conversationDTO);
     void deleteConversation(ConversationDTO conversationDTO);
 
-    List<Conversation> getByUserIdAndIgnoreTypeHide(String userId);
+    List<ConversationDTO> getByUserIdAndIgnoreTypeHide(String userId);
 
     ConversationDTO checkConversation(ConversationDTO conversationDTO);
 

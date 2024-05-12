@@ -5,29 +5,33 @@ networks:
 services:
 
 
-  mysql:
-    image: mysql:8.4
+  mysqldb:
+    image: mysql:8.0
     restart: unless-stopped
     networks:
       - my_network
+    container_name: mysqldb
     environment:
       MYSQL_ROOT_PASSWORD: RHUowB1w__*e3MBZGAf0
       MYSQL_DATABASE: snap_connectDb
     ports:
      - "3307:3306"
     volumes:
-      - db-data:/var/lib/mysql
+      - mysqldb-data:/data/db
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
     # restart: unless-stopped
     networks:
       - my_network
     container_name: elasticsearch
     environment:
-      - discovery.type=single-node
+      - "discovery.type=single-node"
+      - "xpack.security.enabled=false"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ELASTIC_PASSWORD=RHUowB1w__*e3MBZGAf0"
     ports:
-      - "3308:9200"
+      - "9200:9200"
 
   mongodb:
     image: mongo:7.0  
@@ -36,7 +40,7 @@ services:
       - my_network
     container_name: mongodb
     ports:
-      - "3309:27017"
+      - "27017:27017"
     volumes:
       - mongodb_data:/data/db
     environment:
@@ -48,20 +52,22 @@ services:
   server-config:
     build: ./server-config/
     image: server-config
+    restart: unless-stopped
+    container_name: server-config
     networks:
       - my_network
     ports:
       - "8088:8088"
-    restart: always
 
   # Config for Server-registry  
   server-registry:
     build: ./server-registry/
     image: server-registry
+    restart: unless-stopped
+    container_name: server-registry
     entrypoint: ./wait-for-it.sh server-config:8088 --strict -- java -jar server-registry.jar
     networks:
       - my_network
-    restart: always
     ports:
      - "8761:8761"
     depends_on:
@@ -71,10 +77,14 @@ services:
   main-service:
     build: ./main-service/
     image: main-service
-    entrypoint: ./wait-for-it.sh server-registry:8761 --strict -- ./wait-for-it.sh mysql:3306 --strict -- ./wait-for-it.sh elasticsearch:9200 --strict -- java -jar main-service.jar
+    restart: unless-stopped
+    container_name: main-service
+    environment:
+      - ELASTICSEARCH_URL=elasticsearch:9200
+      - SPRING_DATA_ELASTICSEARCH_CLUSTERNODES=elasticsearch:9200
+    entrypoint: ./wait-for-it.sh server-registry:8761 --strict -- ./wait-for-it.sh elasticsearch:9200 --strict -- ./wait-for-it.sh mysqldb:3306 --strict -- java -jar main-service.jar
     networks:
       - my_network
-    restart: always
     ports:
       - "8081:8081"
     depends_on:
@@ -85,24 +95,27 @@ services:
   realtime-service:
     build: ./realtime-service/
     image: realtime-service
+    container_name: realtime-service
     entrypoint: ./wait-for-it.sh server-registry:8761 --strict  -- ./wait-for-it.sh mongodb:27017 --strict -- java -jar realtime-service.jar
     networks:
       - my_network
-    restart: always
+    restart: unless-stopped
     ports:
       - "8082:8082"
     depends_on:
       - server-registry
       - server-config
+      - mongodb
 
   # Config for Gateway-Service
   gateway-service:
     build: ./gateway-service/
     image: gateway-service
-    entrypoint: ./wait-for-it.sh main-service:8081 --strict -- ./wait-for-it.sh realtime-service:8082  --strict -- java -jar gateway-service.jar
+    container_name: gateway-service
+    entrypoint: ./wait-for-it.sh server-registry:8761 --strict -- java -jar gateway-service.jar
     networks:
       - my_network
-    restart: always
+    restart: unless-stopped
     ports:
       - "8060:8060"
     depends_on:
@@ -110,4 +123,5 @@ services:
       - realtime-service
 
 volumes:
-  db-data:
+  mysqldb-data:
+  mongodb_data:

@@ -174,7 +174,7 @@ export function Conversations({closeConversations, callback}: ConversationsProps
                             conversations?.map((conversation: ConversationDto, index: number) => {
 
                                 const currentMember: ConversationMember | undefined = conversation.memberMap?.get(currentUser?.id!)
-                                const otherMembers = conversation.members.filter(value => value.id !== currentUser?.id)
+                                const otherMembers = conversation.members.filter(value => value.id !== currentUser?.id && !value.isExited)
                                 const isGroup: boolean = conversation.type === "GROUP"
 
                                 if (!conversation.lastMessage) {

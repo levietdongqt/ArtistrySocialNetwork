@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface IConversationRepository extends MongoRepository<Conversation, String> {
-    @Query(value = "{$and: [{'members.id': ?0},{'type' : {$ne : 'HIDE'}}]}", sort = "{'updatedAt' : -1}")
+    @Query(value = "{$and: [{ 'members': {$elemMatch: { 'id': ?0,'isExited': {$ne :  true} } } },{'type' : {$ne : 'HIDE'}}]}", sort = "{'updatedAt' : -1}")
     List<Conversation> getByUserIdAndIgnoreTypeHide(String userId);
 
     @Query("{'members.id': {$all: ?0}, 'type': ?1}")
@@ -20,7 +20,7 @@ public interface IConversationRepository extends MongoRepository<Conversation, S
     @Query("{ $text: { $search: ?1 } }")
     List<Conversation> findByMemberName(String userId, String searchName);
 
-    @Query("{ 'members': { $elemMatch: { 'id': ?0, 'notSeen': true } } }")
+    @Query("{ 'members': { $elemMatch: { 'id': ?0, 'notSeen': true,'isExited': {$ne :  true} } } }")
     List<Conversation> findUnReads(String userId);
 
     @Query("{'$and': [" +

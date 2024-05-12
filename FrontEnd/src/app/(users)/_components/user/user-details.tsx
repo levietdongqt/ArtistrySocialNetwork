@@ -55,7 +55,7 @@ export function UserDetails({
         />
         <div className='flex items-center gap-1 text-light-secondary dark:text-dark-secondary'>
           <p>@{fullName}</p>
-          <UserFollowing userTargetId={id} />
+          <UserFollowing userTargetId={id} hovered />
         </div>
       </div>
       <div className='flex flex-col gap-2'>

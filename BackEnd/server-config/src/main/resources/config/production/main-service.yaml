@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8061
   servlet:
     context-path: /api/main
 
@@ -9,6 +9,9 @@ management:
 spring:
   application:
     name: main-service
+  data:
+    elasticsearch:
+      cluster-nodes: elasticsearch:9200
   cache:
     jcache:
       config: classpath:ehcache.xml
@@ -22,12 +25,13 @@ spring:
           jwk-set-uri: https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    #    url: jdbc:mysql://localhost:3306/projectsem4
-    #    username: root
-    #    password: thuhuy123
-    url: jdbc:mysql://mysql:3306/snap_connectDb
+    url: jdbc:mysql://mysqldb:3306/snap_connectDb
     username: root
     password: RHUowB1w__*e3MBZGAf0
+#    url: jdbc:mysql://socialdb-artistrysocialnetwork.a.aivencloud.com:13508/projectsem4
+#    useSSL: true
+#    username: avnadmin
+#    password: AVNS_KXx-W0Q-CbV9LAAh4HF
   jpa:
     hibernate:
       ddl-auto: validate
@@ -52,7 +56,7 @@ eureka:
       defaultZone: http://server-registry:8761/eureka
 
 env:
-  elasticsearch_pass: "6oamFruO_jZXP7=4RBHL"
+  elasticsearch_pass: "RHUowB1w__*e3MBZGAf0"
   elasticsearch_host_and_port: "elasticsearch:9200"
   secret_token: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
   firebaseConfig: |

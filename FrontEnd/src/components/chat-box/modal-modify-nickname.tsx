@@ -24,13 +24,13 @@ export function ModalModifyNickname({conversation}: props) {
         toast.warning("Nickname tối đa 50 kí tự!")
         setNickname(value.substring(0, 50))
     }
-
     const onSubmitChangeNickname = () => {
         if (nickname.length < 3) {
             toast.warning("Nickname tối thiểu 3 kí tự!")
             return;
         }
         if (nickname.length > 50) {
+            toast.clearWaitingQueue();
             toast.warning("Nickname tối đa 50 kí tự!")
             return;
         }
