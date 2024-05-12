@@ -1,10 +1,13 @@
+'use client'
 import { DashOutlined } from "@ant-design/icons";
 import { Button } from "@components/ui/button";
 import { Modal, Popover, Table, Tag, Carousel, Image } from "antd";
 import { useState } from "react";
+import UpdateMainService from "../../(main-layout)/provider/main-service/update-service";
+import {MainService} from "@models/main-service";
 
 type DataTable = {
-  data: any[];
+  data: MainService[];
 };
 const contentStyle = {
   margin: 0,
@@ -20,10 +23,22 @@ export default function ServiceMainTable({ data }: DataTable) {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
     undefined
   );
+  const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
+  const [editingServiceId, setEditingServiceId] = useState<MainService>();
+
+  // Mở modal shows ảnh grand ắng handling event
   const handleViewImage = (imageUrl: string) => {
     setSelectedImage(imageUrl);
     setModalVisible(true);
   };
+
+  // Người dùng nhấn vào "Chỉnh sửa"
+  const handleEditClick = (record: MainService) => {
+    setEditingServiceId(record);
+    // console.log('serviceId', data.serviceId);
+    setUpdateModalVisible(true);
+  };
+
   const handleTest = (value: any) => {
     console.log("data ne", value);
   };
@@ -37,7 +52,7 @@ export default function ServiceMainTable({ data }: DataTable) {
       <Button
         className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
                            font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
-        onClick={() => handleTest(record.id)}
+        onClick={() => handleEditClick(record)}
       >
         Chỉnh sửa
       </Button>
@@ -182,6 +197,12 @@ export default function ServiceMainTable({ data }: DataTable) {
         footer={null}
       >
         {selectedImage && <Image src={selectedImage} />}
+      </Modal>
+      <Modal
+        open={updateModalVisible}
+        onCancel={() => setUpdateModalVisible(false)} // thay cho closeModal
+      >
+        {editingServiceId && <UpdateMainService data={editingServiceId}  />}
       </Modal>
     </>
   );

@@ -14,6 +14,7 @@ import {UserTooltip} from "../user/user-tooltip";
 import {UserAvatar} from "../user/user-avatar";
 import {User} from "@models/user";
 import ServiceDetail from "./servicer-detail";
+import DOMPurify from "dompurify";
 
 
 interface ProServiceCard{
@@ -31,7 +32,9 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
         setOpenModalServiceDetail(true);
     }
     const provider: User | null = data?.provider ;
-
+    const decription = data?.description;
+    const cleanFullBioContent = DOMPurify.sanitize(decription);
+    console.log("cleanBioContent: ", cleanFullBioContent);
     const menu = (
         <Menu items={[
             {
@@ -56,8 +59,6 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
             },
         ]} />
     );
-
-
 
 
 
@@ -108,11 +109,11 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
                                                 verified={provider?.verified ?? true} // Lấy giá trị verified từ API hoặc data của bạn
                                                 coverImage={provider?.coverImage ?? ''} // Lấy giá trị coverImage từ API hoặc data của bạn
                                             >
-                                                    <UserAvatar
-                                                        src={provider!.avatar}
-                                                        alt={provider!.fullName}
-                                                        username={provider!.fullName}
-                                                    />
+                                                <UserAvatar
+                                                    src={provider!.avatar}
+                                                    alt={provider!.fullName}
+                                                    username={provider!.fullName}
+                                                />
 
                                             </UserTooltip>
                                         </div>
@@ -120,11 +121,10 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
                                             Giá: {data?.price} {/* Giá của dịch vụ từ API */}
                                         </div>
 
-                                        <p className="whitespace-normal text-sm mt-2">
-                                            {data?.description && data.description.length > 30
-                                                ? data.description.substring(0, 30) + "..."
-                                                : data.description}
-                                        </p>
+                                        <div
+                                            dangerouslySetInnerHTML={{__html: cleanFullBioContent.substring(0, 70) + (cleanFullBioContent.length > 70 ? '...' : '')}}>
+
+                                        </div>
                                     </div>
 
 

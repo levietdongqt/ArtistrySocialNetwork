@@ -31,7 +31,7 @@ export async function createMainService(data: MainService): Promise<any> {
 export async function updateMainService(data: EditableMainServiceData ): Promise<any> {
     const config: AxiosRequestConfig = {
         url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/main-service/update`,
-        method: "POST",
+        method: "PUT",
         headers: {
             'Content-Type': 'application/json', // Đặt Content-Type cho yêu cầu là JSON
         },
@@ -71,7 +71,7 @@ export async function createExtraService(data: ExtraService): Promise<any> {
 export async function updateExtraService(data: ExtraService): Promise<any> {
     const config: AxiosRequestConfig = {
         url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/extra-service/update`,
-        method: "POST",
+        method: "PUT",
         headers: {
             'Content-Type': 'application/json', // Đặt Content-Type cho yêu cầu là JSON
         },

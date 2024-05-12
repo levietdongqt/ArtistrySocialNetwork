@@ -9,7 +9,11 @@ import {useModal} from "@lib/hooks/useModal";
 import useSWR from "swr";
 import {useUser} from "../../../../../../context/user-context";
 import {getBookmarksByUserId} from "../../../../../../services/realtime/clientRequest/bookmarksClient";
-import {getPostListByPostId, getPostsLimit} from "../../../../../../services/realtime/clientRequest/postClient";
+import {
+    getPostListByPostId,
+    getPostsByUserId,
+    getPostsLimit
+} from "../../../../../../services/realtime/clientRequest/postClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {ContentPost} from "../../../../_components/content/content";
 import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
@@ -21,26 +25,22 @@ const PostUser = () => {
     const { open, openModal, closeModal } = useModal();
 
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
-    const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken,{
-        revalidateIfStale: false,
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false
-    });
-
-    const postId = useMemo(
-        () => bookmarksRef?.data?.map((item: any) => item.postId) ?? [],
-        [bookmarksRef]
-    );
+    // const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken,{
+    //     revalidateIfStale: false,
+    //     revalidateOnFocus: false,
+    //     revalidateOnReconnect: false
+    // });
+    ///
 
     const { paginatedPosts:postData, isLoadingMore:postLoading,LoadMore,isReachedEnd,setSize,size,mutate,error } =
         useInfiniteScroll(
-            getPostsLimit
+            getPostsByUserId
         );
     return (
         <>
 
             <section className='mt-0.5'>
-                {bookmarksRefLoading || postLoading ? (
+                { postLoading ? (
                     <Loading className='mt-5' />
                 ) :(
                     <AnimatePresence mode='popLayout'>

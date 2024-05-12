@@ -52,6 +52,20 @@ public class PostController {
                         .build()
         );
     }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @GetMapping("/get-posts-byid/{userId}")
+    public ResponseEntity<?> getPostListById(@PathVariable String userId,@RequestParam("limit") int limit,@RequestParam("pageIndex") int pageIndex) {
+        log.info("Post List ");
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get post list limit " + limit + " va offset " + pageIndex + " OK")
+                        .data(postService.findAllById(limit,pageIndex,userId))
+                        .build()
+        );
+    }
+
     @GetMapping("/get-post/{postId}")
     public ResponseEntity<?> getPostById(@PathVariable String postId) {
         log.info("Post get by id " + postId);
