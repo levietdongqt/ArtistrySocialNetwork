@@ -6,13 +6,16 @@ import React, {useState} from "react";
 import {Button, Carousel, ConfigProvider, Dropdown, Menu, MenuProps, Typography} from 'antd';
 import {MainService} from "@models/main-service";
 import {Modal} from "../modal/modal";
-import CreateReview from "../../(main-layout)/profile/[ID]/review/create-review";
+
 import {CalendarOutlined, EditOutlined, EllipsisOutlined, HeartOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import { TinyColor } from '@ctrl/tinycolor';
 import Link from "next/link";
 import {UserTooltip} from "../user/user-tooltip";
 import {UserAvatar} from "../user/user-avatar";
 import {User} from "@models/user";
+
+import DOMPurify from "dompurify";
+import CreateReview from "../../(main-layout)/profile/[ID]/review/create-review";
 import ServiceDetail from "./servicer-detail";
 
 
@@ -31,7 +34,9 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
         setOpenModalServiceDetail(true);
     }
     const provider: User | null = data?.provider ;
-
+    const decription = data?.description;
+    const cleanFullBioContent = DOMPurify.sanitize(decription);
+    console.log("cleanBioContent: ", cleanFullBioContent);
     const menu = (
         <Menu items={[
             {
@@ -56,8 +61,6 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
             },
         ]} />
     );
-
-
 
 
 
@@ -108,11 +111,11 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
                                                 verified={provider?.verified ?? true} // Lấy giá trị verified từ API hoặc data của bạn
                                                 coverImage={provider?.coverImage ?? ''} // Lấy giá trị coverImage từ API hoặc data của bạn
                                             >
-                                                    <UserAvatar
-                                                        src={provider!.avatar}
-                                                        alt={provider!.fullName}
-                                                        username={provider!.fullName}
-                                                    />
+                                                <UserAvatar
+                                                    src={provider!.avatar}
+                                                    alt={provider!.fullName}
+                                                    username={provider!.fullName}
+                                                />
 
                                             </UserTooltip>
                                         </div>
@@ -120,11 +123,10 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
                                             Giá: {data?.price} {/* Giá của dịch vụ từ API */}
                                         </div>
 
-                                        <p className="whitespace-normal text-sm mt-2">
-                                            {data?.description && data.description.length > 30
-                                                ? data.description.substring(0, 30) + "..."
-                                                : data.description}
-                                        </p>
+                                        <div
+                                            dangerouslySetInnerHTML={{__html: cleanFullBioContent.substring(0, 70) + (cleanFullBioContent.length > 70 ? '...' : '')}}>
+
+                                        </div>
                                     </div>
 
 

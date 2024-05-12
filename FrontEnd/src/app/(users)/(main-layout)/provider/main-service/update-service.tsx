@@ -21,27 +21,30 @@ import { transformToFilesWithId } from '@lib/utils';
 import {uploadImages} from "../../../../../firebase/utils";
 import DescriptionInput from "../../../_components/input/input-description";
 
+
 type PropUpdateMainService = {
-    serviceId : number
+    data : MainService
 }
 
-const UpdateMainService = ({serviceId}:PropUpdateMainService) => {
+const UpdateMainService = ({data}:PropUpdateMainService) => {
     const {currentUser} = useUser();
     const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
     const [promotions, setPromotions] = useState<Promotion[]>([]);
     const {files} = useUpload();
-    const [newdescription, setNewDescription] = useState('')
+    const [newdescription, setNewDescription] = useState(data.description)
     const handleDescriptionChange = (content: string) => {
         setNewDescription(content);
     };
-    const {
-        data: service,
-        isLoading: isLoading,
-        error: error,
-    } = useSWR(
-        GetMainServiceById(serviceId),
-        fetcherWithToken
-    );
+    // console.log('updateid',serviceId)
+    // const {
+    //     data: service,
+    //     isLoading: isLoading,
+    //     error: error,
+    // } = useSWR(
+    //     GetMainServiceById(serviceId),
+    //     fetcherWithToken
+    // );
+
     const {
         data: dataPromotion,
         isLoading: isLoading2,
@@ -56,19 +59,13 @@ const UpdateMainService = ({serviceId}:PropUpdateMainService) => {
         }
     },[dataPromotion])
 
-    const [updateService, setUpdateService] = useState<EditableMainServiceData>({
-        id: serviceId, // Làm cho giá trị này undefined cho đối tượng mới tạo
-        name: service?.data.name, // Làm
-        price: service?.data.price,
-        priceType: service?.data.priceType,
-        duration: service?.data.duration,
-        restTime: service?.data.restTime,
-        imageUrls: service?.data.imageUrls,
-        description: service?.data.description,
+    const [updateService, setUpdateService] = useState<MainService>({...data,
+        description:newdescription,
         updateDate: new Date(),
-        promotionDTO: service?.data.promotionDTO,
 
     });
+
+    // console.log('updatedata',updateService.name)
 
     const [promotionId, setPromotionId] = useState<number | null>(null);
     const [applyPromotion,setApplyPromotion] = useState<any | null>(null);
@@ -85,17 +82,17 @@ const UpdateMainService = ({serviceId}:PropUpdateMainService) => {
     const {values, touched, handleSubmit, handleChange, errors } = useFormik({
         initialValues: updateService,
         validationSchema: ServiceValidation,
-        onSubmit: async (values: EditableMainServiceData, {setSubmitting, resetForm }) => {
+        onSubmit: async (values: MainService, {setSubmitting, resetForm }) => {
             const uploadedImagesData = await uploadImages(currentUser?.id as string,files as FilesWithId);
             const imageUrls = uploadedImagesData?.map((upload: any,index: any)=> upload.src);
 
             const newService = {
 
                 ...values,
-                imageUrls: imageUrls as string[],
+                // imageUrls: imageUrls as string[],
                 promotionDTO: applyPromotion
             };
-
+            console.log("Service udate :", newService);
             try {
                 const response = await updateMainService(newService);
 
@@ -118,7 +115,26 @@ const UpdateMainService = ({serviceId}:PropUpdateMainService) => {
     //     });
     // };
 
+    // useEffect(() => {
+    //     if (service?.data) {
+    //         setUpdateService({
+    //             id: serviceId,
+    //             name: service.data.name,
+    //             price: service.data.price,
+    //             priceType: service.data.priceType,
+    //             duration: service.data.duration,
+    //             restTime: service.data.restTime,
+    //             imageUrls: service.data.imageUrls,
+    //             description: service.data.description,
+    //             updateDate: new Date(),
+    //             promotionDTO: service.data.promotionDTO,
+    //         });
+    //         setNewDescription(service.data.description || '');
+    //         setPromotionId(service.data.promotionDTO?.id || null);
+    //     }
+    // }, [service, serviceId]);
 
+    // console.log('updatedata',values.name)
     return (
         <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded shadow mr-10">
 
@@ -247,7 +263,7 @@ const UpdateMainService = ({serviceId}:PropUpdateMainService) => {
             <div className="flex items-center justify-between">
                 <button type="submit"
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Tạo Dịch Vụ
+                    Sửa thông tin dịch vụ
                 </button>
 
             </div>
@@ -256,4 +272,4 @@ const UpdateMainService = ({serviceId}:PropUpdateMainService) => {
     );
 };
 
-export default CreateMainServiceForm;
+export default UpdateMainService;

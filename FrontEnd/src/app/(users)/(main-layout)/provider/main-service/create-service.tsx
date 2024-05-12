@@ -78,7 +78,8 @@ const CreateMainServiceForm = () => {
 
                 ...values,
                 imageUrls: imageUrls as string[],
-                promotionDTO: applyPromotion
+                promotionDTO: applyPromotion,
+                description : newdescription
             };
 
             try {

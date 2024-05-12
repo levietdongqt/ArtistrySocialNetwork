@@ -10,6 +10,7 @@ import {UserTooltip} from "../user/user-tooltip";
 import {UserAvatar} from "../user/user-avatar";
 import {User} from "@models/user";
 import {EllipsisOutlined, HeartOutlined, PlusCircleOutlined} from "@ant-design/icons";
+import DOMPurify from "dompurify";
 
 
 interface ProServiceDetail {
@@ -29,7 +30,8 @@ const ServiceDetail: React.FC<ProServiceDetail> = ({ data, isModalVisible, setIs
         setIsModalVisible(false);
     };
     const provider: User | null = data?.provider ;
-
+    const decription = data?.description;
+    const cleanFullBioContent = DOMPurify.sanitize(decription);
     const formatDate = (date?: Date) => {
         return date ? new Date(date).toLocaleDateString('vi-VN', {
             year: 'numeric',
@@ -122,11 +124,11 @@ const ServiceDetail: React.FC<ProServiceDetail> = ({ data, isModalVisible, setIs
                                     Giá: {data?.price} {/* Giá của dịch vụ từ API */}
                                 </div>
 
-                                <p className="whitespace-normal text-sm mt-2">
-                                    {data?.description && data.description.length > 30
-                                        ? data.description.substring(0, 30) + "..."
-                                        : data.description}
-                                </p>
+                                <div
+                                    dangerouslySetInnerHTML={{__html: cleanFullBioContent}}>
+
+                                </div>
+
 
                                 {data.priceType && (
                                     <div className="text-sm text-light-secondary dark:text-dark-secondary">

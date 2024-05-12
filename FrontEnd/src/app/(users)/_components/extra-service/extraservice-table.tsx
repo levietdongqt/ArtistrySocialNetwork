@@ -3,9 +3,10 @@ import { Button } from "@components/ui/button";
 import {Carousel, Image, Popover, Table, Tag} from "antd";
 import ServiceDetail from "../main-service/servicer-detail";
 import React, {useState} from "react";
+import {ExtraService} from "@models/extra-service";
 
 type DataTable = {
-  data: any[];
+  data: ExtraService[];
 };
 
 
