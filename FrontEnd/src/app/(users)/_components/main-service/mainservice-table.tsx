@@ -27,7 +27,11 @@ export default function ServiceMainTable({ data }: DataTable) {
   const handleTest = (value: any) => {
     console.log("data ne", value);
   };
-
+  const imageStyle = {
+    width: "100px", // Chiều rộng cố định bạn muốn áp dụng
+    height: "60px", // Chiều cao cố định bạn muốn áp dụng
+    objectFit: "cover" // Sử dụng object-fit để đảm bảo ảnh không bị méo khi thay đổi kích thước
+  };
   const content = (record: any) => (
     <div className="flex flex-col">
       <Button
@@ -37,13 +41,7 @@ export default function ServiceMainTable({ data }: DataTable) {
       >
         Chỉnh sửa
       </Button>
-      <Button
-        className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
-                           font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
-        onClick={() => handleTest(record.id)}
-      >
-        Chi tiết dịch vụ
-      </Button>
+
       {record.status && (
         <Button
           className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
@@ -69,25 +67,23 @@ export default function ServiceMainTable({ data }: DataTable) {
       dataIndex: "imageUrls",
       render: (imageUrls: any) => {
         return (
-          <Carousel autoplay>
-            <div>
-              {imageUrls?.map((img: any, idx: number) => {
-                return (
-                  <img
-                    key={idx}
-                    src={img}
-                    alt={`Service Image ${idx + 1}`}
-                    style={{
-                      width: "200px",
-                      cursor: "pointer",
-                      marginRight: 5,
-                    }}
-                    onClick={() => handleViewImage(img)}
-                  />
-                );
-              })}
+            <div className="rounded-lg overflow-hidden w-20 h-14">
+              <Carousel autoplay>
+                {imageUrls?.map((img: any, idx: number) => (
+                    <div key={idx} className="relative">
+                      <Image
+                          src={img}
+                          alt={`Service Image ${idx + 1}`}
+                          style={{
+                            width: "100px",
+                            height: "60px",
+                            objectFit: "cover",
+                          }}
+                      />
+                    </div>
+                ))}
+              </Carousel>
             </div>
-          </Carousel>
         );
       },
     },

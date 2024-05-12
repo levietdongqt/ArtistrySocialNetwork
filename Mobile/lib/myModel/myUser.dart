@@ -4,6 +4,7 @@ class MyUser {
   String? id;
   String? fullName;
   String? email;
+  String? address;
   String? phoneNumber;
   bool? gender;
   DateTime? dateOfBirth;
@@ -11,6 +12,7 @@ class MyUser {
   String? avatar;
   String? coverImage;
   Map<String, Object>? userDetails;
+  Map<String, Object>? location;
   String? password;
   List<String>? roles;
   AccentType? accent;
@@ -24,6 +26,7 @@ class MyUser {
     this.id,
     this.fullName,
     this.email,
+    this.address,
     this.phoneNumber,
     this.gender,
     this.dateOfBirth,
@@ -31,6 +34,7 @@ class MyUser {
     this.avatar,
     this.coverImage,
     this.userDetails,
+    this.location,
     this.password,
     this.roles,
     this.accent,
@@ -45,6 +49,7 @@ class MyUser {
       id: json['id'],
       fullName: json['fullName'],
       email: json['email'],
+      address: json['address'],
       phoneNumber: json['phoneNumber'],
       gender: json['gender'],
       dateOfBirth: json['dateOfBirth'] != null
@@ -56,6 +61,7 @@ class MyUser {
       avatar: json['avatar'],
       coverImage: json['coverImage'],
       userDetails: json['userDetails'],
+      // location: json['location'],
       password: json['password'],
       roles: json['roles'] != null ? List<String>.from(json['roles']) : null,
       accent: json['accent'] != null
@@ -77,6 +83,7 @@ class MyUser {
       'id': id,
       'fullName': fullName,
       'email': email,
+      'address': address,
       'phoneNumber': phoneNumber,
       'gender': gender,
       'dateOfBirth': dateOfBirth?.toIso8601String(),
@@ -84,6 +91,7 @@ class MyUser {
       'avatar': avatar,
       'coverImage': coverImage,
       'userDetails': userDetails,
+      'location': location,
       'password': password,
       'roles': roles,
       'accent': _enumToString(accent),
@@ -92,6 +100,7 @@ class MyUser {
       'verified': verified,
       'createDate': createDate?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+
     };
   }
 

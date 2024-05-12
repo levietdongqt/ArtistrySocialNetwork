@@ -15,19 +15,17 @@ import { useUpload } from 'context/uploadfile-context';
 import { FilesWithId } from '@models/file';
 import { transformToFilesWithId } from '@lib/utils';
 import {uploadImages} from "../../../../../firebase/utils";
-
-
-
-
-
-
+import DescriptionInput from "../../../_components/input/input-description";
 
 const CreateMainServiceForm = () => {
     const {currentUser} = useUser();
     const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
     const [promotions, setPromotions] = useState<Promotion[]>([]);
     const {files} = useUpload();
-
+    const [newdescription, setNewDescription] = useState('')
+    const handleDescriptionChange = (content: string) => {
+        setNewDescription(content);
+    };
     const {
         data: dataPromotion,
         isLoading: isLoading2,
@@ -99,7 +97,9 @@ const CreateMainServiceForm = () => {
 
     return (
         <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded shadow mr-10">
-            <UploadFile />
+
+            <UploadFile/>
+
             {/* <ImageService onImageListChange={handleImageListChange}/> */}
             <div className="mb-4">
                 <label htmlFor="serviceName" className="block text-gray-700 text-sm font-bold mb-2">
@@ -209,32 +209,27 @@ const CreateMainServiceForm = () => {
                     ))}
                 </select>
             </div>
-                <div className="mb-4">
-                    <label htmlFor="serviceDescription" className="block text-gray-700 text-sm font-bold mb-2">
-                        Mô Tả Dịch Vụ
-                    </label>
-                    <textarea
-                        id="serviceDescription"
-                        name="description"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        onChange={handleChange}
-                        value={values.description}
-                    />
-                    {errors.description && touched.description ? (
-                        <div className="text-red-700 text-sm">{errors.description}</div>
-                    ) : null}
-                </div>
+            <div className="mb-4 ">
+                <label htmlFor="serviceDescription" className="block text-gray-700 text-sm font-bold mb-2">
+                    Mô tả dịch vụ
+                </label>
+                <DescriptionInput
+                    value={newdescription || ''}
+                    onChange={handleDescriptionChange}
+                />
 
-                <div className="flex items-center justify-between">
-                    <button type="submit"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                        Tạo Dịch Vụ
-                    </button>
-                    
-                </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+                <button type="submit"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Tạo Dịch Vụ
+                </button>
+
+            </div>
         </form>
-    
-);
+
+    );
 };
 
 export default CreateMainServiceForm;

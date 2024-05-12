@@ -1,8 +1,12 @@
 'use client'
 import React, {useEffect, useState} from 'react';
-import { MainService } from "@models/main-service";
+import {EditableMainServiceData, MainService} from "@models/main-service";
 import { useUser } from "../../../../../context/user-context";
-import {createExtraService, createMainService} from "../../../../../services/main/clientRequest/service";
+import {
+    createMainService,
+    GetMainServiceById,
+    updateMainService
+} from "../../../../../services/main/clientRequest/service";
 import ImageService , { ImageItem } from "./image-service";
 import { useFormik } from 'formik';
 import ServiceValidation from "@lib/validations/ServiceValidation";
@@ -15,16 +19,29 @@ import { useUpload } from 'context/uploadfile-context';
 import { FilesWithId } from '@models/file';
 import { transformToFilesWithId } from '@lib/utils';
 import {uploadImages} from "../../../../../firebase/utils";
-import {ExtraService} from "@models/extra-service";
 import DescriptionInput from "../../../_components/input/input-description";
 
-const CreateExtraServiceForm = () => {
+type PropUpdateMainService = {
+    serviceId : number
+}
+
+const UpdateMainService = ({serviceId}:PropUpdateMainService) => {
     const {currentUser} = useUser();
     const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
     const [promotions, setPromotions] = useState<Promotion[]>([]);
     const {files} = useUpload();
     const [newdescription, setNewDescription] = useState('')
-
+    const handleDescriptionChange = (content: string) => {
+        setNewDescription(content);
+    };
+    const {
+        data: service,
+        isLoading: isLoading,
+        error: error,
+    } = useSWR(
+        GetMainServiceById(serviceId),
+        fetcherWithToken
+    );
     const {
         data: dataPromotion,
         isLoading: isLoading2,
@@ -38,20 +55,19 @@ const CreateExtraServiceForm = () => {
             setPromotions(dataPromotion.data);
         }
     },[dataPromotion])
-    const [eService, setMService] = useState<ExtraService>({
-        id: null, // Làm cho giá trị này undefined cho đối tượng mới tạo
-        provider: currentUser, // Sử dụng currentUser từ hook useUser
-        name: '',
-        price: 0,
-        priceType: '',
-        duration: 0,
-        restTime: 0,
-        imageUrls: [],
-        description: '',
-        createDate: new Date(),
+
+    const [updateService, setUpdateService] = useState<EditableMainServiceData>({
+        id: serviceId, // Làm cho giá trị này undefined cho đối tượng mới tạo
+        name: service?.data.name, // Làm
+        price: service?.data.price,
+        priceType: service?.data.priceType,
+        duration: service?.data.duration,
+        restTime: service?.data.restTime,
+        imageUrls: service?.data.imageUrls,
+        description: service?.data.description,
         updateDate: new Date(),
-        promotionDTO: null,
-        status: true,
+        promotionDTO: service?.data.promotionDTO,
+
     });
 
     const [promotionId, setPromotionId] = useState<number | null>(null);
@@ -66,26 +82,22 @@ const CreateExtraServiceForm = () => {
         setApplyPromotion(result);
 
     };
-    const handleDescriptionChange = (content: string) => {
-        setNewDescription(content);
-    };
     const {values, touched, handleSubmit, handleChange, errors } = useFormik({
-        initialValues: eService,
+        initialValues: updateService,
         validationSchema: ServiceValidation,
-        onSubmit: async (values: ExtraService, {setSubmitting, resetForm }) => {
+        onSubmit: async (values: EditableMainServiceData, {setSubmitting, resetForm }) => {
             const uploadedImagesData = await uploadImages(currentUser?.id as string,files as FilesWithId);
             const imageUrls = uploadedImagesData?.map((upload: any,index: any)=> upload.src);
 
             const newService = {
 
                 ...values,
-                destination:newdescription,
                 imageUrls: imageUrls as string[],
                 promotionDTO: applyPromotion
             };
 
             try {
-                const response = await createExtraService(newService);
+                const response = await updateMainService(newService);
 
                 console.log("Service created successfully", response);
 
@@ -97,6 +109,14 @@ const CreateExtraServiceForm = () => {
             }
         },
     });
+    // const handleImageListChange = (newImageList: ImageItem[]) => {
+    //     console.log("newImageList",newImageList)
+    //     // Chỉ cần cập nhật mService imageUrl thay vì gọi setFieldValue tại đây.
+    //     setMService({
+    //         ...mService,
+    //         imageUrls: newImageList.map((imageItem) => imageItem.src),
+    //     });
+    // };
 
 
     return (
@@ -236,4 +256,4 @@ const CreateExtraServiceForm = () => {
     );
 };
 
-export default CreateExtraServiceForm;
+export default CreateMainServiceForm;

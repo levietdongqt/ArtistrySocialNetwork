@@ -55,6 +55,7 @@ export default function UploadFile ()  {
         fileList={fileList}
         onPreview={handlePreview}
         onChange={handleChange}
+        multiple={true}
       >
         {fileList.length >= 8 ? null : uploadButton}
       </Upload>

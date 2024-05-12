@@ -5,6 +5,13 @@ import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Review } from '@models/review';
 import {UserAvatar} from "../../../../_components/user/user-avatar";
+import useSWR from "swr";
+import {getUserById} from "../../../../../../services/main/clientRequest/userClient";
+import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import {UserTooltip} from "../../../../_components/user/user-tooltip";
+import {Modal} from "../../../../_components/modal/modal";
+import RegisterProviderForm from "../register-provider";
+import CreateReview from "./create-review";
 
 
 
@@ -14,12 +21,10 @@ interface ReviewCardProps {
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
     const {
-        reviewDetails: { star, content, additionalContent, createdDate, serviceName },
+        reviewDetails: { CREATE_DATE,CONTENT,ADDITIONAL_CONTENT,MAIN_SERVICE_ID,STAR,SERVICE_NAME },
     } = review;
-
-    const username = "John Doe"; // Thay đổi thành username từ dữ liệu sau này.
-
-    const dateObject = new Date(createdDate);
+    const dateObject = new Date(review?.reviewDetails?.CREATE_DATE);
+    // console.log('dateObject',review?.reviewDetails.STAR)
     const formattedDate = !isNaN(dateObject.valueOf())
         ? format(dateObject, "MMM do, yyyy")
         : "Invalid Date";
@@ -34,6 +39,8 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
     };
 
     return (
+        <>
+
         <motion.div
             whileHover="hover"
             variants={variants}
@@ -42,17 +49,19 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
             style={{ perspective: 1000 }} // Apply perspective to get a more pronounced 3D effect
         >
             <div className="flex items-center space-x-4">
-                <UserAvatar src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"} alt={username} username={username} />
+                <UserAvatar src={review?.customerUser?.avatar} alt={review?.customerUser?.fullName ?? ''} username={review?.customerUser?.fullName ?? ''} />
+
                 <div className="flex flex-col">
-                    <span className="font-medium text-gray-700">{username}</span>
-                    <Rate disabled defaultValue={star} className="text-sm" />
+                    <span className="font-medium text-gray-700">{review?.customerUser?.fullName}</span>
+                    <Rate disabled defaultValue={review?.reviewDetails?.STAR} className="text-sm" />
                     <span className="text-sm text-gray-500">{formattedDate}</span>
                 </div>
             </div>
-            <div className="text-gray-800">Service used: {serviceName}</div>
-            <div className="text-gray-600">{content}</div>
-            {additionalContent && <div className="text-gray-500 text-sm">{additionalContent}</div>}
+            <div className="text-gray-800">Service used: {review?.reviewDetails.SERVICE_NAME}</div>
+            <div className="text-gray-600">{review?.reviewDetails.CONTENT}</div>
+            {review?.reviewDetails.ADDITIONAL_CONTENT && <div className="text-gray-500 text-sm">{review?.reviewDetails.ADDITIONAL_CONTENT}</div>}
         </motion.div>
+        </>
     );
 };
 

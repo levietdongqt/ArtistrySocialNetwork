@@ -1,21 +1,22 @@
 import {JsonObject} from "type-fest";
+import {User} from "@models/user";
 
 // Review type with reviewDetails as a nested object
 export type Review = {
-    id: number;
-    customerUserId: number;
-    providerId: number;
+    id: number| null;
+    customerUser: User;
+    providerUser: User;
     reviewDetails: ReviewDetails;
 }
 
 // Review details type definition
 export type ReviewDetails = {
-    star: number;
-    content: string;
-    additionalContent: string;
-    createdDate: Date;
-    mainServiceId: number;
-    serviceName: string;
-    likesNumber: number;
-    isHaveOrder: boolean;
+    STAR: number;
+    CONTENT: string;
+    ADDITIONAL_CONTENT: string;
+    CREATE_DATE: string;
+    MAIN_SERVICE_ID: number|null;
+    SERVICE_NAME: string;
+    LIKE_NUMBER: number;
+    IS_HAVE_ORDER: boolean;
 }

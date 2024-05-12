@@ -107,7 +107,7 @@ const InputAddress: React.FC<InputAddressProps> = ({ onAddressComplete }) => {
         <div className="space-y-6 sm:space-y-0 sm:space-x-6 mb-6 flex flex-col sm:flex-row">
             <div className="flex-grow">
                 <label className="block mb-2 sm:mb-0 sm:mr-4">
-                    Số nhà, Tên đường:
+                    Tên đường:
                     <input
                         type="text"
                         placeholder="Ví dụ: 123 Lý Thường Kiệt"

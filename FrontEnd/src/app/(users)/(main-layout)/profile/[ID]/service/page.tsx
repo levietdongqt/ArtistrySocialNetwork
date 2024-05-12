@@ -30,9 +30,11 @@ export default function UserMedia(): JSX.Element {
                               ) */
                                   : (
                                   <AnimatePresence mode='popLayout'>
-                                      {/*{sortedTweets.map((content) => (*/}
-                                      <ServiceProvider />
-                                      {/*))}*/}
+                                    <div className="py-2.5">
+                                        <ServiceProvider />
+                                    </div>
+
+
                                   </AnimatePresence>
                               )}
                           </section>

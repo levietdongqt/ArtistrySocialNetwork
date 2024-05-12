@@ -18,9 +18,9 @@ const ServiceValidation = yup.object({
     // imageUrl: yup.array()
     //     .of(yup.string().url("URL ảnh phải hợp lệ"))
     //     .required("Ảnh không được để trống"),
-    description: yup.string()
-        .required("Mô tả dịch vụ không được để trống")
-        .max(500, "Mô tả quá dài!")
+    // description: yup.string()
+    //     .required("Mô tả dịch vụ không được để trống")
+    //     .max(500, "Mô tả quá dài!")
 });
 
 export default ServiceValidation;
