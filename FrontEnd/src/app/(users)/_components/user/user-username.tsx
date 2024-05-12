@@ -15,7 +15,7 @@ export function UserUsername({
   disableLink
 }: UserUsernameProps) {
   return (
-    <Link href={`/user/${id}`} className={cn(
+    <Link href={`/profile/${id}`} className={cn(
         'truncate text-light-secondary dark:text-dark-secondary',
         className,
         disableLink && 'pointer-events-none'

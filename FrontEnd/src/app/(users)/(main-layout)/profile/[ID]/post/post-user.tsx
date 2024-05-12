@@ -9,9 +9,10 @@ import {useModal} from "@lib/hooks/useModal";
 import useSWR from "swr";
 import {useUser} from "../../../../../../context/user-context";
 import {getBookmarksByUserId} from "../../../../../../services/realtime/clientRequest/bookmarksClient";
-import {getPostListByPostId} from "../../../../../../services/realtime/clientRequest/postClient";
+import {getPostListByPostId, getPostsLimit} from "../../../../../../services/realtime/clientRequest/postClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {ContentPost} from "../../../../_components/content/content";
+import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
 
 
 const PostUser = () => {
@@ -31,8 +32,10 @@ const PostUser = () => {
         [bookmarksRef]
     );
 
-    const { data: postData, isLoading: postLoading } = useSWR(getPostListByPostId(postId),fetcherWithToken);
-
+    const { paginatedPosts:postData, isLoadingMore:postLoading,LoadMore,isReachedEnd,setSize,size,mutate,error } =
+        useInfiniteScroll(
+            getPostsLimit
+        );
     return (
         <>
 
@@ -41,9 +44,9 @@ const PostUser = () => {
                     <Loading className='mt-5' />
                 ) :(
                     <AnimatePresence mode='popLayout'>
-                        {/*{postData?.data?.map((post:any) => (*/}
-                        {/*    <ContentPost {...post} key={post.id} />*/}
-                        {/*))}*/}
+                        {postData?.map((post:any) => (
+                            <ContentPost {...post} key={post.id} />
+                        ))}
 
                     </AnimatePresence>
                 )}

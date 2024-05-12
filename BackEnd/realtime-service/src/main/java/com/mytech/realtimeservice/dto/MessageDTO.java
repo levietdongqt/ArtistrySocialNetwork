@@ -28,5 +28,5 @@ public class MessageDTO {
     private ParentMessage parentMessage;
     private Integer likes;
     private LocalDateTime sendTime;
-    private boolean isTyping;
+    private boolean seen = false;
 }

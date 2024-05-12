@@ -143,17 +143,16 @@ class _HomePageState extends State<HomePage> {
 
   void initChat() {
     final chatState = Provider.of<ChatState>(context, listen: false);
-    final state = Provider.of<AuthState>(context, listen: false);
-    chatState.databaseInit(state.userId, state.userId);
+    chatState.initConversations(context);
 
     /// It will update fcm token in database
     /// fcm token is required to send firebase notification
-    state.updateFCMToken();
+    ///state.updateFCMToken();
 
     /// It get fcm server key
     /// Server key is required to configure firebase notification
     /// Without fcm server notification can not be sent
-    chatState.getFCMServerKey();
+    ///chatState.getFCMServerKey();
   }
 
   /// Initialize the firebase dynamic link sdk

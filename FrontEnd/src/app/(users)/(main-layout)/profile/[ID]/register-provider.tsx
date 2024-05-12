@@ -101,7 +101,9 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
             console.log("Provider Register successfully", response);
             const updatedUser = response.data as User;
             setCurrentUser(updatedUser)
+
             setCookie('user', JSON.stringify(updatedUser),refresh_token_options);
+
             push("/provider")
             closeModal();
         } catch (error) {

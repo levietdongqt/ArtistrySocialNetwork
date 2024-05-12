@@ -13,6 +13,8 @@ import Link from "next/link";
 import {UserTooltip} from "../user/user-tooltip";
 import {UserAvatar} from "../user/user-avatar";
 import {User} from "@models/user";
+import ServiceDetail from "./servicer-detail";
+
 
 interface ProServiceCard{
     data: MainService
@@ -21,8 +23,12 @@ interface ProServiceCard{
 
 export function ServiceCard({data}:ProServiceCard): JSX.Element {
     const [openModalCreateReview, setOpenModalCreateReview] = React.useState(false);
+    const [openModalServiceDetail, setOpenModalServiceDetail] = useState(false);
     const handleOpenCreateReview =()=>{
         setOpenModalCreateReview(true)
+    }
+    const handleOpenServiceDetail = () => {
+        setOpenModalServiceDetail(true);
     }
     const provider: User | null = data?.provider ;
 
@@ -60,6 +66,7 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
             <Modal open={openModalCreateReview} closeModal={()=>setOpenModalCreateReview(false)}>
                 <CreateReview closeModal={()=>setOpenModalCreateReview(false)} service={data}/>
             </Modal>
+            <ServiceDetail data={data} isModalVisible={openModalServiceDetail} setIsModalVisible={setOpenModalServiceDetail} />
                 {/*<Link href={`/service/${data.id}`} passHref>*/}
                     <motion.div className="block cursor-pointer z-1 py-2.5"  whileTap={{scale: 0.97}}>
                         <div className="block cursor-pointer">
@@ -133,6 +140,11 @@ export function ServiceCard({data}:ProServiceCard): JSX.Element {
                                                 className="self-end bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                                             Đặt Dịch vụ
                                         </button>
+
+                                        <div onClick={handleOpenServiceDetail}
+                                             className="cursor-pointer text-blue-500 hover:text-blue-700 transition ease-in duration-300">
+                                            Xem chi tiết...
+                                        </div>
                                     </div>
                                 </div>
 

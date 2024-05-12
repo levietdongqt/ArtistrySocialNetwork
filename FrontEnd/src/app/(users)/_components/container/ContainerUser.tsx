@@ -29,7 +29,7 @@ const ContainerUser = () => {
                 </AnimatePresence>
                 ) : (
                 <div className="border border-gray-300 rounded p-4 shadow">
-                <ServiceProvider/>
+                    <PostUser  />
                 </div>
                 )}
         </section>

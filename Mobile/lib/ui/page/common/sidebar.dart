@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/constant.dart';
+import 'package:flutter_twitter_clone/state/WebSocketState.dart';
 import 'package:flutter_twitter_clone/state/authState.dart';
 import 'package:flutter_twitter_clone/ui/page/bookmark/bookmarkPage.dart';
 import 'package:flutter_twitter_clone/ui/page/profile/follow/followerListPage.dart';
@@ -234,6 +235,8 @@ class _SidebarMenuState extends State<SidebarMenu> {
   }
 
   void _logOut() {
+    final socketState = Provider.of<WebSocketState>(context,listen: false);
+    socketState.disconnect();
     final state = Provider.of<AuthState>(context, listen: false);
     Navigator.pop(context);
     state.logoutCallback();
@@ -259,11 +262,11 @@ class _SidebarMenuState extends State<SidebarMenu> {
                     child: _menuHeader(),
                   ),
                   const Divider(),
-                  _menuListRowButton('Profile',
+                  _menuListRowButton('Trang cá nhân',
                       icon: AppIcon.profile, isEnable: true, onPressed: () {
                     var state = context.read<AuthState>();
                     Navigator.push(
-                        context, ProfilePage.getRoute(profileId: state.userId));
+                        context, ProfilePage.getRoute(profileId: state.myUser!.id!));
                   }),
                   _menuListRowButton(
                     'Bookmark',

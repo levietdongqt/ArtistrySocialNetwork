@@ -108,7 +108,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: CircularImage(
-        path: authState.userModel?.profilePic,
+        path: authState.myUser!.avatar,
         height: 30,
       ).ripple(() {
         scaffoldKey!.currentState!.openDrawer();
