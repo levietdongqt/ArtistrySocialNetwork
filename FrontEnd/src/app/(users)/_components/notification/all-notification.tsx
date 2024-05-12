@@ -376,7 +376,7 @@ export default function AllNotification() {
               <AnimatePresence mode="popLayout">
                 {notificationsTypeNormal &&
                   notificationsTypeNormal.map((item: any, index: number) => {
-                    return <NotificationCard key={index} data={item} />;
+                    return<NotificationCard key={index} data={item} />;
                   })}
               </AnimatePresence>
             </>

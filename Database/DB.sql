@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS friendships (
 	id Bigint auto_increment,
     from_User_Id VARCHAR(36) not null,
     to_User_Id VARCHAR(36),
-    status ENUM('PENDING', 'ISFRIEND', 'FOLLOWING', 'BLOCKED') DEFAULT 'PENDING',
+    status json DEFAULT NULL,
     primary key(id),
     foreign key(from_User_Id) references users(id),
     foreign key(to_User_Id) references users(id)
@@ -155,6 +155,7 @@ CREATE TABLE IF NOT EXISTS working_time (
     end_Date datetime not null,
     working_Day varchar(20) CHARACTER SET utf8mb4,
     status boolean default 1,
+	working_Days json DEFAULT NULL,
     primary key(id),
     Foreign key(user_Id) references users(id)
 );

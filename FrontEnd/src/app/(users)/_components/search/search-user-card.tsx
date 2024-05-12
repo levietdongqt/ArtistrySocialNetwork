@@ -7,6 +7,7 @@ import { SearchUser } from '@models/search';
 import { SearchButton } from './search-button';
 import { UserName } from '../user/user-name';
 import { ClockCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { FollowButton } from '@components/ui/follow-button';
 
 const { Text } = Typography;
 interface SearchUserParams {
@@ -18,7 +19,7 @@ interface SearchUserParams {
 export function SearchUserCard({data} : SearchUserParams): JSX.Element {
   
   return (
-    <Link href={`/user/${data.user.id}`}  className='accent-tab bg-w-primary py-5 hover-animation grid grid-cols-[auto,1fr] gap-3 px-4
+    <Link href={`/profile/${data.user.id}`}  className='accent-tab bg-w-primary py-5 hover-animation grid grid-cols-[auto,1fr] gap-3 px-4
                    py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5'
     >
        <div className="flex items-center justify-between w-full">
@@ -43,7 +44,12 @@ export function SearchUserCard({data} : SearchUserParams): JSX.Element {
         </div>
       </div>
       <div className='absolute right-5'>
-      <SearchButton userTargetUsername={data.user.fullName} userTargetId={data.user.id} follow={data.isCheckFriend.follow} pending={data.isCheckFriend.pending} friend={data.isCheckFriend.friend} acceptedFriend={data.isCheckFriend.acceptFriend} />
+      <FollowButton
+                                            userTargetId={data.user.id}
+                                            userTargetUsername={data?.user.fullName}
+                                            hovered={true}
+                                        />
+      {/* <SearchButton userTargetUsername={data.user.fullName} userTargetId={data.user.id} follow={data.isCheckFriend.follow} pending={data.isCheckFriend.pending} friend={data.isCheckFriend.friend} acceptedFriend={data.isCheckFriend.acceptFriend} /> */}
       </div>
       </div>
     </Link>

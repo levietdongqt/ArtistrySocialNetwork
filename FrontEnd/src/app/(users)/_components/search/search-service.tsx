@@ -11,6 +11,7 @@ import { SearchServiceCard } from "./search-service-card";
 import { useEffect } from "react";
 import { HeroIcon } from "@components/ui/hero-icon";
 import { EmptyPage } from "@models/search";
+import { ServiceCard } from "../main-service/service-card";
 
 
 export default function SearchService() {
@@ -33,7 +34,7 @@ export default function SearchService() {
           {
             data.data.map((item: any, index : number) => {
               return (
-                <SearchServiceCard key={index} data={item}/>
+                <ServiceCard key={index} data={item}/>
               )
             })
           }

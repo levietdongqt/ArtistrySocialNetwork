@@ -1,6 +1,7 @@
 import { DashOutlined } from "@ant-design/icons";
 import { Button } from "@components/ui/button";
-import { Popover, Table, Tag, Carousel, Image } from "antd";
+import { Modal, Popover, Table, Tag, Carousel, Image } from "antd";
+import { useState } from "react";
 
 type DataTable = {
   data: any[];
@@ -15,6 +16,14 @@ const contentStyle = {
 };
 
 export default function ServiceMainTable({ data }: DataTable) {
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(
+    undefined
+  );
+  const handleViewImage = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    setModalVisible(true);
+  };
   const handleTest = (value: any) => {
     console.log("data ne", value);
   };
@@ -147,7 +156,7 @@ export default function ServiceMainTable({ data }: DataTable) {
       },
     },
     {
-      title: "Action",
+      title: "Công cụ",
       dataIndex: "",
       key: "x",
       render: (record: any) => (
@@ -164,5 +173,16 @@ export default function ServiceMainTable({ data }: DataTable) {
     },
   ];
 
-  return <Table columns={columns} dataSource={data} />;
+  return (
+    <>
+      <Table columns={columns} dataSource={data} />
+      <Modal
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={null}
+      >
+        {selectedImage && <Image src={selectedImage} />}
+      </Modal>
+    </>
+  );
 }

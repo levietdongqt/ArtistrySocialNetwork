@@ -29,6 +29,12 @@ export function UserFollowing({
       revalidateOnFocus: false,
     }
   );
+  return (
+    <p className="rounded bg-main-search-background px-1 text-xs">
+      {userTargetId === currentUser?.id ? "" : data?.data.follow ? FollowButtonType.FOLLOW : FollowButtonType.UN_FOLLOW}
+      {data?.data.friend ? ` | ${FollowButtonType.FRIEND}`:``}
+    </p>
+  );
     if (currentUser?.id === userTargetId) {
         return null;
     }

@@ -31,7 +31,7 @@ export function SearchBarCard({
   return (
     <Link
       href={type === "user"
-      ? `/user/${id}`
+      ? `/profile/${id}`
       : type === "post"
       ? `/post/${id}`
       : type === "service"

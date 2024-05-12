@@ -13,7 +13,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -31,10 +33,10 @@ public class WorkingTimeDTO implements Serializable {
     private LocalDateTime endDate;
 
 
-    private String workingDay;
+    private List<DayOfWeek> workingDays;
 
 
     private boolean status =true;
 
-    private User provider;
+    private UserDTO provider;
 }

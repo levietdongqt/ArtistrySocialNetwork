@@ -1,9 +1,8 @@
 package com.mytech.mainservice.controller;
 
-import com.mytech.mainservice.dto.MainServiceDTO;
-import com.mytech.mainservice.dto.PromotionDTO;
 import com.mytech.mainservice.dto.ResponseObject;
-import com.mytech.mainservice.service.IPromotionService;
+import com.mytech.mainservice.dto.WorkingTimeDTO;
+import com.mytech.mainservice.service.IWorkingTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -13,82 +12,83 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Controller
-@RequestMapping("promotions")
-public class PromotionController {
+@RequestMapping("working-time")
+public class WorkingTimeController {
 
     @Autowired
-    private IPromotionService promotionService;
+    private IWorkingTimeService workingTimeService;
+
     @GetMapping("/{userId}/get-all-by-status")
-    public ResponseEntity<?> getPromotions(@PathVariable("userId") String userId, @Param("status") boolean status, @Param("isExpired") boolean expired) {
-        List<PromotionDTO> lists = promotionService.getPromotionsForServiceAndOrder(userId, status, expired);
+    public ResponseEntity<?> getWorkingTimesByStatus(@PathVariable("userId") String userId, @Param("status") boolean status) {
+        List<WorkingTimeDTO> lists = workingTimeService.getAllWorkingTimesByStatus(userId, status);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Get Promotion successfully")
+                        .message("Get WorkingTimeDTO successfully")
                         .data(lists).build()
         );
     }
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('PROVIDER')")
     @GetMapping("/{userId}/get-all")
-    public ResponseEntity<?> getAllPromotions(@PathVariable("userId") String userId) {
-        List<PromotionDTO> lists = promotionService.getAllPromotions(userId);
+    public ResponseEntity<?> getAllWorkingTimes(@PathVariable("userId") String userId) {
+        List<WorkingTimeDTO> lists = workingTimeService.getAllWorkingTimes(userId);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Get Promotion successfully")
+                        .message("Get WorkingTimeDTO successfully")
                         .data(lists).build()
         );
     }
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('PROVIDER')")
     @PostMapping("/{userId}/save")
-    public ResponseEntity<?> createPromotion(@PathVariable("userId") String userId, @RequestBody PromotionDTO promotionDTO){
-        promotionService.createPromotion(promotionDTO);
+    public ResponseEntity<?> createWorkingTime(@PathVariable("userId") String userId, @RequestBody WorkingTimeDTO workingTimeDTO){
+        workingTimeService.createWorkingTime(workingTimeDTO);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Create Promotion successfully")
+                        .message("Create workingTime successfully")
                         .data(null).build()
         );
     }
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('PROVIDER')")
     @PutMapping("/{userId}/update")
-    public ResponseEntity<?> updatePromotion(@PathVariable("userId") String userId, @RequestBody PromotionDTO promotionDTO){
-        promotionService.updatePromotion(promotionDTO);
+    public ResponseEntity<?> updateWorkingTime(@PathVariable("userId") String userId, @RequestBody WorkingTimeDTO workingTimeDTO){
+        workingTimeService.updateWorkingTime(workingTimeDTO);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Update Promotion successfully")
+                        .message("Update workingTime successfully")
                         .data(null).build()
         );
     }
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('PROVIDER')")
-    @DeleteMapping("/{userId}/delete/{promotionId}")
-    public ResponseEntity<?> deletePromotion(@PathVariable("userId") String userId,@PathVariable("promotionId") Long promotionId){
-        promotionService.deletePromotion(userId,promotionId);
+    @DeleteMapping("/{userId}/delete/{workingTimeId}")
+    public ResponseEntity<?> deleteWorkingTime(@PathVariable("userId") String userId,@PathVariable("workingTimeId") Long workingTimeId){
+        workingTimeService.deleteWorkingTime(userId,workingTimeId);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Delete Promotion successfully")
+                        .message("Delete workingTime successfully")
                         .data(null).build()
         );
     }
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('PROVIDER')")
-    @PutMapping("/{userId}/rework/{promotionId}")
-    public ResponseEntity<?> reworkPromotion(@PathVariable("userId") String userId,@PathVariable("promotionId") Long promotionId){
-        promotionService.updatePromotion(userId,promotionId);
+    @PutMapping("/{userId}/rework/{workingTimeId}")
+    public ResponseEntity<?> reworkWorkingTime(@PathVariable("userId") String userId,@PathVariable("workingTimeId") Long workingTimeId){
+        workingTimeService.updateWorkingTime(userId,workingTimeId);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Delete Promotion successfully")
+                        .message("Rework workingTime successfully")
                         .data(null).build()
         );
     }
+
 }
