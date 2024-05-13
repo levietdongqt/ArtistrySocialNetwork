@@ -13,28 +13,33 @@ import 'package:flutter_twitter_clone/model/user.dart';
 import 'package:flutter_twitter_clone/ui/page/common/locator.dart';
 import 'package:get_it/get_it.dart';
 
+import '../myModel/mainService.dart';
+import '../myModel/review.dart';
 import 'authState.dart';
 
 class ProfileState extends ChangeNotifier {
+  late String userId;
+  List<Review>? listReview;
+  List<MainService>? listMainService;
   ProfileState(this.profileId) {
     // databaseInit();
     init();
     _getProfileUser(profileId);
     getIt<SharedPreferenceHelper>().getUserProfile().then((myUser) {
       userId = myUser!.id!;
+      cprint("UserId: ${userId}",errorIn: "ProfileState");
       _getloggedInUserProfile(myUser.id!);
     });
     // userId = FirebaseAuth.instance.currentUser!.uid;
   }
 
   /// This is the id of user who is logegd into the app.
-  late String userId;
 
   /// Profile data of logged in user.
   late UserModel _userModel;
-
+  late MyUser _myUser;
   UserModel get userModel => _userModel;
-
+  MyUser get myUser => _myUser;
   dabase.Query? _profileQuery;
   late StreamSubscription<DatabaseEvent> profileSubscription;
 
@@ -43,9 +48,9 @@ class ProfileState extends ChangeNotifier {
 
   /// Profile data of user whose profile is open.
   late UserModel _profileUserModel;
-
-  UserModel get profileUserModel => _profileUserModel;
-
+  late MyUser _profileMyUser;
+  // UserModel get profileUserModel => _profileUserModel;
+  MyUser get profileMyUser => _profileMyUser;
   bool _isBusy = true;
 
   bool get isbusy => _isBusy;
@@ -84,36 +89,52 @@ class ProfileState extends ChangeNotifier {
             ServerDestination.Main_Service,true)
         .then((response) {
       if (response.status == 200) {
-        // _userModel = MyUser.fromJson(response.data);
+        _myUser = MyUser.fromJson(response.data);
       }
     });
   }
 
   /// Fetch profile data of user whoose profile is opened
   void _getProfileUser(String? userProfileId) {
+    // assert(userProfileId != null);
+    // try {
+    //   loading = true;
+    //   kDatabase
+    //       .child("profile")
+    //       .child(userProfileId!)
+    //       .once()
+    //       .then((DatabaseEvent event) {
+    //     final snapshot = event.snapshot;
+    //     if (snapshot.value != null) {
+    //       var map = snapshot.value as Map;
+    //       // ignore: unnecessary_null_comparison
+    //       if (map != null) {
+    //         _profileUserModel = UserModel.fromJson(map);
+    //         Utility.logEvent('get_profile_2', parameter: {});
+    //       }
+    //     }
+    //     loading = false;
+    //   });
+    // } catch (error) {
+    //   loading = false;
+    //   cprint(error, errorIn: 'getProfileUser');
+    // }
+
     assert(userProfileId != null);
-    try {
-      loading = true;
-      kDatabase
-          .child("profile")
-          .child(userProfileId!)
-          .once()
-          .then((DatabaseEvent event) {
-        final snapshot = event.snapshot;
-        if (snapshot.value != null) {
-          var map = snapshot.value as Map;
-          // ignore: unnecessary_null_comparison
-          if (map != null) {
-            _profileUserModel = UserModel.fromJson(map);
-            Utility.logEvent('get_profile_2', parameter: {});
-          }
-        }
-        loading = false;
-      });
-    } catch (error) {
+    loading = true;
+    ApiHelper.callApi(HttpMethod.GET, '/user/get/${userProfileId}', null, ServerDestination.Main_Service, true)
+        .then((response) {
+      if (response.status == 200) {
+        // Parse the JSON data to UserModel
+        _profileMyUser = MyUser.fromJson(response.data);
+      }
       loading = false;
-      cprint(error, errorIn: 'getProfileUser');
-    }
+    }).catchError((error) {
+      // Handle any errors here
+      loading = false;
+      cprint(error, errorIn: '_getProfileUser');
+    });
+
   }
 
   /// Follow / Unfollow user
@@ -121,51 +142,52 @@ class ProfileState extends ChangeNotifier {
   /// If `removeFollower` is true then remove user from follower list
   ///
   /// If `removeFollower` is false then add user to follower list
-  followUser({bool removeFollower = false}) {
-    /// `userModel` is user who is logged-in app.
-    /// `profileUserModel` is user whoose profile is open in app.
-    try {
-      if (removeFollower) {
-        /// If logged-in user `alredy follow `profile user then
-        /// 1.Remove logged-in user from profile user's `follower` list
-        /// 2.Remove profile user from logged-in user's `following` list
-        profileUserModel.followersList!.remove(userModel.userId);
-
-        /// Remove profile user from logged-in user's following list
-        userModel.followingList!.remove(profileUserModel.userId);
-        cprint('user removed from following list', event: 'remove_follow');
-      } else {
-        /// if logged in user is `not following` profile user then
-        /// 1.Add logged in user to profile user's `follower` list
-        /// 2. Add profile user to logged in user's `following` list
-        profileUserModel.followersList ??= [];
-        profileUserModel.followersList!.add(userModel.userId!);
-        // Adding profile user to logged-in user's following list
-        userModel.followingList ??= [];
-        addFollowNotification();
-        userModel.followingList!.add(profileUserModel.userId!);
-      }
-      // update profile user's user follower count
-      profileUserModel.followers = profileUserModel.followersList!.length;
-      // update logged-in user's following count
-      userModel.following = userModel.followingList!.length;
-      kDatabase
-          .child('profile')
-          .child(profileUserModel.userId!)
-          .child('followerList')
-          .set(profileUserModel.followersList);
-      kDatabase
-          .child('profile')
-          .child(userModel.userId!)
-          .child('followingList')
-          .set(userModel.followingList);
-      cprint('user added to following list', event: 'add_follow');
-
-      notifyListeners();
-    } catch (error) {
-      cprint(error, errorIn: 'followUser');
-    }
-  }
+  // followUser({bool removeFollower = false}) {
+  //   /// `userModel` is user who is logged-in app.
+  //   /// `profileUserModel` is user whoose profile is open in app.
+  //   try {
+  //     if (removeFollower) {
+  //       /// If logged-in user `alredy follow `profile user then
+  //       /// 1.Remove logged-in user from profile user's `follower` list
+  //       /// 2.Remove profile user from logged-in user's `following` list
+  //       profileUserModel.followersList!.remove(userModel.userId);
+  //
+  //
+  //       /// Remove profile user from logged-in user's following list
+  //       userModel.followingList!.remove(profileUserModel.userId);
+  //       cprint('user removed from following list', event: 'remove_follow');
+  //     } else {
+  //       /// if logged in user is `not following` profile user then
+  //       /// 1.Add logged in user to profile user's `follower` list
+  //       /// 2. Add profile user to logged in user's `following` list
+  //       profileUserModel.followersList ??= [];
+  //       profileUserModel.followersList!.add(userModel.userId!);
+  //       // Adding profile user to logged-in user's following list
+  //       userModel.followingList ??= [];
+  //       addFollowNotification();
+  //       userModel.followingList!.add(profileUserModel.userId!);
+  //     }
+  //     // update profile user's user follower count
+  //     profileUserModel.followers = profileUserModel.followersList!.length;
+  //     // update logged-in user's following count
+  //     userModel.following = userModel.followingList!.length;
+  //     kDatabase
+  //         .child('profile')
+  //         .child(profileUserModel.userId!)
+  //         .child('followerList')
+  //         .set(profileUserModel.followersList);
+  //     kDatabase
+  //         .child('profile')
+  //         .child(userModel.userId!)
+  //         .child('followingList')
+  //         .set(userModel.followingList);
+  //     cprint('user added to following list', event: 'add_follow');
+  //
+  //     notifyListeners();
+  //   } catch (error) {
+  //     cprint(error, errorIn: 'followUser');
+  //   }
+  // }
 
   void addFollowNotification() {   // 
     // Sends notification to user who created tweet
@@ -192,8 +214,13 @@ class ProfileState extends ChangeNotifier {
     final updatedUser = UserModel.fromJson(event.snapshot.value as Map);
     if (updatedUser.userId == profileId) {
       _profileUserModel = updatedUser;
+
     }
     notifyListeners();
+    // final updatedUser = MyUser.fromJson(event.snapshot.value as Map);
+    // if (updatedUser.id == profileId) {
+    //   _getProfileUser(updatedUser.id);
+    // }
   }
 
   @override
@@ -202,4 +229,39 @@ class ProfileState extends ChangeNotifier {
     // profileSubscription.cancel();
     super.dispose();
   }
+
+
+  void  fetchReviews(String id) async {
+
+    final response = await ApiHelper.callApi(HttpMethod.GET, '/review/get-all/${id}', null, ServerDestination.Main_Service, true);
+    if (response.status == 200) {
+      List<dynamic> jsonResponse = response.data;
+      listReview = jsonResponse.map((data) => Review.fromJson(data)).toList();
+      notifyListeners();
+    } else {
+      throw Exception('Failed to load reviews');
+    }
+  }
+
+  void fetchService(String id) async {
+    cprint(' Data dịch vụ List', label: 'profile_state');
+
+      final response = await ApiHelper.callApi(HttpMethod.GET, '/main-service/get-all/${id}', null, ServerDestination.Main_Service, true);
+      cprint(' Data dịch vụ List 2 ${response.status}', label: 'profile_state');
+    cprint(' Data List 3 ${response.data}', label: 'profile_state');
+      if (response.status == 200) {
+          List<dynamic> jsonResponse = response.data;
+          cprint(' Data List 4 ${listMainService}', label: 'profile_state');
+          listMainService = jsonResponse.map((data) => MainService.fromJson(data)).toList();
+
+            notifyListeners();
+
+        } else {
+        throw Exception('Failed to load service');
+
+        }
+
+
+  }
+
 }

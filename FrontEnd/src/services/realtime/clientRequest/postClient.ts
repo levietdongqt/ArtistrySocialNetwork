@@ -13,6 +13,9 @@ export function getPostsCount (): fetcherParams {
 export function getPostsLimit (userId?:string,limit?: number,pageIndex?:number): fetcherParams {
     return [`/posts/get-posts/${userId}?limit=${limit}&pageIndex=${pageIndex}`, 'GET', null, ServiceDestination.REALTIME];
 }
+export function getPostsByUserId (userId?:string,limit?: number,pageIndex?:number): fetcherParams {
+    return [`/posts/get-posts-byid/${userId}?limit=${limit}&pageIndex=${pageIndex}`, 'GET', null, ServiceDestination.REALTIME];
+}
 
 export function getPostListByPostId(postIds: any): fetcherParams {
     return [`/posts/postIds?ids=${postIds.join(',')}`, 'GET', null, ServiceDestination.REALTIME];

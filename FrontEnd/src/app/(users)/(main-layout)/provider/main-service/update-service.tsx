@@ -1,8 +1,12 @@
 'use client'
 import React, {useEffect, useState} from 'react';
-import { MainService } from "@models/main-service";
+import {EditableMainServiceData, MainService} from "@models/main-service";
 import { useUser } from "../../../../../context/user-context";
-import {createExtraService, createMainService} from "../../../../../services/main/clientRequest/service";
+import {
+    createMainService,
+    GetMainServiceById,
+    updateMainService
+} from "../../../../../services/main/clientRequest/service";
 import ImageService , { ImageItem } from "./image-service";
 import { useFormik } from 'formik';
 import ServiceValidation from "@lib/validations/ServiceValidation";
@@ -15,15 +19,31 @@ import { useUpload } from 'context/uploadfile-context';
 import { FilesWithId } from '@models/file';
 import { transformToFilesWithId } from '@lib/utils';
 import {uploadImages} from "../../../../../firebase/utils";
-import {ExtraService} from "@models/extra-service";
 import DescriptionInput from "../../../_components/input/input-description";
 
-const CreateExtraServiceForm = () => {
+
+type PropUpdateMainService = {
+    data : MainService
+}
+
+const UpdateMainService = ({data}:PropUpdateMainService) => {
     const {currentUser} = useUser();
     const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
     const [promotions, setPromotions] = useState<Promotion[]>([]);
     const {files} = useUpload();
-    const [newdescription, setNewDescription] = useState('')
+    const [newdescription, setNewDescription] = useState(data.description)
+    const handleDescriptionChange = (content: string) => {
+        setNewDescription(content);
+    };
+    // console.log('updateid',serviceId)
+    // const {
+    //     data: service,
+    //     isLoading: isLoading,
+    //     error: error,
+    // } = useSWR(
+    //     GetMainServiceById(serviceId),
+    //     fetcherWithToken
+    // );
 
     const {
         data: dataPromotion,
@@ -38,21 +58,14 @@ const CreateExtraServiceForm = () => {
             setPromotions(dataPromotion.data);
         }
     },[dataPromotion])
-    const [eService, setMService] = useState<ExtraService>({
-        id: null, // Làm cho giá trị này undefined cho đối tượng mới tạo
-        provider: currentUser, // Sử dụng currentUser từ hook useUser
-        name: '',
-        price: 0,
-        priceType: '',
-        duration: 0,
-        restTime: 0,
-        imageUrls: [],
-        description: '',
-        createDate: new Date(),
+
+    const [updateService, setUpdateService] = useState<MainService>({...data,
+        description:newdescription,
         updateDate: new Date(),
-        promotionDTO: null,
-        status: true,
+
     });
+
+    // console.log('updatedata',updateService.name)
 
     const [promotionId, setPromotionId] = useState<number | null>(null);
     const [applyPromotion,setApplyPromotion] = useState<any | null>(null);
@@ -66,26 +79,22 @@ const CreateExtraServiceForm = () => {
         setApplyPromotion(result);
 
     };
-    const handleDescriptionChange = (content: string) => {
-        setNewDescription(content);
-    };
     const {values, touched, handleSubmit, handleChange, errors } = useFormik({
-        initialValues: eService,
+        initialValues: updateService,
         validationSchema: ServiceValidation,
-        onSubmit: async (values: ExtraService, {setSubmitting, resetForm }) => {
+        onSubmit: async (values: MainService, {setSubmitting, resetForm }) => {
             const uploadedImagesData = await uploadImages(currentUser?.id as string,files as FilesWithId);
             const imageUrls = uploadedImagesData?.map((upload: any,index: any)=> upload.src);
 
             const newService = {
 
                 ...values,
-                destination:newdescription,
-                imageUrls: imageUrls as string[],
+                // imageUrls: imageUrls as string[],
                 promotionDTO: applyPromotion
             };
-
+            console.log("Service udate :", newService);
             try {
-                const response = await createExtraService(newService);
+                const response = await updateMainService(newService);
 
                 console.log("Service created successfully", response);
 
@@ -97,8 +106,35 @@ const CreateExtraServiceForm = () => {
             }
         },
     });
+    // const handleImageListChange = (newImageList: ImageItem[]) => {
+    //     console.log("newImageList",newImageList)
+    //     // Chỉ cần cập nhật mService imageUrl thay vì gọi setFieldValue tại đây.
+    //     setMService({
+    //         ...mService,
+    //         imageUrls: newImageList.map((imageItem) => imageItem.src),
+    //     });
+    // };
 
+    // useEffect(() => {
+    //     if (service?.data) {
+    //         setUpdateService({
+    //             id: serviceId,
+    //             name: service.data.name,
+    //             price: service.data.price,
+    //             priceType: service.data.priceType,
+    //             duration: service.data.duration,
+    //             restTime: service.data.restTime,
+    //             imageUrls: service.data.imageUrls,
+    //             description: service.data.description,
+    //             updateDate: new Date(),
+    //             promotionDTO: service.data.promotionDTO,
+    //         });
+    //         setNewDescription(service.data.description || '');
+    //         setPromotionId(service.data.promotionDTO?.id || null);
+    //     }
+    // }, [service, serviceId]);
 
+    // console.log('updatedata',values.name)
     return (
         <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded shadow mr-10">
 
@@ -227,7 +263,7 @@ const CreateExtraServiceForm = () => {
             <div className="flex items-center justify-between">
                 <button type="submit"
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Tạo Dịch Vụ
+                    Sửa thông tin dịch vụ
                 </button>
 
             </div>
@@ -236,4 +272,4 @@ const CreateExtraServiceForm = () => {
     );
 };
 
-export default CreateExtraServiceForm;
+export default UpdateMainService;

@@ -56,6 +56,9 @@ dependencies:
   web_socket_channel: ^2.4.5
   stomp_dart_client: ^2.0.0
   avatar_stack: ^1.2.0
+  flutter_html: ^3.0.0-beta.2
+  flutter_rating_bar: ^4.0.1
+  carousel_slider: ^4.2.1
   # link_preview_generator: ^1.2.0
 
 dev_dependencies:

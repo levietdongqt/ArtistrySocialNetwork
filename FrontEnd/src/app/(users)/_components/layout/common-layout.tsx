@@ -29,8 +29,8 @@ export function HomeLayout({ children }: LayoutProps): JSX.Element {
     <>
       {children}
       <Aside>
-        {/* <AsideTrends /> */}
-        {/* <Suggestions /> */}
+        {/*<AsideTrends />*/}
+        {/*<Suggestions />*/}
           <ServiceAll />
       </Aside>
     </>
@@ -42,7 +42,6 @@ export function UserLayout({ children }: LayoutProps): JSX.Element {
     <>
       {children}
       <Aside>
-        <Suggestions />
         <ServiceProvider />
       </Aside>
     </>
@@ -98,7 +97,7 @@ export function NotificationLayout({ children }: LayoutProps): JSX.Element {
     <>
       {children}
       <Aside>
-        <AsideTrends />
+        {/* <AsideTrends /> */}
         <Suggestions />
       </Aside>
     </>

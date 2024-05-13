@@ -19,8 +19,8 @@ import java.util.Set;
 @Repository
 public interface PostRepository extends MongoRepository<Post,String> {
 
-    @Query(value = "{'user.userId': ?0}")
-    List<Post> findPostByUser(String userId);
+    @Query(value = "{'user.id': ?0}")
+    Page<Post> findPostByUser(String userId,Pageable pageable);
 
     @Query(value = "{'id': ?0}")
     Optional<Post> findPostById(String postId);

@@ -24,6 +24,9 @@ public interface IPostService {
     List<PostResponse> findPostByIdInList(List<String> postIds);
     Boolean deletePost(String postId);
     Post getPostById(String postId);
+
+    List<PostResponse> findAllById(int limit, int pageIndex, String userId);
+
     long getCountPost();
 
 

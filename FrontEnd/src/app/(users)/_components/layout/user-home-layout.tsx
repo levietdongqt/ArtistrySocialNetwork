@@ -92,14 +92,15 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
 
     const menu = (
         <Menu>
-            <Menu.Item>
 
-                <Link href="#" onClick={() => setOpenModal(true)}>
-                    <EditOutlined className="h-4 w-4 md:h-5 md:w-5"/>
-                    Đổi mật khẩu
-                </Link>
-
-            </Menu.Item>
+            {currentUser?.authProvider !== 'google.com' && currentUser?.authProvider !== 'facebook.com' && (
+                <Menu.Item>
+                    <Link href="#" onClick={() => setOpenModal(true)}>
+                        <EditOutlined className="h-4 w-4 md:h-5 md:w-5"/>
+                        Đổi mật khẩu
+                    </Link>
+                </Menu.Item>
+            )}
 
             <Menu.Item>
                 <Link href="/profile/edit">
@@ -126,8 +127,7 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
             {
                 openModalProvider && <Modal open={openModalProvider} closeModal={() => setOpenModalProvider(false)}>
                     <RegisterProviderForm closeModal={() => setOpenModalProvider(false)}/>
-                </Modal>
-            }
+                </Modal>}
 
             {response?.data && (
                 <SEO
@@ -135,43 +135,43 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                 />
             )}
             <motion.section {...variants} exit={undefined}>
-                {loading &&
+                {loading ?
                     <Loading className='mt-5'/>
-                }
-                {!response?.data ? (
-                    <>
-                        <UserHomeCover/>
-                        <div className='flex flex-col gap-8'>
+                    :
+                    (!response?.data ? (
+                        <>
+                            <UserHomeCover/>
+                            <div className='flex flex-col gap-8'>
+                                <div className='relative flex flex-col gap-3 px-4 py-3'>
+                                    <UserHomeAvatar/>
+                                    <p className='text-xl font-bold'>@{ID}</p>
+                                </div>
+                                <div className='p-8 text-center'>
+                                    <p className='text-3xl font-bold'>This account doesn’t exist</p>
+                                    <p className='text-light-secondary dark:text-dark-secondary'>
+                                        Try searching for another.
+                                    </p>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <UserHomeCover coverData={coverData}/>
                             <div className='relative flex flex-col gap-3 px-4 py-3'>
-                                <UserHomeAvatar/>
-                                <p className='text-xl font-bold'>@{ID}</p>
-                            </div>
-                            <div className='p-8 text-center'>
-                                <p className='text-3xl font-bold'>This account doesn’t exist</p>
-                                <p className='text-light-secondary dark:text-dark-secondary'>
-                                    Try searching for another.
-                                </p>
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <UserHomeCover coverData={coverData}/>
-                        <div className='relative flex flex-col gap-3 px-4 py-3'>
-                            <div className='flex justify-between'>
-                                <UserHomeAvatar profileData={profileData}/>
-                                {isOwner ? (
-                                    <div className="text-right">
-                                        <Dropdown.Button overlay={menu} placement="bottomRight" trigger={['click']}>
-                                            Tùy chọn
-                                        </Dropdown.Button>
-                                    </div>
-                                ) : (
-                                    <div className='flex gap-2 self-start'>
-                                        <UserShare username={response?.data?.fullName}/>
-                                        <Button
-                                            className='dark-bg-tab group relative cursor-not-allowed border border-light-line-reply p-2
-                                 hover:bg-light-primary/10 active:bg-light-primary/20 dark:border-light-secondary 
+                                <div className='flex justify-between'>
+                                    <UserHomeAvatar profileData={profileData}/>
+                                    {isOwner ? (
+                                        <div className="text-right">
+                                            <Dropdown.Button overlay={menu} placement="bottomRight" trigger={['click']}>
+                                                Tùy chọn
+                                            </Dropdown.Button>
+                                        </div>
+                                    ) : (
+                                        <div className='flex gap-2 self-start'>
+                                            <UserShare username={response?.data?.fullName}/>
+                                            <Button
+                                                className='dark-bg-tab group relative cursor-not-allowed border border-light-line-reply p-2
+                                 hover:bg-light-primary/10 active:bg-light-primary/20 dark:border-light-secondary
                                  dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20'
                                         >
                                             <HeroIcon className='h-5 w-5' iconName='EnvelopeIcon'/>
@@ -195,11 +195,12 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                                     </div>
                                 )}
                             </div>
-                            <UserDetails {...response?.data} />
-                        </div>
-                    </>
-                )}
+                            </div>
+                        </>
+                    )
+                    )}
             </motion.section>
+
             {response?.data && (
                 <>
 

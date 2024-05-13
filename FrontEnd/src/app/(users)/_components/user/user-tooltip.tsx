@@ -45,10 +45,8 @@ export function UserTooltip({
 }: UserTooltipProps):JSX.Element {
   const { isMobile } = useWindow();
   const [hovered, setHovered] = useState(false);
-  const {currentUser} = useUser();
-  // if (isMobile || modal) return <>{children}</>;
   const userLink = `/profile/${id}`;
-
+  const {currentUser, } = useUser();
   useEffect(() => {
     if (hovered) {
     }
@@ -112,7 +110,7 @@ export function UserTooltip({
               {((currentUser?.id !== id) && hovered) &&
                 <FollowButton userTargetId={id} userTargetUsername={fullName} hovered={hovered}/>
               }
-              
+
             </div>
             <div>
               <UserName

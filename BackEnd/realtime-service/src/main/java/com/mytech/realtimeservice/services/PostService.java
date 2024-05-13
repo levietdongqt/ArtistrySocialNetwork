@@ -4,15 +4,12 @@ import com.mytech.realtimeservice.client.FriendForeignClient;
 import com.mytech.realtimeservice.dto.*;
 
 import com.mytech.realtimeservice.enums.ReportStatus;
-import com.mytech.realtimeservice.exception.myException.ForbiddenException;
 import com.mytech.realtimeservice.exception.myException.NotFoundException;
 import com.mytech.realtimeservice.helper.JwtTokenHolder;
-import com.mytech.realtimeservice.models.Notification;
 import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.PostLike;
 import com.mytech.realtimeservice.models.Report;
 import com.mytech.realtimeservice.models.users.User;
-import com.mytech.realtimeservice.repositories.*;
 import com.mytech.realtimeservice.repositories.PostLikeRepository;
 import com.mytech.realtimeservice.repositories.PostRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -143,6 +140,19 @@ public class PostService implements IPostService {
         log.info( "page inndex: " + pageIndex+ "post response: " + postResponses.size() );
         return postResponses;
     }
+
+    @Override
+    public List<PostResponse> findAllById(int limit, int pageIndex, String userId) {
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(pageIndex, limit, sort);
+        Page<Post> pagePosts = postRepository.findPostByUser(userId, pageable);
+        List<PostResponse> postResponses = pagePosts.getContent().stream()
+                .map(post -> modelMapper.map(post, PostResponse.class))
+                .collect(Collectors.toList());
+        return postResponses;
+    }
+
     public List<String> filterFollowFriends(String userId){
         var friendsFollow = friendForeignClient.getFollowFriends(userId);
         return friendsFollow.getData().stream().map(UserDTO::getId).collect(Collectors.toList());
