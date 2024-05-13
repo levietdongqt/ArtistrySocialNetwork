@@ -32,12 +32,13 @@ import CreateExtraServiceForm from "../../(main-layout)/provider/extra-service/c
 import {EditProfileModal} from "../modal/edit-profile-modal";
 import RegisterProviderForm from "../../(main-layout)/profile/[ID]/register-provider";
 import { SearchButton } from '../search/search-button';
-import { isFollowing } from 'services/main/clientRequest/friendsClient';
+import { isCheckFriend, isFollowing } from 'services/main/clientRequest/friendsClient';
 
 
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
     const [openModal, setOpenModal] = useState(false)
     const [openModalProvider, setOpenModalProvider] = useState(false)
+    const [a, setA] = useState<any>()
     const {currentUser} = useUser();
     const router = useRouter();
 
@@ -49,14 +50,19 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
 
     //console.log("currentUser",currentUser)
     const {ID} = useParams() || currentUser?.id;
-    const { data: data } = useSWR(
-        isFollowing({
+    const { data: data, isLoading} = useSWR(
+        isCheckFriend({
              userId: currentUser?.id as string,
              friendId: ID,
            }),
        fetcherWithToken,
      );
-   console.log("currentUser1111",data)
+
+     useEffect(()=>{
+        if(data){
+            setA(data.data);
+        }
+     },[data])
     console.log("currentUser", ID)
     const {
         isLoading: loading,
@@ -177,20 +183,22 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                                             <HeroIcon className='h-5 w-5' iconName='EnvelopeIcon'/>
                                             <ToolTip tip='Message'/>
                                         </Button>
-                                        {/* <SearchButton
-                                        userTargetUsername={response?.data?.fullName}
-                                        userTargetId={ID as string}
-                                        follow={data.follow}
-                                        acceptedFriend={data.acceptedFriend}
-                                        friend={data.friend}
-                                        pending={data.pending}
-                                        /> */}
-                                        <FollowButton
+                                        <SearchButton
+                                                userTargetUsername={response?.data?.fullName}
+                                                userTargetId={ID as string}
+                                                follow={a?.follow}
+                                                acceptedFriend={a?.acceptFriend}
+                                                friend={a?.friend}
+                                                pending={a?.pending}
+                                                />
+                                        
+                                        
+                                        {/* <FollowButton
                                             userTargetId={response?.data?.id}
                                             userTargetUsername={response?.data?.fullName}
                                             hovered={true}
                                         />
-                                        
+                                         */}
                                         {/*{isOwner && <UserEditProfile hide/>}*/}
                                     </div>
                                 )}

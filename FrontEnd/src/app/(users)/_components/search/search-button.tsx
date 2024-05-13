@@ -33,6 +33,7 @@ export function SearchButton({
   acceptedFriend,
   
 }: SearchButtonProps): JSX.Element | null {
+  console.log("log ne",follow,pending,friend,acceptedFriend)
   const {currentUser} = useUser();
   const { open:openUnFollow, openModal:openUnFollowModal, closeModal:closeUnFollowModal } = useModal();
   const { open:openUnfriend, openModal:openUnFriendModal, closeModal:closeUnFriendModal } = useModal();
@@ -48,6 +49,7 @@ export function SearchButton({
   const [renderPending,setRenderPending] = useState(pending);
   const [renderAccept,setRenderAccept] = useState(acceptedFriend);
   //Xử lý follow
+
   const {} = useSWR(
     shouldUnFollowed?
     unFollowingFriend({
@@ -114,6 +116,7 @@ fetcherWithToken,{
   onSuccess(data, key, config) {
     toast.success("Kết bạn thành công");
     setRenderPending(!renderPending);
+    setRenderFollow(true);
 },
 }
 );
@@ -128,6 +131,7 @@ fetcherWithToken,{
   onSuccess(data, key, config) {
     toast.success("Hủy kết bạn thành công");
     setRenderFriend(!renderFriend);
+    setRenderFollow(false);
 },
 }
 );
@@ -157,7 +161,8 @@ fetcherWithToken,{
   revalidateOnFocus: false,
   onSuccess(data, key, config) {
     toast.success("Chấp nhận lời mời kết bạn thành công");
-    setRenderFriend(!renderFriend);
+    setRenderFriend(true);
+    setRenderFollow(true);
 },
 }
 );
@@ -181,7 +186,7 @@ fetcherWithToken,{
 
   const handleAcceptFriend = () =>{
     setShouldAcceptFriend(true);
-    setRenderFriend(!renderFriend);
+    //setRenderFriend(!renderFriend);
   }
 
 
