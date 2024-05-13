@@ -3,8 +3,8 @@ import { DashOutlined } from "@ant-design/icons";
 import { Button } from "@components/ui/button";
 import { Modal, Popover, Table, Tag, Carousel, Image } from "antd";
 import { useState } from "react";
-import UpdateMainService from "../../(main-layout)/provider/main-service/update-service";
 import {MainService} from "@models/main-service";
+import UpdateMainService from "../../(main-layout)/provider/main-service/update-service";
 
 type DataTable = {
   data: MainService[];

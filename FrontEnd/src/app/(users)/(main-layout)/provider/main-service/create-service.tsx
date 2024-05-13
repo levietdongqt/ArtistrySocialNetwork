@@ -75,7 +75,6 @@ const CreateMainServiceForm = () => {
             const imageUrls = uploadedImagesData?.map((upload: any,index: any)=> upload.src);
             
             const newService = {
-
                 ...values,
                 imageUrls: imageUrls as string[],
                 promotionDTO: applyPromotion,
@@ -161,7 +160,7 @@ const CreateMainServiceForm = () => {
             </div>
             <div className="mb-4">
                 <label htmlFor="servicePrice" className="block text-gray-700 text-sm font-bold mb-2">
-                    Khoảng thời gian
+                    Khoảng thời gian(Giờ)
                 </label>
                 <input
                     type="number"
@@ -179,7 +178,7 @@ const CreateMainServiceForm = () => {
 
             <div className="mb-4">
                 <label htmlFor="servicePrice" className="block text-gray-700 text-sm font-bold mb-2">
-                    Thời gian nghỉ
+                    Thời gian nghỉ(Giờ)
                 </label>
                 <input
                     type="number"
