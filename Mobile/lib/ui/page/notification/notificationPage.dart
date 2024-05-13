@@ -32,12 +32,7 @@ class _NotificationPageState extends State<NotificationPage> {
       var state = Provider.of<NotificationState>(context, listen: false);
       var authState = Provider.of<AuthState>(context, listen: false);
       state.getListNotification(authState.userId,context);
-    });
-    // var state = Provider.of<NotificationState>(context);
-    // var authState = Provider.of<AuthState>(context, listen: false);
-    // state.getListNotification(authState.userId,context);
-    // cprint("fgfg");
-    
+    });    
   }
 
   void onSettingIconPressed() {
@@ -47,7 +42,7 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: TwitterColor.bondiBlue,
+      backgroundColor: TwitterColor.white,
       appBar: CustomAppBar(
         scaffoldKey: widget.scaffoldKey,
         title: customTitleText(
@@ -65,44 +60,26 @@ class NotificationPageBody extends StatelessWidget {
   const NotificationPageBody({Key? key}) : super(key: key);
 
   Widget _notificationRow(BuildContext context, MyNotification model) {
-    var state = Provider.of<NotificationState>(context);
-    // var state = Provider.of<NotificationState>(context, listen: false);
+      var state = Provider.of<NotificationState>(context, listen: true);
+      
       return FollowNotificationTile(
         model: model,
+        Myfunction: () {
+        state.removeMyNotifications(model.id!, context);
+      },
       );
-
-    // }
-    // return FutureBuilder(
-    //   future: state.getTweetDetail(model.tweetKey!),
-    //   builder: (BuildContext context, AsyncSnapshot<FeedModel?> snapshot) {
-    //     if (snapshot.hasData) {
-    //       return PostLikeTile(model: snapshot.data!);
-    //     } else if (snapshot.connectionState == ConnectionState.waiting ||
-    //         snapshot.connectionState == ConnectionState.active) {
-    //       return const SizedBox(
-    //         height: 4,
-    //         child: LinearProgressIndicator(),
-    //       );
-    //     } else {
-    //       /// remove notification from firebase db if tweet in not available or deleted.
-    //       var authState = Provider.of<AuthState>(context);
-    //       state.removeNotification(authState.userId, model.tweetKey!);
-    //       return const SizedBox();
-    //     }
-    //   },
-    // );
   }
 
   @override
   Widget build(BuildContext context) {
-    var socketState =  Provider.of<WebSocketState>(context, listen: false);
+    var socketState =  Provider.of<WebSocketState>(context, listen: true);
     var list = socketState.myNotifications;
     if (list == null || list.isEmpty) {
       return const Padding(
         padding: EdgeInsets.symmetric(horizontal: 30),
         child: EmptyList(
-          'No Notification available yet',
-          subTitle: 'When new notification found, they\'ll show up here.',
+          'Không có thông báo nào để hiển thị',
+          subTitle: 'Khi có thông báo đến, sẽ được thông báo ở đây',
         ),
       );
     }

@@ -29,7 +29,7 @@ export function Aside({ children }: AsideProps): JSX.Element | null {
                 <SearchBar width='350px' />
             )}
             {children}
-            <AsideFooter key={'footer'} />
+            {/* <AsideFooter key={'footer'} /> */}
         </aside>
     );
 }

@@ -14,13 +14,14 @@ import CreatePromotionsForm from "./create-promotions";
 import { getAllWorkingTimes } from "services/main/clientRequest/working-time";
 import WorkingTimesTable from "./working-time-table";
 import CreateWorkingTimesForm from "./create-workingtime";
+import { WorkingTime } from "@models/workingTime";
 
 
 export default function WorkingTimes() {
   const { currentUser } = useUser();
   const [changeStatus,setChangeStatus] = useState(false);
-  const [mainDataTrue, setMainDataTrue] = useState<MainService[]>([]);
-  const [mainDataFalse, setMainDataFalse] = useState<MainService[]>([]);
+  const [mainDataTrue, setMainDataTrue] = useState<WorkingTime[]>([]);
+  const [mainDataFalse, setMainDataFalse] = useState<WorkingTime[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -42,18 +43,13 @@ export default function WorkingTimes() {
         addRowNumber(
           data.data.filter((value:any) => value.status === true).sort(
             (a: any, b: any) =>
-              new Date(b.createDate).getTime() -
-              new Date(a.createDate).getTime()
+              b.id - a.id
           )
         )
       );
       setMainDataFalse(
         addRowNumber(
-          data.data.filter((value:any) => value.status === false).sort(
-            (a: any, b: any) =>
-              new Date(b.createDate).getTime() -
-              new Date(a.createDate).getTime()
-          )
+          data.data.filter((value:any) => value.status === false)
         )
       );
     }
@@ -85,9 +81,9 @@ export default function WorkingTimes() {
         closeModal={handleCancel}
         className="w-1/2 ml-auto mr-auto"
       >
-        <CreateWorkingTimesForm />
+        <CreateWorkingTimesForm array={mainDataTrue} />
       </Modal>
-      <WorkingTimesTable data={!changeStatus ? mainDataTrue as any : mainDataFalse as any}></WorkingTimesTable>
+      <WorkingTimesTable data={!changeStatus ? mainDataTrue as any : mainDataFalse as any} trueData={mainDataTrue}></WorkingTimesTable>
     </div>
   );
 }

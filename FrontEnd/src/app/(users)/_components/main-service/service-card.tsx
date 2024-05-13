@@ -15,9 +15,9 @@ import {UserAvatar} from "../user/user-avatar";
 import {User} from "@models/user";
 
 import DOMPurify from "dompurify";
+import BookingModal from "../booking/bookingModal";
 import CreateReview from "../../(main-layout)/profile/[ID]/review/create-review";
 import ServiceDetail from "./servicer-detail";
-import BookingModal from "../booking/bookingModal";
 
 
 interface ProServiceCard {

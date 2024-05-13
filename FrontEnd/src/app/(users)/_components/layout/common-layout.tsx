@@ -97,7 +97,7 @@ export function NotificationLayout({ children }: LayoutProps): JSX.Element {
     <>
       {children}
       <Aside>
-        <AsideTrends />
+        {/* <AsideTrends /> */}
         <Suggestions />
       </Aside>
     </>

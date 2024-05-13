@@ -34,6 +34,11 @@ const nextConfig = {
                 hostname: 'www.youtube.com',
                 pathname: '/**',
             },
+            {
+                protocol: 'http',
+                hostname: 'example.com',
+                pathname: '/**',
+            }
         ],
     },
 }

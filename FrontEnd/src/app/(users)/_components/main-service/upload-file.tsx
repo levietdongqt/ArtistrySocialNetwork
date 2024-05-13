@@ -1,8 +1,11 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Upload ,Image} from "antd";
 import { useUpload } from "context/uploadfile-context";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+interface UploadDataParams {
+  urlMedia?: any[]
+}
 
 const getBase64 = (file: any) =>
   new Promise((resolve, reject) => {
@@ -11,12 +14,20 @@ const getBase64 = (file: any) =>
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
-export default function UploadFile ()  {
+export default function UploadFile ({urlMedia} : UploadDataParams)  {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
-  const {setFiles} = useUpload();
-  const [fileList, setFileList] = useState<any>([
-  ]);
+  const {setFiles,setUrlUpload} = useUpload();
+  const [fileList, setFileList] = useState<any>([]);
+  useEffect(()=>{
+    if(urlMedia !== undefined){
+      const newArray = urlMedia.map((str: string) => ({ url: str }));
+      setUrlUpload(newArray as any);
+      console.log("urlMedia",newArray)
+      setFileList(urlMedia.map((data)=>({url:data})))
+    }
+  },[urlMedia])
+
   const handlePreview = async (file: any) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -28,7 +39,12 @@ export default function UploadFile ()  {
     const files = newFileList.map((file:any) => file.originFileObj).filter((file:any) => file !== undefined);
     setFileList(newFileList)
     setFiles(files);
+    if (urlMedia !== undefined) {
+      const filesUpload = newFileList.filter((file:any) => file.url != undefined)
+      setUrlUpload(filesUpload)
+    }
 };
+
   const uploadButton = (
     <button
       style={{

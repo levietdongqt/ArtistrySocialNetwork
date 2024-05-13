@@ -37,7 +37,7 @@ public class NotificationController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Get post list OK")
+                        .message("Get notification list OK")
                         .data(notifications)
                         .build()
         );

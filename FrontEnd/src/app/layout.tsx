@@ -1,4 +1,4 @@
-"use client"
+
 import "./styles/globals.scss";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -8,7 +8,7 @@ import {ThemeContextProvider} from "../context/theme-context";
 import {AuthContextProvider} from "../context/oauth2-context";
 import {UserContextProvider} from "../context/user-context";
 
-export default function RootLayout({
+export default async function RootLayout({
                                        children,
                                    }: {
     children: React.ReactNode;

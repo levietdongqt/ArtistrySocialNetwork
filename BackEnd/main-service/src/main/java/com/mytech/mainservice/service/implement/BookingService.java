@@ -27,19 +27,23 @@ public class BookingService implements IBookingService {
     @Override
     public List<WorkingTimeDTO> getWorkingTimesByProvider(String providerId) {
         LocalDateTime oneMonthAfterNow = LocalDateTime.now().plusDays(30).withHour(1);
-        return workingTimeRepo.findByProviderId(providerId,oneMonthAfterNow).stream()
+        return workingTimeRepo.findByProviderId(providerId, oneMonthAfterNow).stream()
                 .map((element) -> modelMapper.map(element, WorkingTimeDTO.class)).toList();
     }
 
     @Override
     public List<OrderDto> getOrdersInDay(BookingDTO bookingDTO) {
         List<Order> orders = orderRepo.findByStartDateAndProviderUser_Id(bookingDTO.bookingDate().toLocalDate(), bookingDTO.providerId());
-        return orders.stream().map((order) -> modelMapper.map(order,OrderDto.class)).toList();
+        return orders.stream().map((order) -> modelMapper.map(order, OrderDto.class)).toList();
     }
 
     @Override
     public void createOrder(OrderDto orderDto) {
         Order order = modelMapper.map(orderDto, Order.class);
+        if (order.getAdditionalService() != null) {
+            List<String> extraServiceIds = orderDto.getAdditionalService().stream().map(service -> String.valueOf(service.getId())).toList();
+            order.setAdditionalService(extraServiceIds);
+        }
         orderRepo.save(order);
     }
 }

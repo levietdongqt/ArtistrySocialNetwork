@@ -30,10 +30,6 @@ export default function PromotionsTable({ data }: DataTable) {
     setIsModalOpen1(false);
     setCurrentRecord(null);
   };
-  const handleTest = (value: any) => {
-    console.log("data ne", value);
-  };
-
   const handleDelete = async (value: any) => {
     console.log("data ne", value);
     try {
@@ -66,14 +62,6 @@ export default function PromotionsTable({ data }: DataTable) {
         onClick={() => showModal(record)}
       >
         Chỉnh sửa
-      </Button>
-
-      <Button
-        className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
-                           font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
-        onClick={() => handleTest(record.id)}
-      >
-        Chi tiết Khuyến mãi
       </Button>
       {
         record.status && (

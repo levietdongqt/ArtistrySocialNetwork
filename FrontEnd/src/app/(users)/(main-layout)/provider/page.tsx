@@ -6,14 +6,14 @@ import ServiceMain from "../../_components/main-service/servcie-main";
 import Promotions from "app/(users)/_components/main-service/promotions";
 import ServiceExtra from "../../_components/extra-service/servcie-extra";
 import WorkingTimes from "app/(users)/_components/main-service/workingtimes";
+import Order from "app/(users)/_components/order/order";
 
 const items = [
     {
         key: "1",
-        label: "Trang chủ",
-        children: "Content of Tab Pane 1",
+        label: "Hóa đơn",
+        children:<Order/> ,
     },
-
     {
         key: "2",
         label: "Dịch vụ chính",

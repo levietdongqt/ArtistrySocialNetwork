@@ -33,6 +33,7 @@ export function SearchButton({
   acceptedFriend,
   
 }: SearchButtonProps): JSX.Element | null {
+  console.log("log ne",follow,pending,friend,acceptedFriend)
   const {currentUser} = useUser();
   const { open:openUnFollow, openModal:openUnFollowModal, closeModal:closeUnFollowModal } = useModal();
   const { open:openUnfriend, openModal:openUnFriendModal, closeModal:closeUnFriendModal } = useModal();
@@ -48,6 +49,7 @@ export function SearchButton({
   const [renderPending,setRenderPending] = useState(pending);
   const [renderAccept,setRenderAccept] = useState(acceptedFriend);
   //Xử lý follow
+
   const {} = useSWR(
     shouldUnFollowed?
     unFollowingFriend({
@@ -58,6 +60,7 @@ export function SearchButton({
     revalidateOnFocus: false,
     onSuccess(data, key, config) {
         toast.success("Hủy theo dõi thành công");
+        setRenderFollow(!renderFollow);
     },
   }
 );
@@ -73,6 +76,7 @@ fetcherWithToken,{
   revalidateOnFocus: false,
   onSuccess(data, key, config) {
     toast.success("Theo dõi thành công");
+    setRenderFollow(!renderFollow);
 },
 }
 );
@@ -91,13 +95,13 @@ useEffect(()=>{
 
 const handleUnfollow = () =>{
   setShouldUnFollowed(true);
-  setRenderFollow(!renderFollow);
+  //setRenderFollow(!renderFollow);
   closeUnFollowModal();
 }
 
 const handlefollow = () =>{
   setShouldFollowed(true);
-  setRenderFollow(!renderFollow);
+  //setRenderFollow(!renderFollow);
 }
 
 //Xử lý kết bạn
@@ -111,6 +115,8 @@ fetcherWithToken,{
   revalidateOnFocus: false,
   onSuccess(data, key, config) {
     toast.success("Kết bạn thành công");
+    setRenderPending(!renderPending);
+    setRenderFollow(true);
 },
 }
 );
@@ -124,6 +130,8 @@ fetcherWithToken,{
   revalidateOnFocus: false,
   onSuccess(data, key, config) {
     toast.success("Hủy kết bạn thành công");
+    setRenderFriend(!renderFriend);
+    setRenderFollow(false);
 },
 }
 );
@@ -138,6 +146,7 @@ fetcherWithToken,{
   revalidateOnFocus: false,
   onSuccess(data, key, config) {
     toast.success("Rút lời mời kết bạn thành công");
+    setRenderPending(!renderPending);
 },
 }
 );
@@ -152,30 +161,32 @@ fetcherWithToken,{
   revalidateOnFocus: false,
   onSuccess(data, key, config) {
     toast.success("Chấp nhận lời mời kết bạn thành công");
+    setRenderFriend(true);
+    setRenderFollow(true);
 },
 }
 );
 
   const handleAddFriend = () =>{
     setShouldAddFriend(true);
-    setRenderPending(!renderPending);
+    //setRenderPending(!renderPending);
   }
 
   const handleRemoveFriend = () =>{
     setShouldUnFriend(true);
-    setRenderFriend(!renderFriend);
+    //setRenderFriend(!renderFriend);
     closeUnFriendModal();
   }
 
   const handleReAcceptFriend = () =>{
     setShouldReFriend(true);
-    setRenderPending(!renderPending);
+    //setRenderPending(!renderPending);
     closeReAcceptModal();
   }
 
   const handleAcceptFriend = () =>{
     setShouldAcceptFriend(true);
-    setRenderFriend(!renderFriend);
+    //setRenderFriend(!renderFriend);
   }
 
 

@@ -87,13 +87,14 @@ class WebSocketState extends ChangeNotifier {
       },
     );
 
-    // Timer.periodic(const Duration(seconds: 10), (_) {
-    //   stompClient!.send(
-    //     destination: '/app/test/endpoints',
-    //     body: json.encode({'a': 123}),
-    //   );
-    // });
-    
+    stompClient!.subscribe(
+      destination: '/user/topic/private-notification', 
+      callback: (frame){
+         var notification = MyNotification.fromJson(json.decode(frame.body!));
+         myNotifications!.insert(0,notification);
+         notifyListeners();
+         return;
+      });
 
   }
 

@@ -175,5 +175,17 @@ public class FriendController {
         );
     }
 
+    @PostMapping("/is-checked")
+    public ResponseEntity<?> isCheckStatus(@RequestBody FriendDTO friendDTO) {
+        var result = friendService.isFollowingAndIsFriend(friendDTO.userId(), friendDTO.friendId());
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get Is following successfully")
+                        .data(result)
+                        .build()
+        );
+    }
+
 
 }
