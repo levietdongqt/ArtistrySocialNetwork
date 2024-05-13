@@ -58,6 +58,7 @@ export function SearchButton({
     revalidateOnFocus: false,
     onSuccess(data, key, config) {
         toast.success("Hủy theo dõi thành công");
+        setRenderFollow(!renderFollow);
     },
   }
 );
@@ -73,6 +74,7 @@ fetcherWithToken,{
   revalidateOnFocus: false,
   onSuccess(data, key, config) {
     toast.success("Theo dõi thành công");
+    setRenderFollow(!renderFollow);
 },
 }
 );
@@ -91,13 +93,13 @@ useEffect(()=>{
 
 const handleUnfollow = () =>{
   setShouldUnFollowed(true);
-  setRenderFollow(!renderFollow);
+  //setRenderFollow(!renderFollow);
   closeUnFollowModal();
 }
 
 const handlefollow = () =>{
   setShouldFollowed(true);
-  setRenderFollow(!renderFollow);
+  //setRenderFollow(!renderFollow);
 }
 
 //Xử lý kết bạn
@@ -111,6 +113,7 @@ fetcherWithToken,{
   revalidateOnFocus: false,
   onSuccess(data, key, config) {
     toast.success("Kết bạn thành công");
+    setRenderPending(!renderPending);
 },
 }
 );
@@ -124,6 +127,7 @@ fetcherWithToken,{
   revalidateOnFocus: false,
   onSuccess(data, key, config) {
     toast.success("Hủy kết bạn thành công");
+    setRenderFriend(!renderFriend);
 },
 }
 );
@@ -138,6 +142,7 @@ fetcherWithToken,{
   revalidateOnFocus: false,
   onSuccess(data, key, config) {
     toast.success("Rút lời mời kết bạn thành công");
+    setRenderPending(!renderPending);
 },
 }
 );
@@ -152,24 +157,25 @@ fetcherWithToken,{
   revalidateOnFocus: false,
   onSuccess(data, key, config) {
     toast.success("Chấp nhận lời mời kết bạn thành công");
+    setRenderFriend(!renderFriend);
 },
 }
 );
 
   const handleAddFriend = () =>{
     setShouldAddFriend(true);
-    setRenderPending(!renderPending);
+    //setRenderPending(!renderPending);
   }
 
   const handleRemoveFriend = () =>{
     setShouldUnFriend(true);
-    setRenderFriend(!renderFriend);
+    //setRenderFriend(!renderFriend);
     closeUnFriendModal();
   }
 
   const handleReAcceptFriend = () =>{
     setShouldReFriend(true);
-    setRenderPending(!renderPending);
+    //setRenderPending(!renderPending);
     closeReAcceptModal();
   }
 

@@ -9,7 +9,7 @@ import {ThemeContextProvider} from "../../context/theme-context";
 import { UploadContextProvider } from "context/uploadfile-context";
 
 
-export default function RootLayout({
+export default async function RootLayout({
                                        children,
                                    }: {
     children: React.ReactNode

@@ -31,6 +31,8 @@ import {UserRole} from "@lib/enum/UserRole";
 import CreateExtraServiceForm from "../../(main-layout)/provider/extra-service/create-service";
 import {EditProfileModal} from "../modal/edit-profile-modal";
 import RegisterProviderForm from "../../(main-layout)/profile/[ID]/register-provider";
+import { SearchButton } from '../search/search-button';
+import { isFollowing } from 'services/main/clientRequest/friendsClient';
 
 
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
@@ -43,7 +45,18 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
         event.preventDefault(); // Ngăn chặn sự kiện mặc định
         router.push('/profile/edit');
     };
+    
+
+    //console.log("currentUser",currentUser)
     const {ID} = useParams() || currentUser?.id;
+    const { data: data } = useSWR(
+        isFollowing({
+             userId: currentUser?.id as string,
+             friendId: ID,
+           }),
+       fetcherWithToken,
+     );
+   console.log("currentUser1111",data)
     console.log("currentUser", ID)
     const {
         isLoading: loading,
@@ -51,6 +64,8 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
         error,
         isValidating: checkTrue
     } = useSWR(getUserById(ID as string), fetcherWithToken);
+
+   
     const isProvider = response?.data.roles.includes(UserRole.ROLE_PROVIDER)
     const coverData = response?.data.coverImage
         ? {src: response?.data.coverImage, alt: response?.data.fullName}
@@ -112,8 +127,7 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
             {
                 openModalProvider && <Modal open={openModalProvider} closeModal={() => setOpenModalProvider(false)}>
                     <RegisterProviderForm closeModal={() => setOpenModalProvider(false)}/>
-                </Modal>
-            }
+                </Modal>}
 
             {response?.data && (
                 <SEO
@@ -159,26 +173,34 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                                                 className='dark-bg-tab group relative cursor-not-allowed border border-light-line-reply p-2
                                  hover:bg-light-primary/10 active:bg-light-primary/20 dark:border-light-secondary
                                  dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20'
-                                            >
-                                                <HeroIcon className='h-5 w-5' iconName='EnvelopeIcon'/>
-                                                <ToolTip tip='Message'/>
-                                            </Button>
-                                            <FollowButton
-                                                userTargetId={response?.data?.id}
-                                                userTargetUsername={response?.data?.fullName}
-                                                hovered={false}
-                                            />
-                                            {/*{isOwner && <UserEditProfile hide/>}*/}
-                                        </div>
-                                    )}
-                                </div>
-                                <UserDetails {...response?.data} />
+                                        >
+                                            <HeroIcon className='h-5 w-5' iconName='EnvelopeIcon'/>
+                                            <ToolTip tip='Message'/>
+                                        </Button>
+                                        {/* <SearchButton
+                                        userTargetUsername={response?.data?.fullName}
+                                        userTargetId={ID as string}
+                                        follow={data.follow}
+                                        acceptedFriend={data.acceptedFriend}
+                                        friend={data.friend}
+                                        pending={data.pending}
+                                        /> */}
+                                        <FollowButton
+                                            userTargetId={response?.data?.id}
+                                            userTargetUsername={response?.data?.fullName}
+                                            hovered={true}
+                                        />
+                                        
+                                        {/*{isOwner && <UserEditProfile hide/>}*/}
+                                    </div>
+                                )}
+                            </div>
                             </div>
                         </>
-                    ))
-                }
-
+                    )
+                    )}
             </motion.section>
+
             {response?.data && (
                 <>
 

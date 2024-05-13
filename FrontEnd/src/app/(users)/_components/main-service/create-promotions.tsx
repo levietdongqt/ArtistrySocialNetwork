@@ -10,6 +10,7 @@ import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import { toast } from 'react-toastify';
 import { mutate } from 'swr';
+import UpdatePromotionValidation from '@lib/validations/UpdatePromotionValidation';
 
 interface CreatePromotionsFromParams  {
     data?: Promotion
@@ -33,7 +34,7 @@ const CreatePromotionsForm = ({data} : CreatePromotionsFromParams) => {
    
     const {values, touched, handleSubmit, handleChange, errors,setFieldValue } = useFormik({
         initialValues: promotion,
-        validationSchema: PromotionValidation,
+        validationSchema: data === undefined ? PromotionValidation:UpdatePromotionValidation,
         onSubmit: async (values: Promotion, {setSubmitting, resetForm }) => {
             const newPromotion = {
                 ...values,
