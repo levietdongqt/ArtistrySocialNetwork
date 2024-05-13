@@ -52,3 +52,8 @@ export function unFollowingFriend (body: any): fetcherParams {
     return [`/friends/unFollowFriend`, 'POST', body, ServiceDestination.MAIN];
 }
 
+export function isCheckFriend (body: any): fetcherParams {
+    return [`/friends/is-checked`, 'POST', body, ServiceDestination.MAIN];
+}
+
+

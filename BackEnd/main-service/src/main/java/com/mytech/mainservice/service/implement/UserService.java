@@ -2,14 +2,17 @@ package com.mytech.mainservice.service.implement;
 
 import com.google.firebase.auth.UserInfo;
 import com.mytech.mainservice.dto.UserDTO;
+import com.mytech.mainservice.dto.request.ChangePassDTO;
 import com.mytech.mainservice.dto.request.LoginDTO;
 import com.mytech.mainservice.dto.request.RegisterDto;
 import com.mytech.mainservice.enums.AccentType;
 import com.mytech.mainservice.enums.Theme;
 import com.mytech.mainservice.enums.UserRole;
 import com.mytech.mainservice.enums.UserStatus;
+import com.mytech.mainservice.exception.myException.InvalidPropertyException;
 import com.mytech.mainservice.exception.myException.NotFoundException;
 import com.mytech.mainservice.exception.myException.UnAuthenticationException;
+import com.mytech.mainservice.helper.JwtTokenHolder;
 import com.mytech.mainservice.model.Role;
 import com.mytech.mainservice.model.User;
 import com.mytech.mainservice.model.elasticsearch.UserELS;
@@ -36,6 +39,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private IUserRepository userRepo;
+
+    @Autowired
+    private JwtTokenHolder tokenHolder;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -207,12 +213,26 @@ public class UserService implements IUserService {
         List<UserRole> userRoles = userDto.getRoles().stream().map(UserRole::valueOf).toList();
         List<Role> roles = roleRepo.findByListName(userRoles);
         User user = userRepo.findById(userDto.getId()).orElseThrow(() -> new NotFoundException("User not Found"));
-        modelMapper.map(userDto,user);
+        modelMapper.map(userDto, user);
         user.setRoles(roles);
         User saved = userRepo.save(user);
-        return modelMapper.map(saved,UserDTO.class);
+        return modelMapper.map(saved, UserDTO.class);
 
     }
+
+    @Override
+    public void changePasswordV2(ChangePassDTO changePassDTO) {
+        User user = userRepo.findById(tokenHolder.getUserId())
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        boolean isValidOldPass = passwordEncoder.matches(changePassDTO.oldPass(), user.getPassword());
+        if(isValidOldPass || user.getPassword() == null){
+            user.setPassword(passwordEncoder.encode(changePassDTO.newPass()));
+            userRepo.save(user);
+            return;
+        }
+        throw new InvalidPropertyException("Old password is not valid");
+    }
+
     public User existUser(UserInfo userInfo) throws UnAuthenticationException {
         Optional<User> user = userRepo.findByEmailOrPhoneNumber(userInfo.getEmail(), userInfo.getPhoneNumber());
         if (user.isPresent() && !user.get().getAuthProvider().equals(userInfo.getProviderId())) {

@@ -12,7 +12,7 @@ export function getAllWorkingTimes (userId: string): fetcherParams {
     return [`/working-time/${userId}/get-all`, 'GET',null, ServiceDestination.MAIN];
 }
 
-export async function createWorkingTime(userId : string,data: WorkingTime): Promise<any> {
+export async function createWorkingTime(userId : string,data: any): Promise<any> {
     const config: AxiosRequestConfig = {
         url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/working-time/${userId}/save`,
         method: "POST",
@@ -31,7 +31,7 @@ export async function createWorkingTime(userId : string,data: WorkingTime): Prom
     }
 }
 
-export async function updateWorkingTime(userId : string,data: WorkingTime): Promise<any> {
+export async function updateWorkingTime(userId : string,data: any): Promise<any> {
     const config: AxiosRequestConfig = {
         url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/working-time/${userId}/update`,
         method: "PUT",

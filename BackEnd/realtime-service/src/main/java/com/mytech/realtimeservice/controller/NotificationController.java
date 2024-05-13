@@ -37,7 +37,7 @@ public class NotificationController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Get post list OK")
+                        .message("Get notification list OK")
                         .data(notifications)
                         .build()
         );
@@ -67,19 +67,6 @@ public class NotificationController {
                         .status(HttpStatus.OK)
                         .message("Updated status ok")
                         .data(notification)
-                        .build()
-        );
-    }
-
-    @PutMapping("/list-update")
-    public ResponseEntity<?> changeListNotificationsStatusToRead(@RequestBody List<String> listId) {
-       notificationService.changeListNotifications(listId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseObject.builder()
-                        .status(HttpStatus.OK)
-                        .message("Change List Updated status ok")
-                        .data(null)
                         .build()
         );
     }
@@ -166,18 +153,4 @@ public class NotificationController {
                         .message("deleted successfully")
                         .build());
     }
-
-    @DeleteMapping("/delete/{notifID}")
-    public ResponseEntity<?> deleteNotification(@PathVariable String notifID) {
-        notificationService.deleteNotification(notifID);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                ResponseObject.builder()
-                        .status(HttpStatus.OK)
-                        .message("delete notification ok")
-                        .data(null)
-                        .build()
-        );
-    }
-
-
 }

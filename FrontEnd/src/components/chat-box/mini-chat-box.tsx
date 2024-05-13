@@ -20,7 +20,7 @@ export default function MiniChatBox({curConversation, onClickCloseMessage, onCli
     const lastMessage = curConversation.lastMessage
     const sender = curConversation.lastMessage && curConversation.memberMap?.get(lastMessage!.senderId)
     const currentMember = curConversation.memberMap?.get(currentUser?.id!)
-    const otherMembers = curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id);
+    const otherMembers = curConversation?.members?.filter(memberMap => memberMap.id !== currentUser?.id && !memberMap.isExited);
     const toolTipTitle = sender ?
         `${sender?.id === currentUser?.id ? 'Bạn' : sender?.nickname}: ${lastMessage!.content}`
         : (curConversation.name || otherMembers[0].nickname)

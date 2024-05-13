@@ -1,7 +1,8 @@
 'use client'
 import { DashOutlined } from "@ant-design/icons";
 import { Button } from "@components/ui/button";
-import { Modal, Popover, Table, Tag, Carousel, Image } from "antd";
+import { Popover, Table, Tag, Carousel, Image } from "antd";
+import { Modal } from "../modal/modal";
 import { useState } from "react";
 import {MainService} from "@models/main-service";
 import UpdateMainService from "../../(main-layout)/provider/main-service/update-service";
@@ -24,19 +25,28 @@ export default function ServiceMainTable({ data }: DataTable) {
     undefined
   );
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
-  const [editingServiceId, setEditingServiceId] = useState<MainService>();
+  const [editingServiceId, setEditingServiceId] = useState<any>();
 
   // Mở modal shows ảnh grand ắng handling event
   const handleViewImage = (imageUrl: string) => {
     setSelectedImage(imageUrl);
-    setModalVisible(true);
+    setUpdateModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    console.log("Cancelled");
+    //setEditingServiceId(null);
+    setUpdateModalVisible(false);
+   
   };
 
   // Người dùng nhấn vào "Chỉnh sửa"
-  const handleEditClick = (record: MainService) => {
-    setEditingServiceId(record);
+  const handleEditClick = (record: any) => {
+   
     // console.log('serviceId', data.serviceId);
+    setEditingServiceId(record);
     setUpdateModalVisible(true);
+   
   };
 
   const handleTest = (value: any) => {
@@ -191,7 +201,7 @@ export default function ServiceMainTable({ data }: DataTable) {
   return (
     <>
       <Table columns={columns} dataSource={data} />
-      <Modal
+      {/* <Modal
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
@@ -201,8 +211,14 @@ export default function ServiceMainTable({ data }: DataTable) {
       <Modal
         open={updateModalVisible}
         onCancel={() => setUpdateModalVisible(false)} // thay cho closeModal
+      > */}
+
+      <Modal
+        open={updateModalVisible}
+        closeModal={handleCancel}
+        className="w-1/2 ml-auto mr-auto"
       >
-        {editingServiceId && <UpdateMainService data={editingServiceId}  />}
+        <UpdateMainService data={editingServiceId!}  />
       </Modal>
     </>
   );

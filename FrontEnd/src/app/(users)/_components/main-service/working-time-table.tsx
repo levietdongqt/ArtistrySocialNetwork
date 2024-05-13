@@ -1,23 +1,29 @@
 import { DashOutlined } from "@ant-design/icons";
 import { Button } from "@components/ui/button";
-import { Popover, Table, Tag,List } from "antd";
+import { Popover, Table, Tag, List } from "antd";
 import { Modal } from "../modal/modal";
 import { useState } from "react";
 import CreateWorkingTimesForm from "./create-workingtime";
 import { toast } from "react-toastify";
-import { deleteWorkingTime, getAllWorkingTimes, reworkWorkingTime } from "services/main/clientRequest/working-time";
+import {
+  deleteWorkingTime,
+  getAllWorkingTimes,
+  reworkWorkingTime,
+} from "services/main/clientRequest/working-time";
 import { useUser } from "context/user-context";
 import { mutate } from "swr";
+import dayjs from "dayjs";
+import { formatDate } from "@lib/helper/convertTime";
 
 type DataTable = {
   data: any[];
+  trueData?: any[]
 };
 
-export default function WorkingTimesTable({ data }: DataTable) {
-  
+export default function WorkingTimesTable({ data,trueData }: DataTable) {
   const [isModalOpen1, setIsModalOpen1] = useState(false);
   const [currentRecord, setCurrentRecord] = useState<any>(null);
-  const {currentUser} = useUser();
+  const { currentUser } = useUser();
   const showModal = (record: any) => {
     setCurrentRecord(record);
     setIsModalOpen1(true);
@@ -27,37 +33,71 @@ export default function WorkingTimesTable({ data }: DataTable) {
     setCurrentRecord(null);
   };
   const handleCancel = () => {
-    console.log("Cancelled")
+    console.log("Cancelled");
     setIsModalOpen1(false);
     setCurrentRecord(null);
   };
   const handleDelete = async (value: any) => {
     console.log("data ne", value);
     try {
-      await deleteWorkingTime(currentUser?.id as string,value);
+      await deleteWorkingTime(currentUser?.id as string, value);
       mutate(getAllWorkingTimes);
-      toast.success("Xoá thành công")
-  } catch (error) {   
+      toast.success("Xoá thành công");
+    } catch (error) {
       console.error("Failed to update working time", error);
-      toast.error("Xoá thất bại")
-  }
+      toast.error("Xoá thất bại");
+    }
   };
 
   const handleRework = async (value: any) => {
-    console.log("data ne", value);
+    var existedStartDates = trueData?.findIndex(
+      (date) =>
+        (formatDate(new Date(value.startDate)) >=
+          formatDate(new Date(date.startDate)) &&
+          formatDate(new Date(value.startDate)) <= formatDate(new Date(date.endDate))) && (
+          date.id!== value.id
+        )
+    );
+    var existedEndDates = trueData?.findIndex(
+      (date) =>
+        (formatDate(new Date(value.endDate)) >=
+          formatDate(new Date(date.startDate)) &&
+          formatDate(new Date(value.endDate)) <= formatDate(new Date(date.endDate))) && (
+          date.id!== value.id
+        ))
+    var existedEndStartDates = trueData?.findIndex(
+          (date) => (formatDate(new Date(value.startDate))<= formatDate(new Date(date.startDate)) && formatDate(new Date(value.endDate)) >= formatDate(new Date(date.endDate))) && (date.id!== value.id)
+        )
+    if (existedStartDates !== -1) {
+      toast.error(
+        "Lịch đã tồn tại hoặc nằm trong khoảng thời gian đã có.Vui lòng cập nhật lại giờ nếu muốn hồi lại lịch"
+      );
+      return;
+    }
+    if (existedEndDates !== -1) {
+      toast.error(
+        "Lịch đã tồn tại hoặc nằm trong khoảng thời gian đã có.Vui lòng cập nhật lại giờ nếu muốn hồi lại lịch"
+      );
+      return;
+    }
+    if (existedEndStartDates !== -1) {
+      toast.error(
+        "Lịch đã tồn tại hoặc nằm trong khoảng thời gian đã có.Vui lòng cập nhật lại giờ nếu muốn hồi lại lịch"
+      );
+      return;
+    }
     try {
-      await reworkWorkingTime(currentUser?.id as string,value);
+      await reworkWorkingTime(currentUser?.id as string, value.id);
       mutate(getAllWorkingTimes);
-      toast.success("Hồi lại thành công")
-  } catch (error) {   
+      toast.success("Hồi lại thành công");
+    } catch (error) {
       console.error("Failed to update working time", error);
-      toast.error("Hồi lại thất bại")
-  }
+      toast.error("Hồi lại thất bại");
+    }
   };
 
   const content = (record: any) => (
     <div className="flex flex-col">
-      
       <Button
         className="dark-bg-tab min-w-[130px] self-start border  border-light-line-reply px-4 py-1.5 
                            font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
@@ -65,27 +105,24 @@ export default function WorkingTimesTable({ data }: DataTable) {
       >
         Chỉnh sửa
       </Button>
-      {
-        record.status && (
-          <Button
-        className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
+      {record.status && (
+        <Button
+          className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
                            font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
-        onClick={() => handleDelete(record.id)}
-      >
-        Xóa lịch
-      </Button>
-        )
-      }
-      {
-        !record.status &&<Button
-        className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
+          onClick={() => handleDelete(record.id)}
+        >
+          Xóa lịch
+        </Button>
+      )}
+      {!record.status && (
+        <Button
+          className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
                            font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
-        onClick={() => handleRework(record.id)}
-      >
-        Hồi lại lịch
-      </Button>
-      }
-      
+          onClick={() => handleRework(record)}
+        >
+          Hồi lại lịch
+        </Button>
+      )}
     </div>
   );
   const columns: any = [
@@ -102,43 +139,33 @@ export default function WorkingTimesTable({ data }: DataTable) {
         return dateA - dateB;
       },
       render: (startDate: any) => {
-        return new Date(startDate).toLocaleDateString();
-      },
-    },
-    {
-      title: "Giờ bắt đầu",
-      dataIndex: "startDate",
-      sorter: (a: any, b: any) => {
-        const dateA = new Date(a.startDate).getTime();
-        const dateB = new Date(b.startDate).getTime();
-        return dateA - dateB;
-      },
-      render: (startDate: any) => {
-        return new Date(startDate).toLocaleTimeString();
+        return dayjs(new Date(startDate)).format("DD-MM-YYYY");
       },
     },
     {
       title: "Ngày kết thúc",
       dataIndex: "endDate",
       sorter: (a: any, b: any) => {
-        const dateA = new Date(a.startDate).getTime();
-        const dateB = new Date(b.startDate).getTime();
+        const dateA = new Date(a.endDate).getTime();
+        const dateB = new Date(b.endDate).getTime();
         return dateA - dateB;
       },
+      render: (endDate: any) => {
+        return dayjs(new Date(endDate)).format("DD-MM-YYYY");
+      },
+    },
+    {
+      title: "Giờ bắt đầu",
+      dataIndex: "startDate",
       render: (startDate: any) => {
-        return new Date(startDate).toLocaleDateString();
+        return dayjs(new Date(startDate)).format("HH:mm");
       },
     },
     {
       title: "Giờ kết thúc",
       dataIndex: "endDate",
-      sorter: (a: any, b: any) => {
-        const dateA = new Date(a.startDate).getTime();
-        const dateB = new Date(b.startDate).getTime();
-        return dateA - dateB;
-      },
-      render: (startDate: any) => {
-        return new Date(startDate).toLocaleTimeString();
+      render: (endDate: any) => {
+        return dayjs(new Date(endDate)).format("HH:mm");
       },
     },
     {
@@ -147,15 +174,13 @@ export default function WorkingTimesTable({ data }: DataTable) {
       render: (workingDays: any) => {
         return (
           <div className="flex flex-col">
-            {
-              (workingDays.map((day:any,index:number) =>
-                <List>
-                   <Tag color={"red"}>{day}</Tag>
-                </List>
-              ))
-            }
+            {workingDays.map((day: any, index: number) => (
+              <List>
+                <Tag color={"red"}>{day}</Tag>
+              </List>
+            ))}
           </div>
-        )
+        );
       },
       filters: [
         {
@@ -187,7 +212,7 @@ export default function WorkingTimesTable({ data }: DataTable) {
           value: "SUNDAY",
         },
       ],
-      onFilter: (value: any, record: any) => record.workingDays.includes(value)
+      onFilter: (value: any, record: any) => record.workingDays.includes(value),
     },
     {
       title: "Trạng thái",
@@ -226,7 +251,10 @@ export default function WorkingTimesTable({ data }: DataTable) {
         closeModal={handleCancel}
         className="w-1/2 ml-auto mr-auto"
       >
-        <CreateWorkingTimesForm data={currentRecord} />
+        <CreateWorkingTimesForm
+          data={currentRecord}
+          array={data.filter((value: any) => value.status === true)}
+        />
       </Modal>
     </>
   );
