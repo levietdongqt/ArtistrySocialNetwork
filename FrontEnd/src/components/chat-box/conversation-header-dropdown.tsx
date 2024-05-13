@@ -11,7 +11,7 @@ import {Modal} from "../../app/(users)/_components/modal/modal";
 import {ModalModifyNickname} from "@components/chat-box/modal-modify-nickname";
 import {CreateGroupChat} from "@components/chat-box/modal-create-group";
 import Swal from "sweetalert2";
-import {deleteConversationAndMessagesBelong} from "../../services/realtime/clientRequest/conversationClient";
+import {deleteConversationAndMessagesBelong, outGroup} from "../../services/realtime/clientRequest/conversationClient";
 import {toast} from "react-toastify";
 import {useChat} from "../../context/chat-context";
 import {ACTION_TYPE, ChatAction} from "@lib/reducer/chat-reducer";
@@ -36,11 +36,12 @@ export function ConversationHeaderDropdown({isInMessage, isGroup, conversation, 
     const [openModifyNickName, setOpenModifyNickName] = useState(false)
 
     const {currentUser} = useUser()
+    const isGroupMember = isGroup && !conversation.memberMap?.get(currentUser?.id!)?.isGroupOwner;
     const {state: {pickedConversations, showChatBoxes, conversations}, dispatch} = useChat()
     const handleDeleteConversation = () => {
         Swal.fire({
             title: "Bạn đã chắc chắn?",
-            text: "Hành động này sẽ toàn bộ đoạn chat và không thể hoàn tác!",
+            text: isGroupMember ? "Bạn sẽ thoát khỏi nhóm này!" : "Hành động này sẽ toàn bộ đoạn chat và không thể hoàn tác!",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
@@ -49,13 +50,13 @@ export function ConversationHeaderDropdown({isInMessage, isGroup, conversation, 
             cancelButtonText: "Quay lại"
         }).then((result) => {
             if (result.isConfirmed) {
-                toast.promise(deleteConversationAndMessagesBelong({
+                toast.promise(isGroupMember ? outGroup(conversation.id) : deleteConversationAndMessagesBelong({
                     id: conversation.id,
                     members: conversation.members,
                     type: conversation.type
                 }), {
                     pending: "Đang xóa...",
-                    success: "Xóa thành công!",
+                    success: `${isGroupMember? 'Thoát': 'Xoá'} nhóm thành công!`,
                     error: "Xóa thất bại!"
                 }).then(() => {
                     const pickedIndex = pickedConversations.findIndex(item => item?.id === conversation.id)
@@ -118,12 +119,11 @@ export function ConversationHeaderDropdown({isInMessage, isGroup, conversation, 
         },
         {
             key: '5',
-            disabled: isGroup && !conversation.memberMap?.get(currentUser?.id!)?.isGroupOwner,
             label: (
                 <TemplateNav href={''}
                              callback={handleDeleteConversation}
                              iconName={'IconTrash3Fill'}
-                             label={"Xoá đoạn chat"}/>
+                             label={isGroupMember ? "Thoát nhóm" : "Xoá đoạn chat"}/>
             ),
         },
     ]

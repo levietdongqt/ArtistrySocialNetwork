@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8062
   servlet:
     context-path: /api/realtime
 
@@ -7,8 +7,19 @@ server:
 spring:
   application:
     name: realtime-service
-
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+  data:
+    mongodb:
+      uri: mongodb://root:RHUowB1w__*e3MBZGAf0@mongodb:27017/snap_connectDb?authSource=admin
 eureka:
   client:
     service-url:
       defaultZone: http://server-registry:8761/eureka
+
+env:
+  CLIENT_URL: http://localhost:3000
+  SECRET_KEY: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"

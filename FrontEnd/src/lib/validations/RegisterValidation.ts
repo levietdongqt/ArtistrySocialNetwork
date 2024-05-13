@@ -15,7 +15,6 @@ const RegisterValidation = yup.object().shape({
     rePassword: yup.string()
         .oneOf([yup.ref('password')], 'Mật khẩu không trùng khớp! ')
         .required('Vui lòng xác nhận lại mật khẩu.'),
-    isGetGeolocation: yup.boolean().isTrue("Vui lòng cho phép chúng tôi xác định vị trí của bạn!")
 
 });
 export default RegisterValidation;

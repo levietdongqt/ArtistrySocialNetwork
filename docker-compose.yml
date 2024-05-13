@@ -1,10 +1,35 @@
 version: '3'
+networks:
+  my_network:
+    driver: bridge
 services:
-  mysql:
-    image: mysql:5.7
+
+  # Config for Server-Config
+  server-config:
+    build: ./server-config/
+    image: server-config
+    container_name: server-config
+    networks:
+      - my_network
     ports:
-      - 3306:3306
-    volumes:
-      - todo-mysql-data:/var/lib/mysql
-    environment: 
-      MYSQL_ROOT_PASSWORD: 123456
+      - "8088:8088"
+    restart: always
+
+  # Config for Server-registry  
+  server-registry:
+    build: ./BackEnd/server-registry/
+    image: server-registry
+    container_name: server-registry
+    entrypoint: ./wait-for-it.sh server-config:8088 --strict -- java -jar server-registry.jar
+    networks:
+      - my_network
+    restart: always
+    ports:
+     - "8761:8761"
+    depends_on:
+     - server-config
+
+
+volumes:
+  mysqldb-data:
+  mongodb_data:

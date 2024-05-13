@@ -1,7 +1,5 @@
 import {ConversationDto, ConversationMember} from "@models/conversation";
 import {MessageDto} from "@models/message";
-import {messages} from "async-validator/dist-types/messages";
-import {toastMessage} from "@components/chat-box/chat-box-socket-helper";
 
 
 const initState: stateType = {
@@ -55,13 +53,14 @@ const reducer = (state: any, action: any): stateType => {
     switch (action.type) {
 
         case ACTION_TYPE.SET_CONVERSATIONS:
-            const conversations = action.payload as ConversationDto[];
-            conversations.forEach(conversation => {
-                initMemberMapOfConversation(conversation);
-            })
+            const conversations = [...action.payload] as ConversationDto[];
+            if (!(conversations?.length > 0))
+                return state;
+            const updatedConversations = conversations.map(conversation => initMemberMapOfConversation(conversation));
+
             newState = {
                 ...state,
-                conversations: conversations
+                conversations: updatedConversations
             }
             break;
 
@@ -69,10 +68,11 @@ const reducer = (state: any, action: any): stateType => {
             const newConversation1 = action.payload as ConversationDto;
             const isExist = state.conversations.every((value: ConversationDto) => value.id === newConversation1.id)
             if (isExist) return state
-            initMemberMapOfConversation(newConversation1);
             newState = {
                 ...state,
-                conversations: [ newConversation1,...state.conversations]
+                conversations: [
+                    {...initMemberMapOfConversation(newConversation1)}
+                    , ...state.conversations]
             }
             break;
 
@@ -89,10 +89,11 @@ const reducer = (state: any, action: any): stateType => {
             // if (curPickedIndex1 !== -1 && state.showChatBoxes[curPickedIndex1]) {
             //     newConversation.members.forEach(member => member.notSeen = false)
             // }
-            initMemberMapOfConversation(newConversation)
             newState = {
                 ...state,
-                conversations: [newConversation, ...newConversationList]
+                conversations: [{
+                    ...initMemberMapOfConversation(newConversation)
+                }, ...newConversationList]
             }
             break;
 
@@ -125,12 +126,11 @@ const reducer = (state: any, action: any): stateType => {
             break;
 
         case ACTION_TYPE.UPDATE_PICKED_CONVERSATION:
-            const conversation = action.payload as ConversationDto
+            const conversation = {...action.payload} as ConversationDto
             // curPickedIndex = state.pickedConversations.findIndex((value: ConversationDto) => value?.id === newMessage.conversationId)
             curPickedIndex = findIndexOfConversation(state.pickedConversations, conversation.id)
             if (curPickedIndex === -1) {
                 const sender = conversation.members.find(member => member.id === conversation.lastMessage?.senderId)
-
                 console.log("New message is not in picked conversation")
                 newState = {
                     ...state,
@@ -147,10 +147,10 @@ const reducer = (state: any, action: any): stateType => {
                 messages: curPickedConversation.messages ? [...curPickedConversation.messages, conversation.lastMessage!] : [conversation.lastMessage!]
 
             }
-            initMemberMapOfConversation(newCurConversation)
+            const updateCurCon =   initMemberMapOfConversation(newCurConversation)
             // newPickedConversations = [...state.pickedConversations]
             // newPickedConversations[curPickedIndex] = newCurConversation
-            newPickedConversations = replaceConversationInList(state.pickedConversations, curPickedIndex, newCurConversation)
+            newPickedConversations = replaceConversationInList(state.pickedConversations, curPickedIndex, updateCurCon)
             newState = {
                 ...state,
                 pickedConversations: newPickedConversations
@@ -218,12 +218,16 @@ const reducer = (state: any, action: any): stateType => {
     return newState;
 }
 
- export function initMemberMapOfConversation(conversation: ConversationDto) {
+export function initMemberMapOfConversation(conversation: ConversationDto) {
+    if (conversation.id === "663a292ce8832b7b50e3076c") {
+        console.log("initMemberMapOfConversation: ", {...conversation})
+    }
     const memberMap = new Map<string, ConversationMember>()
     conversation.members.forEach(member => {
         memberMap.set(member.id, member)
+
     })
-    conversation.memberMap = memberMap
+    return {...conversation, memberMap: memberMap} as ConversationDto;
 }
 
 export function findIndexOfConversation(conversations: (ConversationDto | undefined)[], conversationId: string): number {
@@ -237,7 +241,7 @@ function replaceConversationInList(conversations: ConversationDto[], indexReplac
 }
 
 function updateConversationMembers(conversation: ConversationDto, newMembers: ConversationMember[]) {
-    conversation.members = newMembers
+    conversation.members = newMembers;
     initMemberMapOfConversation(conversation)
 }
 

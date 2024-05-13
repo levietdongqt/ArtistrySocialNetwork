@@ -13,6 +13,9 @@
 # Package Files #
 /BackEnd/**/target/
 
+/BackEnd/**/config/production
+/BackEnd/docker-compose.yml
+
 /BackEnd/**/*.jar
 /BackEnd/**/*.war
 /BackEnd/**/*.nar

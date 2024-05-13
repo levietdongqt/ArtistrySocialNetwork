@@ -20,10 +20,16 @@ interface props {
 
 export function CreateGroupChat({conversation, closeModal}: props) {
     const [friends, setFriends] = useState<User[]>([])
+
     const [removeIndex, setRemoveIndex] = useState(-1)
+
     const [groupName, setGroupName] = useState(conversation.name || 'No name')
+
     const [isModifyGroupName, setIsModifyGroupName] = useState(false)
-    const [members, setMembers] = useState<ConversationMember[]>(conversation.members)
+
+    const [members, setMembers] = useState<ConversationMember[]>(
+        conversation.members.filter(value => !value.isExited))
+
     const [searchString, setSearchString] = useState('')
 
     const isGroup = conversation.type === "GROUP"

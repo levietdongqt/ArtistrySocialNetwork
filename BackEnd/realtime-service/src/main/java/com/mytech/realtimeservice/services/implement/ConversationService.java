@@ -63,8 +63,9 @@ public class ConversationService implements IConversationService {
     }
 
     @Override
-    public List<Conversation> getByUserIdAndIgnoreTypeHide(String userId) {
-        return conversationRepo.getByUserIdAndIgnoreTypeHide(userId);
+    public List<ConversationDTO> getByUserIdAndIgnoreTypeHide(String userId) {
+        return conversationRepo.getByUserIdAndIgnoreTypeHide(userId).stream()
+                .map(item -> modelMapper.map(item,ConversationDTO.class)).toList();
     }
 
     @Override
@@ -106,6 +107,18 @@ public class ConversationService implements IConversationService {
         if (!isValid) {
             throw new ForbiddenException("You are not allowed to access this conversation");
         }
+    }
+
+    @Override
+    public void outConversation(String userId, String conversationId) {
+        Conversation conversation = conversationRepo.findById(conversationId)
+                .orElseThrow(() -> new NotFoundException("Conversation not found: " + conversationId));
+        conversation.getMembers().forEach(user -> {
+            if(user.getId().equals(userId)){
+                user.setIsExited(true);
+            }
+        });
+        conversationRepo.save(conversation);
     }
 
     private boolean isPrivateConversation(List<Conversation> conversations) {

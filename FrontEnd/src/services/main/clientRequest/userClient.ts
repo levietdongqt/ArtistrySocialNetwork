@@ -6,7 +6,7 @@ import {ExtraService} from "@models/extra-service";
 import {Review} from "@models/review";
 
 
-export function getUserById (userId: string): fetcherParams {
+export function getUserById(userId: string): fetcherParams {
     return [`/user/get/${userId}`, 'GET', null, ServiceDestination.MAIN];
 }
 
@@ -20,7 +20,7 @@ export async function updateUser(data: any): Promise<any> {
     return response.data;
 }
 
-export  function getAllReviewsByUserId(userId: string):fetcherParams  {
+export function getAllReviewsByUserId(userId: string): fetcherParams {
     return [`/review/get-all/${userId}`, 'GET', null, ServiceDestination.MAIN];
 }
 
@@ -44,4 +44,5 @@ export async function createReview(data: Review): Promise<any> {
         throw error; // Hoặc return thứ gì đó cho ngữ cảnh của bạn
     }
 }
+
 
