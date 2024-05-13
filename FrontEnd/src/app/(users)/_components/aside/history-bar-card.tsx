@@ -29,7 +29,7 @@ export function HistoryBarCard({data,handleFunctionLink,handleFunctionDelete}: H
                 data.keyword
                 ? `/search?q=${data.keyword}`
                 : data?.type === "user"
-                ? `/user/${data.id}`
+                ? `/profile/${data.id}`
                 : data?.type === "post"
                 ? `/post/${data.id}`
                 : data?.type === "service"

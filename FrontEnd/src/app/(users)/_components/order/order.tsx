@@ -31,34 +31,34 @@ export default function Order() {
     data: []
   };
   //Set data vào từng mảng theo trạng thái ở đây
-  useEffect(() => {
-    if (data) {
-      setOrderPendingData(
-        addRowNumber(
-          data.data.filter((value:any) => value.status === 'PENDING').sort(
-            (a: any, b: any) =>
-              b.id - a.id
-          )
-        )
-      );
-      setOrderActiveData(
-        addRowNumber(
-          data.data.filter((value:any) => value.status === 'ACTIVE').sort(
-            (a: any, b: any) =>
-              b.id - a.id
-          )
-        )
-      );
-      setOrderCancelledData(
-        addRowNumber(
-          data.data.filter((value:any) => value.status === 'CANCELLED').sort(
-            (a: any, b: any) =>
-              b.id - a.id
-          )
-        )
-      );
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     setOrderPendingData(
+  //       addRowNumber(
+  //         data.data.filter((value:any) => value.status === 'PENDING').sort(
+  //           (a: any, b: any) =>
+  //             b.id - a.id
+  //         )
+  //       )
+  //     );
+  //     setOrderActiveData(
+  //       addRowNumber(
+  //         data.data.filter((value:any) => value.status === 'ACTIVE').sort(
+  //           (a: any, b: any) =>
+  //             b.id - a.id
+  //         )
+  //       )
+  //     );
+  //     setOrderCancelledData(
+  //       addRowNumber(
+  //         data.data.filter((value:any) => value.status === 'CANCELLED').sort(
+  //           (a: any, b: any) =>
+  //             b.id - a.id
+  //         )
+  //       )
+  //     );
+  //   }
+  // }, [data]);
 
   //Hàm dùng để chuyển các dữ liệu theo status có sai thì em sửa ở đây cho phù hợp với status nhe, + với sửa ở OrderTable ở dưới
   const handleChange = () =>{
