@@ -80,7 +80,7 @@ public class WorkingTimeService implements IWorkingTimeService {
 
     private List<WorkingTimeDTO> getWorkingTimeDTOS(List<WorkingTimeDTO> workingTimeDTOs, List<WorkingTime> workingTimes) {
         if (workingTimes.isEmpty()){
-            throw new NotFoundException("Không tìm thấy working time nào");
+            return workingTimeDTOs;
         }
         for (int i = 0; i < workingTimes.size(); i++) {
             var workingTimeDTO = modelMapper.map(workingTimes.get(i),WorkingTimeDTO.class);

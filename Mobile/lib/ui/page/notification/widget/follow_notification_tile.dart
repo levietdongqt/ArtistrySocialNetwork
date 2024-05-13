@@ -1,63 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_twitter_clone/helper/utility.dart';
-import 'package:flutter_twitter_clone/model/notificationModel.dart';
-import 'package:flutter_twitter_clone/model/user.dart';
 import 'package:flutter_twitter_clone/myModel/MyNotification.dart';
+import 'package:flutter_twitter_clone/state/notificationState.dart';
 import 'package:flutter_twitter_clone/myModel/myUser.dart';
 import 'package:flutter_twitter_clone/ui/page/profile/profilePage.dart';
 import 'package:flutter_twitter_clone/ui/page/profile/widgets/circular_image.dart';
 import 'package:flutter_twitter_clone/ui/theme/theme.dart';
 import 'package:flutter_twitter_clone/widgets/customWidgets.dart';
 import 'package:flutter_twitter_clone/widgets/url_text/customUrlText.dart';
+import 'package:provider/provider.dart';
 
 class FollowNotificationTile extends StatelessWidget {
   final MyNotification model;
-  const FollowNotificationTile({Key? key, required this.model})
+  final Function Myfunction;
+  const FollowNotificationTile({Key? key, required this.model,required this.Myfunction})
       : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
-    var g = "";
-    switch(model.notificationType){
-      case "FOLLOWING":
-        g = "đang theo dõi tôi";
-        break;
-      case "LIKE":
-        g = "đã like bài viết của bạn";
-        break;
-      case "NORMAL":
-        g = "đã đăng bài viết mới";
-        break;
-      case "TAG":
-        g = "đã gắn bạn vào bài viết của họ";
-        break;
-      case "COMMENT":
-        g = "đã bình luận bài viết của họ";
-        break;
-      case "FRIEND":
-        g = "đã gửi lời mời kết bạn";
-        break;
-      case "ACCEPT_FRIEND":
-        g = "đã chấp nhận lời mời kết bạn";
-        break;  
-    }
+   
     return Column(
       children: [
         Container(
           color: TwitterColor.white,
-          // padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 26),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
           child: Column(
             children: [
               Row(
                 children: [
-                  _UserCard(user: model.userTo!),
-                  Text(g, style: TextStyles.subtitleStyle),
-                  // customIcon(context, icon: AppIcon.profile, isEnable: true),
-                  // const SizedBox(width: 10),
-                  // Text(
-                  //   model.userFrom?.fullName as String,
-                  //   style: TextStyles.titleStyle.copyWith(fontSize: 14),
-                  // ), 
+                  _UserCard(
+                    user: model.userTo!,
+                    type: model.notificationType!,
+                  ),
+                  IconButton(
+                      icon: Icon(Icons.disabled_visible_outlined),
+                      onPressed: () {
+                        Myfunction();
+                      },
+                    ),
                 ],
               ),
             ],
@@ -71,7 +50,9 @@ class FollowNotificationTile extends StatelessWidget {
 
 class _UserCard extends StatelessWidget {
   final MyUser user;
-  const _UserCard({Key? key, required this.user}) : super(key: key);
+  final String type;
+  const _UserCard({Key? key, required this.user, required this.type})
+      : super(key: key);
   String getBio(String bio) {
     if (bio == "Edit profile to update bio") {
       return "No bio available";
@@ -82,6 +63,30 @@ class _UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var g = "";
+    switch (type) {
+      case "FOLLOWING":
+        g = " đang theo dõi bạn";
+        break;
+      case "LIKE":
+        g = " đã like bài viết của bạn";
+        break;
+      case "NORMAL":
+        g = " đã đăng bài viết mới";
+        break;
+      case "TAG":
+        g = " đã gắn bạn vào bài viết của họ";
+        break;
+      case "COMMENT":
+        g = " đã bình luận bài viết của họ";
+        break;
+      case "FRIEND":
+        g = " đã gửi lời mời kết bạn";
+        break;
+      case "ACCEPT_FRIEND":
+        g = " đã chấp nhận lời mời kết bạn";
+        break;
+    }
     return Padding(
         padding: const EdgeInsets.only(left: 30, top: 10, bottom: 8),
         child: Container(
@@ -108,6 +113,8 @@ class _UserCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 3),
+                    Text(g, style: TextStyles.subtitleStyle),
+                    
                   ],
                 ),
               ),
@@ -122,8 +129,7 @@ class _UserCard extends StatelessWidget {
             ],
           ),
         ).ripple(() {
-          Navigator.push(
-              context, ProfilePage.getRoute(profileId: user.id!));
+          Navigator.push(context, ProfilePage.getRoute(profileId: user.id!));
         }, borderRadius: BorderRadius.circular(15)));
   }
 }

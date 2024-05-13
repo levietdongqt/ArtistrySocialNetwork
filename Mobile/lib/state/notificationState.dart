@@ -63,13 +63,13 @@ class NotificationState extends AppState {
     }
   }
 
-  //get [Notification list] from firebase realtime database
+  //Lay list notification
   void getListNotification(String userId,BuildContext context) {
      cprint('Notification list: gdfg',
             label: "ChatState");
    final socketSate = Provider.of<WebSocketState>(context, listen: false);
     try {
-      ApiHelper.callApi(HttpMethod.GET, '/notifications/${userId}/all', null,
+      ApiHelper.callApi(HttpMethod.GET, '/notifications/${userId}', null,
               ServerDestination.Realtime_Service, true)
           .then((response) {
         _myNotificationList = <MyNotification>[];
@@ -93,6 +93,29 @@ class NotificationState extends AppState {
 
     }
   }
+
+  void removeMyNotifications(String notifyId,BuildContext context) async {
+     final socketSate = Provider.of<WebSocketState>(context, listen: false);
+     try {
+      ApiHelper.callApi(HttpMethod.PUT, '/notifications/update/${notifyId}', null,
+              ServerDestination.Realtime_Service, true)
+          .then((response) {
+        _myNotificationList = <MyNotification>[];
+        if (response.status == 200) {
+          print("dfgdfggggg");
+          socketSate.myNotifications?.removeWhere((element) => element.id == notifyId);
+        } else {
+            cprint('Notification list: ${_myNotificationList?.length}',
+            label: "Notification State");
+        }
+        notifyListeners();
+      });
+    } catch (error) {
+
+    }
+  }
+
+  
 
    void getDataFromDatabase(String userId) {
     try {
