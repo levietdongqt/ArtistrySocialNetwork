@@ -175,6 +175,8 @@ CREATE TABLE IF NOT EXISTS orders (
     address varchar(255) CHARACTER SET utf8mb4,
     promotion_Id bigint,
 	status ENUM('PENDING', 'ACTIVE', 'CANCELLING', 'CANCELLED') DEFAULT 'PENDING',
+    amount int,
+    total_Price bigint,
     primary key(id),
     Foreign key(customer_User_Id) references users(id),
     Foreign key(promotion_Id) references promotions(id),

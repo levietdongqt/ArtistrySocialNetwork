@@ -4,7 +4,7 @@ import {Promotion} from "@models/promotion";
 import {ExtraService} from "@models/extra-service";
 
 export type Order = {
-    id: string;
+    id?: string;
     status: OrderStatus;
     startDate: Date;
     endDate: Date;
@@ -13,8 +13,10 @@ export type Order = {
     providerUser: User;
     customerUser:User;
     mainService: MainService;
+    amount?: number;
+    totalPrice?: number;
     promotion?: Promotion;
-    additionalService?: ExtraService;
+    additionalService?: ExtraService[];
 }
 
 export enum OrderStatus {

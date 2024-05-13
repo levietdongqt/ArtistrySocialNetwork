@@ -86,6 +86,16 @@ export async function outGroup(conversationId: String) {
     const response = await axiosWithToken(config);
     return response.data;
 }
+
+export async function checkConversation(body: string) {
+    const fullUrl = `${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/conversation/check`
+    const config: AxiosRequestConfig = {
+        url: fullUrl,
+        method: 'POST',
+    };
+    const response = await axiosWithToken(config);
+    return response.data;
+}
 export function isFollowing(body: any): fetcherParams {
     return [`/friends/isFollow-isFriend`, 'POST', body, ServiceDestination.MAIN];
 }

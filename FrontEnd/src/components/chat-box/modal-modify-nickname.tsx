@@ -16,22 +16,26 @@ export function ModalModifyNickname({conversation}: props) {
     const [modifyIndex, setModifyIndex] = useState(-1)
     const [nickname, setNickname] = useState('')
     const {state: {pickedConversations}, dispatch} = useChat()
+    let toastId: any;
     const handleChangeNickname = (value: string) => {
         if (nickname.length < 50) {
             setNickname(value)
             return;
         }
-        toast.warning("Nickname tối đa 50 kí tự!")
         setNickname(value.substring(0, 50))
+        if (toast.isActive(toastId)) return;
+        toastId = toast.warning("Nickname tối đa 50 kí tự!")
+
     }
     const onSubmitChangeNickname = () => {
         if (nickname.length < 3) {
-            toast.warning("Nickname tối thiểu 3 kí tự!")
+            if (toast.isActive(toastId)) return;
+            toastId = toast.warning("Nickname tối thiểu 3 kí tự!")
             return;
         }
         if (nickname.length > 50) {
-            toast.clearWaitingQueue();
-            toast.warning("Nickname tối đa 50 kí tự!")
+            if(toast.isActive(toastId))return;
+            toastId = toast.warning("Nickname tối đa 50 kí tự!")
             return;
         }
         const updateConversation: ConversationDto = {...conversation}

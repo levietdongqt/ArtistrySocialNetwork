@@ -36,4 +36,10 @@ public class BookingService implements IBookingService {
         List<Order> orders = orderRepo.findByStartDateAndProviderUser_Id(bookingDTO.bookingDate().toLocalDate(), bookingDTO.providerId());
         return orders.stream().map((order) -> modelMapper.map(order,OrderDto.class)).toList();
     }
+
+    @Override
+    public void createOrder(OrderDto orderDto) {
+        Order order = modelMapper.map(orderDto, Order.class);
+        orderRepo.save(order);
+    }
 }

@@ -11,4 +11,6 @@ public interface IBookingService {
     List<WorkingTimeDTO> getWorkingTimesByProvider(String providerId);
 
     List<OrderDto> getOrdersInDay(BookingDTO bookingDTO);
+
+    void createOrder(OrderDto orderDto);
 }

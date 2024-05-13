@@ -43,4 +43,16 @@ public class BookingController {
                         .data(orderDtos)
                         .build());
     }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/create-order")
+    public ResponseEntity<?> createOrder(@RequestBody OrderDto orderDto) {
+         bookingService.createOrder(orderDto);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Create Order successfully")
+                        .data(null)
+                        .build());
+    }
 }

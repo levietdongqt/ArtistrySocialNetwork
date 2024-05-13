@@ -131,7 +131,6 @@ const reducer = (state: any, action: any): stateType => {
             curPickedIndex = findIndexOfConversation(state.pickedConversations, conversation.id)
             if (curPickedIndex === -1) {
                 const sender = conversation.members.find(member => member.id === conversation.lastMessage?.senderId)
-
                 console.log("New message is not in picked conversation")
                 newState = {
                     ...state,

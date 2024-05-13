@@ -34,6 +34,7 @@ public class MainServiceDTO implements Serializable {
     private String description;
     private String createBy;
     private LocalDateTime createDate;
+    private LocalDateTime updateDate;
     private List<ExtraServiceDTO> extraServiceDTOs;
     private PromotionDTO promotionDTO;
     private UserDTO provider;

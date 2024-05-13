@@ -2,6 +2,10 @@
 import {Avatar, MessageSeparator} from "@chatscope/chat-ui-kit-react";
 import {MessageDto} from "@models/message";
 import {ConversationDto, ConversationMember} from "@models/conversation";
+import {ACTION_TYPE, ChatAction, stateType} from "@lib/reducer/chat-reducer";
+import {checkConversation} from "../../services/realtime/clientRequest/conversationClient";
+import {User} from "@models/user";
+import {toast} from "react-toastify";
 
 const milliPerDay = 86400000;
 
@@ -90,7 +94,48 @@ export function isLastMessageOutGoing(isLastMessage: boolean, direction: string)
     return isLastMessage && direction === "outgoing";
 }
 
-export function chatBoxNavBars() {
+export async function openConversationWithAnyone(currentUser: User, friend: User, state: stateType, dispatch: React.Dispatch<any>) {
+    const requestBody = JSON.stringify({
+        members: [
+            {
+                id: currentUser.id,
+                fullName: currentUser.fullName,
+                nickname: currentUser.fullName,
+                avatar: currentUser.avatar,
+                notSeen: false,
+            }, {
+                id: friend.id,
+                fullName: friend.fullName,
+                nickname: friend.fullName,
+                avatar: friend.avatar,
+                notSeen: false,
+            }
+        ]
+    })
+    const response = await checkConversation(requestBody)
+    if (response.status === 200) {
+        const conversation = response.data as ConversationDto
+        const curIndex = state.pickedConversations.findIndex(value => value?.id === conversation.id);
+        //Conversation was picked and is showing
+        if (curIndex !== -1 && (state.showChatBoxes[curIndex])) {
+            console.log("Conversation is existing")
+            return
+        }
+        let newShowChatBoxes = [...state.showChatBoxes]
+        if (curIndex !== -1 && !state.showChatBoxes[curIndex]) {
+            console.log("Conversation was picked and not showing")
+            newShowChatBoxes[curIndex] = true
+        } else {
+            console.log("Conversation not picked and not showing")
+            const newPickedCon = handlePickedConversations(conversation, state.pickedConversations)
+            dispatch(ChatAction(newPickedCon, ACTION_TYPE.SET_PICKED_CONVERSATIONS))
+            newShowChatBoxes = [true, ...newShowChatBoxes].slice(0, 3)
+        }
+        dispatch(ChatAction(newShowChatBoxes, ACTION_TYPE.SHOW_CHAT_BOXES))
+    } else {
+        console.log(response)
+        toast.error("Có lỗi xảy ra, vui lòng thử lại!")
+    }
 
 }
 

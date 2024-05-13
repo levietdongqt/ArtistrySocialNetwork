@@ -51,6 +51,10 @@ public class Order implements Serializable {
     @Column(name = "address")
     private String address;
 
+    private int amount;
+    @Column(name = "total_Price")
+    private long totalPrice;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
