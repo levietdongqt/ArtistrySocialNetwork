@@ -29,8 +29,8 @@ export function HomeLayout({ children }: LayoutProps): JSX.Element {
     <>
       {children}
       <Aside>
-        <AsideTrends />
-        <Suggestions />
+        {/* <AsideTrends /> */}
+        {/* <Suggestions /> */}
           <ServiceAll />
       </Aside>
     </>

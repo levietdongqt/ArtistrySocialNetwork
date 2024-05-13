@@ -1,3 +1,4 @@
+"use client"
 import cn from 'clsx';
 import Link from 'next/link';
 import { HeroIcon } from '@components/ui/hero-icon';
@@ -22,7 +23,6 @@ export function UserName({
   iconClassName
 }: UserNameProps): JSX.Element {
   const CustomTag = tag ? tag : 'p';
-
   return (
     <Link href={username ? `/profile/${id}` : '#'}  className={cn(
         'flex items-center gap-1 truncate font-bold',

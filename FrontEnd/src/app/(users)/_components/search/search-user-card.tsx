@@ -25,13 +25,13 @@ export function SearchUserCard({data} : SearchUserParams): JSX.Element {
        <div className="flex items-center justify-between w-full">
       <div className="flex items-center">
     
-      <UserTooltip avatarCheck={true} {...data.user}>
+      {/* <UserTooltip avatarCheck={true} {...data.user}> */}
       <UserAvatar
             src={data.user.avatar || "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
             alt={"name"}
             username={`${data?.user.id}`}
           />
-        </UserTooltip>
+        {/* </UserTooltip> */}
         <div className='flex flex-col'>
         <UserName
                 className='-mb-1 text-lg'
@@ -44,12 +44,7 @@ export function SearchUserCard({data} : SearchUserParams): JSX.Element {
         </div>
       </div>
       <div className='absolute right-5'>
-      <FollowButton
-                                            userTargetId={data.user.id}
-                                            userTargetUsername={data?.user.fullName}
-                                            hovered={true}
-                                        />
-      {/* <SearchButton userTargetUsername={data.user.fullName} userTargetId={data.user.id} follow={data.isCheckFriend.follow} pending={data.isCheckFriend.pending} friend={data.isCheckFriend.friend} acceptedFriend={data.isCheckFriend.acceptFriend} /> */}
+      <SearchButton userTargetUsername={data.user.fullName} userTargetId={data.user.id} follow={data.isCheckFriend.follow} pending={data.isCheckFriend.pending} friend={data.isCheckFriend.friend} acceptedFriend={data.isCheckFriend.acceptFriend} />
       </div>
       </div>
     </Link>
