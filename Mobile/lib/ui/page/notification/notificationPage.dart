@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/myModel/MyNotification.dart';
 import 'package:flutter_twitter_clone/state/WebSocketState.dart';
 import 'package:flutter_twitter_clone/state/authState.dart';
 import 'package:flutter_twitter_clone/state/notificationState.dart';
+import 'package:flutter_twitter_clone/ui/page/notification/widget/add_friend_notification_tile.dart';
 import 'package:flutter_twitter_clone/ui/page/notification/widget/follow_notification_tile.dart';
 
 import 'package:flutter_twitter_clone/ui/theme/theme.dart';
@@ -61,7 +64,21 @@ class NotificationPageBody extends StatelessWidget {
 
   Widget _notificationRow(BuildContext context, MyNotification model) {
       var state = Provider.of<NotificationState>(context, listen: true);
-      
+      final body = jsonEncode({
+      'userId': model.userFrom?.id,
+      'friendId': model.userTo?.id,
+    });
+      if (model.notificationType == "FRIEND"){
+        return AddFriendNotificationTile(model: model, Myfunction: () {
+          state.removeMyNotifications(model.id!, context);
+        },acceptFunction: () {
+          state.acceptFriendMyNotifications(body, context);
+        },
+        unAcceptFunction: () {
+          state.unAcceptFriendMyNotifications(body, context);
+        },
+        );
+      }
       return FollowNotificationTile(
         model: model,
         Myfunction: () {

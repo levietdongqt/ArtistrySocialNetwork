@@ -8,9 +8,11 @@ type UserAvatarProps = {
   size?: number;
   username?: string;
   className?: string;
+  id?: string
 };
 
 export function UserAvatar({
+  id,
   src,
   alt,
   size,
@@ -20,7 +22,7 @@ export function UserAvatar({
   const pictureSize = size ?? 48;
 
   return (
-    <Link href={username ? `/profile/${username}` : '#'} className={cn(
+    <Link href={ id? `/profile/${id}` : '#'} className={cn(
         'blur-picture flex self-start',
         !username && 'pointer-events-none',
         className

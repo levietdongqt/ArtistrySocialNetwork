@@ -25,7 +25,7 @@ export function UserCard(user: UserCardProps): JSX.Element {
 
         {/*<UserTooltip avatar {...user} modal={modal}>*/}
 
-        <UserTooltip avatarCheck modal={modal}>
+        <UserTooltip avatarCheck modal={modal} {...user}>
           <UserAvatar src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"} alt={"name"} username={"username"} />
         </UserTooltip>
         <div className='flex flex-col gap-1 truncate xs:overflow-visible'>
@@ -44,10 +44,10 @@ export function UserCard(user: UserCardProps): JSX.Element {
                 <UserTooltip modal={modal} {...user}>
                   <UserUsername username={fullName} />
                 </UserTooltip>
-                {follow && <UserFollowing userTargetId={id} />}
+                {follow && <UserFollowing userTargetId={id} hovered={true} />}
               </div>
             </div>
-            <FollowButton userTargetId={id} userTargetUsername={fullName} />
+            <FollowButton userTargetId={id} userTargetUsername={fullName} hovered={true}/>
           </div>
           {follow && bio && <p className='whitespace-normal'>{bio}</p>}
         </div>

@@ -12,6 +12,7 @@ import type { ReactNode } from 'react';
 import {User} from "@models/user";
 import {useEffect, useState} from "react";
 import { useUser } from 'context/user-context';
+import HtmlRenderer from './html-render';
 
 
 type UserTooltipProps = Pick<
@@ -43,14 +44,20 @@ export function UserTooltip({
                               coverImage,
   avatarCheck
 }: UserTooltipProps):JSX.Element {
+  const parser = new DOMParser();
+  console.log("bio",bio)
   const { isMobile } = useWindow();
   const [hovered, setHovered] = useState(false);
+  const [doc,setDoc] = useState<any>();
   const userLink = `/profile/${id}`;
   const {currentUser, } = useUser();
   useEffect(() => {
     if (hovered) {
     }
   }, [hovered]);
+  useEffect(()=>{
+    setDoc(parser.parseFromString(bio as string, "text/html"));
+  },[bio])
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
   const allStats: Readonly<Stats[]> = [
@@ -105,6 +112,7 @@ export function UserTooltip({
                   alt={fullName}
                   size={64}
                   username={fullName}
+                  id={id}
                 />
               </div>
               {((currentUser?.id !== id) && hovered) &&
@@ -129,7 +137,7 @@ export function UserTooltip({
               </div>
             </div>
           </div>
-          {bio && <p>{bio}</p>}
+          {bio &&  <HtmlRenderer htmlString={bio} />}
           <div className='text-secondary flex gap-4'>
           </div>
         </div>
