@@ -17,8 +17,13 @@ import { transformToFilesWithId } from '@lib/utils';
 import {uploadImages} from "../../../../../firebase/utils";
 import {ExtraService} from "@models/extra-service";
 import DescriptionInput from "../../../_components/input/input-description";
+import {toast} from "react-toastify";
 
-const CreateExtraServiceForm = () => {
+interface CreateExtraServiceFormProps {
+    closeModal: () => void;
+};
+
+const CreateExtraServiceForm:React.FC<CreateExtraServiceFormProps> = ({ closeModal }) => {
     const {currentUser} = useUser();
     const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
     const [promotions, setPromotions] = useState<Promotion[]>([]);
@@ -85,12 +90,21 @@ const CreateExtraServiceForm = () => {
             };
 
             try {
-                const response = await createExtraService(newService);
 
-                console.log("Service created successfully", response);
-
-
-                resetForm();
+                toast.promise(
+                    createExtraService(newService), // Hàm async để thực thi
+                    {
+                        pending: 'Đang tạo dịch vụ ...', // Thông báo khi đang xử lý
+                        success: 'Tạo dịch vụ thành công', // Thông báo khi thành công
+                        error: 'Tạo dịch vụ thất bại!' // Thông báo khi có lỗi
+                    }
+                ).then(() => {
+                    // Nếu Promise được resolve, tức là "Tạo dịch vụ thành công"
+                    closeModal(); // Gọi hàm đóng Modal
+                }).catch(error => {
+                    // Nếu có lỗi xảy ra, Promise được reject
+                    console.error("Failed to create service", error);
+                });
             } catch (error) {
 
                 console.error("Failed to create service", error);
@@ -102,7 +116,7 @@ const CreateExtraServiceForm = () => {
     return (
         <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded shadow mr-10">
 
-            <UploadFile/>
+            {/*<UploadFile/>*/}
 
             {/* <ImageService onImageListChange={handleImageListChange}/> */}
             <div className="mb-4">

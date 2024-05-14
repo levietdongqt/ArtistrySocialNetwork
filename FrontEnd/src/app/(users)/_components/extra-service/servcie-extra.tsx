@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "../modal/modal";
 import {GetAllExtraService, GetAllMainService} from "services/main/clientRequest/service";
 import useSWR from "swr";
-import { addRowNumber } from "@lib/helper/addRowSerivce";
+import {addRowNumber} from "@lib/helper/addRowSerivce";
 import ServiceMainTable from "./extraservice-table";
 import { Button, Tabs } from "antd";
 import CreateExtraServiceForm from "../../(main-layout)/provider/extra-service/create-service";
@@ -12,11 +12,13 @@ import {ExtraService} from "@models/extra-service";
 import ServiceExtraTable from "./extraservice-table";
 
 
+
+
 export default function ServiceExtra() {
   const { currentUser } = useUser();
   const [changeStatus,setChangeStatus] = useState(false);
-  const [mainDataTrue, setMainDataTrue] = useState<ExtraService[]>([]);
-  const [mainDataFalse, setMainDataFalse] = useState<ExtraService[]>([]);
+  const [extraDataTrue, setExtraDataTrue] = useState<ExtraService[]>([]);
+  const [extraDataFalse, setExtraDataFalse] = useState<ExtraService[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -33,25 +35,28 @@ export default function ServiceExtra() {
     error: error2,
   } = useSWR(GetAllExtraService(currentUser?.id as string), fetcherWithToken);
 
+
   useEffect(() => {
     if (data) {
-      setMainDataTrue(
-        addRowNumber(
-          data.data.filter((value:any) => value.status === true).sort(
-            (a: any, b: any) =>
-              new Date(b.createDate).getTime() -
-              new Date(a.createDate).getTime()
+      setExtraDataTrue(
+          addRowNumber(
+              data.data.filter((value:any) => value.status === true).sort(
+                  (a: any, b: any) =>
+                      new Date(b.createDate).getTime() -
+                      new Date(a.createDate).getTime()
+
+              )
           )
-        )
+
       );
-      setMainDataFalse(
-        addRowNumber(
-          data.data.filter((value:any) => value.status === false).sort(
-            (a: any, b: any) =>
-              new Date(b.createDate).getTime() -
-              new Date(a.createDate).getTime()
+      setExtraDataFalse(
+          addRowNumber(
+              data.data.filter((value:any) => value.status === false).sort(
+                  (a: any, b: any) =>
+                      new Date(b.createDate).getTime() -
+                      new Date(a.createDate).getTime()
+              )
           )
-        )
       );
     }
   }, [data]);
@@ -82,9 +87,9 @@ export default function ServiceExtra() {
         closeModal={handleCancel}
         className="w-1/2 ml-auto"
       >
-        <CreateExtraServiceForm />
+        <CreateExtraServiceForm closeModal={() => setIsModalOpen(false)} />
       </Modal>
-      <ServiceExtraTable data={!changeStatus ? mainDataTrue as any : mainDataFalse as any}></ServiceExtraTable>
+      <ServiceExtraTable data={!changeStatus ? extraDataTrue as any : extraDataFalse as any}></ServiceExtraTable>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 
 import {User} from "@models/user";
+import {Promotion} from "@models/promotion";
 
 export type MainService = {
 id: number|null;
@@ -13,7 +14,7 @@ imageUrls: string[];
 description: string;
 createDate: Date;
 updateDate: Date;
-promotionDTO: any|null ;
+promotionDTO: Promotion|null ;
 status: boolean;
 rowNumber?: number;
 };

@@ -17,14 +17,15 @@ import {
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {ContentPost} from "../../../../_components/content/content";
 import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
+import {useParams} from "next/navigation";
 
 
 const PostUser = () => {
     const { currentUser } = useUser();
-
+    const { ID } = useParams()
     const { open, openModal, closeModal } = useModal();
 
-    const userId = useMemo(() => currentUser?.id as string, [currentUser]);
+    const userId = ID;
     // const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken,{
     //     revalidateIfStale: false,
     //     revalidateOnFocus: false,
@@ -36,9 +37,9 @@ const PostUser = () => {
         useInfiniteScroll(
             getPostsByUserId
         );
+    console.log('postData' , postData);
     return (
         <>
-
             <section className='mt-0.5'>
                 { postLoading ? (
                     <Loading className='mt-5' />

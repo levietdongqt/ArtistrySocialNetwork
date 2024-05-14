@@ -122,6 +122,8 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
         clearTimeout(timeoutId)
         timeoutId = setTimeout(() => {
             callBack(compAddress)
+
+
         }, 600)
 
         const callBack = async (compAddress: any) => {
@@ -138,6 +140,7 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
                             longitude: data[0].lon
                         }
                         setValues((prevValues) => ({...prevValues, location: locationMap}));
+                        setValues(prevValues => ({ ...prevValues, address:compAddress }));
                         setErrorLocation('');
                         console.log('vị trí:', locationMap);
                     } else {
@@ -275,7 +278,6 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
                             <label htmlFor="role" className="block text-gray-700 text-sm font-bold mb-2">
                                 Địa chỉ hiện tại: <span>{values.address}</span>
                             </label>
-                            {/* Nút để kích hoạt chế độ chỉnh sửa địa chỉ */}
                             <button
                                 onClick={() => setIsEditingAddress(true)}
                                 className="text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
@@ -284,7 +286,6 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
                             </button>
                         </div>
                     )}
-                    {/* Hiển thị InputAddress nếu không có giá trị địa chỉ hoặc đang trong chế độ chỉnh sửa */}
                     {(isEditingAddress || !values.address) && (
                         <>
                             <label htmlFor="role" className="block text-gray-700 text-sm font-bold mb-2">

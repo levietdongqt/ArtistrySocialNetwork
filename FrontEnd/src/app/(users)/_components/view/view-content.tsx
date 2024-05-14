@@ -79,7 +79,7 @@ export function ViewContent(post: ViewPostProps): JSX.Element {
       <div className='flex flex-col gap-2'>
         <div className='grid grid-cols-[auto,1fr] gap-3'>
           <UserTooltip avatarCheck {...postUserData}>
-            <UserAvatar src={avatar} alt={fullName} username={fullName} />
+            <UserAvatar  src={avatar} alt={fullName} username={fullName} />
           </UserTooltip>
           <div className='flex min-w-0 justify-between'>
             <div className='flex flex-col truncate xs:overflow-visible xs:whitespace-normal'>

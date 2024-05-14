@@ -25,8 +25,8 @@ export function UserCard(user: UserCardProps): JSX.Element {
 
         {/*<UserTooltip avatar {...user} modal={modal}>*/}
 
-        <UserTooltip avatarCheck modal={modal}>
-          <UserAvatar src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"} alt={"name"} username={"username"} />
+        <UserTooltip  avatarCheck modal={modal}>
+          <UserAvatar id={id}  src={"https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"} alt={"name"} username={"username"} />
         </UserTooltip>
         <div className='flex flex-col gap-1 truncate xs:overflow-visible'>
           <div className='flex items-center justify-between gap-2 truncate xs:overflow-visible'>

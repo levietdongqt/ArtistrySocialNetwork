@@ -1,7 +1,5 @@
 package com.mytech.mainservice.dto;
 
-import com.mytech.mainservice.model.MainService;
-import com.mytech.mainservice.model.User;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -14,9 +12,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * DTO for {@link com.mytech.mainservice.model.ExtraService}
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,4 +29,5 @@ public class ExtraServiceDTO implements Serializable {
     private List<MainServiceDTO> mainServices;
     private PromotionDTO promotionDTO;
     private UserDTO provider;
+    private boolean status;
 }
