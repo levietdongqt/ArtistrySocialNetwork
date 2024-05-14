@@ -101,7 +101,7 @@ export function GetExtraServiceById (serviceId :number): fetcherParams {
 }
 
 export function GetAllExtraService (userId :string): fetcherParams {
-    return [`/extra-service/get/${userId}`, 'GET', null, ServiceDestination.MAIN];
+    return [`/extra-service/get-all/${userId}`, 'GET', null, ServiceDestination.MAIN];
 }
 
 export async function getExtraServiceByProvider (providerId :string){

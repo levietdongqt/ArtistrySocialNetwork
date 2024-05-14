@@ -53,7 +53,7 @@ public class PostController {
         );
     }
 
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+
     @GetMapping("/get-posts-byid/{userId}")
     public ResponseEntity<?> getPostListById(@PathVariable String userId,@RequestParam("limit") int limit,@RequestParam("pageIndex") int pageIndex) {
         log.info("Post List ");

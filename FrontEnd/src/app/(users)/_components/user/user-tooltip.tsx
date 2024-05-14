@@ -8,10 +8,11 @@ import { UserAvatar } from './user-avatar';
 import { UserName } from './user-name';
 import { UserFollowing } from './user-following';
 import { UserUsername } from './user-username';
-import type { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import {User} from "@models/user";
 import {useEffect, useState} from "react";
 import { useUser } from 'context/user-context';
+import DOMPurify from "dompurify";
 
 
 type UserTooltipProps = Pick<
@@ -57,7 +58,7 @@ export function UserTooltip({
     ['following', 'Following',2],
     ['followers', 'Followers',2]
   ];
-
+    const cleanFullBioContent = DOMPurify.sanitize(bio as string);
   return (
     <div
       className={cn(
@@ -75,64 +76,65 @@ export function UserTooltip({
             comment ?'left-[13.25rem] top-[-12.5rem] z-50 ' : ''
             )}
       >
-        <div className='flex flex-col gap-3 p-4'>
-          <div className='flex flex-col gap-2'>
-            <div className='-mx-4 -mt-4'>
-              {coverImage ? (
-                <Link href={userLink} className='blur-picture'>
-                  <div className='blur-picture'>
-                    <NextImage
-                      useSkeleton
-                      className='relative h-24'
-                      imgClassName='rounded-t-2xl'
-                      src={coverImage ?? "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
-                      alt={fullName}
-                      layout={"fill"}
-                    />
+          <div className='flex flex-col gap-3 p-4'>
+              <div className='flex flex-col gap-2'>
+                  <div className='-mx-4 -mt-4'>
+                      {coverImage ? (
+                          <Link href={userLink} className='blur-picture'>
+                              <div className='blur-picture'>
+                                  <NextImage
+                                      useSkeleton
+                                      className='relative h-24'
+                                      imgClassName='rounded-t-2xl'
+                                      src={coverImage ?? "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
+                                      alt={fullName}
+                                      layout={"fill"}
+                                  />
+                              </div>
+                          </Link>
+                      ) : (
+                          <div className='h-16 rounded-t-2xl bg-light-line-reply dark:bg-dark-line-reply'/>
+                      )}
                   </div>
-                </Link>
-              ) : (
-                <div className='h-16 rounded-t-2xl bg-light-line-reply dark:bg-dark-line-reply' />
-              )}
-            </div>
-            <div className='flex justify-between'>
-              <div className='mb-10'>
-                <UserAvatar
-                  className='absolute -translate-y-1/2 bg-main-background p-1
+                  <div className='flex justify-between'>
+                      <div className='mb-10'>
+                          <UserAvatar
+                              className='absolute -translate-y-1/2 bg-main-background p-1
                              hover:brightness-100 [&>figure>span]:[transition:200ms]
                              [&:hover>figure>span]:brightness-75'
-                  src={avatar ?? "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
-                  alt={fullName}
-                  size={64}
-                  username={fullName}
-                />
-              </div>
-              {((currentUser?.id !== id) && hovered) &&
-                <FollowButton userTargetId={id} userTargetUsername={fullName} hovered={hovered}/>
-              }
+                              src={avatar ?? "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
+                              alt={fullName}
+                              size={64}
+                              username={fullName}
+                          />
+                      </div>
+                      {((currentUser?.id !== id) && hovered) &&
+                          <FollowButton userTargetId={id} userTargetUsername={fullName} hovered={hovered}/>
+                      }
 
-            </div>
-            <div>
-              <UserName
-                className='-mb-1 text-lg'
-                name={fullName}
-                username={fullName}
-                verified={verified}
-                id={id}
-              />
-              <div className='flex items-center gap-1 text-light-secondary dark:text-dark-secondary'>
-               <UserUsername username={fullName} id={id} />
-               { hovered &&
-             <UserFollowing userTargetId={id} hovered={hovered}/>
-               }
-               
+                  </div>
+                  <div>
+                      <UserName
+                          className='-mb-1 text-lg'
+                          name={fullName}
+                          username={fullName}
+                          verified={verified}
+                          id={id}
+                      />
+                      <div className='flex items-center gap-1 text-light-secondary dark:text-dark-secondary'>
+                          <UserUsername username={fullName} id={id}/>
+                          {hovered &&
+                              <UserFollowing userTargetId={id} hovered={hovered}/>
+                          }
+
+                      </div>
+                  </div>
               </div>
-            </div>
+              {bio && <div className="p-2"  dangerouslySetInnerHTML={{__html: cleanFullBioContent.substring(0, 100) + (cleanFullBioContent.length > 100 ? '...' : '')}}></div>}
+
+              <div className='text-secondary flex gap-4'>
+              </div>
           </div>
-          {bio && <p>{bio}</p>}
-          <div className='text-secondary flex gap-4'>
-          </div>
-        </div>
       </div>
     </div>
   );

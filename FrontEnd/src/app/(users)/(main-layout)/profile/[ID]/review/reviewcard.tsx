@@ -49,7 +49,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
             style={{ perspective: 1000 }} // Apply perspective to get a more pronounced 3D effect
         >
             <div className="flex items-center space-x-4">
-                <UserAvatar src={review?.customerUser?.avatar} alt={review?.customerUser?.fullName ?? ''} username={review?.customerUser?.fullName ?? ''} />
+                <UserAvatar id={review?.customerUser?.id} src={review?.customerUser?.avatar} alt={review?.customerUser?.fullName ?? ''} username={review?.customerUser?.fullName ?? ''} />
 
                 <div className="flex flex-col">
                     <span className="font-medium text-gray-700">{review?.customerUser?.fullName}</span>

@@ -28,10 +28,10 @@ export default function ServiceMainTable({ data }: DataTable) {
   const [editingServiceId, setEditingServiceId] = useState<any>();
 
   // Mở modal shows ảnh grand ắng handling event
-  const handleViewImage = (imageUrl: string) => {
-    setSelectedImage(imageUrl);
-    setUpdateModalVisible(true);
-  };
+  // const handleViewImage = (imageUrl: string) => {
+  //   setSelectedImage(imageUrl);
+  //   setUpdateModalVisible(true);
+  // };
 
   const handleCancel = () => {
     console.log("Cancelled");
@@ -52,6 +52,7 @@ export default function ServiceMainTable({ data }: DataTable) {
   const handleTest = (value: any) => {
     console.log("data ne", value);
   };
+  console.log("data ne main",data);
   const imageStyle = {
     width: "100px", // Chiều rộng cố định bạn muốn áp dụng
     height: "60px", // Chiều cao cố định bạn muốn áp dụng
@@ -122,7 +123,7 @@ export default function ServiceMainTable({ data }: DataTable) {
       dataIndex: "duration",
       sorter: (a: any, b: any) => a.duration - b.duration,
       render: (duration: any) => {
-        return new Date(duration).toLocaleTimeString();
+        return  duration;
       },
     },
     {
@@ -130,7 +131,7 @@ export default function ServiceMainTable({ data }: DataTable) {
       dataIndex: "restTime",
       sorter: (a: any, b: any) => a.restTime - b.restTime,
       render: (restTime: any) => {
-        return new Date(restTime).toLocaleTimeString();
+        return  restTime;
       },
     },
     {

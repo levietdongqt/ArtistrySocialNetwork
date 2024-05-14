@@ -37,9 +37,9 @@ const PostUser = () => {
         useInfiniteScroll(
             getPostsByUserId
         );
+    console.log('postData' , postData);
     return (
         <>
-
             <section className='mt-0.5'>
                 { postLoading ? (
                     <Loading className='mt-5' />

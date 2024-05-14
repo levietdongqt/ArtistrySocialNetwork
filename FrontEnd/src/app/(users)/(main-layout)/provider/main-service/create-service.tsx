@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import { MainService } from "@models/main-service";
 import { useUser } from "../../../../../context/user-context";
-import { createMainService } from "../../../../../services/main/clientRequest/service";
+import {createExtraService, createMainService} from "../../../../../services/main/clientRequest/service";
 import ImageService , { ImageItem } from "./image-service";
 import { useFormik } from 'formik';
 import ServiceValidation from "@lib/validations/ServiceValidation";
@@ -16,8 +16,12 @@ import { FilesWithId } from '@models/file';
 import { transformToFilesWithId } from '@lib/utils';
 import {uploadImages} from "../../../../../firebase/utils";
 import DescriptionInput from "../../../_components/input/input-description";
+import {toast} from "react-toastify";
 
-const CreateMainServiceForm = () => {
+interface CreateMainServiceFormProps {
+    closeModal: () => void;
+};
+const CreateMainServiceForm :React.FC<CreateMainServiceFormProps> = ({ closeModal }) => {
     const {currentUser} = useUser();
     const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
     const [promotions, setPromotions] = useState<Promotion[]>([]);
@@ -82,12 +86,21 @@ const CreateMainServiceForm = () => {
             };
 
             try {
-                const response = await createMainService(newService);
+                toast.promise(
+                    createMainService(newService), // Hàm async để thực thi
+                    {
+                        pending: 'Đang tạo dịch vụ ...', // Thông báo khi đang xử lý
+                        success: 'Tạo dịch vụ thành công', // Thông báo khi thành công
+                        error: 'Tạo dịch vụ thất bại!' // Thông báo khi có lỗi
+                    }
+                ).then(() => {
+                    // Nếu Promise được resolve, tức là "Tạo dịch vụ thành công"
+                    closeModal(); // Gọi hàm đóng Modal
+                }).catch(error => {
+                    // Nếu có lỗi xảy ra, Promise được reject
+                    console.error("Failed to create service", error);
+                });
 
-                console.log("Service created successfully", response);
-
-
-                resetForm();
             } catch (error) {
 
                 console.error("Failed to create service", error);

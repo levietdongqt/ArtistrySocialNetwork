@@ -3,6 +3,7 @@ import cn from 'clsx';
 import { NextImage } from '@components/ui/next-image';
 
 type UserAvatarProps = {
+  id?: string;
   src: string;
   alt: string;
   size?: number;
@@ -11,6 +12,7 @@ type UserAvatarProps = {
 };
 
 export function UserAvatar({
+    id,
   src,
   alt,
   size,
@@ -20,7 +22,7 @@ export function UserAvatar({
   const pictureSize = size ?? 48;
 
   return (
-    <Link href={username ? `/profile/${username}` : '#'} className={cn(
+    <Link href={id ? `/profile/${id}` : '#'} className={cn(
         'blur-picture flex self-start',
         !username && 'pointer-events-none',
         className
