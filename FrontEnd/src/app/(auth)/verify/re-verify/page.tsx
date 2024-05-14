@@ -10,6 +10,8 @@ export default function ReVerify() {
         const searchParam = get("forgot-pass")
         if (searchParam) {
             setDestination("/verify/continue?forgot-pass=true");
+        }else{
+            setDestination("/verify/continue")
         }
     }, []);
     return (
