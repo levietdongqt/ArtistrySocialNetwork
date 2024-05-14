@@ -65,8 +65,8 @@ export function SidebarProfile(): JSX.Element {
                             <div className='flex gap-3 truncate'>
                                 <UserAvatar src={currentUser?.avatar as string} alt={'username'}
                                             size={40}/>
-                                <div className='hidden truncate text-start leading-5 xl:block'>
-                                    <UserName name={currentUser?.fullName!} username={currentUser?.fullName!} className='truncate' verified={!currentUser?.verified}/>
+                                <div className='hidden truncate text-start leading-5 xl:block' suppressHydrationWarning>
+                                    <UserName name={currentUser?.fullName!} username={currentUser?.fullName!} className='truncate' verified={!currentUser?.verified} />
                                 </div>
                             </div>
                             <HeroIcon

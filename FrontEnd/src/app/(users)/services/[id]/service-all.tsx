@@ -8,7 +8,7 @@ import { Carousel } from 'antd';
 
 import {UserCard} from "../../_components/user/user-card";
 import useSWR from "swr";
-import {GetAllMainService} from "../../../../services/main/clientRequest/service";
+import {GetAllMainService, GetTrendMainService} from "../../../../services/main/clientRequest/service";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {useUser} from "../../../../context/user-context";
 // import * as console from "node:console";
@@ -19,14 +19,11 @@ import {Loading} from "@components/ui/loading";
 
 
 export function ServiceAll(): JSX.Element {
-
-    const { currentUser } = useUser();
-    const id = '8c35d989-785c-4d18-909e-1792d62628ad'
     const {
         data: response,
         isLoading: isLoading,
         error: error2,
-    } = useSWR(GetAllMainService(id), fetcherWithToken);
+    } = useSWR(GetTrendMainService(), fetcherWithToken);
     if (isLoading) return <Loading className='flex h-52 items-center justify-center p-4' />;
     if (error2) return <div>Error: {error2.message}</div>;
     if (!Array.isArray(response?.data)) {
