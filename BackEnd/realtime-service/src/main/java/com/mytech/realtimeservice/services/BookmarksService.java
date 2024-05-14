@@ -33,6 +33,15 @@ public class BookmarksService implements IBookmarksService {
                 .collect(Collectors.toList());
     }
 
+    public Boolean deleteBookmark(String postId, String userId) {
+        Optional<BookMarks> bookmark = bookmarkRepository.findByPostIdAndUserId(postId, userId);
+        if (bookmark.isEmpty()) {
+            return false;
+        }
+        bookmarkRepository.delete(bookmark.get());
+        return true;
+    }
+
     public Boolean deleteAllBookmarks(String userId) {
         List<BookMarks> bookmarks = bookmarkRepository.findBookMarksByUserId(userId);
         if (bookmarks.isEmpty()) {

@@ -1,5 +1,5 @@
 'use client'
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Button} from "@components/ui/button";
 import {HeroIcon} from "@components/ui/hero-icon";
 import {ToolTip} from "@components/ui/tooltip";
@@ -19,25 +19,28 @@ import {ContentPost} from "../content/content";
 import {toast} from "react-toastify";
 import {deleteAllBokMarksByUserId} from "../../../../services/realtime/ServerAction/bookmarksService";
 import {SEO} from "../common/seo";
+import {useRecoilState} from "recoil";
+import {mutateBookmarkByPostId} from "@lib/hooks/mutateBookmarkByPostId";
+import {mutateBookmark} from "@lib/hooks/mutateBookmark";
 
 const ContainerBookmarks = () => {
+    const [, setMutateBookmarkPostId] = useRecoilState(mutateBookmarkByPostId);
+    const [, setMutateBookmark] = useRecoilState(mutateBookmark);
     const { currentUser } = useUser();
-
     const { open, openModal, closeModal } = useModal();
-
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
-    const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken,{
-        refreshInterval:0,
-        dedupingInterval:0
-    });
-
+    const { data: bookmarksRef, isLoading: bookmarksRefLoading,mutate: mutateBookmarkUserId } = useSWR(getBookmarksByUserId(userId),fetcherWithToken);
     const postId = useMemo(
         () => bookmarksRef?.data?.map((item: any) => item.postId) ?? [],
         [bookmarksRef]
     );
-
-    const { data: postData, isLoading: postLoading } = useSWR(getPostListByPostId(postId),fetcherWithToken);
-
+    const { data: postData, isLoading: postLoading,mutate: mutatePost } = useSWR(getPostListByPostId(postId),fetcherWithToken);
+    useEffect(() => {
+        setMutateBookmarkPostId(()=>mutatePost);
+    }, [mutatePost,setMutateBookmarkPostId]);
+    useEffect(() => {
+        setMutateBookmark(()=>mutateBookmarkUserId);
+    }, [mutateBookmarkUserId,setMutateBookmark]);
 
     const handleClear = async (): Promise<void> => {
         await deleteAllBokMarksByUserId(userId);
@@ -46,7 +49,6 @@ const ContainerBookmarks = () => {
     };
     return (
         <>
-            <SEO title='Page / Bookmarks' />
             <Modal
                 modalClassName='max-w-xs bg-main-background w-full p-8 rounded-2xl'
                 open={open}
@@ -65,10 +67,8 @@ const ContainerBookmarks = () => {
             </Modal>
             <MainHeader className='flex items-center justify-between'>
                 <div className='-mb-1 flex flex-col'>
-                    <h2 className='-mt-1 text-xl font-bold'>Đã Lưu</h2>
-                    <p className='text-xs text-light-secondary dark:text-dark-secondary'>
-                        {currentUser?.fullName}
-                    </p>
+                    <h2 className='-mt-1 text-xl font-bold'>Filter</h2>
+
                 </div>
                 <Button
                     className='dark-bg-tab group relative p-2 hover:bg-light-primary/10
@@ -95,7 +95,7 @@ const ContainerBookmarks = () => {
                 ) : (
                     <AnimatePresence mode='popLayout'>
                         {postData?.data?.map((post:any) => (
-                            <ContentPost {...post} key={post.id} />
+                            <ContentPost {...post} key={post.id}/>
                         ))}
                     </AnimatePresence>
                 )}

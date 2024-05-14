@@ -16,13 +16,10 @@ import {useUser} from "../../../../context/user-context";
 import { postPosts1} from "../../../../services/realtime/ServerAction/PostService";
 import {uploadImages} from "../../../../firebase/utils";
 import {postComment} from "../../../../services/realtime/ServerAction/CommentService";
-import useSWR from "swr";
-import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
-import {getFriendByUserId} from "../../../../services/main/clientRequest/friendsClient";
-import {getPostsLimit} from "../../../../services/realtime/clientRequest/postClient";
-import {useSearch} from "../../../../context/search-context";
+import { badWords, blackList } from 'vn-badwords';
 import {useRecoilValue} from "recoil";
 import {mutateState} from "@lib/hooks/mutateState";
+import {mutatePostId} from "@lib/hooks/mutatePostId";
 type InputProps = {
   postID?: string;
   modal?: boolean;
@@ -76,6 +73,7 @@ export function Input({
     []
   );
   const mutate = useRecoilValue(mutateState);
+  const mutatePostById = useRecoilValue(mutatePostId);
   const sendPost = async (): Promise<void> => {
     try {
     inputRef.current?.blur();
@@ -116,6 +114,9 @@ export function Input({
       };
       await sleep(1000);
       await postComment(commentData);
+      if(mutatePostById){
+        await mutatePostById();
+      }
     }
   }else{
     toast.error('bạn cần phải đăng nhập mới đăng bài');
@@ -192,12 +193,8 @@ export function Input({
   const handleChange = ({
     target: { value }
   }: ChangeEvent<HTMLTextAreaElement>): void => {
-    if ((value.includes(' @') || value.startsWith('@')) && !value.includes('@ ')) {
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-    }
-    setInputValue(value)
+    const badWord = badWords(value,{replacement:'*'})
+    setInputValue(badWord as string)
   };
 
   const handleSubmit = async () => {

@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Loading} from "@components/ui/loading";
 import {motion} from "framer-motion";
 import {variants} from "../aside/aside-trends";
@@ -13,11 +13,17 @@ import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {Error} from "@components/ui/error";
 import {FriendHomeLayout} from "../friend/friendHomeLayout";
 import cn from "clsx";
+import {useRecoilState} from "recoil";
+import {mutateFriend} from "@lib/hooks/mutateFriend";
 
 const ContainerFriend = () => {
     const {currentUser} = useUser();
+    const [,setMutateFriends] = useRecoilState(mutateFriend);
     const userId = currentUser?.id as string;
     const { data:friends, isLoading,mutate  } = useSWR(getFriendByUserId(userId),fetcherWithToken );
+    useEffect(() => {
+        setMutateFriends(()=>mutate);
+    }, [mutate,setMutateFriends]);
     return (
         <>
             <section>
@@ -35,7 +41,7 @@ const ContainerFriend = () => {
                         <>
                             <motion.div className='mt-0.5' {...variants}>
                                 {friends?.data.map((userData:any) => (
-                            <UserCard {...userData} key={userData.id} follow />
+                            <UserCard {...userData} key={userData.id} follow friends />
                              ))}
                         </motion.div>
                         {/*<LoadMore />*/}

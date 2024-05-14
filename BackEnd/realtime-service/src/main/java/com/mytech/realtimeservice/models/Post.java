@@ -37,6 +37,8 @@ public class Post implements Serializable {
     private int totalComments;
     private int totalShares;
     private LocalDateTime lastInteractionAt;
+    private boolean leastPrioritized;
+
     @Transient
     private double engagementScore;
 }

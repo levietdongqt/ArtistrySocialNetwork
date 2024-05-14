@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/model/feedModel.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 import 'package:flutter_twitter_clone/state/feedState.dart';
+import 'package:flutter_twitter_clone/state/postState.dart';
 import 'package:flutter_twitter_clone/ui/page/feed/feedPostDetail.dart';
 import 'package:flutter_twitter_clone/ui/page/profile/widgets/circular_image.dart';
 import 'package:flutter_twitter_clone/ui/theme/theme.dart';
@@ -26,7 +28,7 @@ class RetweetWidget extends StatelessWidget {
   final bool isImageAvailable;
   final TweetType type;
 
-  Widget _tweet(BuildContext context, FeedModel model) {
+  Widget _tweet(BuildContext context, myPost model) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -40,21 +42,21 @@ class RetweetWidget extends StatelessWidget {
               SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularImage(path: model.user!.profilePic),
+                child: CircularImage(path: model.user!.avatar),
               ),
               const SizedBox(width: 10),
               ConstrainedBox(
                 constraints:
                     BoxConstraints(minWidth: 0, maxWidth: context.width * .5),
                 child: TitleText(
-                  model.user!.displayName!,
+                  model.user!.fullName!,
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 3),
-              model.user!.isVerified!
+              model.user!.verified!
                   ? customIcon(
                       context,
                       icon: AppIcon.blueTick,
@@ -65,11 +67,11 @@ class RetweetWidget extends StatelessWidget {
                     )
                   : const SizedBox(width: 0),
               SizedBox(
-                width: model.user!.isVerified! ? 5 : 0,
+                width: model.user!.verified! ? 5 : 0,
               ),
               Flexible(
                 child: customText(
-                  '${model.user!.userName}',
+                  '${model.user!.fullName}',
                   style: TextStyles.userNameStyle,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -82,12 +84,12 @@ class RetweetWidget extends StatelessWidget {
             ],
           ),
         ),
-        model.description == null
+        model.content == null
             ? const SizedBox()
             : Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: UrlText(
-                  text: model.description!.takeOnly(150),
+                  text: model.content!.takeOnly(150),
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 14,
@@ -97,7 +99,7 @@ class RetweetWidget extends StatelessWidget {
                       color: Colors.blue, fontWeight: FontWeight.w400),
                 ),
               ),
-        SizedBox(height: model.imagePath == null ? 8 : 0),
+        SizedBox(height: model.mediaUrl?.isEmpty == true ? 8 : 0),
         TweetImage(model: model, type: type, isRetweetImage: true),
       ],
     );
@@ -105,10 +107,10 @@ class RetweetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var feedstate = Provider.of<FeedState>(context, listen: false);
+    var postState = Provider.of<PostState>(context, listen: false);
     return FutureBuilder(
-      future: feedstate.fetchTweet(childRetwetkey),
-      builder: (context, AsyncSnapshot<FeedModel?> snapshot) {
+      future: postState.fetchTweet(childRetwetkey),
+      builder: (context, AsyncSnapshot<myPost?> snapshot) {
         if (snapshot.hasData) {
           return Container(
             margin: EdgeInsets.only(
@@ -125,10 +127,10 @@ class RetweetWidget extends StatelessWidget {
             child: RippleButton(
               borderRadius: const BorderRadius.all(Radius.circular(15)),
               onPressed: () {
-                feedstate.getPostDetailFromDatabase(null,
+                postState.getPostDetailFromDatabase(null,
                     model: snapshot.data!);
                 Navigator.push(
-                    context, FeedPostDetail.getRoute(snapshot.data!.key!));
+                    context, FeedPostDetail.getRoute(snapshot.data!.id!));
               },
               child: ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(15)),

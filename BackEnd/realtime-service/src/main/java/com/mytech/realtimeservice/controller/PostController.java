@@ -52,6 +52,18 @@ public class PostController {
                         .build()
         );
     }
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @GetMapping("/get-posts-pag/{userId}")
+    public ResponseEntity<?> getPostListNotPag(@PathVariable String userId) {
+        log.info("Post List ");
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get post list not pag OK")
+                        .data(postService.findAllNotPag(userId))
+                        .build()
+        );
+    }
 
     @GetMapping("/getTotalLike/{postId}")
     public ResponseEntity<?> getTotalLikePostByPostId(@PathVariable String postId){
@@ -132,6 +144,20 @@ public class PostController {
                         .status(HttpStatus.OK)
                         .message("Handler list post successfully,")
                         .data(responses)
+                        .build()
+        );
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#descendingActionDto.userId) && hasRole('USER')")
+    @PostMapping("/descending-action")
+    public ResponseEntity<?> descendingAction(@RequestBody descendingActionDto descendingActionDto){
+        postService.descreasePriorityScore(descendingActionDto);
+        log.info("Handler decrease priority score successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.CREATED)
+                        .message("Handler decrease priority score successfully")
+                        .data(null)
                         .build()
         );
     }

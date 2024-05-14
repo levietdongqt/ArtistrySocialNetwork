@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
 import 'package:flutter_twitter_clone/model/feedModel.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 import 'package:flutter_twitter_clone/state/bookmarkState.dart';
 import 'package:flutter_twitter_clone/ui/theme/theme.dart';
 import 'package:flutter_twitter_clone/widgets/customAppBar.dart';
@@ -41,7 +42,7 @@ class BookmarkPage extends StatelessWidget {
 class BookmarkPageBody extends StatelessWidget {
   const BookmarkPageBody({Key? key}) : super(key: key);
 
-  Widget _tweet(BuildContext context, FeedModel model) {
+  Widget _tweet(BuildContext context, myPost model) {
     return Container(
       color: Colors.white,
       child: Tweet(

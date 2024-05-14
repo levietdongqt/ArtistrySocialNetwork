@@ -1,25 +1,14 @@
 
-import { useModal } from '@lib/hooks/useModal';
 import { preventBubbling } from '@lib/utils';
-import { Modal } from '../modal/modal';
-import { ActionModal } from '../modal/action-modal';
 import { Button } from '@components/ui/button';
 import {
-    acceptFriend,
-    addFriend,
-    followingFriend,
-    isFollowing,
-    removeFriend,
-    returnAddFriend,
-    unAcceptFriend,
-    unFollowingFriend
-} from 'services/main/clientRequest/friendsClient';
+    acceptFriend,unAcceptFriend
+} from 'services/realtime/ServerAction/friendsService';
 import { useUser } from 'context/user-context';
-import { useEffect, useState } from 'react';
-import { fetcherWithToken } from '@lib/config/SwrFetcherConfig';
-import useSWR from 'swr';
 import { FollowButtonType } from '@models/notifications';
 import {Typography} from "antd";
+import {useRecoilValue} from "recoil";
+import {mutateFriendRequest} from "@lib/hooks/mutateFriendRequest";
 
 const { Text } = Typography;
 
@@ -35,50 +24,28 @@ export function FriendButton({
                                  hovered,
                              }: FollowButtonProps): JSX.Element | null {
     const {currentUser} = useUser();
-    const [shouldRejectFriend,setShouldRejectFriend] = useState(false);
-    const [shouldAcceptFriend,setShouldAcceptFriend] = useState(false);
-    //Xử lý follow
-    console.log("show friends",userTargetId)
-    console.log("show ủe",currentUser?.id as string)
-
-//Xử lý kết bạn
-    const {} = useSWR(
-        shouldAcceptFriend?
-            acceptFriend({
-                userId: currentUser?.id as string,
-                friendId: userTargetId
-            }):null,
-        fetcherWithToken
-    );
-    const {} = useSWR(
-        shouldRejectFriend ?
-            unAcceptFriend({
-                userId: currentUser?.id as string,
-                friendId: userTargetId
-            }):null,
-        fetcherWithToken
-    )
-
-
-    const handleAcceptFriend = () =>{
-        setShouldAcceptFriend(true);
+    const mutateFriendRequests = useRecoilValue(mutateFriendRequest);
+    const handleAcceptFriend = async () =>{
+        const data = {
+            userId: currentUser?.id as string,
+            friendId: userTargetId
+        }
+        if (mutateFriendRequests) {
+               await acceptFriend(data);
+                   await  mutateFriendRequests();
+        }
     }
 
-    const handleRejectFriend = () =>{
-        setShouldRejectFriend(true);
+    const handleRejectFriend = async () =>{
+        const data = {
+            userId: currentUser?.id as string,
+            friendId: userTargetId
+        }
+        if (mutateFriendRequests) {
+               await unAcceptFriend(data);
+               await mutateFriendRequests();
+        }
     }
-    useEffect(()=>{
-        if(shouldRejectFriend){
-            setShouldRejectFriend(false);
-        }
-    },[shouldRejectFriend])
-
-    useEffect(()=>{
-        if(shouldAcceptFriend){
-            setShouldAcceptFriend(false);
-        }
-    },[shouldAcceptFriend])
-
 
     return (
         <>

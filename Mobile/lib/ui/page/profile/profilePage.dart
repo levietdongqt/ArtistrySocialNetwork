@@ -454,17 +454,17 @@ class _ProfilePageState extends State<ProfilePage>
                 itemCount: list.length,
                 itemBuilder: (context, index) => Container(
                   color: TwitterColor.white,
-                  child: Tweet(
-                    model: list![index],
-                    isDisplayOnProfile: true,
-                    trailing: TweetBottomSheet().tweetOptionIcon(
-                      context,
-                      model: list[index],
-                      type: TweetType.Tweet,
-                      scaffoldKey: scaffoldKey,
-                    ),
-                    scaffoldKey: scaffoldKey,
-                  ),
+                  // child: Tweet(
+                  //   model: list![index],
+                  //   isDisplayOnProfile: true,
+                  //   trailing: TweetBottomSheet().tweetOptionIcon(
+                  //     context,
+                  //     model: list[index],
+                  //     type: TweetType.Tweet,
+                  //     scaffoldKey: scaffoldKey,
+                  //   ),
+                  //   scaffoldKey: scaffoldKey,
+                  // ),
                 ),
               );
   }

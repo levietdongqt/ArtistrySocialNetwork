@@ -1,6 +1,6 @@
 
 import { useModal } from '@lib/hooks/useModal';
-import { preventBubbling } from '@lib/utils';
+import {preventBubbling, sleep} from '@lib/utils';
 import { Modal } from '../../app/(users)/_components/modal/modal';
 import { ActionModal } from '../../app/(users)/_components/modal/action-modal';
 import { Button } from '@components/ui/button';
@@ -11,6 +11,8 @@ import { fetcherWithToken } from '@lib/config/SwrFetcherConfig';
 import useSWR from 'swr';
 import { FollowButtonType } from '@models/notifications';
 import {Typography} from "antd";
+import {useRecoilValue} from "recoil";
+import {mutateFriend} from "@lib/hooks/mutateFriend";
 
 const { Text } = Typography;
 
@@ -47,7 +49,7 @@ export function FollowButton({
       revalidateOnFocus: false,
     }
   );
-  const {} = useSWR(
+  const {isLoading:unFollowLoadingFriend} = useSWR(
     shouldUnFollowed?
     unFollowingFriend({
         userId: currentUser?.id as string,
@@ -59,7 +61,7 @@ export function FollowButton({
 );
 
 
-const {} = useSWR(
+const {isLoading:FollowLoadingFriend} = useSWR(
   shouldFollowed?
   followingFriend({
       userId: currentUser?.id as string,
@@ -82,17 +84,29 @@ useEffect(()=>{
   }
 },[shouldFollowed])
 
-const handleUnfollow = () =>{
+const handleUnfollow = async () =>{
   setShouldUnFollowed(true);
+    if(unFollowLoadingFriend == false){
+        await sleep(2000);
+        if(mutateFriends){
+            await mutateFriends();
+        }
+    }
   closeUnFollowModal();
 }
 
-const handlefollow = () =>{
+const handlefollow = async () =>{
   setShouldFollowed(true);
+    if(FollowLoadingFriend == false){
+        await sleep(2000);
+        if(mutateFriends){
+            await mutateFriends();
+        }
+    }
 }
 
 //Xử lý kết bạn
-const {} = useSWR(
+const {isLoading} = useSWR(
   shouldAddFriend?
   addFriend({
       userId: currentUser?.id as string,
@@ -102,7 +116,7 @@ fetcherWithToken,{
   revalidateOnFocus: false,
 }
 );
-const {} = useSWR(
+const {isLoading:removeLoadingFriend} = useSWR(
   shouldUnFriend?
   removeFriend({
       userId: currentUser?.id as string,
@@ -135,21 +149,28 @@ fetcherWithToken,{
 }
 );
 
-  const handleAddFriend = () =>{
+    const mutateFriends = useRecoilValue(mutateFriend);
+  const handleAddFriend = async () =>{
     setShouldAddFriend(true);
   }
 
-  const handleRemoveFriend = () =>{
+  const handleRemoveFriend = async () =>{
     setShouldUnFriend(true);
+    if(removeLoadingFriend == false){
+        await sleep(2000);
+        if(mutateFriends){
+            await mutateFriends();
+        }
+    }
     closeUnFriendModal();
   }
 
-  const handleReAcceptFriend = () =>{
+  const handleReAcceptFriend = async () =>{
     setShouldReFriend(true);
     closeReAcceptModal();
   }
 
-  const handleAcceptFriend = () =>{
+  const handleAcceptFriend = async () =>{
     setShouldAcceptFriend(true);
   }
 

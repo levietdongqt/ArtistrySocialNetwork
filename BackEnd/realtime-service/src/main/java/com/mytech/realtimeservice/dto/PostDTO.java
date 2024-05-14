@@ -22,4 +22,5 @@ public class PostDTO {
     private String sendUserBio;
     private Boolean sendVerified = false;
     private List<UserDTO> userTags;
+
 }

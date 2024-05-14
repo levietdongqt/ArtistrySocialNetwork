@@ -13,7 +13,7 @@ import 'package:flutter_twitter_clone/state/appState.dart';
 import 'package:flutter_twitter_clone/state/authState.dart';
 import 'package:flutter_twitter_clone/state/chats/chatState.dart';
 import 'package:flutter_twitter_clone/state/suggestionUserState.dart';
-import 'package:flutter_twitter_clone/state/feedState.dart';
+import 'package:flutter_twitter_clone/state/postState.dart';
 import 'package:flutter_twitter_clone/state/notificationState.dart';
 import 'package:flutter_twitter_clone/state/searchState.dart';
 import 'package:flutter_twitter_clone/ui/page/feed/feedPage.dart';
@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
       var state = Provider.of<AppState>(context, listen: false);
       state.setPageIndex = 0;
       initWebSocket();
-      initTweets();
+      initPosts();
       initProfile();
       initSearch();
       initNotification();
@@ -74,10 +74,9 @@ class _HomePageState extends State<HomePage> {
     state.initWebSocket(accessToken!);
   }
 
-  void initTweets() {
-    var state = Provider.of<FeedState>(context, listen: false);
-    state.databaseInit();
-    state.getDataFromDatabase();
+  void initPosts() {
+    var state = Provider.of<PostState>(context, listen: false);
+      state.getDataFromDatabase();
   }
 
   void initProfile() {
@@ -135,7 +134,7 @@ class _HomePageState extends State<HomePage> {
     /// `model.data.senderId` is user id who tagged you in a tweet
     else if (model.type == NotificationType.Mention.toString() &&
         model.receiverId == authState.user!.uid) {
-      var feedState = Provider.of<FeedState>(context, listen: false);
+      var feedState = Provider.of<PostState>(context, listen: false);
       feedState.getPostDetailFromDatabase(model.tweetId);
       Navigator.push(context, FeedPostDetail.getRoute(model.tweetId));
     }
@@ -185,7 +184,7 @@ class _HomePageState extends State<HomePage> {
     if (type == "profilePage") {
       Navigator.push(context, ProfilePage.getRoute(profileId: id));
     } else if (type == "tweet") {
-      var feedState = Provider.of<FeedState>(context, listen: false);
+      var feedState = Provider.of<PostState>(context, listen: false);
       feedState.getPostDetailFromDatabase(id);
       Navigator.push(context, FeedPostDetail.getRoute(id));
     }

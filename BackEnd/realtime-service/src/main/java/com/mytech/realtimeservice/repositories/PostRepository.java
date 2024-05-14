@@ -19,7 +19,7 @@ import java.util.Set;
 @Repository
 public interface PostRepository extends MongoRepository<Post,String> {
 
-    @Query(value = "{'user.userId': ?0}")
+    @Query(value = "{'user.id': ?0}")
     List<Post> findPostByUser(String userId);
 
     @Query(value = "{'id': ?0}")
@@ -27,6 +27,8 @@ public interface PostRepository extends MongoRepository<Post,String> {
     @Query(value = "{'_id': {$nin: ?1},'user.id' : { $in: ?0 }}")
     Page<Post> findByOrderByCreatedAtDesc(List<String> userIds, Set<String> reportedPostIds, Pageable pageable);
 
+    @Query(value = "{'id': {$nin: ?1},'user.id' : { $in: ?0 }}",sort = "{'createdAt': -1}")
+    List<Post> findByOrderByCreatedAtDescNotPag(List<String> userIds, Set<String> reportedPostIds);
     long count();
     List<Post> findByContentContainingIgnoreCaseOrUserFullNameContainingIgnoreCase(String contentKeyword, String fullNameKeyword);
 

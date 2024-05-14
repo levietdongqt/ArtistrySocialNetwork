@@ -7,6 +7,7 @@ import { MainContainer } from '../../_components/home/main-container';
 import ContainerFriend from "../../_components/container/ContainerFriend";
 import {FriendHomeLayout} from "../../_components/friend/friendHomeLayout";
 import {useRouter} from "next/navigation";
+import {AnimatePresence} from "framer-motion";
 
 export default function FriendsLayout({
                                           children,
@@ -21,7 +22,9 @@ export default function FriendsLayout({
                     <SEO title='Friends' />
                     <MainHeader useActionButton title='Bạn bè' action={back} />
                     <FriendHomeLayout>
-                        {children}
+                        <AnimatePresence mode='popLayout'>
+                            {children}
+                        </AnimatePresence>
                     </FriendHomeLayout>
                 </MainContainer>
             </FriendLayout>

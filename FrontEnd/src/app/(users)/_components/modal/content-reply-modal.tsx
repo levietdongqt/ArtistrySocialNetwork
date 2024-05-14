@@ -14,6 +14,8 @@ import {useSocket} from "../../../../context/websocket-context1";
 import commentsReducer from "../comment/commentReducer";
 import {useRecoilState} from "recoil";
 import {mutateDeleteComment} from "@lib/hooks/mutateDelete";
+import {mutatePostId} from "@lib/hooks/mutatePostId";
+import {mutateDeleteCommentState} from "@lib/hooks/mutateDeleteState";
 
 
 type TweetReplyModalProps = {
@@ -39,7 +41,7 @@ export function ContentReplyModal({
     };
     }, [post?.id,stompClient]);
 
-    const { data: postData,isLoading:loadingPost } = useSWR(
+    const { data: postData,isLoading:loadingPost,mutate:mutatePostById } = useSWR(
         getPostById(post?.id), fetcherWithToken
     );
     // Fetch comments, ensure that we don't re-fetch if hasFetched is true
@@ -47,11 +49,23 @@ export function ContentReplyModal({
         getCommentByPost(post?.id), fetcherWithToken
     );
     const [,setMutateCommentData] = useRecoilState(mutateDeleteComment);
+    const [,setMutatePostDataById] = useRecoilState(mutatePostId);
+    const [,setStateComment] = useRecoilState(mutateDeleteCommentState);
     useEffect(() => {
         if (commentsData) {
             setMutateCommentData(() => mutateComment);
         }
     }, [mutateComment,setMutateCommentData]);
+    useEffect(() => {
+        if (commentsData) {
+            setMutateCommentData(() => state.comments);
+        }
+    }, [state,setStateComment]);
+    useEffect(() => {
+        if (commentsData) {
+            setMutatePostDataById(() => mutatePostById);
+        }
+    }, [mutatePostById,setMutatePostDataById]);
     const handleOpenChild = (commentId:any) => {
         if (lastOpenedCommentId === commentId) {
             // Nếu comment hiện tại đã mở, nhấn một lần nữa sẽ đóng nó lại

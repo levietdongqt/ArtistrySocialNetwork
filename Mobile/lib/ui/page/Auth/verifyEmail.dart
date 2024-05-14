@@ -37,7 +37,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 NotifyText(
                   title: 'Verify your email address',
                   subTitle:
-                      'Send email verification email link to ${state.user!.email} to verify address',
+                      'Send email verification email link to ${state.user?.email} to verify address',
                 ),
                 const SizedBox(
                   height: 30,

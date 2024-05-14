@@ -3,6 +3,7 @@ package com.mytech.mainservice.service.implement;
 import com.mytech.mainservice.dto.ExtraServiceDTO;
 import com.mytech.mainservice.dto.MainServiceDTO;
 import com.mytech.mainservice.dto.PromotionDTO;
+import com.mytech.mainservice.dto.SaveServiceDTO;
 import com.mytech.mainservice.enums.PromotionType;
 import com.mytech.mainservice.exception.myException.InvalidPropertyException;
 import com.mytech.mainservice.exception.myException.NotFoundException;
@@ -10,10 +11,12 @@ import com.mytech.mainservice.helper.JwtTokenHolder;
 import com.mytech.mainservice.model.ExtraService;
 import com.mytech.mainservice.model.MainService;
 import com.mytech.mainservice.model.Promotion;
+import com.mytech.mainservice.model.User;
 import com.mytech.mainservice.model.elasticsearch.ServiceELS;
 import com.mytech.mainservice.repository.IExtraServiceRepository;
 import com.mytech.mainservice.repository.IMainServiceRepository;
 import com.mytech.mainservice.repository.IPromotionRepository;
+import com.mytech.mainservice.repository.IUserRepository;
 import com.mytech.mainservice.service.IELSService;
 import com.mytech.mainservice.service.IMainSerService;
 import org.modelmapper.ModelMapper;
@@ -30,6 +33,8 @@ import java.util.stream.Collectors;
 public class MainSerService implements IMainSerService {
     @Autowired
     private IMainServiceRepository mainServiceRepo;
+    @Autowired
+    private IUserRepository userRepo;
     @Autowired
     private IPromotionRepository promotionRepo;
     @Autowired
@@ -59,6 +64,31 @@ public class MainSerService implements IMainSerService {
             throw new InvalidPropertyException("This service has deleted before");
         }
         return modelMapper.map(mainService, MainServiceDTO.class);
+    }
+    @Override
+    public void saveMainService(SaveServiceDTO saveServiceDTO){
+        Optional<MainService> mainService = mainServiceRepo.findById(saveServiceDTO.getMainServiceId());
+        Optional<User> user = userRepo.findById(saveServiceDTO.getUserId());
+        if(mainService.isEmpty() || user.isEmpty()){
+            throw new NotFoundException("Not found main service or user");
+        }
+        MainService getMainService = mainService.get();
+        User getUser = user.get();
+
+        getUser.getSavedMainServices().add(getMainService);
+        getMainService.getSavedByUser().add(getUser);
+
+        userRepo.save(getUser);
+        mainServiceRepo.save(getMainService);
+    }
+
+    @Override
+    public List<MainServiceDTO> findMainServiceSavedByUserId(String userId){
+        List<MainService> listMainService = mainServiceRepo.findMainServiceByUserId(userId);
+        if(listMainService.isEmpty()){
+            throw new NotFoundException("Not found main service");
+        }
+        return listMainService.stream().map(mainService -> modelMapper.map(mainService, MainServiceDTO.class)).collect(Collectors.toList());
     }
 
     @Override

@@ -11,6 +11,8 @@ import {toast} from "react-toastify";
 import {HeroIcon} from "@components/ui/hero-icon";
 import {ToolTip} from "@components/ui/tooltip";
 import {Button} from "@components/ui/button";
+import {useRecoilValue} from "recoil";
+import {mutateState} from "@lib/hooks/mutateState";
 
 
 
@@ -79,6 +81,7 @@ export function ContentStats({
         setCountLiked(currentLikes);
 
     }, []);
+    const mutateHome = useRecoilValue(mutateState);
     const handleLikes = async (): Promise<void> => {
         if(userId !== null){
             if(!replyTags){

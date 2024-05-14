@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Loading} from "@components/ui/loading";
 import {motion} from "framer-motion";
 import {variants} from "../aside/aside-trends";
@@ -13,11 +13,17 @@ import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {Error} from "@components/ui/error";
 import cn from "clsx";
 import {FriendRequestCard} from "../friend/FriendRequestCard";
+import {mutateFriendRequest} from "@lib/hooks/mutateFriendRequest";
+import {useRecoilState} from "recoil";
 
 const ContainerFriendRequest = () => {
     const {currentUser} = useUser();
     const userId = currentUser?.id as string;
-    const { data:friends, isLoading,  } = useSWR(getPendingFriend(userId),fetcherWithToken );
+    const { data:friends, isLoading,mutate:mutateFriendRequests  } = useSWR(getPendingFriend(userId),fetcherWithToken );
+    const [, setMutateFriends] = useRecoilState(mutateFriendRequest);
+    useEffect(() => {
+        setMutateFriends(() =>mutateFriendRequests);
+    }, [mutateFriendRequests,setMutateFriends]);
     return (
         <>
             <section>

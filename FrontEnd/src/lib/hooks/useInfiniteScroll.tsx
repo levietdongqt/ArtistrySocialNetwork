@@ -33,7 +33,6 @@ export function useInfiniteScroll(
         ...options
     });
     const paginatedPosts = posts?.map(post =>post?.data).flat();
-    console.log("show data",paginatedPosts)
     const isReachedEnd = posts?.map(post =>post?.data) && posts?.map(post =>post?.data)[posts?.map(post =>post?.data).length -1]?.length < PAGE_SIZE - 1;
     const isLoadingMore = posts && typeof posts[size -1] === 'undefined';
     const LoadMore = () => (

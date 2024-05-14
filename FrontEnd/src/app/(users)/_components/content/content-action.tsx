@@ -21,12 +21,19 @@ import {deleteComment} from "../../../../services/realtime/ServerAction/CommentS
 import {createReport} from "../../../../services/realtime/ServerAction/ReportService";
 import {getBookmarksByUserId} from "../../../../services/realtime/clientRequest/bookmarksClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
-import {bookmarksPost} from "../../../../services/realtime/ServerAction/bookmarksService";
+import {
+    bookmarksPost,
+    deleteBokMarksByUserIdAndPostId
+} from "../../../../services/realtime/ServerAction/bookmarksService";
 import Link from "next/link";
 import {useEffect, useState} from "react";
 import {useRecoilValue} from "recoil";
 import {mutateState} from "@lib/hooks/mutateState";
 import {mutateDeleteComment} from "@lib/hooks/mutateDelete";
+import {mutatePostId} from "@lib/hooks/mutatePostId";
+import {mutateDeleteCommentState} from "@lib/hooks/mutateDeleteState";
+import {mutateBookmarkByPostId} from "@lib/hooks/mutateBookmarkByPostId";
+import {mutateBookmark} from "@lib/hooks/mutateBookmark";
 
 export const variants: Variants = {
   initial: { opacity: 0, y: -25 },
@@ -48,6 +55,7 @@ type TweetActionsProps = Pick<Post, 'createdBy'> & {
   comment?: boolean;
   commentId?: string;
   reported?: (check:boolean) => void;
+  bookmark?:boolean;
 };
 
 type PinModalData = Record<'title' | 'description' | 'mainBtnLabel', string>;
@@ -99,6 +107,10 @@ export function ContentAction({
   } = useModal();
   const mutatePost = useRecoilValue(mutateState);
   const muatateComment = useRecoilValue(mutateDeleteComment);
+  const mutatePostById = useRecoilValue(mutatePostId);
+  const mutateCommentState = useRecoilValue(mutateDeleteCommentState);
+  const mutateBookmarkByPostIdAndUserId = useRecoilValue(mutateBookmarkByPostId);
+  const mutateBookmarks = useRecoilValue(mutateBookmark);
   // const isInAdminControl = isAdmin && !isOwner;
   // const postIsPinned = pinnedTweet === postId;
  const handleRemove = async (): Promise<void> => {
@@ -113,19 +125,19 @@ export function ContentAction({
                     `bài viết bạn đã xóa`
                 );
             }
-
             removeCloseModal();
         }else{
-            if (muatateComment) {
+            if (muatateComment && mutatePostById) {
                 await Promise.all([
                     deleteComment(commentId as string),
-                    muatateComment()
+                    mutatePostById,
+                    muatateComment,
+                    mutateCommentState
                 ]);
                 toast.success(
                     `bài viết bạn đã bình luận này`
                 );
             }
-
             removeCloseModal();
         }
     }
@@ -144,13 +156,11 @@ export function ContentAction({
                     userId: useid
                 }
                     setIsCheckBookmark(prevState => !prevState);
-                    await mutate(async () =>{
-                        try{
-                            await bookmarksPost(data)
-                        }catch(error){
-                            console.log(error);
-                        }
-                    },false);
+                    await bookmarksPost(data);
+                    if(mutatePost && mutateBookmarks){
+                        await mutatePost();
+                        await  mutateBookmarks();
+                    }
                 closeMenu();
                 toast.success(
                     type === 'bookmark'
@@ -230,7 +240,7 @@ const  userIsFollowed = false;
         <ActionModal
             actionReport={()=>{}}
           title={comment ? 'Xóa bình luận' : 'Xóa bài viết'}
-          description={`Bạn muốn xóa ${comment ? 'bình luận' : 'bài viết'} ngày không`}
+          description={`Bạn muốn xóa ${comment ? 'bình luận' : 'bài viết'} này không`}
           mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75 accent-tab
                             focus-visible:bg-accent-red/90'
           mainBtnLabel='Delete'

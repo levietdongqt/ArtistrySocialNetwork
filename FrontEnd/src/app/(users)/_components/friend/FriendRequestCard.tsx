@@ -15,7 +15,7 @@ type UserCardProps = User &  {
 };
 
 export function FriendRequestCard(user: UserCardProps): JSX.Element {
-    const {id, bio, modal, follow, fullName, verified, avatar } = user;
+    const {id, modal, follow, fullName, verified, avatar } = user;
     return (
         <Link href={`/user/${"username"}`}  className='accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4
                    py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5'>
@@ -42,7 +42,6 @@ export function FriendRequestCard(user: UserCardProps): JSX.Element {
                     </div>
                     <FriendButton userTargetId={id} userTargetUsername={fullName}  hovered/>
                 </div>
-                {follow && bio && <p className='whitespace-normal'>{bio}</p>}
             </div>
         </Link>
     );

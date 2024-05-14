@@ -13,10 +13,11 @@ type UserCardProps = User &  {
 
   modal?: boolean;
   follow?: boolean;
+  friends?: boolean;
 };
 
 export function UserCard(user: UserCardProps): JSX.Element {
-  const {id, bio, modal, follow, fullName, verified, avatar } = user;
+  const {id, bio, modal, follow, fullName, verified, avatar,friends } = user;
 
   return (
     <Link href={`/user/${"username"}`}  className='accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4
@@ -44,7 +45,7 @@ export function UserCard(user: UserCardProps): JSX.Element {
             </div>
             <FollowButton userTargetId={id} userTargetUsername={fullName}  hovered/>
           </div>
-          {follow && bio && <p className='whitespace-normal'>{bio}</p>}
+          {follow && bio && !friends && <p className='whitespace-normal'>{bio}</p>}
         </div>
     </Link>
   );
