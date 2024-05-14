@@ -19,6 +19,8 @@ import {ContentPost} from "../content/content";
 import {toast} from "react-toastify";
 import {deleteAllBokMarksByUserId} from "../../../../services/realtime/ServerAction/bookmarksService";
 import {SEO} from "../common/seo";
+import {GetAllSavedMainService} from "../../../../services/main/clientRequest/service";
+import {ServiceCard} from "../main-service/service-card";
 
 const ContainerService = () => {
     const { currentUser } = useUser();
@@ -26,20 +28,12 @@ const ContainerService = () => {
     const { open, openModal, closeModal } = useModal();
 
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
-    const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken);
-
-    const postId = useMemo(
-        () => bookmarksRef?.data?.map((item: any) => item.postId) ?? [],
-        [bookmarksRef]
-    );
-
-    const { data: postData, isLoading: postLoading } = useSWR(getPostListByPostId(postId),fetcherWithToken);
-
+    const { data: savedRef, isLoading: savedRefLoading } = useSWR(GetAllSavedMainService(userId),fetcherWithToken);
 
     const handleClear = async (): Promise<void> => {
         await deleteAllBokMarksByUserId(userId);
         closeModal();
-        toast.success('Xóa tất cả bookmarks thành công');
+        toast.success('Xóa tất cả Services thành công');
     };
     return (
         <>
@@ -77,9 +71,9 @@ const ContainerService = () => {
                 </Button>
             </MainHeader>
             <section className='mt-0.5'>
-                {bookmarksRefLoading || postLoading ? (
+                {savedRefLoading  ? (
                     <Loading className='mt-5' />
-                ) : !bookmarksRef ? (
+                ) : !savedRef ? (
                     <StatsEmpty
                         title='Lưu bài post '
                         description='Đừng để bài post của bạn mất'
@@ -87,8 +81,8 @@ const ContainerService = () => {
                     />
                 ) : (
                     <AnimatePresence mode='popLayout'>
-                        {postData?.data?.map((post:any) => (
-                            <ContentPost {...post} key={post.id} />
+                        {savedRef?.data?.map((service:any) => (
+                            <ServiceCard data={service} key={service.id} />
                         ))}
                     </AnimatePresence>
                 )}

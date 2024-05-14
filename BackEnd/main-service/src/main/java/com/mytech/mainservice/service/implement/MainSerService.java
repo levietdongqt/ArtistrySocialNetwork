@@ -85,12 +85,12 @@ public class MainSerService implements IMainSerService {
     @Override
     public List<MainServiceDTO> findMainServiceSavedByUserId(String userId){
         List<MainService> listMainService = mainServiceRepo.findMainServiceByUserId(userId);
-        if(listMainService.isEmpty()){
-            throw new NotFoundException("Not found main service");
-        }
         return listMainService.stream().map(mainService -> modelMapper.map(mainService, MainServiceDTO.class)).collect(Collectors.toList());
     }
+    public void deleteAllSaved(String userId){
 
+
+    }
     @Override
     public void createMainService(MainServiceDTO mainServiceDTO) {
         MainService mainService = modelMapper.map(mainServiceDTO, MainService.class);

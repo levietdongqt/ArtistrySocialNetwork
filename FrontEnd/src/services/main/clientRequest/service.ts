@@ -58,3 +58,7 @@ export function GetAllMainService (userId :string): fetcherParams {
 export function GetAllExtraService (userId :string): fetcherParams {
     return [`/extra-service/get-all/${userId}`, 'GET', null, ServiceDestination.MAIN];
 }
+
+export function GetAllSavedMainService (userId :string): fetcherParams {
+    return [`/main-service/getAllSavedMainService/${userId}`, 'GET', null, ServiceDestination.MAIN];
+}
