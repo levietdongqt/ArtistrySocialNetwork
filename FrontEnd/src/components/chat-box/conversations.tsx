@@ -57,6 +57,9 @@ export function Conversations({closeConversations, callback}: ConversationsProps
         refreshInterval: 0,
         onSuccess: async response => {
             console.log("GET CONVERSATIONS: ", response)
+            if(!response.data || response.data.length === 0){
+                return;
+            }
             dispatch(ChatAction(response.data, ACTION_TYPE.SET_CONVERSATIONS))
             if (!isInMessagePage) {
                 return

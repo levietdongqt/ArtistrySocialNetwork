@@ -61,7 +61,7 @@ public class ExtraSerService implements IExtraSerService {
     public void createExtraService(ExtraServiceDTO extraServiceDTO) {
         ExtraService extraService = modelMapper.map(extraServiceDTO, ExtraService.class);
         Promotion promotion = checkValidPromotion(extraServiceDTO.getPromotionDTO());
-        extraService.setPromotion(promotion);
+        extraService.setPromotionDTO(promotion);
         extraService.setStatus(true);
         extraService.setCreateDate(LocalDateTime.now());
         extraServiceRepo.save(extraService);

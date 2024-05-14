@@ -294,7 +294,7 @@ fetcherWithToken,{
         />
       </Modal>
       <div className="flex flex-col">
-        {data?.data.follow ? (
+        {data?.data?.follow ? (
           <Button
             className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5
                      font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red

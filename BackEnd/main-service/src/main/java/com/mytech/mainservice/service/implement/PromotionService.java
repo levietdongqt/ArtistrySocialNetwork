@@ -109,16 +109,16 @@ public class PromotionService implements IPromotionService {
         var mainService = mainServiceRepository.getById(mainServiceId);
         var promotion = getDBPromotionById(userId,promotionId);
         //Check sự xem promotion trong mainService đã có hay chưa?
-        var promotionsInMainService = mainService.getPromotion();
+        var promotionsInMainService = mainService.getPromotionDTO();
         if (promotionsInMainService.getId() == promotion.getId()) {
             if (!promotionsInMainService.isStatus()){
-                mainService.setPromotion(promotion);
+                mainService.setPromotionDTO(promotion);
                 mainServiceRepository.save(mainService);
                 return;
             }
             throw new RuntimeException("Đã tồn tại promotion này rồi");
         }
-        mainService.setPromotion(promotion);
+        mainService.setPromotionDTO(promotion);
         mainServiceRepository.save(mainService);
     }
 

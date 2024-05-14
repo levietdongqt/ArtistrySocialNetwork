@@ -21,7 +21,7 @@ import {Loading} from "@components/ui/loading";
 export function ServiceAll(): JSX.Element {
 
     const { currentUser } = useUser();
-    const id = '8c35d989-785c-4d18-909e-1792d62628ad'
+    const id = '7788c88f-c249-4efb-bf0c-f02c667d538b'
     const {
         data: response,
         isLoading: isLoading,

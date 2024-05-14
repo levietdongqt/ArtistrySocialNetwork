@@ -26,7 +26,7 @@ const range = (start: number, end: number) => {
 };
 export default function BookingPage() {
 
-    const providerId = "7aac6b78-49b0-492a-a653-976bc56df03d"
+    const providerId = "7788c88f-c249-4efb-bf0c-f02c667d538b"
 
     const [disableTimePicker, setDisableTimePicker] = useState(true)
     const [showTimePickerTooltip, setShowTimePickerTooltip] = useState(true)

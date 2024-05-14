@@ -97,10 +97,10 @@ public class MainSerService implements IMainSerService {
 
         List<ExtraService> extraServices = checkValidExtraServiceIds(mainServiceDTO.getExtraServiceDTOs());
         Promotion promotion = checkValidPromotion(mainServiceDTO.getPromotionDTO());
-        mainService.setPromotion(promotion);
+        mainService.setPromotionDTO(promotion);
         mainService.setStatus(true);
         mainService.setCreateDate(LocalDateTime.now());
-        mainService.setExtraServices(extraServices);
+        mainService.setExtraServiceDTOs(extraServices);
         var createdMainService =  mainServiceRepo.save(mainService);
         //Lưu vào ELS Search
         ServiceELS serviceELS = modelMapper.map(createdMainService,ServiceELS.class);

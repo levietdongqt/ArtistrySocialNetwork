@@ -71,11 +71,11 @@ public class MainService  implements Serializable {
     @JoinTable(name = "additional_details",
             joinColumns = @JoinColumn(name = "main_service_Id"),
             inverseJoinColumns = @JoinColumn(name = "extra_service_Id"))
-    private List<ExtraService> extraServices;
+    private List<ExtraService> extraServiceDTOs;
 
     @ManyToOne
     @JoinColumn(name = "promotion_Id")
-    private Promotion promotion;
+    private Promotion promotionDTO;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_Id")
