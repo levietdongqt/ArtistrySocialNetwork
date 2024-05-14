@@ -29,6 +29,13 @@ const ContainerBookmarks = () => {
     const { currentUser } = useUser();
     const { open, openModal, closeModal } = useModal();
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
+    const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken,{
+        revalidateIfStale: false,
+        refreshInterval: 0,
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false
+    });
+
     const { data: bookmarksRef, isLoading: bookmarksRefLoading,mutate: mutateBookmarkUserId } = useSWR(getBookmarksByUserId(userId),fetcherWithToken);
     const postId = useMemo(
         () => bookmarksRef?.data?.map((item: any) => item.postId) ?? [],
