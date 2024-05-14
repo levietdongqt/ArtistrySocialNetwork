@@ -88,8 +88,11 @@ public class MainSerService implements IMainSerService {
         return listMainService.stream().map(mainService -> modelMapper.map(mainService, MainServiceDTO.class)).collect(Collectors.toList());
     }
     public void deleteAllSaved(String userId){
-
-
+        List<MainService> getAllSavedByUserId = mainServiceRepo.findSavedByUserId(userId);
+        getAllSavedByUserId.forEach(mainService -> {
+            mainService.getSavedByUser().removeIf(user -> user.getId().equals(userId));
+            mainServiceRepo.save(mainService);
+        });
     }
     @Override
     public void createMainService(MainServiceDTO mainServiceDTO) {

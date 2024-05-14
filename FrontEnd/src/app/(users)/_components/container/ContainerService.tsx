@@ -1,5 +1,5 @@
 'use client'
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {Button} from "@components/ui/button";
 import {HeroIcon} from "@components/ui/hero-icon";
 import {ToolTip} from "@components/ui/tooltip";
@@ -21,6 +21,9 @@ import {deleteAllBokMarksByUserId} from "../../../../services/realtime/ServerAct
 import {SEO} from "../common/seo";
 import {GetAllSavedMainService} from "../../../../services/main/clientRequest/service";
 import {ServiceCard} from "../main-service/service-card";
+import {useRecoilState} from "recoil";
+import {mutateSavedService} from "@lib/hooks/mutateSavedService";
+import {Form} from "antd";
 
 const ContainerService = () => {
     const { currentUser } = useUser();
@@ -28,8 +31,11 @@ const ContainerService = () => {
     const { open, openModal, closeModal } = useModal();
 
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
-    const { data: savedRef, isLoading: savedRefLoading } = useSWR(GetAllSavedMainService(userId),fetcherWithToken);
-
+    const { data: savedRef, isLoading: savedRefLoading,mutate: savedRefMutate } = useSWR(GetAllSavedMainService(userId),fetcherWithToken);
+    const [,setMutateSaved] = useRecoilState(mutateSavedService);
+    useEffect(() => {
+        setMutateSaved(()=>savedRefMutate);
+    }, [savedRefMutate,setMutateSaved]);
     const handleClear = async (): Promise<void> => {
         await deleteAllBokMarksByUserId(userId);
         closeModal();
@@ -57,6 +63,12 @@ const ContainerService = () => {
                 <div className='-mb-1 flex flex-col'>
                     <h2 className='-mt-1 text-xl font-bold'>Filter</h2>
                 </div>
+                <Form className={'flex gap-2'}>
+                    <div className={'py-1'}>
+                        <HeroIcon iconName={'MagnifyingGlassIcon'}/>
+                    </div>
+                    <input type="search" name={'search'} className={'border-2 border-black rounded py-1 px-2'} placeholder={'Tìm kiếm'}/>
+                </Form>
                 <Button
                     className='dark-bg-tab group relative p-2 hover:bg-light-primary/10
                      active:bg-light-primary/20 dark:hover:bg-dark-primary/10

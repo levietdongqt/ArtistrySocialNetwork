@@ -194,7 +194,7 @@ public class FriendService implements IFriendService {
     public List<UserDTO> getIsFriendFriends(String userId) {
         List<User> friends = new ArrayList<User>();
         //Lấy ra toàn bộ dữ liệu trong bảng friendship có chưa userId
-        List<Friendship> friendships = friendshipRepo.getAllFriendShipByUserId(userId);
+        List<Friendship> friendships = friendshipRepo.getFriendShipByUserId(userId);
 
         //Lọc lại dữ liệu để lấy ra dữ liệu có status = ISFRIEND
         List<Friendship> friendsWithStatusIsFriendship = friendships

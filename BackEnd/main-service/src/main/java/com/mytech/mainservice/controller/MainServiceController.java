@@ -4,6 +4,7 @@ import com.mytech.mainservice.dto.MainServiceDTO;
 import com.mytech.mainservice.dto.ResponseObject;
 import com.mytech.mainservice.dto.SaveServiceDTO;
 import com.mytech.mainservice.service.IMainSerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("main-service")
+@Slf4j
 public class MainServiceController {
 
     @Autowired
@@ -51,6 +53,18 @@ public class MainServiceController {
                         .status(HttpStatus.OK)
                         .message("Get Saved Service successfully")
                         .data(mainServiceDTOs).build()
+        );
+    }
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @DeleteMapping("/deleteAllSaved/{userId}")
+    public ResponseEntity<?> DeleteMainService(@PathVariable("userId") String userId) {
+        mainService2.deleteAllSaved(userId);
+        log.info("Delete all saved service successfully");
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get Saved Service successfully")
+                        .data(null).build()
         );
     }
 
