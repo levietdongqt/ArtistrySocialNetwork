@@ -5,16 +5,16 @@ import { Modal } from "../modal/modal";
 import useSWR from "swr";
 import { addRowNumber } from "@lib/helper/addRowSerivce";
 import { Button, Tabs } from "antd";
-import { OrderDTO } from "@models/order";
+import { Order } from "@models/order";
 import OrderTable from "./order-table";
 
 
 export default function Order() {
   const { currentUser } = useUser();
   const [changeStatus,setChangeStatus] = useState<Number>(0);
-  const [orderPendingData, setOrderPendingData] = useState<OrderDTO[]>([]);
-  const [orderActiveData, setOrderActiveData] = useState<OrderDTO[]>([]);
-  const [orderCancelledData, setOrderCancelledData] = useState<OrderDTO[]>([]);
+  const [orderPendingData, setOrderPendingData] = useState<Order[]>([]);
+  const [orderActiveData, setOrderActiveData] = useState<Order[]>([]);
+  const [orderCancelledData, setOrderCancelledData] = useState<Order[]>([]);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
