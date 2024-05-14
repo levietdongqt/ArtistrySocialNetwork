@@ -155,7 +155,9 @@ export function Sidebar() {
                             <p className="hidden xl:block">Post</p>
                         </Button>
                     </section>
+                    
                     {!isMobile && <SidebarProfile/>}
+
                 </div>
 
             </header>

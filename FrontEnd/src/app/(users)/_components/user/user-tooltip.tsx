@@ -12,7 +12,7 @@ import React, { ReactNode } from 'react';
 import {User} from "@models/user";
 import {useEffect, useState} from "react";
 import { useUser } from 'context/user-context';
-import DOMPurify from "dompurify";
+import HtmlRenderer from './html-render';
 
 
 type UserTooltipProps = Pick<
@@ -44,21 +44,26 @@ export function UserTooltip({
                               coverImage,
   avatarCheck
 }: UserTooltipProps):JSX.Element {
+  const parser = new DOMParser();
+  console.log("bio",bio)
   const { isMobile } = useWindow();
   const [hovered, setHovered] = useState(false);
+  const [doc,setDoc] = useState<any>();
   const userLink = `/profile/${id}`;
   const {currentUser, } = useUser();
   useEffect(() => {
     if (hovered) {
     }
   }, [hovered]);
+  useEffect(()=>{
+    setDoc(parser.parseFromString(bio as string, "text/html"));
+  },[bio])
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
   const allStats: Readonly<Stats[]> = [
     ['following', 'Following',2],
     ['followers', 'Followers',2]
   ];
-    const cleanFullBioContent = DOMPurify.sanitize(bio as string);
   return (
     <div
       className={cn(
@@ -102,15 +107,16 @@ export function UserTooltip({
                               className='absolute -translate-y-1/2 bg-main-background p-1
                              hover:brightness-100 [&>figure>span]:[transition:200ms]
                              [&:hover>figure>span]:brightness-75'
-                              src={avatar ?? "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
-                              alt={fullName}
-                              size={64}
-                              username={fullName}
-                          />
-                      </div>
-                      {((currentUser?.id !== id) && hovered) &&
-                          <FollowButton userTargetId={id} userTargetUsername={fullName} hovered={hovered}/>
-                      }
+                  src={avatar ?? "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
+                  alt={fullName}
+                  size={64}
+                  username={fullName}
+                  id={id}
+                />
+              </div>
+              {((currentUser?.id !== id) && hovered) &&
+                <FollowButton userTargetId={id} userTargetUsername={fullName} hovered={hovered}/>
+              }
 
                   </div>
                   <div>
@@ -130,12 +136,14 @@ export function UserTooltip({
                       </div>
                   </div>
               </div>
-              {bio && <div className="p-2"  dangerouslySetInnerHTML={{__html: cleanFullBioContent.substring(0, 100) + (cleanFullBioContent.length > 100 ? '...' : '')}}></div>}
-
+      
               <div className='text-secondary flex gap-4'>
               </div>
           </div>
+          {bio &&  <HtmlRenderer htmlString={bio} />}
+          <div className='text-secondary flex gap-4'>
+          </div>
+        </div>
       </div>
-    </div>
   );
 }

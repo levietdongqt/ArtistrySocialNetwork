@@ -1,6 +1,6 @@
 import {AxiosRequestConfig} from "axios";
 import axiosWithToken from "@lib/config/AxiosConfig";
-import {MainService} from "@models/main-service";
+import {EditableMainServiceData, MainService} from "@models/main-service";
 import {ExtraService} from "@models/extra-service";
 import { fetcherParams } from "@lib/config/SwrFetcherConfig";
 import { ServiceDestination } from "@lib/enum/ServiceDestination";
@@ -102,6 +102,10 @@ export function GetExtraServiceById (serviceId :number): fetcherParams {
 
 export function GetAllExtraService (userId :string): fetcherParams {
     return [`/extra-service/get-all/${userId}`, 'GET', null, ServiceDestination.MAIN];
+}
+
+export function GetTrendMainService (): fetcherParams {
+    return [`/main-service/trends`, 'GET', null, ServiceDestination.MAIN];
 }
 
 export async function getExtraServiceByProvider (providerId :string){
