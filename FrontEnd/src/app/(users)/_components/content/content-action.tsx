@@ -15,10 +15,25 @@ import { CustomIcon } from '@components/ui/custom-icon';
 import type { Variants } from 'framer-motion';
 import type { Post } from '@models/post';
 import {useUser} from "../../../../context/user-context";
-import {mutate} from "swr";
+import useSWR, {mutate} from "swr";
 import {deletePosts1} from "../../../../services/realtime/ServerAction/PostService";
 import {deleteComment} from "../../../../services/realtime/ServerAction/CommentService";
 import {createReport} from "../../../../services/realtime/ServerAction/ReportService";
+import {getBookmarksByUserId} from "../../../../services/realtime/clientRequest/bookmarksClient";
+import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
+import {
+    bookmarksPost,
+    deleteBokMarksByUserIdAndPostId
+} from "../../../../services/realtime/ServerAction/bookmarksService";
+import Link from "next/link";
+import {useEffect, useState} from "react";
+import {useRecoilValue} from "recoil";
+import {mutateState} from "@lib/hooks/mutateState";
+import {mutateDeleteComment} from "@lib/hooks/mutateDelete";
+import {mutatePostId} from "@lib/hooks/mutatePostId";
+import {mutateDeleteCommentState} from "@lib/hooks/mutateDeleteState";
+import {mutateBookmarkByPostId} from "@lib/hooks/mutateBookmarkByPostId";
+import {mutateBookmark} from "@lib/hooks/mutateBookmark";
 
 export const variants: Variants = {
   initial: { opacity: 0, y: -25 },
@@ -40,6 +55,7 @@ type TweetActionsProps = Pick<Post, 'createdBy'> & {
   comment?: boolean;
   commentId?: string;
   reported?: (check:boolean) => void;
+  bookmark?:boolean;
 };
 
 type PinModalData = Record<'title' | 'description' | 'mainBtnLabel', string>;
@@ -73,7 +89,7 @@ export function ContentAction({
   const { currentUser } = useUser();
   const { push } = useRouter();
   const userId = currentUser?.id as string;
-
+    const [isCheckBookmark, setIsCheckBookmark] = useState(false);
   const {
     open: removeOpen,
     openModal: removeOpenModal,
@@ -89,37 +105,77 @@ export function ContentAction({
     openModal: pinOpenModal,
     closeModal: pinCloseModal
   } = useModal();
+  const mutatePost = useRecoilValue(mutateState);
+  const muatateComment = useRecoilValue(mutateDeleteComment);
+  const mutatePostById = useRecoilValue(mutatePostId);
+  const mutateCommentState = useRecoilValue(mutateDeleteCommentState);
+  const mutateBookmarkByPostIdAndUserId = useRecoilValue(mutateBookmarkByPostId);
+  const mutateBookmarks = useRecoilValue(mutateBookmark);
   // const isInAdminControl = isAdmin && !isOwner;
   // const postIsPinned = pinnedTweet === postId;
  const handleRemove = async (): Promise<void> => {
     if(currentUser !== null){
         if(!comment){
-            await Promise.all([
-                deletePosts1(postId)
-                // manageTotalTweets('decrement', ownerId),
-                // hasImages && manageTotalPhotos('decrement', createdBy),
-                // parentId && manageReply('decrement', parentId)
-            ]);
-            await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/get-posts?limit=${20}&offset=${0}`, null, false);
-            toast.success(
-                `bài viết bạn đã xóa`
-            );
+            if (mutatePost) {
+                await Promise.all([
+                    deletePosts1(postId),
+                    mutatePost(),
+                ]);
+                toast.success(
+                    `bài viết bạn đã xóa`
+                );
+            }
             removeCloseModal();
         }else{
-            await Promise.all([
-                deleteComment(commentId as string)
-                // manageTotalTweets('decrement', ownerId),
-                // hasImages && manageTotalPhotos('decrement', createdBy),
-                // parentId && manageReply('decrement', parentId)
-            ]);
-            await mutate(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/posts/get-posts?limit=${20}&offset=${0}`, null, false);
-            toast.success(
-                `bài viết bạn đã bình luận này`
-            );
+            if (muatateComment && mutatePostById) {
+                await Promise.all([
+                    deleteComment(commentId as string),
+                    mutatePostById,
+                    muatateComment,
+                    mutateCommentState
+                ]);
+                toast.success(
+                    `bài viết bạn đã bình luận này`
+                );
+            }
             removeCloseModal();
         }
     }
   };
+    const {data: userBookmarks, isLoading} = useSWR(getBookmarksByUserId(userId),fetcherWithToken);
+    useEffect(() => {
+        mutate(getBookmarksByUserId(userId)).then(()=>{
+        });
+    }, [isCheckBookmark]);
+    const handleBookmark =
+        (closeMenu: () => void, args:string, useid:string,postid:string) =>
+            async (): Promise<void> => {
+                const type = args;
+                const data = {
+                    postId:  postid,
+                    userId: useid
+                }
+                    setIsCheckBookmark(prevState => !prevState);
+                    await bookmarksPost(data);
+                    if(mutatePost && mutateBookmarks){
+                        await mutatePost();
+                        await  mutateBookmarks();
+                    }
+                closeMenu();
+                toast.success(
+                    type === 'bookmark'
+                        ? (): JSX.Element => (
+                            <span className='flex gap-2'>
+                Bài viết bạn đã lưu
+                <Link href='/bookmarks'>
+                  <p className='custom-underline font-bold'>View</p>
+                </Link>
+              </span>
+                        )
+                        : 'Bài post đã xóa khỏi danh sách lưu'
+                );
+            };
+
  const handleReport = async (value:string, content:string) : Promise<void> =>{
      console.log("show post",postId);
     if(currentUser !== null){
@@ -129,7 +185,6 @@ export function ContentAction({
             postId: postId,
             content: content
         }
-        console.log("show report",reportData);
         await Promise.all([
             createReport(reportData)
         ]);
@@ -164,6 +219,11 @@ export function ContentAction({
 const  isInAdminControl = false;
 const  tweetIsPinned = false;
 const  userIsFollowed = false;
+    useEffect(() => {
+        const tweetIsBookmarked = !!userBookmarks?.data?.some((items:any) => items.postId === postId);
+        if(tweetIsBookmarked)
+            setIsCheckBookmark(true);
+    }, [isCheckBookmark]);
   let currentPinModalData = {
     title: 'Pin Content to from profile?',
     description:
@@ -180,7 +240,7 @@ const  userIsFollowed = false;
         <ActionModal
             actionReport={()=>{}}
           title={comment ? 'Xóa bình luận' : 'Xóa bài viết'}
-          description={`Bạn muốn xóa ${comment ? 'bình luận' : 'bài viết'} ngày không`}
+          description={`Bạn muốn xóa ${comment ? 'bình luận' : 'bài viết'} này không`}
           mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75 accent-tab
                             focus-visible:bg-accent-red/90'
           mainBtnLabel='Delete'
@@ -262,7 +322,7 @@ const  userIsFollowed = false;
                       onClick={preventBubbling(removeOpenModal)}
                     >
                       <HeroIcon iconName='TrashIcon' />
-                      Delete
+                      Xóa
                     </Popover.Button>
                   )}
                   {isOwner && !comment ? (
@@ -318,6 +378,29 @@ const  userIsFollowed = false;
                             </Popover.Button>
                         )
                     }
+                    {!isCheckBookmark ? (
+                        <Popover.Button
+                            className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
+                            as={Button}
+                            onClick={preventBubbling(
+                                handleBookmark(close, 'bookmark', userId, postId)
+                            )}
+                        >
+                            <HeroIcon iconName='BookmarkIcon' />
+                            Lưu bài post
+                        </Popover.Button>
+                    ) : (
+                        <Popover.Button
+                            className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
+                            as={Button}
+                            onClick={preventBubbling(
+                                handleBookmark(close, 'unbookmark', userId, postId)
+                            )}
+                        >
+                            <HeroIcon iconName='BookmarkSlashIcon' />
+                            Xóa bài post đã lưu
+                        </Popover.Button>
+                    )}
                 </Popover.Panel>
               )}
             </AnimatePresence>

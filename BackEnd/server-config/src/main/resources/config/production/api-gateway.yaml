@@ -3,6 +3,8 @@ server:
 
 eureka:
   client:
+    instance:
+      prefer-ip-address: true
     client:
       register-with-eureka: false
     serviceUrl:
@@ -18,25 +20,34 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      mvc:
-        routes:
-          - id: main-service
-            uri: lb://main-service
-            predicates:
-              - Path=/api/main/**
-            filters:
-              - AuthenticationFilter
-          - id: runtime-service
-            uri: lb://realtime-service
-            predicates:
-              - Path=/api/realtime/**
-            filters:
-              - AuthenticationFilter
-          - id: auth-service
-            uri: lb://auth-service
-            predicates:
-              - Path=/api/auth/**
-            filters:
-              - AuthenticationFilter
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedHeaders: "*"
+            allowCredentials: true
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+              - PUT
+              - OPTIONS
+      routes:
+        - id: main-service
+          #          uri: lb://main-service
+          uri: http://main-service:8061
+          predicates:
+            - Path=/api/main/**
+          filters:
+            - AuthenticationFilter
+        - id: runtime-service
+          uri: http://realtime-service:8062
+          #          uri: lb://realtime-service
+          predicates:
+            - Path=/api/realtime/**
+          filters:
+            - AuthenticationFilter
+
 
 

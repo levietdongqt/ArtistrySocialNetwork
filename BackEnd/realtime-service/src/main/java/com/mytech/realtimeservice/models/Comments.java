@@ -25,7 +25,7 @@ public class Comments {
     private LocalDateTime updatedDate;
     private List<MediaObject> mediaUrl;
     private String postId;
-    private String commentId;
+    private String parentCommentId;
     private User byUser;
     private List<User> commentsLikes = new ArrayList<>();
     private List<User> tagUserComments = new ArrayList<>();

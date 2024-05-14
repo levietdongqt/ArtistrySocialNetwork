@@ -2,19 +2,24 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
-import 'package:flutter_twitter_clone/model/feedModel.dart';
 import 'package:flutter_twitter_clone/model/user.dart';
+import 'package:flutter_twitter_clone/myModel/MiniUser.dart';
+import 'package:flutter_twitter_clone/myModel/myComment.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 import 'package:flutter_twitter_clone/state/authState.dart';
 import 'package:flutter_twitter_clone/state/feedState.dart';
+import 'package:flutter_twitter_clone/state/postState.dart';
 import 'package:flutter_twitter_clone/ui/theme/theme.dart';
 import 'package:flutter_twitter_clone/widgets/customWidgets.dart';
 import 'package:flutter_twitter_clone/widgets/share_widget.dart';
 import 'package:flutter_twitter_clone/widgets/tweet/tweet.dart';
 import 'package:provider/provider.dart';
 
+import '../../../myModel/myUser.dart';
+
 class TweetBottomSheet {
   Widget tweetOptionIcon(BuildContext context,
-      {required FeedModel model,
+      {required myPost model,
       required TweetType type,
       required GlobalKey<ScaffoldState> scaffoldKey}) {
     return Container(
@@ -38,10 +43,10 @@ class TweetBottomSheet {
 
   void _openBottomSheet(BuildContext context,
       {required TweetType type,
-      required FeedModel model,
+      required myPost model,
       required GlobalKey<ScaffoldState> scaffoldKey}) async {
     var authState = Provider.of<AuthState>(context, listen: false);
-    bool isMyTweet = authState.userId == model.userId;
+    bool isMyTweet = authState.userId == model.user?.id;
     await showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
@@ -77,7 +82,7 @@ class TweetBottomSheet {
 
   Widget _tweetDetailOptions(BuildContext context,
       {required bool isMyTweet,
-      required FeedModel model,
+      required myPost model,
       required TweetType type,
       required GlobalKey<ScaffoldState> scaffoldKey}) {
     return Column(
@@ -93,15 +98,15 @@ class TweetBottomSheet {
           ),
         ),
         _widgetBottomSheetRow(context, AppIcon.link,
-            text: 'Copy link to tweet', isEnable: true, onPressed: () async {
+            text: 'Copy link to post', isEnable: true, onPressed: () async {
           Navigator.pop(context);
           var uri = await Utility.createLinkToShare(
             context,
-            "tweet/${model.key}",
+            "tweet/${model.id}",
             socialMetaTagParameters: SocialMetaTagParameters(
-                description: model.description ??
-                    "${model.user!.displayName} posted a tweet on Fwitter.",
-                title: "Tweet on Fwitter app",
+                description: model.content ??
+                    "${model.user!.fullName} Đăng bài trên social.",
+                title: "Social on Fwitter app",
                 imageUrl: Uri.parse(
                     "https://play-lh.googleusercontent.com/e66XMuvW5hZ7HnFf8R_lcA3TFgkxm0SuyaMsBs3KENijNHZlogUAjxeu9COqsejV5w=s180-rw")),
           );
@@ -144,8 +149,8 @@ class TweetBottomSheet {
                             _deleteTweet(
                               context,
                               type,
-                              model.key!,
-                              parentkey: model.parentkey,
+                              model.id!,
+                              parentkey: model.id,
                             );
                           },
                           child: const Text('Confirm'),
@@ -166,14 +171,14 @@ class TweetBottomSheet {
             : _widgetBottomSheetRow(
                 context,
                 AppIcon.unFollow,
-                text: 'Unfollow ${model.user!.userName}',
+                text: 'Unfollow ${model.user!.fullName}',
               ),
         isMyTweet
             ? Container()
             : _widgetBottomSheetRow(
                 context,
                 AppIcon.mute,
-                text: 'Mute ${model.user!.userName}',
+                text: 'Mute ${model.user!.fullName}',
               ),
         _widgetBottomSheetRow(
           context,
@@ -190,7 +195,7 @@ class TweetBottomSheet {
             : _widgetBottomSheetRow(
                 context,
                 AppIcon.block,
-                text: 'Block ${model.user!.userName}',
+                text: 'Block ${model.user!.fullName}',
               ),
         isMyTweet
             ? Container()
@@ -205,7 +210,7 @@ class TweetBottomSheet {
 
   Widget _tweetOptions(BuildContext context,
       {required bool isMyTweet,
-      required FeedModel model,
+      required myPost model,
       required TweetType type,
       required GlobalKey<ScaffoldState> scaffoldKey}) {
     return Column(
@@ -224,10 +229,10 @@ class TweetBottomSheet {
             text: 'Copy link to tweet', isEnable: true, onPressed: () async {
           var uri = await Utility.createLinkToShare(
             context,
-            "tweet/${model.key}",
+            "tweet/${model.id}",
             socialMetaTagParameters: SocialMetaTagParameters(
-                description: model.description ??
-                    "${model.user!.displayName} posted a tweet on Fwitter.",
+                description: model.content ??
+                    "${model.user!.fullName} posted a tweet on Fwitter.",
                 title: "Tweet on Fwitter app",
                 imageUrl: Uri.parse(
                     "https://play-lh.googleusercontent.com/e66XMuvW5hZ7HnFf8R_lcA3TFgkxm0SuyaMsBs3KENijNHZlogUAjxeu9COqsejV5w=s180-rw")),
@@ -272,8 +277,8 @@ class TweetBottomSheet {
                             _deleteTweet(
                               context,
                               type,
-                              model.key!,
-                              parentkey: model.parentkey,
+                              model.id!,
+                              parentkey: model.id,
                             );
                           },
                           child: const Text('Confirm'),
@@ -301,21 +306,21 @@ class TweetBottomSheet {
             : _widgetBottomSheetRow(
                 context,
                 AppIcon.unFollow,
-                text: 'Unfollow ${model.user!.userName}',
+                text: 'Unfollow ${model.user!.fullName}',
               ),
         isMyTweet
             ? Container()
             : _widgetBottomSheetRow(
                 context,
                 AppIcon.mute,
-                text: 'Mute ${model.user!.userName}',
+                text: 'Mute ${model.user!.fullName}',
               ),
         isMyTweet
             ? Container()
             : _widgetBottomSheetRow(
                 context,
                 AppIcon.block,
-                text: 'Block ${model.user!.userName}',
+                text: 'Block ${model.user!.fullName}',
               ),
         isMyTweet
             ? Container()
@@ -384,7 +389,7 @@ class TweetBottomSheet {
 
   void openRetweetBottomSheet(BuildContext context,
       {TweetType? type,
-      required FeedModel model,
+      required myPost model,
       required GlobalKey<ScaffoldState> scaffoldKey}) async {
     await showModalBottomSheet(
       backgroundColor: Colors.transparent,
@@ -406,7 +411,7 @@ class TweetBottomSheet {
     );
   }
 
-  Widget _retweet(BuildContext context, FeedModel model, TweetType? type) {
+  Widget _retweet(BuildContext context, myPost model, TweetType? type) {
     return Column(
       children: <Widget>[
         Container(
@@ -425,28 +430,27 @@ class TweetBottomSheet {
           isEnable: true,
           text: 'Retweet',
           onPressed: () async {
-            var state = Provider.of<FeedState>(context, listen: false);
+            var state = Provider.of<PostState>(context, listen: false);
             var authState = Provider.of<AuthState>(context, listen: false);
-            var myUser = authState.userModel;
-            myUser = UserModel(
-                displayName: myUser!.displayName ?? myUser.email!.split('@')[0],
-                profilePic: myUser.profilePic,
-                userId: myUser.userId,
-                isVerified: authState.userModel!.isVerified,
-                userName: authState.userModel!.userName);
+            var myUser = authState.myUser;
+            myUser = MyUser(
+                email: myUser!.fullName ?? myUser.email!.split('@')[0],
+                avatar: myUser.avatar,
+                id: myUser.id,
+                verified: authState.userModel!.isVerified,
+                fullName: authState.userModel!.userName);
             // Prepare current Tweet model to reply
-            FeedModel post = FeedModel(
-                childRetwetkey: model.getTweetKeyToRetweet,
+            myPost post = myPost(
                 createdAt: DateTime.now().toUtc().toString(),
-                user: myUser,
-                userId: myUser.userId!);
-            state.createTweet(post);
-
+                user: myUser as MiniUser,
+                createdBy: myUser.id!
+            );
+            state.createTweet(post,myUser);
             Navigator.pop(context);
-            var sharedPost = await state.fetchTweet(post.childRetwetkey!);
+            var sharedPost = await state.fetchTweet(post.id!);
             if (sharedPost != null) {
-              sharedPost.retweetCount ??= 0;
-              sharedPost.retweetCount = sharedPost.retweetCount! + 1;
+              sharedPost.totalShares ??= 0;
+              sharedPost.totalShares = sharedPost.totalShares! + 1;
               state.updateTweet(sharedPost);
             }
           },
@@ -457,7 +461,7 @@ class TweetBottomSheet {
           text: 'Retweet with comment',
           isEnable: true,
           onPressed: () {
-            var state = Provider.of<FeedState>(context, listen: false);
+            var state = Provider.of<PostState>(context, listen: false);
             // Prepare current Tweet model to reply
             state.setTweetToReply = model;
             Navigator.pop(context);
@@ -472,7 +476,7 @@ class TweetBottomSheet {
   }
 
   void openShareTweetBottomSheet(
-      BuildContext context, FeedModel model, TweetType? type) async {
+      BuildContext context, myPost model, TweetType? type) async {
     await showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
@@ -493,11 +497,11 @@ class TweetBottomSheet {
     );
   }
 
-  Widget _shareTweet(BuildContext context, FeedModel model, TweetType? type) {
+  Widget _shareTweet(BuildContext context, myPost model, TweetType? type) {
     var socialMetaTagParameters = SocialMetaTagParameters(
-        description: model.description ?? "",
-        title: "${model.user!.displayName} posted a tweet on Fwitter.",
-        imageUrl: Uri.parse(model.user?.profilePic ??
+        description: model.content ?? "",
+        title: "${model.user!.fullName} posted a tweet on Fwitter.",
+        imageUrl: Uri.parse(model.user?.avatar ??
             "https://play-lh.googleusercontent.com/e66XMuvW5hZ7HnFf8R_lcA3TFgkxm0SuyaMsBs3KENijNHZlogUAjxeu9COqsejV5w=s180-rw"));
     return Column(
       children: <Widget>[
@@ -519,7 +523,7 @@ class TweetBottomSheet {
           text: 'Bookmark',
           onPressed: () async {
             var state = Provider.of<FeedState>(context, listen: false);
-            await state.addBookmark(model.key!);
+            await state.addBookmark(model.id!);
             Navigator.pop(context);
             ScaffoldMessenger.maybeOf(context)!.showSnackBar(
               const SnackBar(content: Text("Bookmark saved!!")),
@@ -536,7 +540,7 @@ class TweetBottomSheet {
             Navigator.pop(context);
             var url = Utility.createLinkToShare(
               context,
-              "tweet/${model.key}",
+              "tweet/${model.id}",
               socialMetaTagParameters: socialMetaTagParameters,
             );
             var uri = await url;
@@ -551,9 +555,9 @@ class TweetBottomSheet {
           isEnable: true,
           onPressed: () {
             socialMetaTagParameters = SocialMetaTagParameters(
-                description: model.description ?? "",
-                title: "${model.user!.displayName} posted a tweet on Fwitter.",
-                imageUrl: Uri.parse(model.user?.profilePic ??
+                description: model.content ?? "",
+                title: "${model.user!.fullName} posted a tweet on Fwitter.",
+                imageUrl: Uri.parse(model.user?.avatar ??
                     "https://play-lh.googleusercontent.com/e66XMuvW5hZ7HnFf8R_lcA3TFgkxm0SuyaMsBs3KENijNHZlogUAjxeu9COqsejV5w=s180-rw"));
             Navigator.pop(context);
             Navigator.push(
@@ -568,7 +572,7 @@ class TweetBottomSheet {
                       : Tweet(
                           model: model,
                           scaffoldKey: GlobalKey<ScaffoldState>()),
-                  id: "tweet/${model.key}",
+                  id: "tweet/${model.id}",
                   socialMetaTagParameters: socialMetaTagParameters),
             );
           },

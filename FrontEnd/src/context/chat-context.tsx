@@ -4,6 +4,7 @@ import {ConversationDto} from "@models/conversation";
 import {MessageDto} from "@models/message";
 import {initState, reducer, stateType} from "@lib/reducer/chat-reducer";
 import {toastMessage} from "@components/chat-box/chat-box-socket-helper";
+import {useNotification} from "./notification-context";
 
 type ChatContextType = {
     state: stateType,
@@ -16,6 +17,7 @@ export default function ChatContextProvider({children}: any): JSX.Element {
     // const [curConversation, setCurConversation] = useState<ConversationDto>()
     const [reRender, setReRender] = useState(0)
     const [state, dispatch] = useReducer(reducer, initState)
+
     const {showNotifyMessage} = state
     const values = {
         state: state,

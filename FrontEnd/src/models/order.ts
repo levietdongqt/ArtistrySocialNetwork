@@ -1,10 +1,10 @@
-import { ExtraService } from "./extra-service";
-import { MainService } from "./main-service";
-import { Promotion } from "./promotion";
-import { User } from "./user";
+import {User} from "@models/user";
+import {MainService} from "@models/main-service";
+import {Promotion} from "@models/promotion";
+import {ExtraService} from "@models/extra-service";
 
-export type OrderDTO = {
-    id: string;
+export type Order = {
+    id?: string;
     status: OrderStatus;
     startDate: Date;
     endDate: Date;
@@ -13,8 +13,10 @@ export type OrderDTO = {
     providerUser: User;
     customerUser:User;
     mainService: MainService;
+    amount?: number;
+    totalPrice?: number;
     promotion?: Promotion;
-    additionalService?: ExtraService;
+    additionalService?: ExtraService[];
 }
 
 export enum OrderStatus {

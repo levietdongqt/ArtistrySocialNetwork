@@ -36,4 +36,7 @@ public class WSSocket implements IWSSocket{
         messagingTemplate.convertAndSend("/topic/comments/" + postId, comments);
     }
 
+    public void sendGlobalCommentChild(final String parentComment,Comments comments) {
+        messagingTemplate.convertAndSend("/topic/commentsChild/" + parentComment, comments);
+    }
 }

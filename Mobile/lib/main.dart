@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/myModel/myUser.dart';
 import 'package:flutter_twitter_clone/state/WebSocketState.dart';
+import 'package:flutter_twitter_clone/state/postState.dart';
 import 'package:flutter_twitter_clone/state/suggestionUserState.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AppState>(create: (_) => AppState()),
         ChangeNotifierProvider<AuthState>(create: (_) => AuthState()),
         ChangeNotifierProvider<FeedState>(create: (_) => FeedState()),
+        ChangeNotifierProvider<PostState>(create: (_) => PostState()),
         ChangeNotifierProvider<ChatState>(create: (_) => ChatState()),
         ChangeNotifierProvider<SearchState>(create: (_) => SearchState()),
         ChangeNotifierProvider<WebSocketState>(create: (_) => WebSocketState()),

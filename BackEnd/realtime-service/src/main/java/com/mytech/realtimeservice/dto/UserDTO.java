@@ -26,6 +26,8 @@ public class UserDTO {
     private String coverImage;
     private String bio;
     private Boolean isGroupOwner;
+    private Boolean isExited;
+    private Integer notSeenTotal;
     private Boolean notSeen;
 
     //Đánh dấu là user sẽ được Tag vào bài viết

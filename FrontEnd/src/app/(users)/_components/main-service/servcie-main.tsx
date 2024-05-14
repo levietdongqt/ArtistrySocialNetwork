@@ -8,7 +8,7 @@ import { addRowNumber } from "@lib/helper/addRowSerivce";
 import { MainService } from "@models/main-service";
 import ServiceMainTable from "./mainservice-table";
 import { Button, Tabs } from "antd";
-import CreateMainService from "app/(users)/(main-layout)/provider/extra-service/page";
+
 import CreateMainServiceForm from "app/(users)/(main-layout)/provider/main-service/create-service";
 
 
@@ -82,7 +82,7 @@ export default function ServiceMain() {
         closeModal={handleCancel}
         className="w-1/2 ml-auto"
       >
-        <CreateMainServiceForm />
+        <CreateMainServiceForm closeModal={()=>setIsModalOpen(false)} />
       </Modal>
       <ServiceMainTable data={!changeStatus ? mainDataTrue as any : mainDataFalse as any}></ServiceMainTable>
     </div>

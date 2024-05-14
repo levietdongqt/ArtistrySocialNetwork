@@ -1,27 +1,39 @@
 import {ConversationMember} from "@models/conversation";
-import {Avatar, AvatarGroup} from "@chatscope/chat-ui-kit-react";
 import React from "react";
+import {Avatar, Tooltip} from "antd";
+import {AvatarSize} from "antd/lib/avatar/AvatarContext";
 
 interface props {
     members: ConversationMember[],
     onClick?: () => void,
+    size?: AvatarSize
 }
 
-export default function MyAvatarGroup({members, onClick: callback}: props) {
+export default function MyAvatarGroup({members, size, onClick: callback}: props) {
     return <>
-        <AvatarGroup  onClick={() => callback?.()} size={"md"} hoverToFront={true} style={{
-            display: 'flex', flexDirection: 'row'
+        <Avatar.Group size={size ?? "large"} maxCount={1} style={{}} maxStyle={{
+            color: '#f56a00',
+            backgroundColor: '#fde3cf',
         }}>
+            <Tooltip title={members[0].nickname} placement="top">
+            <Avatar onClick={() => callback?.()}
+                    src={members[0].avatar || "https://chatscope.io/storybook/react/assets/lilly-aj6lnGPk.svg"}
+            />
+            </Tooltip>
             {
-                members.slice(0, 2).map((member, index) => {
-                    return <Avatar key={index}
-                                   title={member.fullName ? member.fullName : ""}
-                                   name={member.nickname}
-                                   src={member.avatar || "https://chatscope.io/storybook/react/assets/lilly-aj6lnGPk.svg"}
-                                   status={member.status}
-                    />
+
+                members.slice(1).map((member, index) => {
+                    return <Tooltip title={member.nickname} placement="top">
+                        <Avatar onClick={() => callback?.()}
+                                style={{
+                                    backgroundColor: '#87d068',
+                                }}
+                                key={index}
+                                src={member.avatar || "https://chatscope.io/storybook/react/assets/lilly-aj6lnGPk.svg"}
+                        />
+                    </Tooltip>
                 })
             }
-        </AvatarGroup>
+        </Avatar.Group>
     </>
 }

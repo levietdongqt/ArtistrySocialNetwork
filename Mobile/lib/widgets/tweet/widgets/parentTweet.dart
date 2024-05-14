@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
 import 'package:flutter_twitter_clone/model/feedModel.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 import 'package:flutter_twitter_clone/state/feedState.dart';
+import 'package:flutter_twitter_clone/state/postState.dart';
 import 'package:flutter_twitter_clone/ui/page/feed/feedPostDetail.dart';
 import 'package:flutter_twitter_clone/widgets/tweet/tweet.dart';
 import 'package:flutter_twitter_clone/widgets/tweet/widgets/unavailableTweet.dart';
@@ -19,18 +21,18 @@ class ParentTweetWidget extends StatelessWidget {
   final TweetType type;
   final Widget? trailing;
 
-  void onTweetPressed(BuildContext context, FeedModel model) {
-    var feedstate = Provider.of<FeedState>(context, listen: false);
-    feedstate.getPostDetailFromDatabase(null, model: model);
-    Navigator.push(context, FeedPostDetail.getRoute(model.key!));
+  void onTweetPressed(BuildContext context, myPost model) {
+    var postState = Provider.of<PostState>(context, listen: false);
+    postState.getPostDetailFromDatabase(null, model: model);
+    Navigator.push(context, FeedPostDetail.getRoute(model.id!));
   }
 
   @override
   Widget build(BuildContext context) {
-    var feedstate = Provider.of<FeedState>(context, listen: false);
+    var postState = Provider.of<PostState>(context, listen: false);
     return FutureBuilder(
-      future: feedstate.fetchTweet(childRetwetkey),
-      builder: (context, AsyncSnapshot<FeedModel?> snapshot) {
+      future: postState.fetchTweet(childRetwetkey),
+      builder: (context, AsyncSnapshot<myPost?> snapshot) {
         if (snapshot.hasData) {
           return Tweet(
             model: snapshot.data!,

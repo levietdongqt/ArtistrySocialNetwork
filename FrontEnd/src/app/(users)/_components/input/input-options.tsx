@@ -13,6 +13,7 @@ import {CustomIcon} from '@components/ui/custom-icon';
 import cn from "clsx";
 import {Popper} from "react-popper";
 import {Popover} from "antd";
+import * as repl from "node:repl";
 type Options = {
   name: string;
   iconName: IconName;
@@ -32,29 +33,15 @@ const options: Readonly<Options> = [
     disabled: false
   },
   {
-    name: 'Poll',
-    iconName: 'ChartBarIcon',
-    disabled: true
-  },
-  {
     name: 'Emoji',
     iconName: 'FaceSmileIcon',
     disabled: false
   },
-  {
-    name: 'Schedule',
-    iconName: 'CalendarDaysIcon',
-    disabled: true
-  },
-  {
-    name: 'Location',
-    iconName: 'MapPinIcon',
-    disabled: true
-  }
 ];
 
 type InputOptionsProps = {
   reply?: boolean;
+  childComments?:boolean;
   modal?: boolean;
   inputLimit: number;
   inputLength: number;
@@ -64,10 +51,12 @@ type InputOptionsProps = {
     e: ChangeEvent<HTMLInputElement> | ClipboardEvent<HTMLTextAreaElement>
   ) => void;
   handleEmojiClick: (emoji: any) => void;
+  callBack?: () => void;
 };
 
 export function InputOptions({
   reply,
+                               childComments,
   modal,
   inputLimit,
   inputLength,
@@ -75,6 +64,7 @@ export function InputOptions({
   isCharLimitExceeded,
   handleImageUpload,
    handleEmojiClick,
+                               callBack
 }: InputOptionsProps): JSX.Element {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -92,8 +82,8 @@ export function InputOptions({
     const handleClickOutside = (event: any) => {
       if (
         showEmojiPicker &&
-        emojiPickerRef.current &&
-        !emojiPickerRef.current.contains(event.target)
+        emojiPickerRef?.current &&
+        !emojiPickerRef.current?.contains(event.target)
       ) {
         setShowEmojiPicker(false);
       }
@@ -106,7 +96,6 @@ export function InputOptions({
 
   const handleOptionClick = (event: React.MouseEvent, index: number) => {
     event.stopPropagation();
-    console.log('handleOptionClick called');
     if (index === 0) {
       onClick();
     } else if (index === 3) {
@@ -138,11 +127,12 @@ export function InputOptions({
           multiple
         />
         <div>
-          {filteredOptions.map(({ name, iconName, disabled },index) => (<>
-                <Popover trigger="click" content={name === 'Emoji' && content} ref={emojiPickerRef}>
+          {
+            filteredOptions.map(({ name, iconName, disabled },index) => (
+                <Popover trigger="click" content={name === 'Emoji' && content}>
                   <Button
                       className={`accent-tab accent-bg-tab group relative rounded-full p-2
-              hover:bg-main-accent/10 active:bg-main-accent/20 ${showEmojiPicker ? 'cursor-default' : 'cursor-pointer'}`}
+        hover:bg-main-accent/10 active:bg-main-accent/20 ${showEmojiPicker ? 'cursor-default' : 'cursor-pointer'}`}
                       onClick={(event) => handleOptionClick(event, index)}
                       disabled={disabled}
                       key={name}
@@ -151,8 +141,8 @@ export function InputOptions({
                     <ToolTip tip={name} modal={modal} />
                   </Button>
                 </Popover>
-          </>
-          ))}
+            ))
+          }
         </div>
 
       </div>
@@ -184,15 +174,30 @@ export function InputOptions({
             </>
           )}
         </motion.div>
-        <Button
-          type='submit'
-          className='accent-tab bg-main-accent px-4 py-1.5 font-bold text-white
+        {
+          childComments ? (
+                <Button
+                    className='accent-tab bg-main-accent px-4 py-1.5 font-bold text-white
                      enabled:hover:bg-main-accent/90
                      enabled:active:bg-main-accent/75'
-          disabled={!isValidTweet}
-        >
-          {reply ? 'Reply' : 'Post'}
-        </Button>
+                    disabled={!isValidTweet}
+                    onClick={callBack}
+                >
+                  <HeroIcon iconName={'PaperAirplaneIcon'} className={'accent-accent-blue h-4 w-4'}/>
+                  <ToolTip tip='Comment' modal={modal} />
+                </Button>
+            ) : (
+              <Button
+                  className='accent-tab bg-main-accent px-4 py-1.5 font-bold text-white
+                     enabled:hover:bg-main-accent/90
+                     enabled:active:bg-main-accent/75'
+                  disabled={!isValidTweet}
+                  onClick={callBack}
+              >
+                {'Post'}
+              </Button>
+          )
+        }
       </div>
     </motion.div>
   );

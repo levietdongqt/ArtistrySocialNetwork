@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/model/user.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +128,7 @@ class ComposeTweetState extends ChangeNotifier {
 
   /// Fetch FCM server key from firebase Remote config
   /// send notification to user once fcmToken is retrieved from firebase
-  Future<void> sendNotification(FeedModel model, SearchState state) async {
+  Future<void> sendNotification(myPost model, SearchState state) async {
     const usernameRegex = r"(@\w*[a-zA-Z1-9])";
     RegExp regExp = RegExp(usernameRegex);
     var status = regExp.hasMatch(description);
@@ -150,7 +151,7 @@ class ComposeTweetState extends ChangeNotifier {
             /// Fetch user model from userlist
             /// UserId, FCMtoken is needed to send notification
             final user = state.userlist!.firstWhere((x) => x.userName == name);
-            await sendNotificationToUser(model, user);
+            await sendNotificationToUser(model as FeedModel, user);
           } else {
             cprint("Name: $name ,", errorIn: "UserNot found");
           }

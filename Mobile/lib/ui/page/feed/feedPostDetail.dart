@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/customRoute.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
 import 'package:flutter_twitter_clone/model/feedModel.dart';
+import 'package:flutter_twitter_clone/myModel/MiniUser.dart';
+import 'package:flutter_twitter_clone/myModel/myComment.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 import 'package:flutter_twitter_clone/state/authState.dart';
 import 'package:flutter_twitter_clone/state/feedState.dart';
+import 'package:flutter_twitter_clone/state/postState.dart';
 import 'package:flutter_twitter_clone/ui/theme/theme.dart';
 import 'package:flutter_twitter_clone/widgets/customWidgets.dart';
 import 'package:flutter_twitter_clone/widgets/tweet/tweet.dart';
@@ -38,7 +42,7 @@ class _FeedPostDetailState extends State<FeedPostDetail> {
   Widget _floatingActionButton() {
     return FloatingActionButton(
       onPressed: () {
-        var state = Provider.of<FeedState>(context, listen: false);
+        var state = Provider.of<PostState>(context, listen: false);
         state.setTweetToReply = state.tweetDetailModel!.last;
         Navigator.of(context).pushNamed('/ComposeTweetPage/' + postId);
       },
@@ -46,7 +50,7 @@ class _FeedPostDetailState extends State<FeedPostDetail> {
     );
   }
 
-  Widget _commentRow(FeedModel model) {
+  Widget _commentRow(myPost model) {
     return Tweet(
       model: model,
       type: TweetType.Reply,
@@ -56,7 +60,7 @@ class _FeedPostDetailState extends State<FeedPostDetail> {
     );
   }
 
-  Widget _tweetDetail(FeedModel model) {
+  Widget _tweetDetail(myPost model) {
     return Tweet(
       model: model,
       type: TweetType.Detail,
@@ -67,9 +71,9 @@ class _FeedPostDetailState extends State<FeedPostDetail> {
   }
 
   void addLikeToComment(String commentId) {
-    var state = Provider.of<FeedState>(context, listen: false);
+    var state = Provider.of<PostState>(context, listen: false);
     var authState = Provider.of<AuthState>(context, listen: false);
-    state.addLikeToTweet(state.tweetDetailModel!.last, authState.userId);
+    state.addLikeToComment(state.tweetToReplyModel?.id as String, authState as MiniUser);
   }
 
   void openImage() async {
@@ -86,10 +90,10 @@ class _FeedPostDetailState extends State<FeedPostDetail> {
 
   @override
   Widget build(BuildContext context) {
-    var state = Provider.of<FeedState>(context);
+    var state = Provider.of<PostState>(context);
     return WillPopScope(
       onWillPop: () async {
-        Provider.of<FeedState>(context, listen: false)
+        Provider.of<PostState>(context, listen: false)
             .removeLastTweetDetail(postId);
         return Future.value(true);
       },
@@ -131,15 +135,15 @@ class _FeedPostDetailState extends State<FeedPostDetail> {
             ),
             SliverList(
               delegate: SliverChildListDelegate(
-                state.tweetReplyMap == null ||
-                        state.tweetReplyMap!.isEmpty ||
-                        state.tweetReplyMap![postId] == null
+                state.postReplyMap == null ||
+                        state.postReplyMap!.isEmpty ||
+                        state.postReplyMap![postId] == null
                     ? [
                         //!Removed container
                         const Center()
                       ]
-                    : state.tweetReplyMap![postId]!
-                        .map((x) => _commentRow(x))
+                    : state.postReplyMap![postId]!
+                        .map((x) => _commentRow(x as myPost))
                         .toList(),
               ),
             )

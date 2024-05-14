@@ -6,8 +6,7 @@ import { motion } from 'framer-motion';
 import {useUser} from "../../context/user-context";
 import {Button} from "@components/ui/button";
 import {SWRConfiguration} from "swr";
-
-
+import {useParams} from "next/navigation";
 type InfiniteScrollResult = {
     paginatedPosts: any[] | undefined;
     error: any;
@@ -25,15 +24,17 @@ export function useInfiniteScroll(
     options?: SWRConfiguration
 ) : InfiniteScrollResult {
     const {currentUser} = useUser();
+    const {ID} = useParams();
     const PAGE_SIZE = 7;
+    const userId = ID ?? currentUser?.id;
     const getKey:SWRInfiniteKeyLoader = (index:number,previousPageData:any)  =>{
-        return fetcher(currentUser?.id,PAGE_SIZE,index);
+        return fetcher(userId as string,PAGE_SIZE,index);
     }
     const {data:posts,size,setSize,error,mutate} = useSWRInfinite(getKey,fetcherWithToken,{
         ...options
     });
-    const paginatedPosts = posts?.map(post =>post.data).flat();
-    const isReachedEnd = posts?.map(post =>post.data) && posts?.map(post =>post.data)[posts?.map(post =>post.data).length -1]?.length < PAGE_SIZE - 1;
+    const paginatedPosts = posts?.map(post =>post?.data).flat();
+    const isReachedEnd = posts?.map(post =>post?.data) && posts?.map(post =>post?.data)[posts?.map(post =>post?.data).length -1]?.length < PAGE_SIZE - 1;
     const isLoadingMore = posts && typeof posts[size -1] === 'undefined';
     const LoadMore = () => (
         <motion.div>
