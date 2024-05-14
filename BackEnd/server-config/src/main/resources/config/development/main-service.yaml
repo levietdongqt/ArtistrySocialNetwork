@@ -8,6 +8,9 @@ management:
 spring:
   application:
     name: main-service
+  data:
+    elasticsearch:
+      cluster-nodes: 34.87.190.66:9200
   cache:
     jcache:
       config: classpath:ehcache.xml
@@ -25,10 +28,14 @@ spring:
 #    url: jdbc:mysql://localhost:3306/projectsem4
 #    username: root
 #    password: thuhuy123
-    url: jdbc:mysql://socialdb-artistrysocialnetwork.a.aivencloud.com:13508/projectsem4
+#    url: jdbc:mysql://socialdb-artistrysocialnetwork.a.aivencloud.com:13508/projectsem4
+#    useSSL: true
+#    username: avnadmin
+#    password: AVNS_KXx-W0Q-CbV9LAAh4HF
+    url: jdbc:mysql://34.87.190.66:3306/snap_connectDb
     useSSL: true
-    username: avnadmin
-    password: AVNS_KXx-W0Q-CbV9LAAh4HF
+    username: root
+    password: RHUowB1w__*e3MBZGAf0
 
   jpa:
     hibernate:
@@ -55,7 +62,7 @@ eureka:
 
 env:
   elasticsearch_pass: "6oamFruO_jZXP7=4RBHL"
-  elasticsearch_host_and_port: "localhost:9200"
+  elasticsearch_host_and_port: "34.87.190.66:9200"
   secret_token: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
   firebaseConfig: |
     {
