@@ -24,3 +24,4 @@ export function getPostById(postId: string): fetcherParams {
     return [`/posts/get-post/${postId}`, 'GET', null, ServiceDestination.REALTIME];
 }
 
+

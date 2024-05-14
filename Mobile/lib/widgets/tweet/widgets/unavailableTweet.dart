@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
 import 'package:flutter_twitter_clone/model/feedModel.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 import 'package:flutter_twitter_clone/ui/theme/theme.dart';
 
 class UnavailableTweet extends StatelessWidget {
   const UnavailableTweet({Key? key, required this.snapshot, required this.type})
       : super(key: key);
 
-  final AsyncSnapshot<FeedModel?> snapshot;
+  final AsyncSnapshot<myPost?> snapshot;
   final TweetType type;
 
   @override

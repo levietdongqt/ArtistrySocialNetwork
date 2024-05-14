@@ -8,7 +8,7 @@ import useSWR from "swr";
 
 type UserFollowingProps = {
   userTargetId: string;
-  hovered: boolean;
+  hovered?: boolean;
 };
 
 export function UserFollowing({

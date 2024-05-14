@@ -211,7 +211,7 @@ class _ChatListPageState extends State<ChatListPage> {
                 ),
         ),
         title: TitleText(
-          currentCon.name ?? otherMembers[0].nickname,
+          currentCon.name ?? otherMembers[0].nickname as String,
           fontSize: 16,
           fontWeight: FontWeight.w800,
           overflow: TextOverflow.ellipsis,

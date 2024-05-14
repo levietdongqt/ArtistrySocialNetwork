@@ -280,7 +280,7 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               UrlText(
-                text: state.currentConversation!.name ?? state.otherMembers![0].nickname,
+                text: state.currentConversation!.name ?? state.otherMembers![0].nickname as String,
                 style: const TextStyle(
                     color: Colors.black87,
                     fontSize: 20,

@@ -12,17 +12,23 @@ import com.mytech.realtimeservice.models.PostLike;
 import com.mytech.realtimeservice.models.users.User;
 import com.mytech.realtimeservice.repositories.CommentLikeRepository;
 import com.mytech.realtimeservice.repositories.CommentsRepository;
+import com.mytech.realtimeservice.repositories.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class CommentsService implements ICommentsService {
+    @Autowired
+    private PostRepository postRepository;
 
 
     @Autowired
@@ -45,7 +51,15 @@ public class CommentsService implements ICommentsService {
 
 
     public List<Comments> getCommentsByPostId(String postId) {
-        return commentsRepository.findAllByPostId(postId);
+
+        return commentsRepository.findAllByPostId(postId).stream().filter(comments -> comments.getParentCommentId() == null).collect(Collectors.toList());
+    }
+
+    public List<Comments> getCommentsByParentCommentId(String parentCommentId){
+        return commentsRepository.findCommentsByParentCommentId(parentCommentId);
+    }
+    public Long countCommentsParentId(String parentCommentId){
+        return commentsRepository.countParentCommentsId(parentCommentId);
     }
     public Boolean deleteCommentById(String id){
         Optional<Comments> comments = commentsRepository.findCommentsById(id);
@@ -59,12 +73,34 @@ public class CommentsService implements ICommentsService {
         }
         return false;
     }
+    @Async
+    public void updatePriorityScore(String postId){
+        var post = postService.findById(postId);
+        double engagementScore = calculateEngagementScore(post);
+        post.setEngagementScore(engagementScore);
+        post.setPriorityScore(post.getPriorityScore() + 1);
+        post.setLastInteractionAt(LocalDateTime.now());
+        postRepository.save(post);
+    }
+    public double calculateEngagementScore(Post post) {
+        double score = 0.0;
+        double like = 2.0;
+        double comment = 1.0;
+        double share = 3.0;
+        score += post.getTotalLikes() * like;
+        score += post.getTotalComments() * comment;
+        score += post.getTotalShares() * share; // giả định bạn đã thêm trường totalShares vào model Post.
+        long hoursSinceCreation = ChronoUnit.HOURS.between(post.getCreatedAt(), LocalDateTime.now());
+        double freshnessFactor = Math.max(0, 1 - (hoursSinceCreation / 24.0)); // giảm giá trị sau 24 tiếng
+        score *= freshnessFactor;
+        return score;
+    }
     public Comments createComments(CommentDTO commentDTO) {
         var post = postService.findById(commentDTO.getPostId());
         if (post == null) {
             throw new NotFoundException("Post is not found");
         }
-        System.out.println(post);
+        updatePriorityScore(commentDTO.getPostId());
         //Tạo 1 comments
         Comments comments = Comments.builder()
                 .postId(post.getId())
@@ -75,14 +111,15 @@ public class CommentsService implements ICommentsService {
                 .tagUserComments(commentDTO.getUserTags())
                 .build();
         //Nếu nó là 1 comments đã tồn tại khác
-        if (commentDTO.getCommentsId() != null ) {
+        if (commentDTO.getCommentsParentId() != null ) {
             //Check xem id của comments đã tồn tại đó đúng hay chưa
-            var comment = commentsRepository.findById(commentDTO.getCommentsId()).orElse(null);
+            var comment = commentsRepository.findById(commentDTO.getCommentsParentId()).orElse(null);
             if (comment == null) {
                 throw new NotFoundException("Comment is not found");
             }
-            comments.setCommentId(comment.getId());
+            comments.setParentCommentId(comment.getId());
             var createdComment = commentsRepository.save(comments);
+            wsSocket.sendGlobalCommentChild(commentDTO.getCommentsParentId(),createdComment);
             //Update comments cho bài post
             comment.setTotalReply(comment.getTotalReply() + 1);
             commentsRepository.save(comment);
@@ -91,6 +128,7 @@ public class CommentsService implements ICommentsService {
             sendNotificationInComment(commentDTO.getUserTags(),commentDTO.getByUser(),post.getUser(), post.getId());
             return createdComment;
         }
+
         var createdComment = commentsRepository.save(comments);
         wsSocket.sendGlobalComment(commentDTO.getPostId(),createdComment);
         //Update comments cho bài post

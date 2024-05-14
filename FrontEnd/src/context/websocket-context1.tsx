@@ -75,8 +75,6 @@ export const SocketProvider = ({children}: any) => {
                     }
 
                 });
-
-
                 client.subscribe(`/user/topic/private-notification`, (message) => {
                     if (message.body) {
                         const newMessage = JSON.parse(message.body);
@@ -85,6 +83,7 @@ export const SocketProvider = ({children}: any) => {
                     }
                 });
                 setStompClient(client);
+
             },
 
             onWebSocketError(error: Error): void {

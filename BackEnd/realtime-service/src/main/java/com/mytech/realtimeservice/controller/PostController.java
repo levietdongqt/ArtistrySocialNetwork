@@ -66,6 +66,30 @@ public class PostController {
         );
     }
 
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @GetMapping("/get-posts-pag/{userId}")
+    public ResponseEntity<?> getPostListNotPag(@PathVariable String userId) {
+        log.info("Post List ");
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get post list not pag OK")
+                        .data(postService.findAllNotPag(userId))
+                        .build()
+        );
+    }
+
+    @GetMapping("/getTotalLike/{postId}")
+    public ResponseEntity<?> getTotalLikePostByPostId(@PathVariable String postId){
+        log.info("total like Post get by id " + postId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get post list OK")
+                        .data(postService.showTotalLikesByPostId(postId))
+                        .build()
+        );
+    }
     @GetMapping("/get-post/{postId}")
     public ResponseEntity<?> getPostById(@PathVariable String postId) {
         log.info("Post get by id " + postId);
@@ -116,7 +140,7 @@ public class PostController {
     @PostMapping("/post-create")
     public ResponseEntity<?> savePost(@RequestBody PostDTO postDTO) {
         log.info("post create ",postService.getCountPost());
-        Post savedPost = postService.create(postDTO);
+        PostResponse savedPost = postService.create(postDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
@@ -155,10 +179,37 @@ public class PostController {
     @GetMapping("/comments/{PostId}")
     public ResponseEntity<?> getPostComments(@PathVariable String PostId) {
         List<Comments> comments = commentsService.getCommentsByPostId(PostId);
+        log.info("Get comments list by post id: " + PostId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Get comments list OK")
+                        .message("Get comments list by post id: " + PostId)
+                        .data(comments)
+                        .build()
+        );
+    }
+
+    @GetMapping("/commentsParentId/{commentParentId}")
+    public ResponseEntity<?> getCommentsParent(@PathVariable String commentParentId) {
+        List<Comments> comments = commentsService.getCommentsByParentCommentId(commentParentId);
+        log.info("Get comments list by post id: " + commentParentId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get comments parent list by post id: " + commentParentId)
+                        .data(comments)
+                        .build()
+        );
+    }
+
+    @GetMapping("/commentsParentIdCount/{commentParentId}")
+    public ResponseEntity<?> getCommentsParentCount(@PathVariable String commentParentId) {
+        Long comments = commentsService.countCommentsParentId(commentParentId);
+        log.info("Get comments list by post id: " + commentParentId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get comments parent list by commentParent id: " + commentParentId)
                         .data(comments)
                         .build()
         );

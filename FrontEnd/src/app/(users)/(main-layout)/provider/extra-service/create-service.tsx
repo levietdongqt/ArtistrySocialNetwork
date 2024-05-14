@@ -107,7 +107,7 @@ const CreateExtraServiceForm:React.FC<CreateExtraServiceFormProps> = ({ closeMod
                 });
             } catch (error) {
 
-                console.error("Failed to create service", error);
+                console.error("Failed to create services", error);
             }
         },
     });

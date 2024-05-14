@@ -85,6 +85,7 @@ export function ViewContent(post: ViewPostProps): JSX.Element {
             <div className='flex flex-col truncate xs:overflow-visible xs:whitespace-normal'>
               <UserTooltip {...postUserData}>
                 <UserName
+                    id={ownerId}
                     className='-mb-1'
                     name={fullName}
                     username={fullName}

@@ -20,6 +20,7 @@ export default async function RootLayout({
                 <ChatContextProvider>
                     <SocketProvider>
                         <SearchContextProvider>
+
                             <UploadContextProvider>
                                 <ThemeContextProvider>
                                     <ChatAlert/>

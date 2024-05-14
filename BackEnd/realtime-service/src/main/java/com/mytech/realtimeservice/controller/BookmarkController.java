@@ -35,6 +35,19 @@ public class BookmarkController {
     }
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @DeleteMapping("/deleteBookmarksById/{postId}/{userId}")
+    public ResponseEntity<?> deleteBookmarkByUserIdAndPostId(@PathVariable String postId,@PathVariable String userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        ResponseObject.builder()
+                                .status(HttpStatus.OK)
+                                .message("Handle create bookmark")
+                                .data(bookmarksService.deleteBookmark(postId,userId) ? "success" : "fail")
+                                .build()
+                );
+    }
+
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
     @DeleteMapping("/deleteBookmarksAll/{userId}")
     public ResponseEntity<?> deleteAllBookmarks(@PathVariable String userId) {
         return ResponseEntity.status(HttpStatus.CREATED)
