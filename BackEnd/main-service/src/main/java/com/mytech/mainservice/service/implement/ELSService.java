@@ -136,7 +136,7 @@ public class ELSService implements IELSService {
 
     public List<Object> suggestsKeyword(String searchText) {
         RestClient restClient = RestClient.builder(
-                new HttpHost("localhost", 9200)).build();
+                new HttpHost("34.87.190.66", 9200)).build();
 
         ElasticsearchTransport transport = new RestClientTransport(
                 restClient, new JacksonJsonpMapper());
@@ -148,7 +148,7 @@ public class ELSService implements IELSService {
                             .index("user","post","service")
                             .query(q -> q.multiMatch(builder -> builder
                                     .query(searchText)
-                                    .fields("name^2","fullName","description^2","roles","content^2","email")
+                                    .fields("name","fullName","description","roles","content","email")
                                     .fuzziness("1"))),
                     Object.class);
         } catch (IOException e) {

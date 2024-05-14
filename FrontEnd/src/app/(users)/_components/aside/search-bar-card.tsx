@@ -1,7 +1,13 @@
 import { HeroIcon } from "@components/ui/hero-icon";
 import { Avatar } from "antd";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import ServiceDetail from "../main-service/servicer-detail";
+import useSWR from "swr";
+import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
+import { GetMainServiceById } from "services/main/clientRequest/service";
+import { MainService } from "@models/main-service";
+import HtmlRenderer from "../user/html-render";
 
 interface SearchBarCardProps {
   id: string | number;
@@ -26,20 +32,40 @@ export function SearchBarCard({
   type,
   handleFunction,
 }: SearchBarCardProps): JSX.Element {
+  const [openModalServiceDetail, setOpenModalServiceDetail] = useState(false);
+  const [serviceData,setServiceData] = useState<MainService>();
   var nameCard =
     type === "service" ? "Dịch vụ" : type === "post" ? "Bài đăng" : "";
+    const {
+      data: data,
+      isLoading: isLoading,
+      error: error2,
+    } = useSWR(
+      openModalServiceDetail ?
+      GetMainServiceById(id as number) : null, fetcherWithToken);
+  useEffect(() => {
+    if (data) {
+      setServiceData(data.data);
+    }
+  }, [data]);
+  const handleOpenServiceDetail = () => {
+      setOpenModalServiceDetail(true);
+  }
+
   return (
+    <>
     <Link
       href={type === "user"
       ? `/profile/${id}`
       : type === "post"
       ? `/post/${id}`
-      : type === "service"
-      ? `/service/${id}`
       : ``}
       className="accent-tab hover-animation grid grid-cols-[auto,1fr] gap-3 px-4 py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5"
       onClick={() => {
         handleFunction();
+        if (type === "service"){
+          handleOpenServiceDetail();
+        }
       }}
     >
       <div className="flex items-center justify-between w-full">
@@ -70,11 +96,13 @@ export function SearchBarCard({
                   <h5>{role}</h5>
                 </React.Fragment>
               ))}
-            <h3>{description || content}</h3>
+            <HtmlRenderer htmlString={description as string || content as string} />
             <h5>{nameCard}</h5>
           </div>
         </div>
       </div>
     </Link>
+    { serviceData && <ServiceDetail data={serviceData as MainService} isModalVisible={openModalServiceDetail} setIsModalVisible={setOpenModalServiceDetail} />}
+    </>
   );
 }

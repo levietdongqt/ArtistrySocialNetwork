@@ -21,6 +21,8 @@ import com.mytech.mainservice.service.IELSService;
 import com.mytech.mainservice.service.IMainSerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -130,6 +132,13 @@ public class MainSerService implements IMainSerService {
         //Update the mainService ELS
         ServiceELS serviceELS = modelMapper.map(mainService,ServiceELS.class);
         elsService.updateServiceELS(serviceELS);
+    }
+
+    @Override
+    public List<MainServiceDTO> findTrendMainService() {
+        Pageable topTen = PageRequest.of(0, 10);
+        List<MainService> mainServiceList = mainServiceRepo.findTrendMainService(topTen);
+        return mainServiceList.stream().map(mainService -> modelMapper.map(mainService, MainServiceDTO.class)).collect(Collectors.toList());
     }
 
     private boolean isValidUser(String userId) {

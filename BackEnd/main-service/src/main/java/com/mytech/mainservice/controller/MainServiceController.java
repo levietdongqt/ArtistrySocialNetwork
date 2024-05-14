@@ -42,6 +42,17 @@ public class MainServiceController {
         );
     }
 
+    @GetMapping("/trends")
+    public ResponseEntity<?> getAllTrend() {
+        List<MainServiceDTO> mainServiceDTOs = mainService2.findTrendMainService();
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get All Trend Service successfully")
+                        .data(mainServiceDTOs).build()
+        );
+    }
+
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
     @GetMapping("/getAllSavedMainService/{userId}")
     public ResponseEntity<?> getAllSavedByUserId(@PathVariable("userId") String userId) {
@@ -100,4 +111,6 @@ public class MainServiceController {
                         .data(null).build()
         );
     }
+
+
 }

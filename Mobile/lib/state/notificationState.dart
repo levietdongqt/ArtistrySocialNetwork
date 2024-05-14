@@ -64,10 +64,9 @@ class NotificationState extends AppState {
   }
 
   //Lay list notification
-  void getListNotification(String userId,BuildContext context) {
-     cprint('Notification list: gdfg',
-            label: "ChatState");
-   final socketSate = Provider.of<WebSocketState>(context, listen: false);
+  void getListNotification(String userId, BuildContext context) {
+    cprint('Notification list: gdfg', label: "ChatState");
+    final socketSate = Provider.of<WebSocketState>(context, listen: false);
     try {
       ApiHelper.callApi(HttpMethod.GET, '/notifications/${userId}', null,
               ServerDestination.Realtime_Service, true)
@@ -85,39 +84,69 @@ class NotificationState extends AppState {
         } else {
           _myNotificationList = null;
         }
-         cprint('Notification list: ${_myNotificationList?.length}',
+        cprint('Notification list: ${_myNotificationList?.length}',
             label: "ChatState");
         notifyListeners();
       });
-    } catch (error) {
-
-    }
+    } catch (error) {}
   }
 
-  void removeMyNotifications(String notifyId,BuildContext context) async {
-     final socketSate = Provider.of<WebSocketState>(context, listen: false);
-     try {
-      ApiHelper.callApi(HttpMethod.PUT, '/notifications/update/${notifyId}', null,
-              ServerDestination.Realtime_Service, true)
+  void removeMyNotifications(String notifyId, BuildContext context) async {
+    final socketSate = Provider.of<WebSocketState>(context, listen: false);
+    try {
+      ApiHelper.callApi(HttpMethod.PUT, '/notifications/update/${notifyId}',
+              null, ServerDestination.Realtime_Service, true)
           .then((response) {
         _myNotificationList = <MyNotification>[];
         if (response.status == 200) {
           print("dfgdfggggg");
-          socketSate.myNotifications?.removeWhere((element) => element.id == notifyId);
+          socketSate.myNotifications
+              ?.removeWhere((element) => element.id == notifyId);
         } else {
-            cprint('Notification list: ${_myNotificationList?.length}',
-            label: "Notification State");
+          cprint('Notification list: ${_myNotificationList?.length}',
+              label: "Notification State");
         }
         notifyListeners();
       });
-    } catch (error) {
-
-    }
+    } catch (error) {}
   }
 
-  
+  void acceptFriendMyNotifications(String body, BuildContext context) async {
+    try {
+      ApiHelper.callApi(HttpMethod.POST, '/friends/acceptFriend', body,
+              ServerDestination.Main_Service, true)
+          .then((response) {
+        if (response.status == 200) {
+          cprint('Notification list: ${response.status}',
+              label: "AcceptFriend My Notifications");
+        } else {
+          cprint('Notification list: ${response.status}',
+              label: "AcceptFriend My Notifications");
+        }
+        notifyListeners();
+      });
+    } catch (error) {}
+  }
 
-   void getDataFromDatabase(String userId) {
+  void unAcceptFriendMyNotifications(
+      String body, BuildContext context) async {
+    try {
+      ApiHelper.callApi(HttpMethod.POST, '/friends/unAcceptFriend',
+              body, ServerDestination.Main_Service, true)
+          .then((response) {
+        if (response.status == 200) {
+          cprint('Notification list: ${response.status}',
+              label: "AcceptFriend My Notifications");
+        } else {
+          cprint('Notification list: ${response.status}',
+              label: "AcceptFriend My Notifications");
+        }
+        notifyListeners();
+      });
+    } catch (error) {}
+  }
+
+  void getDataFromDatabase(String userId) {
     try {
       if (_notificationList != null) {
         return;

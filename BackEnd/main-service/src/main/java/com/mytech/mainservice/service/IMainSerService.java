@@ -20,4 +20,6 @@ public interface IMainSerService {
     void deleteService(Long serviceId);
 
     void updateService(MainServiceDTO mainServiceDTO);
+
+    List<MainServiceDTO> findTrendMainService();
 }
