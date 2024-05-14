@@ -140,7 +140,7 @@ public class PostController {
     @PostMapping("/post-create")
     public ResponseEntity<?> savePost(@RequestBody PostDTO postDTO) {
         log.info("post create ",postService.getCountPost());
-        Post savedPost = postService.create(postDTO);
+        PostResponse savedPost = postService.create(postDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
