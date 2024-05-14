@@ -1,39 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_twitter_clone/model/notificationModel.dart';
-import 'package:flutter_twitter_clone/model/user.dart';
+import 'package:flutter_twitter_clone/myModel/MyNotification.dart';
+import 'package:flutter_twitter_clone/state/notificationState.dart';
+import 'package:flutter_twitter_clone/myModel/myUser.dart';
 import 'package:flutter_twitter_clone/ui/page/profile/profilePage.dart';
 import 'package:flutter_twitter_clone/ui/page/profile/widgets/circular_image.dart';
 import 'package:flutter_twitter_clone/ui/theme/theme.dart';
 import 'package:flutter_twitter_clone/widgets/customWidgets.dart';
 import 'package:flutter_twitter_clone/widgets/url_text/customUrlText.dart';
+import 'package:provider/provider.dart';
 
 class FollowNotificationTile extends StatelessWidget {
-  final NotificationModel model;
-  const FollowNotificationTile({Key? key, required this.model})
+  final MyNotification model;
+  final Function Myfunction;
+  const FollowNotificationTile({Key? key, required this.model,required this.Myfunction})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+   
     return Column(
       children: [
         Container(
           color: TwitterColor.white,
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 26),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
           child: Column(
             children: [
               Row(
                 children: [
-                  customIcon(context, icon: AppIcon.profile, isEnable: true),
-                  const SizedBox(width: 10),
-                  Text(
-                    model.user.displayName!,
-                    style: TextStyles.titleStyle.copyWith(fontSize: 14),
+                  _UserCard(
+                    user: model.userTo!,
+                    type: model.notificationType!,
                   ),
-                  Text(" Followed you", style: TextStyles.subtitleStyle),
+                  IconButton(
+                      icon: Icon(Icons.disabled_visible_outlined),
+                      onPressed: () {
+                        Myfunction();
+                      },
+                    ),
                 ],
               ),
-              const SizedBox(width: 10),
-              _UserCard(user: model.user)
             ],
           ),
         ),
@@ -44,8 +49,10 @@ class FollowNotificationTile extends StatelessWidget {
 }
 
 class _UserCard extends StatelessWidget {
-  final UserModel user;
-  const _UserCard({Key? key, required this.user}) : super(key: key);
+  final MyUser user;
+  final String type;
+  const _UserCard({Key? key, required this.user, required this.type})
+      : super(key: key);
   String getBio(String bio) {
     if (bio == "Edit profile to update bio") {
       return "No bio available";
@@ -56,6 +63,30 @@ class _UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var g = "";
+    switch (type) {
+      case "FOLLOWING":
+        g = " đang theo dõi bạn";
+        break;
+      case "LIKE":
+        g = " đã like bài viết của bạn";
+        break;
+      case "NORMAL":
+        g = " đã đăng bài viết mới";
+        break;
+      case "TAG":
+        g = " đã gắn bạn vào bài viết của họ";
+        break;
+      case "COMMENT":
+        g = " đã bình luận bài viết của họ";
+        break;
+      case "FRIEND":
+        g = " đã gửi lời mời kết bạn";
+        break;
+      case "ACCEPT_FRIEND":
+        g = " đã chấp nhận lời mời kết bạn";
+        break;
+    }
     return Padding(
         padding: const EdgeInsets.only(left: 30, top: 10, bottom: 8),
         child: Container(
@@ -67,14 +98,14 @@ class _UserCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircularImage(path: user.profilePic, height: 40),
+              CircularImage(path: user.avatar!, height: 40),
               const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Row(
                   children: <Widget>[
                     UrlText(
-                      text: user.displayName!,
+                      text: user.fullName!,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 16,
@@ -82,14 +113,8 @@ class _UserCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 3),
-                    user.isVerified!
-                        ? customIcon(context,
-                            icon: AppIcon.blueTick,
-                            isTwitterIcon: true,
-                            iconColor: AppColor.primary,
-                            size: 13,
-                            paddingIcon: 3)
-                        : const SizedBox(width: 0),
+                    Text(g, style: TextStyles.subtitleStyle),
+                    
                   ],
                 ),
               ),
@@ -97,24 +122,14 @@ class _UserCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 9),
                 child: customText(
-                  '${user.userName}',
+                  '${user.fullName!}',
                   style: TextStyles.subtitleStyle.copyWith(fontSize: 13),
                 ),
               ),
-              if (getBio(user.bio!).isNotEmpty) ...[
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: customText(
-                    getBio(user.bio!),
-                  ),
-                ),
-              ],
             ],
           ),
         ).ripple(() {
-          Navigator.push(
-              context, ProfilePage.getRoute(profileId: user.userId!));
+          Navigator.push(context, ProfilePage.getRoute(profileId: user.id!));
         }, borderRadius: BorderRadius.circular(15)));
   }
 }

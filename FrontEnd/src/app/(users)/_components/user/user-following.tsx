@@ -8,7 +8,7 @@ import useSWR from "swr";
 
 type UserFollowingProps = {
   userTargetId: string;
-  hovered: boolean;
+  hovered?: boolean;
 };
 
 export function UserFollowing({
@@ -28,12 +28,21 @@ export function UserFollowing({
     {
       revalidateOnFocus: false,
     }
-  );  
+  );
   return (
     <p className="rounded bg-main-search-background px-1 text-xs">
-      {data?.data?.follow ? FollowButtonType.FOLLOW : FollowButtonType.UN_FOLLOW}
-
-      {data?.data?.friend ? ` | ${FollowButtonType.FRIEND}`:``}
+      {userTargetId === currentUser?.id ? "" : data?.data.follow ? FollowButtonType.FOLLOW : FollowButtonType.UN_FOLLOW}
+      {data?.data.friend ? ` | ${FollowButtonType.FRIEND}`:``}
     </p>
   );
+    if (currentUser?.id === userTargetId) {
+        return null;
+    }
+    return (
+        <p className="rounded bg-main-search-background px-1 text-xs">
+            {data?.data.follow ? FollowButtonType.FOLLOW : FollowButtonType.UN_FOLLOW}
+
+            {data?.data.friend ? ` | ${FollowButtonType.FRIEND}`:``}
+        </p>
+    );
 }

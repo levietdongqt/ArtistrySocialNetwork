@@ -21,10 +21,10 @@ spring:
           jwk-set-uri: https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com
 
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/projectsem4
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/snap_connectdb
 #    username: root
-#    password: thuhuy123
+#    password: 123456
     url: jdbc:mysql://socialdb-artistrysocialnetwork.a.aivencloud.com:13508/projectsem4
     useSSL: true
     username: avnadmin
@@ -55,6 +55,7 @@ eureka:
 
 env:
   elasticsearch_pass: "nagffOa5qCW2H7Gdq9xy"
+  elasticsearch_host_and_port: "localhost:9200"
   secret_token: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
   firebaseConfig: |
     {
@@ -72,6 +73,6 @@ env:
     }
   images:
     default:
-      avatar: "/images/avatar.png"
-      background: "/images/background.png"
+      avatar: "https://firebasestorage.googleapis.com/v0/b/artistrysocialnetwork.appspot.com/o/images%2Fdefault%2Favatar.png?alt=media&token=c2a513bb-f750-4710-a0fb-4e745c8359ac"
+      background: "https://firebasestorage.googleapis.com/v0/b/artistrysocialnetwork.appspot.com/o/images%2Fdefault%2Fbackgroud.png?alt=media&token=0492673b-2bac-4859-a48b-40acd4cfc220"
 

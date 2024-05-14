@@ -4,6 +4,10 @@ import { Popover, Table, Tag } from "antd";
 import { Modal } from "../modal/modal";
 import { useState } from "react";
 import CreatePromotionsForm from "./create-promotions";
+import { useUser } from "context/user-context";
+import { deletePromotion, getAllPromotions, reworkPromotion } from "services/main/clientRequest/promotion";
+import { mutate } from "swr";
+import { toast } from "react-toastify";
 
 type DataTable = {
   data: any[];
@@ -12,6 +16,7 @@ type DataTable = {
 export default function PromotionsTable({ data }: DataTable) {
   const [isModalOpen1, setIsModalOpen1] = useState(false);
   const [currentRecord, setCurrentRecord] = useState<any>(null);
+  const {currentUser} = useUser();
   const showModal = (record: any) => {
     setCurrentRecord(record);
     setIsModalOpen1(true);
@@ -21,12 +26,32 @@ export default function PromotionsTable({ data }: DataTable) {
     setCurrentRecord(null);
   };
   const handleCancel = () => {
-    console.log("Cancelled")
+    console.log("Cancelled");
     setIsModalOpen1(false);
     setCurrentRecord(null);
   };
-  const handleTest = (value: any) => {
+  const handleDelete = async (value: any) => {
     console.log("data ne", value);
+    try {
+      await deletePromotion(currentUser?.id as string,value);
+      mutate(getAllPromotions);
+      toast.success("Xoá thành công")
+  } catch (error) {   
+      console.error("Failed to update working time", error);
+      toast.error("Xoá thất bại")
+  }
+  };
+
+  const handleRework = async (value: any) => {
+    console.log("data ne", value);
+    try {
+      await reworkPromotion(currentUser?.id as string,value);
+      mutate(getAllPromotions);
+      toast.success("Hồi lại thành công")
+  } catch (error) {   
+      console.error("Failed to update working time", error);
+      toast.error("Hồi lại thất bại")
+  }
   };
 
   const content = (record: any) => (
@@ -38,14 +63,26 @@ export default function PromotionsTable({ data }: DataTable) {
       >
         Chỉnh sửa
       </Button>
-
-      <Button
+      {
+        record.status && (
+          <Button
         className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
                            font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
-        onClick={() => handleTest(record.id)}
+        onClick={() => handleDelete(record.id)}
       >
-        Chi tiết Khuyến mãi
+        Xóa khuyến mãi
       </Button>
+        )
+      }
+      {
+        !record.status &&<Button
+        className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
+                           font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
+        onClick={() => handleRework(record.id)}
+      >
+        Hồi lại khuyến mãi
+      </Button>
+      }
     </div>
   );
   const columns: any = [
@@ -68,7 +105,11 @@ export default function PromotionsTable({ data }: DataTable) {
     {
       title: "Thời gian bắt đầu",
       dataIndex: "startDate",
-      sorter: (a: any, b: any) => a.startDate - b.startDate,
+      sorter: (a: any, b: any) => {
+        const dateA = new Date(a.startDate).getTime();
+        const dateB = new Date(b.startDate).getTime();
+        return dateA - dateB;
+      },
       render: (startDate: any) => {
         return new Date(startDate).toLocaleDateString();
       },
@@ -76,7 +117,11 @@ export default function PromotionsTable({ data }: DataTable) {
     {
       title: "Thời gian kết thúc",
       dataIndex: "endDate",
-      sorter: (a: any, b: any) => a.endDate - b.endDate,
+      sorter: (a: any, b: any) => {
+        const dateA = new Date(a.startDate).getTime();
+        const dateB = new Date(b.startDate).getTime();
+        return dateA - dateB;
+      },
       render: (startDate: any) => {
         return new Date(startDate).toLocaleDateString();
       },
@@ -114,7 +159,7 @@ export default function PromotionsTable({ data }: DataTable) {
       },
     },
     {
-      title: "Action",
+      title: "Công cụ",
       dataIndex: "",
       key: "x",
       render: (record: any) => (

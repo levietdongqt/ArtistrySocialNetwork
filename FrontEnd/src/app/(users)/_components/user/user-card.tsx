@@ -40,10 +40,10 @@ export function UserCard(user: UserCardProps): JSX.Element {
                 <UserTooltip modal={modal} {...user}>
                   <UserUsername username={fullName} />
                 </UserTooltip>
-                {follow && <UserFollowing userTargetId={id}  hovered/>}
+                {follow && <UserFollowing userTargetId={id} />}
               </div>
             </div>
-            <FollowButton userTargetId={id} userTargetUsername={fullName}  hovered/>
+            <FollowButton userTargetId={id} userTargetUsername={fullName} />
           </div>
           {follow && bio && !friends && <p className='whitespace-normal'>{bio}</p>}
         </div>

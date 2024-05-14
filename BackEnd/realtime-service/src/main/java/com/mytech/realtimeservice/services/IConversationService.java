@@ -10,7 +10,7 @@ public interface IConversationService {
     ConversationDTO createConversation(ConversationDTO conversationDTO);
     void deleteConversation(ConversationDTO conversationDTO);
 
-    List<Conversation> getByUserIdAndIgnoreTypeHide(String userId);
+    List<ConversationDTO> getByUserIdAndIgnoreTypeHide(String userId);
 
     ConversationDTO checkConversation(ConversationDTO conversationDTO);
 
@@ -21,4 +21,6 @@ public interface IConversationService {
     void update(ConversationDTO conversationDTO);
 
     void checkValidRequest(ConversationDTO conversationDTO);
+
+    void outConversation(String userId, String conversationId);
 }

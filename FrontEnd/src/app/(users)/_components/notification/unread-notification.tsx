@@ -15,21 +15,27 @@ const { Sider, Content } = Layout;
 
 export default function UnreadNotification() {
   const user = useUser();
-  const {notificationsContent} = useNotification();
-  const [dataUnread,setDataUnread] = useState<any>([]);
+  const { notificationsContent } = useNotification();
+  const [dataUnread, setDataUnread] = useState<any>([]);
   const {
     data: data2,
     isLoading: isLoading2,
     error: error2,
-  } = useSWR(getUnreadNotifications(user.currentUser?.id as string), fetcherWithToken);
+  } = useSWR(
+    getUnreadNotifications(user.currentUser?.id as string),
+    fetcherWithToken
+  );
 
-  useEffect(()=>{
-    setDataUnread(data2?.data);
-  },[data2])
+  useEffect(() => {
+    if (data2) {
+      setDataUnread(data2.data);
+    }
+  }, [data2]);
 
-  useEffect(()=>{
-    setDataUnread([notificationsContent,...dataUnread]);
-  },[notificationsContent])
+  useEffect(() => {
+    setDataUnread([notificationsContent, ...dataUnread]);
+    console.log("notificationsContent", dataUnread);
+  }, [JSON.stringify(notificationsContent)]);
 
   return (
     <Layout>
@@ -40,25 +46,21 @@ export default function UnreadNotification() {
           <Error message="Something went wrong" />
         ) : (
           <>
-            <AnimatePresence mode="popLayout">
-              {
-            dataUnread && dataUnread.map((item: any, index : number) => {
-              return (
-                <NotificationCard key={index} data={item}/>
-              )
-            })
-          }
-          {
-            dataUnread.length===0 && (
+            {dataUnread.length === 0 && (
               <div className="text-center">
                 <HeroIcon
-                iconName="BellAlertIcon" className="mx-auto w-20"></HeroIcon>
-                <p className="text-gray-500 text-lg">Bạn không có thông báo nào </p>
+                  iconName="BellAlertIcon"
+                  className="mx-auto w-20"
+                ></HeroIcon>
+                <p className="text-gray-500 text-lg">
+                  Bạn không có thông báo nào{" "}
+                </p>
               </div>
-            )
-          }
-            </AnimatePresence>
-            {/* <LoadMore />*/}
+            )}
+            {
+              dataUnread.map((item: any, index: number) => {
+                return <NotificationCard key={index} data={item} />;
+              })}
           </>
         )}
       </Content>

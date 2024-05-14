@@ -35,6 +35,7 @@ public class ChatController {
     @Autowired
     private IConversationService conversationService;
     private final String CHAT_DESTINATION = "/chat/message";
+
     @MessageMapping("/chat.sendPrivate")
 //    @SendTo("/chat/message")
     public void handleSingleChat(@Payload ConversationDTO conversation) {
@@ -46,11 +47,14 @@ public class ChatController {
         chatService.updateConversation(conversation);
 
         conversation.getMembers().forEach(member -> {
-            simpMessagingTemplate.convertAndSendToUser(member.getId(), CHAT_DESTINATION,
-                    ResponseSocket.builder()
-                            .type(ResponseSocketType.SEND_MESSAGE)
-                            .data(conversation)
-                            .build());
+            if (member.getIsExited() == null || !member.getIsExited()) {
+                simpMessagingTemplate.convertAndSendToUser(member.getId(), CHAT_DESTINATION,
+                        ResponseSocket.builder()
+                                .type(ResponseSocketType.SEND_MESSAGE)
+                                .data(conversation)
+                                .build());
+            }
+
         });
     }
 
@@ -74,11 +78,13 @@ public class ChatController {
         saved.setCreateAt(null);
         saved.setUpdatedAt(null);
         conversationDTO.getMembers().forEach(member -> {
-            simpMessagingTemplate.convertAndSendToUser(member.getId(), CHAT_DESTINATION,
-                    ResponseSocket.builder()
-                            .type(ResponseSocketType.SEEN_FLAG)
-                            .data(saved)
-                            .build());
+            if (member.getIsExited() == null || !member.getIsExited()) {
+                simpMessagingTemplate.convertAndSendToUser(member.getId(), CHAT_DESTINATION,
+                        ResponseSocket.builder()
+                                .type(ResponseSocketType.SEEN_FLAG)
+                                .data(saved)
+                                .build());
+            }
         });
     }
 

@@ -14,6 +14,14 @@ export function updateNotification (notificationId: string): fetcherParams {
     return [`/notifications/update/${notificationId}`, 'PUT', null, ServiceDestination.REALTIME];
 }
 
+export function deleteNotification (notificationId: string): fetcherParams {
+    return [`/notifications/delete/${notificationId}`, 'DELETE', null, ServiceDestination.REALTIME];
+}
+
+export function updateListNotification (listId: any[]): fetcherParams {
+    return [`/notifications/list-update`, 'PUT', listId, ServiceDestination.REALTIME];
+}
+
 export function updateAllNotification (body: any[]): fetcherParams {
     return [`/notifications/update-all`, 'POST', body, ServiceDestination.REALTIME];
 }

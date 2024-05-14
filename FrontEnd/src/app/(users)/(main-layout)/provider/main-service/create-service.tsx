@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import { MainService } from "@models/main-service";
 import { useUser } from "../../../../../context/user-context";
-import { createMainService } from "../../../../../services/main/clientRequest/service";
+import {createExtraService, createMainService} from "../../../../../services/main/clientRequest/service";
 import ImageService , { ImageItem } from "./image-service";
 import { useFormik } from 'formik';
 import ServiceValidation from "@lib/validations/ServiceValidation";
@@ -15,19 +15,21 @@ import { useUpload } from 'context/uploadfile-context';
 import { FilesWithId } from '@models/file';
 import { transformToFilesWithId } from '@lib/utils';
 import {uploadImages} from "../../../../../firebase/utils";
+import DescriptionInput from "../../../_components/input/input-description";
+import {toast} from "react-toastify";
 
-
-
-
-
-
-
-const CreateMainServiceForm = () => {
+interface CreateMainServiceFormProps {
+    closeModal: () => void;
+};
+const CreateMainServiceForm :React.FC<CreateMainServiceFormProps> = ({ closeModal }) => {
     const {currentUser} = useUser();
     const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
     const [promotions, setPromotions] = useState<Promotion[]>([]);
     const {files} = useUpload();
-
+    const [newdescription, setNewDescription] = useState('')
+    const handleDescriptionChange = (content: string) => {
+        setNewDescription(content);
+    };
     const {
         data: dataPromotion,
         isLoading: isLoading2,
@@ -77,38 +79,40 @@ const CreateMainServiceForm = () => {
             const imageUrls = uploadedImagesData?.map((upload: any,index: any)=> upload.src);
             
             const newService = {
-
                 ...values,
                 imageUrls: imageUrls as string[],
-                promotionDTO: applyPromotion
+                promotionDTO: applyPromotion,
+                description : newdescription
             };
 
             try {
-                const response = await createMainService(newService);
+                toast.promise(
+                    createMainService(newService), // Hàm async để thực thi
+                    {
+                        pending: 'Đang tạo dịch vụ ...', // Thông báo khi đang xử lý
+                        success: 'Tạo dịch vụ thành công', // Thông báo khi thành công
+                        error: 'Tạo dịch vụ thất bại!' // Thông báo khi có lỗi
+                    }
+                ).then(() => {
+                    // Nếu Promise được resolve, tức là "Tạo dịch vụ thành công"
+                    closeModal(); // Gọi hàm đóng Modal
+                }).catch(error => {
+                    // Nếu có lỗi xảy ra, Promise được reject
+                    console.error("Failed to create service", error);
+                });
 
-                console.log("Service created successfully", response);
-
-
-                resetForm();
             } catch (error) {
 
                 console.error("Failed to create services", error);
             }
         },
     });
-    // const handleImageListChange = (newImageList: ImageItem[]) => {
-    //     console.log("newImageList",newImageList)
-    //     // Chỉ cần cập nhật mService imageUrl thay vì gọi setFieldValue tại đây.
-    //     setMService({
-    //         ...mService,
-    //         imageUrls: newImageList.map((imageItem) => imageItem.src),
-    //     });
-    // };
-
 
     return (
         <form onSubmit={handleSubmit} className="w-full mx-auto p-6 bg-white rounded shadow mr-10">
-            <UploadFile />
+
+            <UploadFile/>
+
             {/* <ImageService onImageListChange={handleImageListChange}/> */}
             <div className="mb-4">
                 <label htmlFor="serviceName" className="block text-gray-700 text-sm font-bold mb-2">
@@ -169,7 +173,7 @@ const CreateMainServiceForm = () => {
             </div>
             <div className="mb-4">
                 <label htmlFor="servicePrice" className="block text-gray-700 text-sm font-bold mb-2">
-                    Khoảng thời gian
+                    Khoảng thời gian(Giờ)
                 </label>
                 <input
                     type="number"
@@ -187,7 +191,7 @@ const CreateMainServiceForm = () => {
 
             <div className="mb-4">
                 <label htmlFor="servicePrice" className="block text-gray-700 text-sm font-bold mb-2">
-                    Thời gian nghỉ
+                    Thời gian nghỉ(Giờ)
                 </label>
                 <input
                     type="number"
@@ -218,32 +222,27 @@ const CreateMainServiceForm = () => {
                     ))}
                 </select>
             </div>
-                <div className="mb-4">
-                    <label htmlFor="serviceDescription" className="block text-gray-700 text-sm font-bold mb-2">
-                        Mô Tả Dịch Vụ
-                    </label>
-                    <textarea
-                        id="serviceDescription"
-                        name="description"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        onChange={handleChange}
-                        value={values.description}
-                    />
-                    {errors.description && touched.description ? (
-                        <div className="text-red-700 text-sm">{errors.description}</div>
-                    ) : null}
-                </div>
+            <div className="mb-4 ">
+                <label htmlFor="serviceDescription" className="block text-gray-700 text-sm font-bold mb-2">
+                    Mô tả dịch vụ
+                </label>
+                <DescriptionInput
+                    value={newdescription || ''}
+                    onChange={handleDescriptionChange}
+                />
 
-                <div className="flex items-center justify-between">
-                    <button type="submit"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                        Tạo Dịch Vụ
-                    </button>
-                    
-                </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+                <button type="submit"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Tạo Dịch Vụ
+                </button>
+
+            </div>
         </form>
-    
-);
+
+    );
 };
 
 export default CreateMainServiceForm;

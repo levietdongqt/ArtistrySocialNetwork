@@ -30,14 +30,13 @@ export default function Register() {
             password: '',
             fullName: '',
             rePassword: '',
-            isGetGeolocation: false
         },
         onSubmit: async values => {
             console.log(showValidPhone)
             if (!showValidPhone) {
                 return
             }
-            const {isGetGeolocation, phoneNumber, ...formData} = values
+            const {phoneNumber, ...formData} = values
             const dataRequest = {
                 phoneNumber: finalPhone,
                 ...formData,
@@ -54,20 +53,6 @@ export default function Register() {
         }
     }, [errors.phoneNumber]);
 
-    const getGeolocation = () => {
-        console.log('getGeolocation')
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                console.log(position.coords.latitude, ' -  ', position.coords.longitude)
-                // setLatitude(position.coords.latitude);
-                // setLongitude(position.coords.longitude);
-            }, function (error) {
-                // setError(error.message);
-            });
-        } else {
-            // setError("Geolocation is not supported by this browser.");
-        }
-    };
     const registerHandler = async (data: any) => {
         const register = () => {
             setIsShowCapcha(false)
@@ -227,22 +212,6 @@ export default function Register() {
                         {errors.rePassword && touched.rePassword ?
                             <div className="text-red-700 text-sm">{errors.rePassword}</div> : null}
                     </div>
-                    <label className="inline-flex items-center cursor-pointer" onClick={getGeolocation}>
-                        <input
-                            id="isGetGeolocation" name="isGetGeolocation"
-                            type="checkbox"
-                            className="form-checkbox border-0 rounded text-blueGray-700 ml-1 w-5 h-5 ease-linear transition-all duration-150"
-                            onChange={(e) => {
-                                handleChange(e);
-                                // Cập nhật giá trị của isGetGeolocation tại đây
-                            }}
-                        />
-                        {errors.isGetGeolocation && touched.isGetGeolocation ?
-                            <div className="text-red-700 text-sm">{errors.isGetGeolocation}</div> :
-                            <span className="ml-2 text-sm font-semibold text-blueGray-600">
-                       Chia sẻ ví trị của bạn cho trải nghiệm tốt hơn
-                      </span>}
-                    </label>
 
                     {isShowCapcha && <div className="mx-auto">
                         <div id="recaptcha-container" className="my-5"></div>

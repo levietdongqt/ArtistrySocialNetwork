@@ -48,6 +48,8 @@ public class UserDTO implements Serializable {
     private boolean verified;
     private LocalDateTime createDate ;
     private LocalDateTime updateAt;
+    private String authProvider;
+
 
     @JsonProperty("password")
     public String getPasswordForJson() {

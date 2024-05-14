@@ -52,6 +52,20 @@ public class PostController {
                         .build()
         );
     }
+
+
+    @GetMapping("/get-posts-byid/{userId}")
+    public ResponseEntity<?> getPostListById(@PathVariable String userId,@RequestParam("limit") int limit,@RequestParam("pageIndex") int pageIndex) {
+        log.info("Post List ");
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get post list limit " + limit + " va offset " + pageIndex + " OK")
+                        .data(postService.findAllById(limit,pageIndex,userId))
+                        .build()
+        );
+    }
+
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
     @GetMapping("/get-posts-pag/{userId}")
     public ResponseEntity<?> getPostListNotPag(@PathVariable String userId) {
@@ -126,7 +140,7 @@ public class PostController {
     @PostMapping("/post-create")
     public ResponseEntity<?> savePost(@RequestBody PostDTO postDTO) {
         log.info("post create ",postService.getCountPost());
-        PostResponse savedPost = postService.create(postDTO);
+        Post savedPost = postService.create(postDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResponseObject.builder()
                         .status(HttpStatus.CREATED)
@@ -144,20 +158,6 @@ public class PostController {
                         .status(HttpStatus.OK)
                         .message("Handler list post successfully,")
                         .data(responses)
-                        .build()
-        );
-    }
-
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#descendingActionDto.userId) && hasRole('USER')")
-    @PostMapping("/descending-action")
-    public ResponseEntity<?> descendingAction(@RequestBody descendingActionDto descendingActionDto){
-        postService.descreasePriorityScore(descendingActionDto);
-        log.info("Handler decrease priority score successfully");
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                ResponseObject.builder()
-                        .status(HttpStatus.CREATED)
-                        .message("Handler decrease priority score successfully")
-                        .data(null)
                         .build()
         );
     }
@@ -214,6 +214,7 @@ public class PostController {
                         .build()
         );
     }
+
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#commentDTO.byUser.id) && hasRole('USER')")
     @PostMapping("/comments")

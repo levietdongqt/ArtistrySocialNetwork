@@ -5,6 +5,12 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/firebase_database.dart' as dabase;
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_twitter_clone/helper/ApiHelper.dart';
+import 'package:flutter_twitter_clone/helper/enum.dart';
+import 'package:flutter_twitter_clone/myModel/MyNotification.dart';
+import 'package:flutter_twitter_clone/state/WebSocketState.dart';
+import 'package:provider/provider.dart';
 
 import '../helper/utility.dart';
 import '../model/feedModel.dart';
@@ -24,6 +30,8 @@ class NotificationState extends AppState {
   List<UserModel> userList = [];
 
   List<NotificationModel>? _notificationList;
+
+  List<MyNotification>? _myNotificationList;
 
   addNotificationList(NotificationModel model) {
     _notificationList ??= <NotificationModel>[];
@@ -55,8 +63,61 @@ class NotificationState extends AppState {
     }
   }
 
-  /// get [Notification list] from firebase realtime database
-  void getDataFromDatabase(String userId) {
+  //Lay list notification
+  void getListNotification(String userId,BuildContext context) {
+     cprint('Notification list: gdfg',
+            label: "ChatState");
+   final socketSate = Provider.of<WebSocketState>(context, listen: false);
+    try {
+      ApiHelper.callApi(HttpMethod.GET, '/notifications/${userId}', null,
+              ServerDestination.Realtime_Service, true)
+          .then((response) {
+        _myNotificationList = <MyNotification>[];
+        if (response.status == 200) {
+          var list = response.data as List<dynamic>?;
+          if (list != null) {
+            list.forEach((item) {
+              var model = MyNotification.fromJson(item);
+              _myNotificationList!.add(model);
+            });
+            socketSate.myNotifications = _myNotificationList;
+          }
+        } else {
+          _myNotificationList = null;
+        }
+         cprint('Notification list: ${_myNotificationList?.length}',
+            label: "ChatState");
+        notifyListeners();
+      });
+    } catch (error) {
+
+    }
+  }
+
+  void removeMyNotifications(String notifyId,BuildContext context) async {
+     final socketSate = Provider.of<WebSocketState>(context, listen: false);
+     try {
+      ApiHelper.callApi(HttpMethod.PUT, '/notifications/update/${notifyId}', null,
+              ServerDestination.Realtime_Service, true)
+          .then((response) {
+        _myNotificationList = <MyNotification>[];
+        if (response.status == 200) {
+          print("dfgdfggggg");
+          socketSate.myNotifications?.removeWhere((element) => element.id == notifyId);
+        } else {
+            cprint('Notification list: ${_myNotificationList?.length}',
+            label: "Notification State");
+        }
+        notifyListeners();
+      });
+    } catch (error) {
+
+    }
+  }
+
+  
+
+   void getDataFromDatabase(String userId) {
     try {
       if (_notificationList != null) {
         return;

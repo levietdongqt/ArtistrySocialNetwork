@@ -32,7 +32,7 @@ public class ConversationController {
     @GetMapping("/by-user")
     public ResponseEntity<?> getByUser() {
         log.info("getByUser");
-        List<Conversation> conversations = conversationService.getByUserIdAndIgnoreTypeHide(jwtTokenHolder.getUserId());
+        List<ConversationDTO> conversations = conversationService.getByUserIdAndIgnoreTypeHide(jwtTokenHolder.getUserId());
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .data(conversations)
@@ -125,6 +125,18 @@ public class ConversationController {
                         .data(conversation)
                         .status(HttpStatus.OK)
                         .message("Get conversation successfully").build()
+        );
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/out-group/{conversationId}")
+    public ResponseEntity<?> outConversation(@PathVariable String conversationId) {
+        conversationService.outConversation(jwtTokenHolder.getUserId(),conversationId);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .data(null)
+                        .status(HttpStatus.OK)
+                        .message("out conversation successfully").build()
         );
     }
 }

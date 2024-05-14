@@ -16,7 +16,6 @@ import { ContentStats } from '../content/content-stats';
 import { ContentDate } from '../content/content-date';
 import { Input } from '../input/input';
 import type { RefObject } from 'react';
-import boolean from "async-validator/dist-types/validator/boolean";
 import {Timestamp} from "firebase/firestore";
 import {Post} from "@models/post";
 import {useUser} from "../../../../context/user-context";
@@ -80,7 +79,7 @@ export function ViewContent(post: ViewPostProps): JSX.Element {
       <div className='flex flex-col gap-2'>
         <div className='grid grid-cols-[auto,1fr] gap-3'>
           <UserTooltip avatarCheck {...postUserData}>
-            <UserAvatar src={avatar} alt={fullName} username={fullName} />
+            <UserAvatar  src={avatar} alt={fullName} username={fullName} />
           </UserTooltip>
           <div className='flex min-w-0 justify-between'>
             <div className='flex flex-col truncate xs:overflow-visible xs:whitespace-normal'>

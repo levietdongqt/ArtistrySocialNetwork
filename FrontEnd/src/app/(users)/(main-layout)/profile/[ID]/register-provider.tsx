@@ -27,7 +27,7 @@ import {useRouter} from "next/navigation";
 import {refresh_token_options} from "@lib/config/TokenConfig";
 
 type RegisterProviderFormProps = {
-    closeModal: () => void; // closeModal là một hàm không nhận đối số và không trả về giá trị
+    closeModal: () => void;
 };
 
 const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal}) => {
@@ -44,6 +44,7 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
         location: currentUser?.location ?? {},
         address: currentUser?.address ?? ""
     });
+
     const [newbio, setNewBio] = useState(user.bio)
     const roleOptions = [
         {label: 'Studio', value: UserRole.ROLE_STUDIO},
@@ -59,6 +60,7 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
     const [showValidPhone, setShowValidPhone] = useState(false)
     const [newProviderData, setNewProviderData] = useState({})
     const [finalPhone, setFinalPhone] = useState("")
+    const [isEditingAddress, setIsEditingAddress] = useState(false);
     const {values, touched, handleSubmit, handleChange, errors, setValues} = useFormik({
         initialValues: user,
         validationSchema: RegisterProviderValidation,
@@ -71,6 +73,7 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
                 bio: newbio,
                 address: addressn
             };
+
             console.log('new ProviderData:', providerData);
             setNewProviderData(providerData)
 
@@ -98,8 +101,11 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
             console.log("Provider Register successfully", response);
             const updatedUser = response.data as User;
             setCurrentUser(updatedUser)
-            setCookie('user', JSON.stringify(updatedUser),refresh_token_options );
+
+            setCookie('user', JSON.stringify(updatedUser),refresh_token_options);
+
             push("/provider")
+            closeModal();
         } catch (error) {
             console.error("Failed to Provider Register", error);
         }
@@ -116,6 +122,8 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
         clearTimeout(timeoutId)
         timeoutId = setTimeout(() => {
             callBack(compAddress)
+
+
         }, 600)
 
         const callBack = async (compAddress: any) => {
@@ -132,6 +140,7 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
                             longitude: data[0].lon
                         }
                         setValues((prevValues) => ({...prevValues, location: locationMap}));
+                        setValues(prevValues => ({ ...prevValues, address:compAddress }));
                         setErrorLocation('');
                         console.log('vị trí:', locationMap);
                     } else {
@@ -264,15 +273,38 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
 
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-md mb-4">
-                    {values.address && (
-                        <label htmlFor="role" className="block text-gray-700 text-sm font-bold mb-2">
-                            Địa chỉ hiện tại:
-                            <span>{values.address}</span>
-                        </label>
+                    {values.address && !isEditingAddress && (
+                        <div className="flex justify-between items-center">
+                            <label htmlFor="role" className="block text-gray-700 text-sm font-bold mb-2">
+                                Địa chỉ hiện tại: <span>{values.address}</span>
+                            </label>
+                            <button
+                                onClick={() => setIsEditingAddress(true)}
+                                className="text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                            >
+                                Sửa
+                            </button>
+                        </div>
                     )}
-                    <InputAddress onAddressComplete={handleAddressComplete}/>
-                    {errorLocation &&
-                        <div className="text-red-700 text-sm">{errorLocation}</div>}
+                    {(isEditingAddress || !values.address) && (
+                        <>
+                            <label htmlFor="role" className="block text-gray-700 text-sm font-bold mb-2">
+                                Địa chỉ hiện tại: <span>{values.address}</span>
+                            </label>
+                            <InputAddress onAddressComplete={(address) => {
+                                handleAddressComplete(address);
+                            }}/>
+                            <button
+                                onClick={() => setIsEditingAddress(false)}
+                                className="text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                            >
+                                Hủy
+                            </button>
+                            {errorLocation && <div className="text-red-700 text-sm">{errorLocation}</div>}
+                            {errors.address && touched.address ?
+                                <div className="text-red-700 text-sm ">{errors.address}</div> : null}
+                        </>
+                    )}
                 </div>
 
                 <div className="mb-4 ">
@@ -285,11 +317,13 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
                     />
 
                 </div>
+
                 {
                     isShowCaptcha && <div className="mx-auto">
                         <div id="recaptcha-container" className="my-5"></div>
                     </div>
                 }
+
                 <div className="flex items-center justify-between">
                     <button type="submit"
                             disabled={errorLocation !== null && errorLocation !== ''}

@@ -7,6 +7,7 @@ import { SearchUser } from '@models/search';
 import { SearchButton } from './search-button';
 import { UserName } from '../user/user-name';
 import { ClockCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { FollowButton } from '@components/ui/follow-button';
 
 const { Text } = Typography;
 interface SearchUserParams {
@@ -18,19 +19,19 @@ interface SearchUserParams {
 export function SearchUserCard({data} : SearchUserParams): JSX.Element {
   
   return (
-    <Link href={`/user/${data.user.id}`}  className='accent-tab bg-w-primary py-5 hover-animation grid grid-cols-[auto,1fr] gap-3 px-4
+    <Link href={`/profile/${data.user.id}`}  className='accent-tab bg-w-primary py-5 hover-animation grid grid-cols-[auto,1fr] gap-3 px-4
                    py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5'
     >
        <div className="flex items-center justify-between w-full">
       <div className="flex items-center">
     
-      <UserTooltip avatarCheck={true} {...data.user}>
+      {/* <UserTooltip avatarCheck={true} {...data.user}> */}
       <UserAvatar
             src={data.user.avatar || "https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg"}
             alt={"name"}
             username={`${data?.user.id}`}
           />
-        </UserTooltip>
+        {/* </UserTooltip> */}
         <div className='flex flex-col'>
         <UserName
                 className='-mb-1 text-lg'

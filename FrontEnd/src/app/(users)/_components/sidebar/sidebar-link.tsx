@@ -18,7 +18,6 @@ import { Button, notification } from "antd";
 import { postNotificationsAPI } from "services/realtime/realtimeservice";
 import { useNotification } from "context/notification-context";
 
-
 type SidebarLinkProps = NavLink & {
   username?: string;
 };
@@ -29,30 +28,31 @@ export function SidebarLink({
   iconName,
   linkName,
   disabled,
-  canBeHidden, callBack
+  canBeHidden,
+  callBack,
 }: SidebarLinkProps) {
   var user = useUser();
   const [shouldFetch, setShouldFetch] = useState(false);
   const asPath = usePathname();
   const isActive = username ? asPath.includes(username) : asPath === href;
   //Xu lý show notifications
-  const {dataCount,setDataCount} = useNotification();
-
+  const { dataCount, setDataCount } = useNotification();
 
   const {
     data: notificationsData,
     isLoading: isLoading,
     error: error2,
   } = useSWR(
-      countUnreadNotifications(user.currentUser?.id as string),
-    fetcherWithToken,{
+    countUnreadNotifications(user.currentUser?.id as string),
+    fetcherWithToken,
+    {
       revalidateOnFocus: false,
     }
   );
 
-  useEffect(()=>{
-      setDataCount((prev) => notificationsData?.data);
-  },[notificationsData?.data])
+  useEffect(() => {
+    setDataCount((prev) => notificationsData?.data);
+  }, [notificationsData?.data]);
 
   const {} = useSWR(
     shouldFetch
@@ -61,11 +61,14 @@ export function SidebarLink({
     fetcherWithToken
   );
 
-  function handleClickSlidebar() {
-      callBack?.()
+  function handleClickSlidebar(e: any) {
+    console.log("e");
+    callBack?.();
     if (!disabled) {
-      setShouldFetch(true);
-      setDataCount((prev) => 0);
+      if (e.target.innerHTML === "Thông báo") {
+        setShouldFetch(true);
+        setDataCount((prev) => 0);
+      }
     }
   }
   useEffect(() => {
@@ -104,20 +107,15 @@ export function SidebarLink({
             )}
             iconName={iconName}
             solid={isActive}
-          />  
-            {
-            linkName === "Thông báo" &&
-            dataCount != 0 && (
-              <span className="absolute top-0 left-0 bg-blue-500 text-white rounded-full px-1 py-0.5 text-xs">
-                {dataCount}
-              </span>
-            )
-          }
+          />
+          {linkName === "Thông báo" && dataCount != 0 && (
+            <span className="absolute top-0 left-0 bg-blue-500 text-white rounded-full px-1 py-0.5 text-xs">
+              {dataCount}
+            </span>
+          )}
         </div>
         <p className="hidden xl:block">{linkName}</p>
       </div>
-
     </Link>
-
   );
 }

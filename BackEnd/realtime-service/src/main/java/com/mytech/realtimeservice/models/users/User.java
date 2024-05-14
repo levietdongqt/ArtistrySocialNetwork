@@ -18,6 +18,8 @@ public class User{
     private String bio;
     private Boolean notSeen;
     private Boolean isGroupOwner;
+    private Boolean isExited;
+    private Integer notSeenTotal;
     private boolean verified;
 }
 

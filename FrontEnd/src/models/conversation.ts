@@ -20,6 +20,8 @@ export type ConversationMember = {
     avatar: string,
     coverImage?: string,
     notSeen: boolean,
+    isExited?: boolean,
+    notSeenTotal?: number,
     status?: UserStatus | undefined
     isGroupOwner?: boolean | undefined
 }

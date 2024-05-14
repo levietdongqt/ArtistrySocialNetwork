@@ -262,11 +262,11 @@ class _SidebarMenuState extends State<SidebarMenu> {
                     child: _menuHeader(),
                   ),
                   const Divider(),
-                  _menuListRowButton('Profile',
+                  _menuListRowButton('Trang cá nhân',
                       icon: AppIcon.profile, isEnable: true, onPressed: () {
                     var state = context.read<AuthState>();
                     Navigator.push(
-                        context, ProfilePage.getRoute(profileId: state.userId));
+                        context, ProfilePage.getRoute(profileId: state.myUser!.id!));
                   }),
                   _menuListRowButton(
                     'Bookmark',

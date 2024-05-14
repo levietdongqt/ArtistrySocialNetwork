@@ -133,7 +133,7 @@ class Routes {
         );
       case "NotificationPage":
         return CustomRoute<bool>(
-          builder: (BuildContext context) => const NotificationPage(),
+          builder: (BuildContext context) => NotificationPage(),
         );
       case "ContentPrefrencePage":
         return CustomRoute<bool>(

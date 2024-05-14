@@ -11,6 +11,7 @@ import useSWR from 'swr';
 import { NopeNotificationModel } from '@models/notifications';
 import {Typography} from "antd";
 import { checkNopeNotifications, deleteNopeNotifications, saveNopeNotifications } from 'services/main/clientRequest/notificationsClient';
+import { toast } from 'react-toastify';
 
 const { Text } = Typography;
 
@@ -39,7 +40,7 @@ export function NotificationButton({
               currentUser?.id as string,
                 {
                     userId:  currentUser?.id as string,
-                    friendId: userTargetId,                
+                    nopeId: userTargetId,                
                 }
             )
           : null,
@@ -54,7 +55,14 @@ export function NotificationButton({
               data as NopeNotificationModel
             )
           : null,
-        fetcherWithToken
+        fetcherWithToken,{
+          onSuccess(data, key, config) {
+              toast.success("Chặn thông báo trong 24h thành công")
+          },
+          onError(err, key, config) {
+              toast.error("Chặn thông báo thất bại")
+          },
+        }
       );
     useEffect(()=>{
         if(shouldSave){
@@ -70,7 +78,14 @@ export function NotificationButton({
             data as NopeNotificationModel
           )
         : null,
-      fetcherWithToken
+      fetcherWithToken,{
+        onSuccess(data, key, config) {
+          toast.success("Bỏ chặn thông báo trong 24h thành công")
+      },
+      onError(err, key, config) {
+          toast.error("Bỏ chặn thông báo thất bại")
+      },
+      }
     );
   useEffect(()=>{
       if(shouldDelete){
@@ -110,6 +125,7 @@ export function NotificationButton({
           mainBtnLabel='Đồng ý'
           action={()=> handleNopeNotification()}
           closeModal={closeModal}
+          actionReport={()=>{}}
         />
       </Modal>  
       <div className='flex flex-col '>
@@ -117,12 +133,11 @@ export function NotificationButton({
           data2?.data ? (
             <Button
             className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
-                       font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
-                       hover:before:content-["Bỏ_chặ_thông_báo"] inner:hover:hidden dark:border-light-secondary
-                       '
+                     font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
+                     hover:before:content-["Bỏ_"] inner:hover:hidden dark:border-light-secondary'
             onClick={()=> handleDeleteNopeNotification()}
           >
-            Đang chặn thông báo
+            Đang Chặn Thông Báo
           </Button>
           ) : (
             <Button

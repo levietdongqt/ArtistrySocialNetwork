@@ -1,4 +1,4 @@
-
+"use client"
 import Link from "next/link";
 import {useWindow} from "../../../../context/window-context";
 import {useModal} from "@lib/hooks/useModal";
@@ -90,12 +90,7 @@ export function Sidebar() {
         });
     }, [notificationsContent]);
 
-    /*const username = user?.username as string;*/
-    const username = "123";
-    const test = () => {
-        console.log("Voooooooooooooooo");
-        testHeader().then((value) => console.log("OKEEEEEEEEEEEE"));
-    };
+
     const {currentUser} = useUser()
      return (
         <>
@@ -142,7 +137,7 @@ export function Sidebar() {
                             ))}
                             <SidebarLink
                                 href={`/profile/${currentUser?.id}`}
-                                username={username}
+                                username={"username"}
                                 linkName="Tài khoản"
                                 iconName="UserIcon"
                             />
@@ -152,7 +147,6 @@ export function Sidebar() {
                             className="accent-tab absolute right-4 -translate-y-[72px] bg-main-accent text-lg font-bold text-white
                        outline-none transition hover:brightness-90 active:brightness-75 xs:static xs:translate-y-0
                        xs:hover:bg-main-accent/90 xs:active:bg-main-accent/75 xl:w-11/12"
-                            onClick={test}
                         >
                             <CustomIcon
                                 className="block h-6 w-6 xl:hidden"
@@ -165,25 +159,6 @@ export function Sidebar() {
                 </div>
 
             </header>
-            {/*{showConversations && (*/}
-            {/*    <div className={'fixed bottom-5  right-5 mb-2  p-2   z-50 '}>*/}
-            {/*        <LeftSidebar closeLeftSideBar={() => dispatch(ChatAction(null, ACTION_TYPE.SHOW_CONVERSATIONS))}/>*/}
-            {/*    </div>*/}
-
-            {/*)}*/}
-
-            {/*{pickedConversations[1] && (*/}
-            {/*    <div className={'fixed  bottom-0   translate-x-[-100%]  p-2 z-50 h-[60%]'}>*/}
-            {/*        <ChatBox curConversation={pickedConversations[1]}/>*/}
-            {/*    </div>*/}
-
-            {/*)}*/}
-            {/*{pickedConversations[2] && (*/}
-            {/*    <div className={'fixed  bottom-0   translate-x-[-100%]  p-2 z-50 h-[60%]'}>*/}
-            {/*        <ChatBox curConversation={pickedConversations[2]}/>*/}
-            {/*    </div>*/}
-
-            {/*)}*/}
             {contextHolder}
         </>
     );

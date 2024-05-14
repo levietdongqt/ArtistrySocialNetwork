@@ -44,6 +44,7 @@ export function SidebarProfile(): JSX.Element {
                     title='Log out of Social?'
                     description='You can always log back in at any time. If you just want to switch accounts, you can do that by adding an existing account.'
                     mainBtnLabel='Log out'
+                    actionReport={()=>{}}
                     // action={signOut}
                     action={() => {
                     }}
@@ -62,10 +63,10 @@ export function SidebarProfile(): JSX.Element {
                             )}
                         >
                             <div className='flex gap-3 truncate'>
-                                <UserAvatar src={ currentUser?.avatar ? currentUser?.avatar :'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg'} alt={currentUser?.fullName!}
+                                <UserAvatar src={currentUser?.avatar as string} alt={'username'}
                                             size={40}/>
-                                <div className='hidden truncate text-start leading-5 xl:block mt-[1.15rem]'>
-                                    <UserName name={currentUser?.fullName!} className='start' verified={!!currentUser?.verified}/>
+                                <div className='hidden truncate text-start leading-5 xl:block'>
+                                    <UserName name={currentUser?.fullName!} username={currentUser?.fullName!} className='truncate' verified={!currentUser?.verified}/>
                                 </div>
                             </div>
                             <HeroIcon
@@ -88,7 +89,7 @@ export function SidebarProfile(): JSX.Element {
                                         disabled
                                     >
                                         <div className='flex items-center gap-3 truncate'>
-                                            <UserAvatar src={ currentUser?.avatar ? currentUser?.avatar :'https://cdn.wallpapersafari.com/43/42/IwWBH3.jpg'}
+                                            <UserAvatar src={currentUser?.avatar as string}
                                                         alt={currentUser?.fullName ? currentUser?.fullName : ""}/>
                                             <div className='truncate'>
                                                 {/*<UserName name={'name'} verified={verified} />*/}
@@ -137,6 +138,7 @@ export function SidebarProfile(): JSX.Element {
                     </>
                 )}
             </Menu>
+            <div></div>
         </>
     );
 }
