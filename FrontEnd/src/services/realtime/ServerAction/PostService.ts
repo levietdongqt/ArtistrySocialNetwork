@@ -14,9 +14,9 @@ export async function postPosts1(data: any): Promise<any> {
                 cache: "no-cache"
             });
         if (res.ok) {
-            const data = await res.json();
+            const item = await res.json();
             console.log("show data",data);
-            return data;
+            return item?.data;
         } else {
             console.log("SAI ROI", res.statusText, res.status)
             return null;

@@ -31,6 +31,7 @@ export type TweetProps = Post & {
   profile?: User | null;
   parentTweet?: boolean;
   comment?: boolean;
+  bookmark?: boolean;
 };
 
 export const variants: Variants = {
@@ -59,7 +60,8 @@ export function ContentPost(tweet: TweetProps) {
     modal,
     profile,
     parentTweet,
-      comment
+      comment,
+    bookmark
   } = tweet;
   const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData;
   const { currentUser } = useUser();
@@ -126,7 +128,7 @@ export function ContentPost(tweet: TweetProps) {
         <div className='grid grid-cols-[auto,1fr] gap-x-3 gap-y-1'>
           <div className='flex flex-col items-center gap-2'>
             <UserTooltip avatarCheck modal={modal} {...postUserData} >
-              <UserAvatar src={avatar} alt={fullName ?? 'tao nè 1'} username={fullName ?? 'Customer 1'} />
+              <UserAvatar  id={parentId} src={avatar} alt={fullName ?? 'tao nè 1'} username={fullName ?? 'Customer 1'} />
             </UserTooltip>
             {parentTweet && (
                 <i className='hover-animation h-full w-0.5 bg-light-line-reply dark:bg-dark-line-reply' />
@@ -137,6 +139,7 @@ export function ContentPost(tweet: TweetProps) {
               <div className='flex gap-1 truncate xs:overflow-visible xs:whitespace-normal'>
                 <UserTooltip modal={modal} {...postUserData}>
                     <UserName
+                        id={parentId}
                         name={fullName ?? 'tào nè 1'}
                         username={fullName}
                         verified={verified}
@@ -148,6 +151,7 @@ export function ContentPost(tweet: TweetProps) {
               <div className='px-4'>
                 {!modal && (
                     <ContentAction
+                        bookmark={bookmark}
                         reported={handleReported}
                         isOwner={isOwner}
                         ownerId={ownerId}

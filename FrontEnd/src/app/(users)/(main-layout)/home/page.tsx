@@ -21,9 +21,9 @@ export default async function Home(){
                 title='Trang chủ'
                 className='flex items-center justify-between'
                 >
-                <UpdateUsername />
+                    <UpdateUsername />
                 </MainHeader>
-                <InputMobile />
+                    <InputMobile />
                 <ContainerHome />
                 </MainContainer>
                 </HomeLayout>

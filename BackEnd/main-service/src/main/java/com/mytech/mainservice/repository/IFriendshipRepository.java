@@ -23,11 +23,13 @@ public interface IFriendshipRepository extends JpaRepository<Friendship, Long> {
     @Query("SELECT f FROM Friendship f WHERE f.friend.id = :userId or f.fromUser.id = :userId")
     List<Friendship> getAllFriendShipByUserId(@Param("userId") String userId);
 
-    @Query("SELECT f FROM Friendship f WHERE f.fromUser.id = :userId")
+    @Query("SELECT f,f.fromUser,f.friend FROM Friendship f WHERE f.fromUser.id = :userId")
     List<Friendship> getFriendShipByUserId(@Param("userId") String userId);
 
-    @Query("SELECT f FROM Friendship f WHERE f.fromUser.id =:fromUserId and f.friend.id =:friendId")
-    Optional<Friendship> findByFromUser_IdAndFriend_Id (@Param("fromUserId")String fromUserId,@Param("friendId") String friendId);
+    @Query("SELECT f,f.friend,f.fromUser FROM Friendship f WHERE f.friend.id = :userId")
+    List<Friendship> getFriendById(@Param("userId") String userId);
 
+    @Query("SELECT f FROM Friendship f WHERE f.fromUser.id like :fromUserId and f.friend.id like :friendId")
+    Optional<Friendship> findByFromUser_IdAndFriend_Id (@Param("fromUserId")String fromUserId,@Param("friendId") String friendId);
 
 }

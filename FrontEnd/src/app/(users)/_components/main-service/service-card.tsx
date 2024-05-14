@@ -18,6 +18,7 @@ import DOMPurify from "dompurify";
 import BookingModal from "../booking/bookingModal";
 import CreateReview from "../../(main-layout)/profile/[ID]/review/create-review";
 import ServiceDetail from "./servicer-detail";
+import {Promotion} from "@models/promotion";
 
 
 interface ProServiceCard {
@@ -35,7 +36,27 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
     const handleOpenServiceDetail = () => {
         setOpenModalServiceDetail(true);
     }
+    const [isPreviewImage, setIsPreviewImage] = useState(false);
+
     const provider: User | null = data?.provider;
+    // const promotion:any |null = data?.promotionDTO;
+    const promotion : {
+        discountPercent: number;
+        endDate: Date;
+        name: string;
+        description: string;
+        id: number;
+        startDate: Date
+    } = {
+        id: 1,
+        name: 'Giảm giá 10%',
+        description: 'Get a 20% discount on all beachwear.',
+        discountPercent: 20, // Đây là giả định rằng discountRate là phần trăm
+        startDate: new Date('2024-06-01'),
+        endDate: new Date('2024-07-31'),
+        // Thêm bất kỳ giá trị mặc định nào cho các thuộc tính khác
+    };
+    console.log('promotion', data)
     const decription = data?.description;
     const cleanFullBioContent = DOMPurify.sanitize(decription);
     console.log("cleanBioContent: ", cleanFullBioContent);
@@ -67,7 +88,26 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
 
     return (
         <>
-
+            <Modal open={isPreviewImage} closeModal={()=> setIsPreviewImage(false)} >
+                <div className="max-w-2xl w-full h-auto">
+                    <div className="rounded-lg overflow-hidden z-10" >
+                        .
+                        <Carousel autoplay arrows >
+                            {data?.imageUrls?.map((img, idx) => (
+                                <div key={idx} className="w-full h-[600px] relative">
+                                    <Image
+                                        src={img}
+                                        alt={`Service Image ${idx + 1}`}
+                                        layout="fill"
+                                        objectFit="contain"
+                                        objectPosition="center"
+                                    />
+                                </div>
+                            ))}
+                        </Carousel>
+                    </div>
+                </div>
+            </Modal>
             <Modal open={openModalCreateReview} closeModal={() => setOpenModalCreateReview(false)}>
                 <CreateReview closeModal={() => setOpenModalCreateReview(false)} service={data}/>
             </Modal>
@@ -84,26 +124,26 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
             <ServiceDetail data={data} isModalVisible={openModalServiceDetail}
                            setIsModalVisible={setOpenModalServiceDetail}/>
             {/*<Link href={`/service/${data.id}`} passHref>*/}
-            <motion.div className="block cursor-pointer z-1 py-2.5" whileTap={{scale: 0.97}}>
+
                 <div className="block cursor-pointer">
                     <div
                         className=" flex-col rounded-lg  border border-gray-200 dark:border-gray-700 shadow-sm transition-shadow hover:shadow-lg">
-                        <div className="rounded-lg overflow-hidden z-1">
+                        <div className="rounded-lg overflow-hidden z-10" onClick={()=> setIsPreviewImage(true)}>
                             <Carousel autoplay>
-                                {data?.imageUrls?.map((img, idx) => {
-
-                                    return <div key={idx} className="w-full h-[300px] relative">
+                                {data?.imageUrls?.map((img, idx) => (
+                                    <div key={idx} className="w-full h-[300px] relative">
                                         <Image
                                             src={img}
                                             alt={`Service Image ${idx + 1}`}
                                             layout="fill"
-                                            objectFit="cover" // Đổi sang 'cover' để hình ảnh chiếm đầy đủ không gian có sẵn.
+                                            objectFit="cover"
                                             objectPosition="center center"
                                         />
                                     </div>
-                                })}
+                                ))}
                             </Carousel>
                         </div>
+
                         <div className="flex justify-center">
                             <div className="text-lg font-semibold text-light-primary dark:text-dark-primary">
                                 {data?.name} {/* Tên dịch vụ từ API */}
@@ -125,6 +165,7 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
                                         coverImage={provider?.coverImage ?? ''} // Lấy giá trị coverImage từ API hoặc data của bạn
                                     >
                                         <UserAvatar
+                                            id={provider!.id}
                                             src={provider!.avatar}
                                             alt={provider!.fullName}
                                             username={provider!.fullName}
@@ -133,9 +174,24 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
                                     </UserTooltip>
                                 </div>
                                 <div className="text-sm text-light-secondary dark:text-dark-secondary">
-                                    Giá: {data?.price} {/* Giá của dịch vụ từ API */}
+                                    <strong>Giá</strong>:
+                                    {promotion && promotion.discountPercent
+                                        ? <>
+                                            <span className="line-through">{data?.price}</span>
+                                            {" "}VNĐ - <span>{data?.price * (1 - promotion.discountPercent / 100)}</span> VNĐ
+                                        </>
+                                        : `${data?.price} VNĐ`
+                                    }
                                 </div>
 
+                                {promotion?.endDate && (
+                                    <div
+                                        className="text-sm text-light-secondary dark:text-dark-secondary"
+                                        title={`Áp dụng đến ${new Date(promotion.endDate).toLocaleDateString('vi-VN')}`}
+                                    >
+                                        (<strong>Khuyến mãi</strong>: {promotion.name})
+                                    </div>
+                                )}
                                 <div
                                     dangerouslySetInnerHTML={{__html: cleanFullBioContent.substring(0, 70) + (cleanFullBioContent.length > 70 ? '...' : '')}}>
 
@@ -167,7 +223,7 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
 
                     </div>
                 </div>
-            </motion.div>
+
             {/*</Link>*/}
 
 

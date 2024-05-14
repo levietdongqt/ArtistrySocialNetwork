@@ -7,7 +7,7 @@ function InputMobile() {
     const { isMobile } = useWindow();
     return (
         <div>
-            {!isMobile && <Input />}
+            {!isMobile && <Input/>}
         </div>
     );
 }

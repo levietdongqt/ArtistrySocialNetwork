@@ -19,4 +19,7 @@ public interface ICommentsService {
     List<Comments> getCommentsByPostId(String postId);
     Boolean deleteCommentById(String id);
 
+    List<Comments> getCommentsByParentCommentId(String parentCommentId);
+    Long countCommentsParentId(String parentCommentId);
+
 }

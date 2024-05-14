@@ -19,13 +19,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,7 +54,7 @@ public class PostService implements IPostService {
     @Autowired
     private JwtTokenHolder jwtTokenHolder;
 
-    public Post create(PostDTO postDTO) {
+    public PostResponse create(PostDTO postDTO) {
         // Lưu bài post
         Post post = Post.builder()
                 .user(User.builder()
@@ -101,7 +100,7 @@ public class PostService implements IPostService {
                notificationService.sendNotification(userFrom, userTo,"NORMAL","đã tạo một bài post mới với nội dụng là: "+postDTO.getContent(),createdPost.getId());
            }
         }
-        return createdPost;
+        return modelMapper.map(createdPost,PostResponse.class);
     }
     public Boolean deletePost(String postId) {
         boolean detected = false;
@@ -120,26 +119,133 @@ public class PostService implements IPostService {
         Optional<Post> post = postRepository.findById(postId);
         return post.orElse(null);
     }
+    public void descreasePriorityScore(descendingActionDto descendingActionDto) {
+        Optional<Post> post = postRepository.findById(descendingActionDto.getPostId());
+        if(post.isEmpty() ){
+            throw new NotFoundException("Post not found");
+        }
+        Post updatedPost = post.get();
+        updatedPost.setLeastPrioritized(true);
+        updatedPost.setLastInteractionAt(LocalDateTime.now()); // Update the last interaction time
+        postRepository.save(updatedPost);
+    }
     public List<PostResponse> findAll(int limit, int pageIndex, String userId) {
         List<String> friendsIds = filterFollowFriends(userId);
         if (!friendsIds.contains(userId)) {
             friendsIds.add(userId);
         }
+        // Định nghĩa tỉ lệ bài viết trending trong feed
+        double trendingRatio = 0.2; // 20% bài viết sẽ là trending
+
+        Set<String> reportedPostIds = reportService.findReportsByUserId(userId)
+                .stream()
+                .filter(status -> status.getStatus().equals(ReportStatus.UNDO))
+                .map(Report::getPostId)
+                .collect(Collectors.toSet());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt").and(Sort.by(Sort.Direction.DESC, "engagementScore"));
+        Pageable pageable = PageRequest.of(pageIndex, limit, sort);
+        Page<Post> pagePosts = postRepository.findByOrderByCreatedAtDesc(friendsIds, reportedPostIds, pageable);
+
+        // Lấy các bài viết thông thường và trending
+        List<Post> normalPosts = pagePosts.getContent();
+        Set<String> excludedPostIds = normalPosts.stream().map(Post::getId).collect(Collectors.toSet());
+        List<Post> trending = getTrendingPosts(excludedPostIds);
+
+        // Tính toán số lượng bài viết
+        int totalPosts = normalPosts.size();
+        int trendingCount = (int) Math.ceil(totalPosts * trendingRatio);
+
+        // Xen kẽ bài viết trending
+        List<PostResponse> postResponses = interleavePosts(normalPosts, trending, trendingCount);
+        log.info("page index: " + pageIndex + " post response: " + postResponses.size());
+        return postResponses;
+    }
+
+    private List<Post> getTrendingPosts(Set<String> excludedPostIds) {
+        return postRepository.findAll()
+                .stream()
+                .filter(post -> post.getPriorityScore() > 0 && !excludedPostIds.contains(post.getId()))
+                .sorted(Comparator.comparingDouble(Post::getPriorityScore).reversed())
+                .limit(5)
+                .toList();
+    }
+
+    private List<PostResponse> interleavePosts(List<Post> normalPosts, List<Post> trending, int trendingCount) {
+        List<PostResponse> interleavePosts = new ArrayList<>();
+        Set<String> includedPostIds = new HashSet<>();  // Tạo một Set để theo dõi ID của các bài viết đã được thêm.
+        // Khởi tạo iterators
+        Iterator<Post> normalIterator = normalPosts.iterator();
+        Iterator<Post> trendingIterator = trending.iterator();
+        while (normalIterator.hasNext()) {
+            Post nextPost = normalIterator.next();
+            interleavePosts.add(mapPostToPostResponse(nextPost));
+            includedPostIds.add(nextPost.getId());
+            if (trendingCount > 0 && trendingIterator.hasNext()) {
+                Post nextTrendingPost = trendingIterator.next();
+                if (!includedPostIds.contains(nextTrendingPost.getId())) {
+                    interleavePosts.add(mapPostToPostResponse(nextTrendingPost));
+                    includedPostIds.add(nextTrendingPost.getId());
+                    trendingCount--;
+                }
+            }
+        }
+        return interleavePosts;
+    }
+    private PostResponse mapPostToPostResponse(Post post) {
+        return modelMapper.map(post, PostResponse.class); // Chuyển Post thành PostResponse.
+    }
+    public List<PostResponse> findAllNotPag(String userId) {
+        List<String> friendsIds = filterFollowFriends(userId);
+        if (!friendsIds.contains(userId)) {
+            friendsIds.add(userId);
+        }
+        // Getting trending posts
+        List<Post> trending = postRepository.findAll()
+                .stream()
+                .filter(post -> post.getPriorityScore() > 0)
+                .sorted(Comparator.comparingDouble(Post::getPriorityScore).reversed())
+                .limit(5)
+                .toList();
+        // Identifying reported post IDs to exclude
         Set<String> reportedPostIds = reportService.findReportsByUserId(userId)
                 .stream()
                 .filter(status->status.getStatus().equals(ReportStatus.UNDO))
                 .map(Report::getPostId)
                 .collect(Collectors.toSet());
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        Pageable pageable = PageRequest.of(pageIndex, limit, sort);
-        Page<Post> pagePosts = postRepository.findByOrderByCreatedAtDesc(friendsIds,reportedPostIds, pageable);
-        List<PostResponse> postResponses = pagePosts.getContent().stream()
+        // Extracting all posts, applying filters and sorting as per given order
+        List<Post> posts = postRepository.findByOrderByCreatedAtDescNotPag(friendsIds, reportedPostIds)
+                .stream()
+                .sorted(Comparator.comparingDouble(Post::getEngagementScore)
+                        .thenComparing(Post::getCreatedAt).reversed())
+                .toList();
+
+        // Mapping to PostResponse DTO
+        List<PostResponse> postResponses = posts.stream()
                 .map(post -> modelMapper.map(post, PostResponse.class))
                 .collect(Collectors.toList());
-        log.info( "page inndex: " + pageIndex+ "post response: " + postResponses.size() );
+
+        // Adding trending posts
+        postResponses.addAll(trending.stream()
+                .map(post -> modelMapper.map(post, PostResponse.class))
+                .toList());
+        log.info("Post response: " + postResponses.size());
         return postResponses;
     }
+    public double calculateEngagementScore(Post post) {
+        double score = 0.0;
+        double like = 2.0;
+        double comment = 1.0;
+        double share = 3.0;
+        score += post.getTotalLikes() * like;
+        score += post.getTotalComments() * comment;
+        score += post.getTotalShares() * share; // giả định bạn đã thêm trường totalShares vào model Post.
+        long hoursSinceCreation = ChronoUnit.HOURS.between(post.getCreatedAt(), LocalDateTime.now());
+        double freshnessFactor = Math.max(0, 1 - (hoursSinceCreation / 24.0)); // giảm giá trị sau 24 tiếng
+        score *= freshnessFactor;
+        return score;
+    }
+
 
     @Override
     public List<PostResponse> findAllById(int limit, int pageIndex, String userId) {
@@ -156,6 +262,14 @@ public class PostService implements IPostService {
     public List<String> filterFollowFriends(String userId){
         var friendsFollow = friendForeignClient.getFollowFriends(userId);
         return friendsFollow.getData().stream().map(UserDTO::getId).collect(Collectors.toList());
+    }
+
+    public PostResponse showTotalLikesByPostId(String postId){
+        Optional<Post> getPost = postRepository.showTotalLikesByPostId(postId);
+        if(getPost.isEmpty()){
+            throw new NotFoundException("No post with postId " + postId);
+        }
+        return modelMapper.map(getPost.get(), PostResponse.class);
     }
     public long getCountPost(){
         return postRepository.count();
@@ -195,9 +309,15 @@ public class PostService implements IPostService {
         });
     }
     //Service xử lý like cho 1 bài Post
+
+
     public Post updateLikeForPost(String postId,User userLike) {
         var post = findById(postId);
+        double engagementScore = calculateEngagementScore(post);
+        post.setEngagementScore(engagementScore);
         post.setTotalLikes(post.getTotalLikes() + 1);
+        post.setPriorityScore(post.getPriorityScore() + 2);
+        post.setLastInteractionAt(LocalDateTime.now());
         List<User> users = post.getUserPostLikes();
         users.add(userLike);
         post.setUserPostLikes(users);
@@ -211,6 +331,7 @@ public class PostService implements IPostService {
         var post = findById(postId);
 
         post.setTotalLikes(post.getTotalLikes() - 1);
+        post.setPriorityScore(post.getPriorityScore() - 2);
         List<User> users = post.getUserPostLikes();
         deletedUser = users
                 .stream()

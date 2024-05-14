@@ -1,35 +1,39 @@
+import 'dart:ffi';
+
 import 'package:flutter_twitter_clone/helper/enum.dart';
 
 class MiniUser {
   String? id;
   String? fullName;
-  String nickname;
+  String? nickname;
   String? avatar;
   String? coverImage;
   bool? verified;
   bool? isGroupOwner;
   bool? notSeen;
-
+   String? bio;
   MiniUser({
     this.id,
     this.fullName,
     this.avatar,
     this.coverImage,
-    this.verified,
+    this.verified = false,
     this.nickname = "",
     this.isGroupOwner = false,
     this.notSeen = false,
+    this.bio,
   });
   factory MiniUser.fromJson(Map<String, dynamic> json) {
     return MiniUser(
-      id: json['id'],
-      fullName: json['fullName'],
-      avatar: json['avatar'],
-      coverImage: json['coverImage'],
+      id: json['id'] as String?,
+      fullName: json['fullName'] as String?,
+      avatar: json['avatar'] as String?,
+      coverImage: json['coverImage'] as String?,
       verified: json['verified'],
       nickname: json['nickname'],
       isGroupOwner: json['isGroupOwner'],
       notSeen: json['notSeen'],
+      bio: json['bio'],
     );
   }
 
@@ -43,6 +47,7 @@ class MiniUser {
       'nickname': nickname,
       'isGroupOwner': isGroupOwner,
       'notSeen': notSeen,
+      'bio': bio,
     };
   }
 

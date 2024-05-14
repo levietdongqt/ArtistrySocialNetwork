@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -26,4 +27,7 @@ public interface IMainServiceRepository extends JpaRepository<MainService, Long>
             "LIKE %:keyword% OR m.provider.fullName " +
             "LIKE %:keyword% order by m.createDate desc ")
     Set<MainService> searchMainServiceByKeyword(@Param("keyword") String keyword);
+
+    @Query("SELECT ms FROM MainService ms JOIN ms.savedByUser u WHERE u.id = :userId ORDER BY ms.createDate DESC")
+    List<MainService> findMainServiceByUserId(@Param("userId") String userId);
 }

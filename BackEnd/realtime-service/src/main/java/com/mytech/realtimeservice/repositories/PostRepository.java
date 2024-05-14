@@ -27,10 +27,16 @@ public interface PostRepository extends MongoRepository<Post,String> {
     @Query(value = "{'_id': {$nin: ?1},'user.id' : { $in: ?0 }}")
     Page<Post> findByOrderByCreatedAtDesc(List<String> userIds, Set<String> reportedPostIds, Pageable pageable);
 
+    @Query(value = "{'id': {$nin: ?1},'user.id' : { $in: ?0 }}",sort = "{'createdAt': -1}")
+    List<Post> findByOrderByCreatedAtDescNotPag(List<String> userIds, Set<String> reportedPostIds);
     long count();
     List<Post> findByContentContainingIgnoreCaseOrUserFullNameContainingIgnoreCase(String contentKeyword, String fullNameKeyword);
 
     @Query(value = "{'id': {$in: ?0}}")
     List<Post> findByPostIdsIn(List<String> postIds);
+
+
+    @Query(value = "{'_id': ?0}",fields = "{'totalLikes': 1}")
+    Optional<Post> showTotalLikesByPostId(String postId);
 
 }

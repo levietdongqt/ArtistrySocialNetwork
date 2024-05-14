@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
+import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/model/feedModel.dart';
+import 'package:flutter_twitter_clone/myModel/MiniUser.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 import 'package:flutter_twitter_clone/state/authState.dart';
 import 'package:flutter_twitter_clone/state/feedState.dart';
+import 'package:flutter_twitter_clone/state/postState.dart';
 import 'package:flutter_twitter_clone/ui/theme/theme.dart';
 import 'package:flutter_twitter_clone/widgets/customWidgets.dart';
 import 'package:flutter_twitter_clone/widgets/newWidget/customLoader.dart';
@@ -48,8 +52,8 @@ class FeedPage extends StatelessWidget {
             key: refreshIndicatorKey,
             onRefresh: () async {
               /// refresh home page feed
-              var feedState = Provider.of<FeedState>(context, listen: false);
-              feedState.getDataFromDatabase();
+              var postState = Provider.of<PostState>(context, listen: false);
+              postState.getDataFromDatabase();
               return Future.value(true);
             },
             child: _FeedPageBody(
@@ -75,9 +79,9 @@ class _FeedPageBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var authState = Provider.of<AuthState>(context, listen: false);
-    return Consumer<FeedState>(
+    return Consumer<PostState>(
       builder: (context, state, child) {
-        final List<FeedModel>? list = state.getTweetList(authState.userModel);
+        final List<myPost>? list = state.getTweetList(authState.myUser);
         return CustomScrollView(
           slivers: <Widget>[
             child!,
@@ -95,9 +99,9 @@ class _FeedPageBody extends StatelessWidget {
                 : !state.isBusy && list == null
                     ? const SliverToBoxAdapter(
                         child: EmptyList(
-                          'No Tweet added yet',
+                          'Không có bài post nào hết',
                           subTitle:
-                              'When new Tweet added, they\'ll show up here \n Tap tweet button to add new',
+                              'Khi mà bạn thêm post mới , chúng sẽ hiển thị ở đây bấm vào để xem mới',
                         ),
                       )
                     : SliverList(

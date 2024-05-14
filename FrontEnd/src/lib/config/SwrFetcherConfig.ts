@@ -21,7 +21,7 @@ export async function fetchJSON(
         else if (destination === ServiceDestination.MAIN) {
             fullUrl = fullUrl.concat(`${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}`).concat(url);
         }else{
-            throw new Error("Invalid service destination!!")
+            throw new Error("Invalid services destination!!")
         }
         const response = await axios.get(fullUrl);
         console.log("SWR url", fullUrl)

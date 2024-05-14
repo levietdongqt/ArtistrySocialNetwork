@@ -1,7 +1,6 @@
 import { DashOutlined } from "@ant-design/icons";
 import { Button } from "@components/ui/button";
 import {Carousel, Image, Popover, Table, Tag} from "antd";
-import ServiceDetail from "../main-service/servicer-detail";
 import React, {useState} from "react";
 import {ExtraService} from "@models/extra-service";
 
@@ -10,17 +9,10 @@ type DataTable = {
 };
 
 
-export default function ExtraMainTable({ data }: DataTable) {
+export default function ServiceExtraTable({ data }: DataTable) {
     const handleTest = (value: any) => {
         console.log("data ne", value);
     };
-
-    const imageStyle = {
-        width: "100px", // Chiều rộng cố định bạn muốn áp dụng
-        height: "60px", // Chiều cao cố định bạn muốn áp dụng
-        objectFit: "cover" // Sử dụng object-fit để đảm bảo ảnh không bị méo khi thay đổi kích thước
-    };
-
     const content = (record: any) => (
         <div className="flex flex-col">
             <Button
@@ -57,31 +49,31 @@ export default function ExtraMainTable({ data }: DataTable) {
             title: "Tên Dịch Vụ",
             dataIndex: "name",
         },
-        {
-            title: "Hình ảnh",
-            dataIndex: "imageUrls",
-            render: (imageUrls: any) => {
-                return (
-                    <div className="rounded-lg overflow-hidden w-20 h-14">
-                        <Carousel autoplay>
-                            {imageUrls?.map((img: any, idx: number) => (
-                                <div key={idx} className="relative">
-                                    <Image
-                                        src={img}
-                                        alt={`Service Image ${idx + 1}`}
-                                        style={{
-                                            width: "100px",
-                                            height: "60px",
-                                            objectFit: "cover",
-                                        }}
-                                    />
-                                </div>
-                            ))}
-                        </Carousel>
-                    </div>
-                );
-            },
-        },
+        // {
+        //     title: "Hình ảnh",
+        //     dataIndex: "imageUrls",
+        //     render: (imageUrls: any) => {
+        //         return (
+        //             <div className="rounded-lg overflow-hidden w-20 h-14">
+        //                 <Carousel autoplay>
+        //                     {imageUrls?.map((img: any, idx: number) => (
+        //                         <div key={idx} className="relative">
+        //                             <Image
+        //                                 src={img}
+        //                                 alt={`Service Image ${idx + 1}`}
+        //                                 style={{
+        //                                     width: "100px",
+        //                                     height: "60px",
+        //                                     objectFit: "cover",
+        //                                 }}
+        //                             />
+        //                         </div>
+        //                     ))}
+        //                 </Carousel>
+        //             </div>
+        //         );
+        //     },
+        // },
         {
             title: "Giá",
             dataIndex: "price",
@@ -168,7 +160,12 @@ export default function ExtraMainTable({ data }: DataTable) {
         },
     ];
 
-    return
+
+    return(
+        <>
         <Table columns={columns} dataSource={data} />
+        </>
+    );
+
 
 }

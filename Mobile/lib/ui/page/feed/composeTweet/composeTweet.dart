@@ -5,6 +5,10 @@ import 'package:flutter_twitter_clone/helper/constant.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/model/feedModel.dart';
 import 'package:flutter_twitter_clone/model/user.dart';
+import 'package:flutter_twitter_clone/myModel/MiniUser.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
+import 'package:flutter_twitter_clone/myModel/myUser.dart';
+import 'package:flutter_twitter_clone/state/postState.dart';
 import 'package:flutter_twitter_clone/ui/page/feed/composeTweet/state/composeTweetState.dart';
 import 'package:flutter_twitter_clone/ui/page/feed/composeTweet/widget/composeBottomIconWidget.dart';
 import 'package:flutter_twitter_clone/ui/page/feed/composeTweet/widget/composeTweetImage.dart';
@@ -90,10 +94,11 @@ class _ComposeTweetReplyPageState extends State<ComposeTweetPage> {
         _textEditingController.text.length > 280) {
       return;
     }
-    var state = Provider.of<FeedState>(context, listen: false);
+    var state = Provider.of<PostState>(context, listen: false);
+    var authState = Provider.of<AuthState>(context,listen: false);
     kScreenLoader.showLoader(context);
 
-    FeedModel tweetModel = await createTweetModel();
+    myPost postModel = await createTweetModel();
     String? tweetId;
 
     /// If tweet contain image
@@ -103,21 +108,19 @@ class _ComposeTweetReplyPageState extends State<ComposeTweetPage> {
     if (_image != null) {
       await state.uploadFile(_image!).then((imagePath) async {
         if (imagePath != null) {
-          tweetModel.imagePath = imagePath;
-
+          postModel.mediaUrl?.map((e) => e.src = imagePath);
           /// If type of tweet is new tweet
           if (widget.isTweet) {
-            tweetId = await state.createTweet(tweetModel);
+            tweetId = await state.createTweet(postModel,authState.myUser as MyUser);
           }
-
           /// If type of tweet is  retweet
-          else if (widget.isRetweet) {
-            tweetId = await state.createReTweet(tweetModel);
-          }
+          // else if (widget.isRetweet) {
+          //   tweetId = await state.createReTweet(postModel);
+          // }
 
           /// If type of tweet is new comment tweet
           else {
-            tweetId = await state.addCommentToPost(tweetModel);
+            tweetId = await state.addCommentToPost(postModel,authState.myUser as MiniUser);
           }
         }
       });
@@ -127,27 +130,27 @@ class _ComposeTweetReplyPageState extends State<ComposeTweetPage> {
     else {
       /// If type of tweet is new tweet
       if (widget.isTweet) {
-        tweetId = await state.createTweet(tweetModel);
+        tweetId = await state.createTweet(postModel,authState.myUser as MyUser);
       }
 
       /// If type of tweet is  retweet
-      else if (widget.isRetweet) {
-        tweetId = await state.createReTweet(tweetModel);
-      }
+      // else if (widget.isRetweet) {
+      //   tweetId = await state.createReTweet(tweetModel);
+      // }
 
       /// If type of tweet is new comment tweet
       else {
-        tweetId = await state.addCommentToPost(tweetModel);
+        tweetId = await state.addCommentToPost(postModel,authState.myUser as MiniUser);
       }
     }
-    tweetModel.key = tweetId;
+    postModel.id = tweetId;
 
     /// Checks for username in tweet description
     /// If username found, sends notification to all tagged user
     /// If no user found, compose tweet screen is closed and redirect back to home page.
     await Provider.of<ComposeTweetState>(context, listen: false)
         .sendNotification(
-            tweetModel, Provider.of<SearchState>(context, listen: false))
+        postModel, Provider.of<SearchState>(context, listen: false))
         .then((_) {
       /// Hide running loader on screen
       kScreenLoader.hideLoader();
@@ -161,40 +164,29 @@ class _ComposeTweetReplyPageState extends State<ComposeTweetPage> {
   /// If tweet is new tweet then `parentkey` and `childRetwetkey` should be null
   /// IF tweet is a comment then it should have `parentkey`
   /// IF tweet is a retweet then it should have `childRetwetkey`
-  Future<FeedModel> createTweetModel() async {
-    var state = Provider.of<FeedState>(context, listen: false);
+  Future<myPost> createTweetModel() async {
+    var state = Provider.of<PostState>(context, listen: false);
     var authState = Provider.of<AuthState>(context, listen: false);
-    var myUser = authState.userModel;
-    var profilePic = myUser!.profilePic ?? Constants.dummyProfilePic;
+    var myUser = authState.myUser;
+    var profilePic = myUser!.avatar ?? Constants.dummyProfilePic;
 
     /// User who are creating reply tweet
-    var commentedUser = UserModel(
-        displayName: myUser.displayName ?? myUser.email!.split('@')[0],
-        profilePic: profilePic,
-        userId: myUser.userId,
-        isVerified: authState.userModel!.isVerified,
-        userName: authState.userModel!.userName);
+    var User = MiniUser(
+        nickname: myUser.fullName ?? myUser.email?.split('@')[0],
+        avatar: profilePic,
+        id: myUser.id,
+        verified: authState.myUser?.verified,
+        fullName: authState.myUser?.fullName,
+        coverImage: authState.myUser?.coverImage,
+        bio: authState.myUser?.bio
+    );
     var tags = Utility.getHashTags(_textEditingController.text);
-    FeedModel reply = FeedModel(
-        description: _textEditingController.text,
-        lanCode:
-            (await GoogleTranslator().translate(_textEditingController.text))
-                .sourceLanguage
-                .code,
-        user: commentedUser,
+    myPost reply = myPost(
+        content: _textEditingController.text,
+        user: User,
         createdAt: DateTime.now().toUtc().toString(),
-        tags: tags,
-        parentkey: widget.isTweet
-            ? null
-            : widget.isRetweet
-                ? null
-                : state.tweetToReplyModel!.key,
-        childRetwetkey: widget.isTweet
-            ? null
-            : widget.isRetweet
-                ? model!.key
-                : null,
-        userId: myUser.userId!);
+        createdBy: myUser.id!
+    );
     return reply;
   }
 
@@ -261,19 +253,19 @@ class _ComposeRetweet
                   SizedBox(
                     width: 25,
                     height: 25,
-                    child: CircularImage(path: model.user!.profilePic),
+                    child: CircularImage(path: model.user?.profilePic ?? ''),
                   ),
                   const SizedBox(width: 10),
                   ConstrainedBox(
                     constraints: BoxConstraints(
                         minWidth: 0, maxWidth: context.width * .5),
-                    child: TitleText(model.user!.displayName!,
+                    child: TitleText(model.user?.displayName as String,
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         overflow: TextOverflow.ellipsis),
                   ),
                   const SizedBox(width: 3),
-                  model.user!.isVerified!
+                  model.user?.isVerified as bool
                       ? customIcon(
                           context,
                           icon: AppIcon.blueTick,
@@ -283,7 +275,7 @@ class _ComposeRetweet
                           paddingIcon: 3,
                         )
                       : const SizedBox(width: 0),
-                  SizedBox(width: model.user!.isVerified! ? 5 : 0),
+                  SizedBox(width: model.user?.isVerified == true ? 5 : 0),
                   Flexible(
                     child: customText(
                       '${model.user!.userName}',

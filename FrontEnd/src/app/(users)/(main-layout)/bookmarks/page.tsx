@@ -5,11 +5,7 @@ import {HomeLayout} from "../../_components/layout/common-layout";
 export default function Page(): JSX.Element {
 
   return (
-      <HomeLayout>
-          <MainContainer>
-              <ContainerBookmarks/>
-          </MainContainer>
-      </HomeLayout>
+      <ContainerBookmarks/>
   );
 }
 

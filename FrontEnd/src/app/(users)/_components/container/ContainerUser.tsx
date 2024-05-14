@@ -7,9 +7,9 @@ import useSWR from "swr";
 import {getUserById} from "../../../../services/main/clientRequest/userClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {ContentPost} from "../content/content";
-import PostUser from "../../(main-layout)/profile/[ID]/post/post-user";
 import DOMPurify from 'dompurify';
 import {ServiceProvider} from "../../services/[id]/service-provider";
+import PostUser from "../../(main-layout)/profile/[ID]/post/post-user";
 
 const ContainerUser = () => {
 

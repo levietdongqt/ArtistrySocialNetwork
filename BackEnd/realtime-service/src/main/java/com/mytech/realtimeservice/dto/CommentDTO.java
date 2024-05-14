@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 public class CommentDTO {
     private String postId;
-    private String commentsId;
+    private String commentsParentId;
     private String content;
     private User byUser;
     private User usersComments;

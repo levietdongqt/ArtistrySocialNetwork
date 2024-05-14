@@ -3,6 +3,8 @@ import 'package:flutter_twitter_clone/helper/customRoute.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/model/feedModel.dart';
+import 'package:flutter_twitter_clone/myModel/myComment.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 import 'package:flutter_twitter_clone/state/authState.dart';
 import 'package:flutter_twitter_clone/state/feedState.dart';
 import 'package:flutter_twitter_clone/ui/page/common/usersListPage.dart';
@@ -12,7 +14,7 @@ import 'package:flutter_twitter_clone/widgets/tweet/widgets/tweetBottomSheet.dar
 import 'package:provider/provider.dart';
 
 class TweetIconsRow extends StatelessWidget {
-  final FeedModel model;
+  final myPost model;
   final Color iconColor;
   final Color iconEnableColor;
   final double? size;
@@ -30,7 +32,7 @@ class TweetIconsRow extends StatelessWidget {
       required this.scaffoldKey})
       : super(key: key);
 
-  Widget _likeCommentsIcons(BuildContext context, FeedModel model) {
+  Widget _likeCommentsIcons(BuildContext context, myPost model) {
     var authState = Provider.of<AuthState>(context, listen: false);
 
     return Container(
@@ -44,18 +46,17 @@ class TweetIconsRow extends StatelessWidget {
           ),
           _iconWidget(
             context,
-            text: isTweetDetail ? '' : model.commentCount.toString(),
+            text: isTweetDetail ? '' : model.totalLikes.toString(),
             icon: AppIcon.reply,
             iconColor: iconColor,
             size: size ?? 20,
             onPressed: () {
-              var state = Provider.of<FeedState>(context, listen: false);
-              state.setTweetToReply = model;
+              var state = Provider.of<myPost>(context, listen: false);
               Navigator.of(context).pushNamed('/ComposeTweetPage');
             },
           ),
           _iconWidget(context,
-              text: isTweetDetail ? '' : model.retweetCount.toString(),
+              text: isTweetDetail ? '' : model.totalComments.toString(),
               icon: AppIcon.retweet,
               iconColor: iconColor,
               size: size ?? 20, onPressed: () {
@@ -64,15 +65,15 @@ class TweetIconsRow extends StatelessWidget {
           }),
           _iconWidget(
             context,
-            text: isTweetDetail ? '' : model.likeCount.toString(),
-            icon: model.likeList!.any((userId) => userId == authState.userId)
+            text: isTweetDetail ? '' : model.totalLikes.toString(),
+            icon: model.userPostLikes!.any((userId) => userId == authState.myUser?.id)
                 ? AppIcon.heartFill
                 : AppIcon.heartEmpty,
             onPressed: () {
               addLikeToTweet(context);
             },
             iconColor:
-                model.likeList!.any((userId) => userId == authState.userId)
+                model.userPostLikes!.any((userId) => userId == authState.myUser?.id)
                     ? iconEnableColor
                     : iconColor,
             size: size ?? 20,
@@ -148,8 +149,8 @@ class TweetIconsRow extends StatelessWidget {
 
   Widget _likeCommentWidget(BuildContext context) {
     bool isLikeAvailable =
-        model.likeCount != null ? model.likeCount! > 0 : false;
-    bool isRetweetAvailable = model.retweetCount! > 0;
+        model.totalLikes != null ? model.totalLikes! > 0 : false;
+    bool isRetweetAvailable = model.totalComments! > 0;
     bool isLikeRetweetAvailable = isRetweetAvailable || isLikeAvailable;
     return Column(
       children: <Widget>[
@@ -169,7 +170,7 @@ class TweetIconsRow extends StatelessWidget {
                   children: <Widget>[
                     !isRetweetAvailable
                         ? const SizedBox.shrink()
-                        : customText(model.retweetCount.toString(),
+                        : customText(model.totalComments.toString(),
                             style:
                                 const TextStyle(fontWeight: FontWeight.bold)),
                     !isRetweetAvailable
@@ -197,10 +198,10 @@ class TweetIconsRow extends StatelessWidget {
                           children: <Widget>[
                             customSwitcherWidget(
                               duraton: const Duration(milliseconds: 300),
-                              child: customText(model.likeCount.toString(),
+                              child: customText(model.totalLikes.toString(),
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold),
-                                  key: ValueKey(model.likeCount)),
+                                  key: ValueKey(model.totalLikes)),
                             ),
                             const SizedBox(width: 5),
                             customText('Likes', style: TextStyles.subtitleStyle)
@@ -237,20 +238,20 @@ class TweetIconsRow extends StatelessWidget {
   }
 
   void addLikeToTweet(BuildContext context) {
-    var state = Provider.of<FeedState>(context, listen: false);
+    var state = Provider.of<myPost>(context, listen: false);
     var authState = Provider.of<AuthState>(context, listen: false);
-    state.addLikeToTweet(model, authState.userId);
+    // state.addLikeToTweet(model, authState.userId);
   }
 
   void onLikeTextPressed(BuildContext context) {
     Navigator.of(context).push(
       CustomRoute<bool>(
         builder: (BuildContext context) => UsersListPage(
-          pageTitle: "Liked by",
-          userIdsList: model.likeList!.map((userId) => userId).toList(),
-          emptyScreenText: "This tweet has no like yet",
+          pageTitle: "Thích bởi",
+          userIdsList: model.userPostLikes!.map((user) => user.id as String).toList(),
+          emptyScreenText: "Bài đăng này chưa ai thích",
           emptyScreenSubTileText:
-              "Once a user likes this tweet, user list will be shown here",
+              "Mỗi khi người thích ở đây, danh sách người dùng xuất hiện ở đây",
         ),
       ),
     );

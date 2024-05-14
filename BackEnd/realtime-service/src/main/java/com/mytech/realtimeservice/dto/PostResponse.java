@@ -33,4 +33,7 @@ public class PostResponse {
     private int userReplies;
     private int totalLikes;
     private int totalComments;
+    private int totalShares;
+    private LocalDateTime lastInteractionAt;
+    private boolean leastPrioritized;
 }

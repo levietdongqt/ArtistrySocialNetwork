@@ -3,8 +3,10 @@ import 'package:flutter_twitter_clone/helper/constant.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/model/feedModel.dart';
 import 'package:flutter_twitter_clone/model/user.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 import 'package:flutter_twitter_clone/state/authState.dart';
 import 'package:flutter_twitter_clone/state/feedState.dart';
+import 'package:flutter_twitter_clone/state/postState.dart';
 import 'package:flutter_twitter_clone/widgets/cache_image.dart';
 import 'package:flutter_twitter_clone/widgets/tweet/widgets/tweetIconsRow.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +32,7 @@ class _ImageViewPgeState extends State<ImageViewPge> {
   }
 
   Widget _body() {
-    var state = Provider.of<FeedState>(context);
+    var state = Provider.of<PostState>(context);
     return Stack(
       children: <Widget>[
         SingleChildScrollView(
@@ -45,7 +47,7 @@ class _ImageViewPgeState extends State<ImageViewPge> {
                   isToolAvailable = !isToolAvailable;
                 });
               },
-              child: _imageFeed(state.tweetDetailModel!.last.imagePath),
+              child: _imageFeed(state.tweetDetailModel?.last.mediaUrl?.first.src),
             ),
           ),
         ),
@@ -78,7 +80,7 @@ class _ImageViewPgeState extends State<ImageViewPge> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     TweetIconsRow(
-                      model: state.tweetDetailModel!.last,
+                      model: state.tweetDetailModel?.last as myPost,
                       iconColor: Theme.of(context).colorScheme.onPrimary,
                       iconEnableColor: Theme.of(context).colorScheme.onPrimary,
                       scaffoldKey: GlobalKey<ScaffoldState>(),
@@ -160,7 +162,7 @@ class _ImageViewPgeState extends State<ImageViewPge> {
     var user = authState.userModel;
     var profilePic = user!.profilePic;
     profilePic ??= Constants.dummyProfilePic;
-    var name = authState.userModel!.displayName ??
+    var name = authState.userModel?.displayName ??
         authState.userModel!.email!.split('@')[0];
     var pic = authState.userModel!.profilePic ?? Constants.dummyProfilePic;
     var tags = Utility.getHashTags(_textEditingController.text);

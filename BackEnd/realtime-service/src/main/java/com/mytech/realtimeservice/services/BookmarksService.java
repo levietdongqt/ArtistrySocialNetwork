@@ -28,10 +28,18 @@ public class BookmarksService implements IBookmarksService {
         if(bookmarks.isEmpty()){
             return Collections.emptyList();
         }
-        System.out.println(bookmarks);
         return bookmarks.stream()
                 .map(bookmark -> modelMapper.map(bookmark, BookmarkDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    public Boolean deleteBookmark(String postId, String userId) {
+        Optional<BookMarks> bookmark = bookmarkRepository.findByPostIdAndUserId(postId, userId);
+        if (bookmark.isEmpty()) {
+            return false;
+        }
+        bookmarkRepository.delete(bookmark.get());
+        return true;
     }
 
     public Boolean deleteAllBookmarks(String userId) {
