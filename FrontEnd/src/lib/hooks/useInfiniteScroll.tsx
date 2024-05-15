@@ -25,7 +25,7 @@ export function useInfiniteScroll(
 ) : InfiniteScrollResult {
     const {currentUser} = useUser();
     const {ID} = useParams();
-    const PAGE_SIZE = 7;
+    const PAGE_SIZE = 5;
     const userId = ID ?? currentUser?.id;
     const getKey:SWRInfiniteKeyLoader = (index:number,previousPageData:any)  =>{
         return fetcher(userId as string,PAGE_SIZE,index);
@@ -34,7 +34,11 @@ export function useInfiniteScroll(
         ...options
     });
     const paginatedPosts = posts?.map(post =>post?.data).flat();
-    const isReachedEnd = posts?.map(post =>post?.data) && posts?.map(post =>post?.data)[posts?.map(post =>post?.data).length -1]?.length < PAGE_SIZE - 1;
+    const fetchData = posts?.map(post =>post?.data);
+    console.log("show pagi",paginatedPosts)
+    console.log("show data",fetchData)
+    console.log("show size page",PAGE_SIZE)
+    const isReachedEnd = fetchData && posts?.map(post =>post?.data)[posts?.map(post =>post?.data).length -1]?.length < PAGE_SIZE - 1;
     const isLoadingMore = posts && typeof posts[size -1] === 'undefined';
     const LoadMore = () => (
         <motion.div>

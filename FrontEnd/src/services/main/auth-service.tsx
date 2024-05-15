@@ -28,7 +28,6 @@ export async function loginService(values: any): Promise<MyResponse<AuthResponse
             },
         })
     const data: MyResponse<AuthResponse> = await res.json();
-    console.log(data)
     if (res.ok) {
         setCookieTokenSSR(data);
         return data;
@@ -54,7 +53,6 @@ export async function registerService(values: any): Promise<MyResponse<AuthRespo
                 },
             })
         const data: MyResponse<AuthResponse> = await res.json();
-        console.log(data)
         if (res.ok) {
             // setCookieTokenSSR(data);
             return data;
@@ -105,7 +103,6 @@ export async function changePassword(values: any): Promise<boolean> {
                 },
             })
         const data: any = await res.json();
-        console.log(data)
         if (res.ok) {
             return data.data;
         } else {
@@ -130,7 +127,6 @@ export async function isExistAccount(phoneNumber: string): Promise<boolean> {
                 },
             })
         const data: any = await res.json();
-        console.log(data)
         if (res.ok) {
             return data.data;
         } else {
@@ -183,7 +179,6 @@ export async function testAPI(): Promise<any> {
 
         if (res.ok) {
             const data = await res.json();
-            console.log(data)
             return data;
         } else {
             console.log("SAI ROI", res.statusText, res.status)

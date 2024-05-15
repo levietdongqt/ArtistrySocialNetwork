@@ -37,7 +37,6 @@ type SearchService = {
 
 
 export function SearchServiceCard({data} : SearchServiceParams): JSX.Element {
-  console.log("data",data)
   var currentDate = new Date();
   var specificDate = new Date(data.createDate);
   var timeDifference = currentDate.getTime() - specificDate.getTime();

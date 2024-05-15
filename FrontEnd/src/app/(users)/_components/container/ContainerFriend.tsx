@@ -15,6 +15,7 @@ import {FriendHomeLayout} from "../friend/friendHomeLayout";
 import cn from "clsx";
 import {useRecoilState} from "recoil";
 import {mutateFriend} from "@lib/hooks/mutateFriend";
+import {StatsEmpty} from "../content/stats-empty";
 
 const ContainerFriend = () => {
     const {currentUser} = useUser();
@@ -30,12 +31,13 @@ const ContainerFriend = () => {
                 {isLoading ? (
                     <Loading className='mt-5' />
                 ) : !friends?.data ? (
-                        <Error message='Something went wrong' />
+                        <Error message='Không co dữ liệu' />
                     ) : friends?.data.length === 0 ?
                     (
-                        <div className={cn(`flex items-center justify-center `)}>
-                            <p className={'text-center text-2xl font-bold mt-20'}>Không có bạn nào</p>
-                        </div>
+                        <StatsEmpty
+                            title='Không có bạn bè nào'
+                            imageData={{ src:'/no-followers.png', alt: 'No friends' }}
+                        />
                     )
                     : (
                         <>

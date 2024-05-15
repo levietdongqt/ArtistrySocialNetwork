@@ -61,7 +61,7 @@ const navLinksBot: Readonly<NavLink[]> = [
 ];
 
 export function Sidebar() {
-
+    'use client'
     const {isMobile} = useWindow();
     const [api, contextHolder] = notification.useNotification();
     const {open, openModal, closeModal} = useModal();
@@ -147,12 +147,13 @@ export function Sidebar() {
                             className="accent-tab absolute right-4 -translate-y-[72px] bg-main-accent text-lg font-bold text-white
                        outline-none transition hover:brightness-90 active:brightness-75 xs:static xs:translate-y-0
                        xs:hover:bg-main-accent/90 xs:active:bg-main-accent/75 xl:w-11/12"
+                            onClick={openModal}
                         >
                             <CustomIcon
                                 className="block h-6 w-6 xl:hidden"
                                 iconName="FeatherIcon"
                             />
-                            <p className="hidden xl:block">Post</p>
+                            <p className="hidden xl:block">Đăng bài viết</p>
                         </Button>
                     </section>
                     

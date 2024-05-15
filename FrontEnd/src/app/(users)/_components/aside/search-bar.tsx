@@ -268,8 +268,9 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
       )}
       {(inputValue == "" &&
         objectArray &&
-        objectArray.toReversed().map((value: any) => (
+        objectArray.toReversed().map((value: any,index:number) => (
           <HistoryBarCard
+              key={index}
             data={value}
             handleFunctionLink={() => handleFunctionLink(value)}
             handleFunctionDelete={() => handleFunctionDelete(value)}
@@ -284,6 +285,7 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
             searchData.map((value: any) =>
               value.type === "user" ? (
                 <SearchBarCard
+                    key={value.id}
                   id={value.id}
                   type={value.type}
                   avatar={value.avatar}
@@ -293,6 +295,7 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
                 />
               ) : value.type === "service" ? (
                 <SearchBarCard
+                    key={value.id}
                   id={value.id}
                   type={value.type}
                   nameService={value.name}
@@ -301,6 +304,7 @@ export function SearchBar({ width }: SearchBarProps): JSX.Element {
                 />
               ) : (
                 <SearchBarCard
+                    key={value.id}
                   id={value.id}
                   type={value.type}
                   fullName={value.fullName}

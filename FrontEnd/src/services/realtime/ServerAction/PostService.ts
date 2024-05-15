@@ -15,7 +15,6 @@ export async function postPosts1(data: any): Promise<any> {
             });
         if (res.ok) {
             const item = await res.json();
-            console.log("show data",data);
             return item?.data;
         } else {
             console.log("SAI ROI", res.statusText, res.status)
@@ -37,7 +36,6 @@ export async function deletePosts1(postId: string): Promise<any> {
             });
         if (res.ok) {
             const data = await res.json();
-            console.log("show data",data);
             return data;
         } else {
             console.log("SAI ROI", res.statusText, res.status)
@@ -59,7 +57,6 @@ export async function likePosts(data: any): Promise<any> {
             });
         if (res.ok) {
             const data = await res.json();
-            console.log("show data",data);
             return data;
         } else {
             console.log("SAI ROI", res.statusText, res.status)

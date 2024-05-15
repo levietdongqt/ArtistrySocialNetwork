@@ -29,13 +29,6 @@ const ContainerBookmarks = () => {
     const { currentUser } = useUser();
     const { open, openModal, closeModal } = useModal();
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
-    const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken,{
-        revalidateIfStale: false,
-        refreshInterval: 0,
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false
-    });
-
     const { data: bookmarksRef, isLoading: bookmarksRefLoading,mutate: mutateBookmarkUserId } = useSWR(getBookmarksByUserId(userId),fetcherWithToken);
     const postId = useMemo(
         () => bookmarksRef?.data?.map((item: any) => item.postId) ?? [],
@@ -86,18 +79,18 @@ const ContainerBookmarks = () => {
                     <HeroIcon className='h-5 w-5' iconName='ArchiveBoxXMarkIcon' />
                     <ToolTip
                         className='!-translate-x-20 translate-y-3 md:-translate-x-1/2'
-                        tip='Clear bookmarks'
+                        tip='xóa đã lưu'
                     />
                 </Button>
             </MainHeader>
             <section className='mt-0.5'>
                 {bookmarksRefLoading || postLoading ? (
                     <Loading className='mt-5' />
-                ) : !bookmarksRef ? (
+                ) : !bookmarksRef || bookmarksRef?.data?.length === 0 ? (
                     <StatsEmpty
                         title='Lưu bài post '
                         description='Đừng để bài post của bạn mất'
-                        imageData={{ src: '/assets/no-bookmarks.png', alt: 'No bookmarks' }}
+                        imageData={{ src:'/no-bookmarks.png', alt: 'No bookmarks' }}
                     />
                 ) : (
                     <AnimatePresence mode='popLayout'>

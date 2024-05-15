@@ -10,6 +10,7 @@ import com.mytech.realtimeservice.models.Post;
 import com.mytech.realtimeservice.models.PostLike;
 import com.mytech.realtimeservice.models.Report;
 import com.mytech.realtimeservice.models.users.User;
+import com.mytech.realtimeservice.repositories.MyRepository;
 import com.mytech.realtimeservice.repositories.PostLikeRepository;
 import com.mytech.realtimeservice.repositories.PostRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,8 @@ public class PostService implements IPostService {
     @Autowired
     private JwtTokenHolder jwtTokenHolder;
 
+    @Autowired
+    private MyRepository myRepository;
     public PostResponse create(PostDTO postDTO) {
         // Lưu bài post
         Post post = Post.builder()
@@ -126,7 +129,7 @@ public class PostService implements IPostService {
         }
         Post updatedPost = post.get();
         updatedPost.setLeastPrioritized(true);
-        updatedPost.setLastInteractionAt(LocalDateTime.now()); // Update the last interaction time
+        updatedPost.setLastInteractionAt(LocalDateTime.now());
         postRepository.save(updatedPost);
     }
     public List<PostResponse> findAll(int limit, int pageIndex, String userId) {
@@ -134,66 +137,17 @@ public class PostService implements IPostService {
         if (!friendsIds.contains(userId)) {
             friendsIds.add(userId);
         }
-        // Định nghĩa tỉ lệ bài viết trending trong feed
-        double trendingRatio = 0.2; // 20% bài viết sẽ là trending
-
         Set<String> reportedPostIds = reportService.findReportsByUserId(userId)
                 .stream()
                 .filter(status -> status.getStatus().equals(ReportStatus.UNDO))
                 .map(Report::getPostId)
                 .collect(Collectors.toSet());
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt").and(Sort.by(Sort.Direction.DESC, "engagementScore"));
-        Pageable pageable = PageRequest.of(pageIndex, limit, sort);
-        Page<Post> pagePosts = postRepository.findByOrderByCreatedAtDesc(friendsIds, reportedPostIds, pageable);
-
-        // Lấy các bài viết thông thường và trending
-        List<Post> normalPosts = pagePosts.getContent();
-        Set<String> excludedPostIds = normalPosts.stream().map(Post::getId).collect(Collectors.toSet());
-        List<Post> trending = getTrendingPosts(excludedPostIds);
-
-        // Tính toán số lượng bài viết
-        int totalPosts = normalPosts.size();
-        int trendingCount = (int) Math.ceil(totalPosts * trendingRatio);
-
-        // Xen kẽ bài viết trending
-        List<PostResponse> postResponses = interleavePosts(normalPosts, trending, trendingCount);
-        log.info("page index: " + pageIndex + " post response: " + postResponses.size());
+        List<Post> newAndTrendingPosts = myRepository.getPostsAndTrendingWithoutDuplicates(friendsIds, reportedPostIds, limit, pageIndex);
+        List<PostResponse> postResponses = newAndTrendingPosts.stream().map((element) -> modelMapper.map(element, PostResponse.class)).collect(Collectors.toList());
+        log.info("pageIndex: " + pageIndex + " Post limit: " + limit);
         return postResponses;
     }
 
-    private List<Post> getTrendingPosts(Set<String> excludedPostIds) {
-        return postRepository.findAll()
-                .stream()
-                .filter(post -> post.getPriorityScore() > 0 && !excludedPostIds.contains(post.getId()))
-                .sorted(Comparator.comparingDouble(Post::getPriorityScore).reversed())
-                .limit(5)
-                .toList();
-    }
-
-    private List<PostResponse> interleavePosts(List<Post> normalPosts, List<Post> trending, int trendingCount) {
-        List<PostResponse> interleavePosts = new ArrayList<>();
-        Set<String> includedPostIds = new HashSet<>();  // Tạo một Set để theo dõi ID của các bài viết đã được thêm.
-        // Khởi tạo iterators
-        Iterator<Post> normalIterator = normalPosts.iterator();
-        Iterator<Post> trendingIterator = trending.iterator();
-        while (normalIterator.hasNext()) {
-            Post nextPost = normalIterator.next();
-            interleavePosts.add(mapPostToPostResponse(nextPost));
-            includedPostIds.add(nextPost.getId());
-            if (trendingCount > 0 && trendingIterator.hasNext()) {
-                Post nextTrendingPost = trendingIterator.next();
-                if (!includedPostIds.contains(nextTrendingPost.getId())) {
-                    interleavePosts.add(mapPostToPostResponse(nextTrendingPost));
-                    includedPostIds.add(nextTrendingPost.getId());
-                    trendingCount--;
-                }
-            }
-        }
-        return interleavePosts;
-    }
-    private PostResponse mapPostToPostResponse(Post post) {
-        return modelMapper.map(post, PostResponse.class); // Chuyển Post thành PostResponse.
-    }
     public List<PostResponse> findAllNotPag(String userId) {
         List<String> friendsIds = filterFollowFriends(userId);
         if (!friendsIds.contains(userId)) {
