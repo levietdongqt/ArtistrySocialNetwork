@@ -3,6 +3,7 @@ package com.mytech.realtimeservice.controller;
 import com.mytech.realtimeservice.dto.*;
 import com.mytech.realtimeservice.models.Comments;
 import com.mytech.realtimeservice.models.Post;
+import com.mytech.realtimeservice.repositories.MyRepository;
 import com.mytech.realtimeservice.services.*;
 import com.netflix.eventbus.spi.Subscribe;
 import jakarta.ws.rs.PathParam;
@@ -38,12 +39,15 @@ public class PostController {
     private ICommentsService commentsService;
 
     @Autowired
+    private MyRepository myRepository;
+
+    @Autowired
     private IWSSocket socket;
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
     @GetMapping("/get-posts/{userId}")
     public ResponseEntity<?> getPostList(@PathVariable String userId,@RequestParam("limit") int limit,@RequestParam("pageIndex") int pageIndex) {
-        log.info("Post List ");
+            log.info("Post List ");
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
@@ -261,6 +265,18 @@ public class PostController {
                         .status(HttpStatus.OK)
                         .message("Get post list OK")
                         .data(posts)
+                        .build()
+        );
+    }
+
+    @PostMapping("/updates-users")
+    public ResponseEntity<?> updateUserForRealtime(@RequestBody UserDTO userDTO){
+        myRepository.updateUserInRealTime(userDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Get post list OK")
+                        .data(null)
                         .build()
         );
     }

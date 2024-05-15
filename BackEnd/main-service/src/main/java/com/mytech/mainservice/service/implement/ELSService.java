@@ -148,7 +148,7 @@ public class ELSService implements IELSService {
                             .index("user","post","service")
                             .query(q -> q.multiMatch(builder -> builder
                                     .query(searchText)
-                                    .fields("name","fullName","description","roles","content","email")
+                                    .fields("name","fullName","description","roles","content")
                                     .fuzziness("1"))),
                     Object.class);
         } catch (IOException e) {

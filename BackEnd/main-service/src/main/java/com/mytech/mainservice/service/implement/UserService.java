@@ -1,6 +1,7 @@
 package com.mytech.mainservice.service.implement;
 
 import com.google.firebase.auth.UserInfo;
+import com.mytech.mainservice.client.NotificationForeignClient;
 import com.mytech.mainservice.dto.UserDTO;
 import com.mytech.mainservice.dto.request.ChangePassDTO;
 import com.mytech.mainservice.dto.request.LoginDTO;
@@ -54,6 +55,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private IELSService elsService;
+
+    @Autowired
+    private NotificationForeignClient notificationForeignClient;
 
     @Value("${env.images.default.avatar}")
     private String DEFAULT_AVATAR;
@@ -216,6 +220,21 @@ public class UserService implements IUserService {
         modelMapper.map(userDto, user);
         user.setRoles(roles);
         User saved = userRepo.save(user);
+        notificationForeignClient.updateUserForRealtime(userDto);
+
+        //update eslactic user
+        var vietnameseRoles = getVietnameseRolesFromRolesTable(saved.getRoles());
+        UserELS userELS = UserELS.builder()
+               .id(saved.getId())
+               .fullName(saved.getFullName())
+               .avatar(saved.getAvatar())
+               .coverImage(saved.getCoverImage())
+               .email(saved.getEmail())
+               .bio(saved.getBio())
+               .roles(vietnameseRoles).build();
+        elsService.updateUserELS(userELS);
+        log.info("Update to els search successfully");
+
         return modelMapper.map(saved, UserDTO.class);
 
     }

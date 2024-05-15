@@ -124,7 +124,7 @@ public class NotificationService implements INotificationService {
             return;
         }
         //Kiểm tra xem có gửi cho chính mình không
-        if(userFrom.getId().equals(userTo.getId())) {
+        if(userFrom.getId().equals(userTo.getId()) && !notificationType.equals("ORDER")) {
             return;
         }
         Notification notification = Notification.builder()
@@ -165,6 +165,14 @@ public class NotificationService implements INotificationService {
                 break;
             case "ACCEPT_FRIEND":
                 notification.setNotificationType(NotificationType.ACCEPT_FRIEND);
+                notificationRepository.save(notification);
+                break;
+            case "GROUP":
+                notification.setNotificationType(NotificationType.GROUP);
+                notificationRepository.save(notification);
+                break;
+            case "ORDER":
+                notification.setNotificationType(NotificationType.ORDER);
                 notificationRepository.save(notification);
                 break;
         }
