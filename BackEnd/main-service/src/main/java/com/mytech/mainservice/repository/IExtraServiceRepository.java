@@ -16,5 +16,5 @@ public interface IExtraServiceRepository extends JpaRepository<ExtraService, Lon
     @Query("SELECT e FROM ExtraService e where e.id in :ids")
     List<ExtraService> findByIdList(@Param("ids") List<Long> ids);
 
-    Set<ExtraService> findExtraServiceByProvider_IdAndStatus(String userId, boolean status);
+    Set<ExtraService> findExtraServiceByProvider_Id(String userId);
 }

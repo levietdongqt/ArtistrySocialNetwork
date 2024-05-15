@@ -40,7 +40,7 @@ public class ExtraSerService implements IExtraSerService {
 
     @Override
     public Set<ExtraServiceDTO> getMainServices(String userId) {
-        return extraServiceRepo.findExtraServiceByProvider_IdAndStatus(userId, true).stream()
+        return extraServiceRepo.findExtraServiceByProvider_Id(userId).stream()
                 .map(extra -> modelMapper.map(extra, ExtraServiceDTO.class))
                 .collect(Collectors.toSet());
     }
@@ -74,8 +74,15 @@ public class ExtraSerService implements IExtraSerService {
             throw new NotFoundException("Not found main service ");
         }
         if (isValidUser(extraService.get().getProvider().getId())) {
-            extraService.get().setStatus(false);
-            extraServiceRepo.save(extraService.get());
+            if (extraService.get().isStatus() ) {
+                extraService.get().setStatus(false);
+                extraServiceRepo.save(extraService.get());
+                return;
+            } else {
+                extraService.get().setStatus(true);
+                extraServiceRepo.save(extraService.get());
+            }
+
             return;
         }
         throw new InvalidPropertyException("You are not the owner of this service");

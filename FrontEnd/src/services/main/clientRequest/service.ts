@@ -48,6 +48,24 @@ export async function updateMainService(data: EditableMainServiceData ): Promise
     }
 }
 
+export async function updateStatusMainService(serviceId :number): Promise<any> {
+    const config: AxiosRequestConfig = {
+        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/main-service/soft-delete/${serviceId}`,
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json', // Đặt Content-Type cho yêu cầu là JSON
+        },
+    };
+    try {
+        const response = await axiosWithToken(config);
+        return response.data.data; // Giả định rằng cấu trúc phản hồi có dạng { data: { data: ... } }
+    } catch (error) {
+        // Xử lý lỗi ở đây
+        console.error('Error creating main service:', error);
+        throw error; // Hoặc return thứ gì đó cho ngữ cảnh của bạn
+    }
+}
+
 
 export async function createExtraService(data: ExtraService): Promise<any> {
     const config: AxiosRequestConfig = {
@@ -78,6 +96,24 @@ export async function updateExtraService(data: ExtraService): Promise<any> {
         data: data, // Gửi đối tượng data như là JSON; không cần JSON.stringify
     };
 
+    try {
+        const response = await axiosWithToken(config);
+        return response.data.data; // Giả định rằng cấu trúc phản hồi có dạng { data: { data: ... } }
+    } catch (error) {
+        // Xử lý lỗi ở đây
+        console.error('Error creating main service:', error);
+        throw error; // Hoặc return thứ gì đó cho ngữ cảnh của bạn
+    }
+}
+
+export async function updateStatusExtraService(serviceId :number): Promise<any> {
+    const config: AxiosRequestConfig = {
+        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/extra-service/soft-delete/${serviceId}`,
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json', // Đặt Content-Type cho yêu cầu là JSON
+        },
+    };
     try {
         const response = await axiosWithToken(config);
         return response.data.data; // Giả định rằng cấu trúc phản hồi có dạng { data: { data: ... } }
@@ -131,3 +167,5 @@ export async function getExtraServiceByProvider (providerId :string){
 export function GetAllSavedMainService (userId :string): fetcherParams {
     return [`/main-service/getAllSavedMainService/${userId}`, 'GET', null, ServiceDestination.MAIN];
 }
+
+
