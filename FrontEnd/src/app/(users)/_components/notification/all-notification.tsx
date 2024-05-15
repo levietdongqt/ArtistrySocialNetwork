@@ -70,7 +70,7 @@ export default function AllNotification() {
           (prev) => prev && [...prev, notificationsContent?.id]
         );
         break;
-      case "FOLLOWING" || "ACCEPT_FRIEND":
+      case "FOLLOWING" || "ACCEPT_FRIEND" || "GROUP":
         console.log("notificationsTypeFriend", notificationsTypeFriend);
         setNotificationsToday([notificationsContent, ...notificationsToday]);
         setUpdatedNotifications(
@@ -171,7 +171,7 @@ export default function AllNotification() {
         data2.data.filter((value: any) => {
           if (
             value.notificationType === "FOLLOWING" ||
-            value.notificationType === "ACCEPT_FRIEND"
+            value.notificationType === "ACCEPT_FRIEND" || value.notificationType === "GROUP"
           ) {
             var notificationDate = new Date(value.createdDate);
             return notificationDate.setHours(0, 0, 0, 0) === today.getTime();
