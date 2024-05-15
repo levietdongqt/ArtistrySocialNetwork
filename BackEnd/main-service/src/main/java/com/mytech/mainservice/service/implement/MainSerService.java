@@ -162,7 +162,7 @@ public class MainSerService implements IMainSerService {
 
     @Override
     public List<MainServiceDTO> findTrendMainService() {
-        Pageable topTen = PageRequest.of(0, 10);
+        Pageable topTen = PageRequest.of(0, 5);
         List<MainService> mainServiceList = mainServiceRepo.findTrendMainService(topTen);
         return mainServiceList.stream().map(mainService -> modelMapper.map(mainService, MainServiceDTO.class)).collect(Collectors.toList());
     }
