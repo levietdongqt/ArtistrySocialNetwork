@@ -8,7 +8,7 @@ import { ContentReplyModal } from '../modal/content-reply-modal';
 import { ImagePreview } from '../input/image-preview';
 import { UserAvatar } from '../user/user-avatar';
 import { UserTooltip } from '../user/user-tooltip';
-import { UserName } from '../user/user-name';
+import { UserName }  from '../user/user-name';
 import { UserUsername } from '../user/user-username';
 import { variants } from '../content/content';
 import { ContentAction } from '../content/content-action';

@@ -9,13 +9,16 @@ import {Button} from '@components/ui/button';
 import {HeroIcon} from '@components/ui/hero-icon';
 import {CustomIcon} from '@components/ui/custom-icon';
 import {UserAvatar} from '../user/user-avatar';
-import {UserName} from '../user/user-name';
+import {UserName } from '../user/user-name';
 import {UserUsername} from '../user/user-username';
 import {variants} from './more-settings';
 import {useUser} from "../../../../context/user-context";
 import {useRouter} from "next/navigation";
 import {useOAuth2} from "../../../../context/oauth2-context";
 import {deleteCookieTokenSSR} from "@lib/helper/serverCookieHandle";
+import dynamic from 'next/dynamic';
+
+
 
 export function SidebarProfile(): JSX.Element {
     // const {  signOut } = useAuth();

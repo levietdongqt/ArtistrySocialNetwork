@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { useUser } from '../../../../context/user-context';
 import { isPlural } from '@lib/utils';
-import { UserName } from './user-name';
+import { UserName }  from './user-name';
 import type { Variants } from 'framer-motion';
 
 export const variants: Variants = {
