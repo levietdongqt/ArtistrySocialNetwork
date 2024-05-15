@@ -54,7 +54,7 @@ export function ChatAlert() {
                                 isMinus = true
                             }
                             return isMinus &&
-                                <div className={`my-1 ml-2 `}>
+                                <div className={`my-1 ml-2 `} key={index}>
                                     <ChatBox isMinusChatBox={isMinus}
                                              curConversation={pickedConversations[index]!}/>
                                 </div>

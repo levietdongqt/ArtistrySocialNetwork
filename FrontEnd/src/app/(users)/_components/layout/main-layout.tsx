@@ -11,7 +11,7 @@ export function MainLayout({ children }: LayoutProps) {
         <RecoilRoot>
           <WindowContextProvider>
             <Sidebar />
-            <SWRConfig value={{ fetcher: fetchJSON}}>
+            <SWRConfig value={{ fetcher: fetchJSON,revalidateOnFocus: false,refreshInterval:0}}>
                 {children}
             </SWRConfig>
           </WindowContextProvider>

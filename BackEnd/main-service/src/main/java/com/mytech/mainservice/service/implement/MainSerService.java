@@ -19,10 +19,13 @@ import com.mytech.mainservice.repository.IPromotionRepository;
 import com.mytech.mainservice.repository.IUserRepository;
 import com.mytech.mainservice.service.IELSService;
 import com.mytech.mainservice.service.IMainSerService;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -74,6 +77,16 @@ public class MainSerService implements IMainSerService {
         if(mainService.isEmpty() || user.isEmpty()){
             throw new NotFoundException("Not found main service or user");
         }
+        Long exist = mainServiceRepo.existsByIdAndUserId(saveServiceDTO.getMainServiceId(), saveServiceDTO.getUserId());
+        if(exist > 0){
+            MainService getMainService = mainService.get();
+            User getUser = user.get();
+            getUser.getSavedMainServices().remove(getMainService);
+            getMainService.getSavedByUser().remove(getUser);
+            mainServiceRepo.save(getMainService);
+            userRepo.save(getUser);
+            return;
+        }
         MainService getMainService = mainService.get();
         User getUser = user.get();
 
@@ -84,14 +97,18 @@ public class MainSerService implements IMainSerService {
         mainServiceRepo.save(getMainService);
     }
 
+
     @Override
-    public List<MainServiceDTO> findMainServiceSavedByUserId(String userId){
-        List<MainService> listMainService = mainServiceRepo.findMainServiceByUserId(userId);
+    public List<MainServiceDTO> findMainServiceSavedByUserId(String userId,int limit,int pageIndex){
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
+        Pageable pageable = PageRequest.of(pageIndex, limit, sort);
+        Page<MainService> pageService = mainServiceRepo.findMainServiceByUserId(userId,pageable);
+        List<MainService> listMainService = pageService.getContent();
         return listMainService.stream().map(mainService -> modelMapper.map(mainService, MainServiceDTO.class)).collect(Collectors.toList());
     }
+    @Transactional
     public void deleteAllSaved(String userId){
-
-
+        mainServiceRepo.deleteSavedByUserId(userId);
     }
     @Override
     public void createMainService(MainServiceDTO mainServiceDTO) {
@@ -143,7 +160,7 @@ public class MainSerService implements IMainSerService {
 
     @Override
     public List<MainServiceDTO> findTrendMainService() {
-        Pageable topTen = PageRequest.of(0, 10);
+        Pageable topTen = PageRequest.of(0, 5);
         List<MainService> mainServiceList = mainServiceRepo.findTrendMainService(topTen);
         return mainServiceList.stream().map(mainService -> modelMapper.map(mainService, MainServiceDTO.class)).collect(Collectors.toList());
     }

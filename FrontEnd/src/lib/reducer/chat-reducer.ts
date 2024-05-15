@@ -58,14 +58,13 @@ const reducer = (state: any, action: any): stateType => {
                 if (!(conversations?.length > 0))
                     return state;
                 const updatedConversations = conversations.map(conversation => initMemberMapOfConversation(conversation));
+
                 newState = {
                     ...state,
                     conversations: updatedConversations
                 }
-                console.log("SET_CONVERSATIONS: ",{...updatedConversations})
                 break;
             }catch (e) {
-                console.log("CHAT_REDUCER: ",e)
                 return  state;
             }
         case ACTION_TYPE.ADD_CONVERSATION:

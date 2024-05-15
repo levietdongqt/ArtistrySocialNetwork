@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 type UserNameProps = {
   tag?: keyof JSX.IntrinsicElements;
   id?:string;
-  name: string;
+  name?: string;
   verified: boolean;
   username?: string;
   className?: string;
@@ -31,9 +31,7 @@ export function UserName({
     )}
           tabIndex={username ? 0 : -1}
     >
-        <CustomTag className='truncate' >{name}</CustomTag>
-       
-        
+        <CustomTag className='truncate' >{username}</CustomTag>
         {verified && (
           <i>
             <HeroIcon

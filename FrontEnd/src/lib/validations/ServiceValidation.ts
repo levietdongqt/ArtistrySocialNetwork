@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export const ServiceValidation = yup.object({
+ const ServiceValidation = yup.object({
     name: yup.string()
         .required("Tên tả dịch vụ không được để trống")
         .max(100, "Mô tả quá dài!"),
@@ -42,5 +42,6 @@ export const ExtraServiceValidation = yup.object({
     //     .required("Mô tả dịch vụ không được để trống")
     //     .max(500, "Mô tả quá dài!")
 });
+export default ServiceValidation;
 
 

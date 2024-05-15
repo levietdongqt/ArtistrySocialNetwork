@@ -36,8 +36,8 @@ export function ServiceAll(): JSX.Element {
     return (
         <>
             <h2 className='text-xl font-bold text-center'>Dịch vụ</h2>
-            {response?.data.map((service: MainService) => (
-                <ServiceCard data={service}/>
+            {response?.data.map((service: MainService,index:number) => (
+                <ServiceCard data={service} key={index}/>
             ))}
         </>
     );

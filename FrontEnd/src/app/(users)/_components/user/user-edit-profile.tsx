@@ -112,7 +112,6 @@ export function UserEditProfile(): JSX.Element {
       const avatarImage = uploadedImagesData.find((upload: any) => upload.alt.startsWith('avatar'));
       if (avatarImage) {
         avatarUrl = avatarImage.src;
-        console.log('avatarUrl', avatarUrl);
       }
 
       // Tìm ảnh cover
@@ -152,7 +151,6 @@ export function UserEditProfile(): JSX.Element {
       setNewUpdateData(editData)
 
       if (phoneNumberFinal !== currentUser?.phoneNumber) {
-        console.log(phoneNumberFinal,'vả',response?.phoneNumber)
         await captchaVerifier({
           phoneNumber: phoneNumberFinal,
           callBack: () => {
@@ -279,7 +277,6 @@ export function UserEditProfile(): JSX.Element {
 
   const verifyCodeCallBack = async (provider: any) => {
     setOpenVerifyCode(false)
-    console.log("Verifying Code callBack: ", provider)
     await updateProfile(provider)
   }
 

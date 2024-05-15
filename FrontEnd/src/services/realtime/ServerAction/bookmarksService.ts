@@ -5,7 +5,6 @@ import {ConTentType} from "@lib/enum/ConTentType";
 
 export async function bookmarksPost(data: any): Promise<any> {
     try {
-        // console.log(headers)
         const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/bookmark/create-Bookmark`,
             {
                 method: 'POST',
