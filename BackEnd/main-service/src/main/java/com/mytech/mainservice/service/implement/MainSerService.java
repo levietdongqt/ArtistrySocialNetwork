@@ -120,15 +120,13 @@ public class MainSerService implements IMainSerService {
             if (mainService.get().isStatus() ) {
                 mainService.get().setStatus(false);
                 mainServiceRepo.save(mainService.get());
-
+                elsService.deleteServiceELSById(mainService.get().getId());
             } else {
                 mainService.get().setStatus(true);
                 mainServiceRepo.save(mainService.get());
+                ServiceELS serviceELS = modelMapper.map(mainService.get(),ServiceELS.class);
+               elsService.saveServiceELS(serviceELS);
             }
-
-//            mainServiceRepo.save(mainService.get());
-            //Xóa khỏi els search
-            elsService.deleteServiceELSById(mainService.get().getId());
             return;
         }
         throw new InvalidPropertyException("You are not the owner of this service");

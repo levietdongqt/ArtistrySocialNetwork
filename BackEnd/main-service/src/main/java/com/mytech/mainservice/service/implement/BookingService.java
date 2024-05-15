@@ -1,6 +1,9 @@
 package com.mytech.mainservice.service.implement;
 
+import com.mytech.mainservice.client.NotificationForeignClient;
+import com.mytech.mainservice.dto.NotificationDTO;
 import com.mytech.mainservice.dto.OrderDto;
+import com.mytech.mainservice.dto.UserDTO;
 import com.mytech.mainservice.dto.WorkingTimeDTO;
 import com.mytech.mainservice.dto.request.BookingDTO;
 import com.mytech.mainservice.model.Order;
@@ -24,6 +27,9 @@ public class BookingService implements IBookingService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private NotificationForeignClient notificationForeignClient;
+
     @Override
     public List<WorkingTimeDTO> getWorkingTimesByProvider(String providerId) {
         LocalDateTime oneMonthAfterNow = LocalDateTime.now().plusDays(30).withHour(1);
@@ -44,6 +50,26 @@ public class BookingService implements IBookingService {
             List<String> extraServiceIds = orderDto.getAdditionalService().stream().map(service -> String.valueOf(service.getId())).toList();
             order.setAdditionalService(extraServiceIds);
         }
-        orderRepo.save(order);
+        var createdOrder = orderRepo.save(order);
+
+        NotificationDTO notificationDTO1 = NotificationDTO.builder()
+                .userFrom(orderDto.getProviderUser())
+                .userTo(orderDto.getCustomerUser())
+                .notificationType("ORDER")
+                .message("đã tạo đơn hàng")
+                .link(String.valueOf(createdOrder.getId()))
+                .build();
+        notificationForeignClient.saveNotification(notificationDTO1);
+
+        NotificationDTO notificationDTO2 = NotificationDTO.builder()
+                .userFrom(orderDto.getCustomerUser())
+                .userTo(orderDto.getProviderUser())
+                .notificationType("ORDER")
+                .message("đã tạo đơn hàng thành công")
+                .link(String.valueOf(createdOrder.getId()))
+                .build();
+        notificationForeignClient.saveNotification(notificationDTO2);
     }
+
+
 }

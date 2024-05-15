@@ -65,7 +65,7 @@ export function FollowButton({
   const [renderAccept,setRenderAccept] = useState(false);
   //Xử lý follow
   const { data: data } = useSWR(
-    hovered
+     hovered
       ? isFollowing({
           userId: currentUser?.id as string,
           friendId: userTargetId,

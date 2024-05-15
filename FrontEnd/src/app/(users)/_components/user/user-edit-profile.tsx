@@ -139,13 +139,14 @@ export function UserEditProfile(): JSX.Element {
       }
         const phoneNumberFinal = checkPhoneFormat(values.phoneNumber!)!;
         const { avatarUrl, coverImageUrl } = await uploadAndClassifyImages(currentUser?.id as string, files as FilesWithId);
+        console.log("Upload",avatarUrl,coverImageUrl);
         const editData = {
           ...values,
           bio: newbio,
           phoneNumber: phoneNumberFinal,
           address: addressn,
-          avatar: avatarUrl,
-          coverImage: coverImageUrl,
+          avatar: avatarUrl === undefined ? response?.data.avatar : avatarUrl,
+          coverImage: coverImageUrl === undefined ? response?.data.coverImage : coverImageUrl,
           updateAt :updateDateName,
         };
       setNewUpdateData(editData)
