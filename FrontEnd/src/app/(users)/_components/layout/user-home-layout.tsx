@@ -33,6 +33,7 @@ import {EditProfileModal} from "../modal/edit-profile-modal";
 import RegisterProviderForm from "../../(main-layout)/profile/[ID]/register-provider";
 import { SearchButton } from '../search/search-button';
 import { isCheckFriend, isFollowing } from 'services/main/clientRequest/friendsClient';
+import InputMobile from "../input/InputMobile";
 
 
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
@@ -211,11 +212,10 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
 
             {response?.data && (
                 <>
-
                     {
                         isProvider && <UserNav/>
                     }
-
+                    <InputMobile />
                     {children}
                 </>
             )}
