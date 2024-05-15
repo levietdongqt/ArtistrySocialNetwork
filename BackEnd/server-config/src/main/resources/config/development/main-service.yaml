@@ -10,7 +10,7 @@ spring:
     name: main-service
   data:
     elasticsearch:
-      cluster-nodes: 34.87.190.66:9200
+      cluster-nodes: 34.126.138.202:9200
   cache:
     jcache:
       config: classpath:ehcache.xml
@@ -35,12 +35,10 @@ spring:
 #    username: avnadmin
 #    password: AVNS_KXx-W0Q-CbV9LAAh4HF
 
-    url: jdbc:mysql://34.87.190.66:3306/snap_connectDb
+    url: jdbc:mysql://34.126.138.202:3306/snap_connectDb
     useSSL: true
     username: root
     password: RHUowB1w__*e3MBZGAf0
-
-
   jpa:
     hibernate:
       ddl-auto: validate
@@ -66,7 +64,7 @@ eureka:
 
 env:
   elasticsearch_pass: "nagffOa5qCW2H7Gdq9xy"
-  elasticsearch_host_and_port: "34.87.190.66:9200"
+  elasticsearch_host_and_port: "34.126.138.202:9200"
   secret_token: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
   firebaseConfig: |
     {
@@ -85,5 +83,5 @@ env:
   images:
     default:
       avatar: "https://firebasestorage.googleapis.com/v0/b/artistrysocialnetwork.appspot.com/o/images%2Fdefault%2Favatar.png?alt=media&token=c2a513bb-f750-4710-a0fb-4e745c8359ac"
-      background: "https://firebasestorage.googleapis.com/v0/b/artistrysocialnetwork.appspot.com/o/images%2Fdefault%2Fbackgroud.png?alt=media&token=0492673b-2bac-4859-a48b-40acd4cfc220"
+      background: "https://firebasestorage.googleapis.com/v0/b/artistrysocialnetwork.appspot.com/o/images%2Fdefault%2Fbackgroud.png?alt=media&token=9c09872c-9511-4c9a-8e1b-646227d81348"
 

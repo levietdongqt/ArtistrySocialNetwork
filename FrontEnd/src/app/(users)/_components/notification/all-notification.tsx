@@ -328,6 +328,7 @@ export default function AllNotification() {
                               key
                             ) as NotificationModel[]
                           }
+                          key={index}
                         />
                       )
                   )}

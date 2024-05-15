@@ -6,6 +6,10 @@ import com.mytech.mainservice.dto.OrderDto;
 import com.mytech.mainservice.dto.UserDTO;
 import com.mytech.mainservice.dto.WorkingTimeDTO;
 import com.mytech.mainservice.dto.request.BookingDTO;
+import com.mytech.mainservice.enums.OrderStatus;
+import com.mytech.mainservice.exception.myException.NotFoundException;
+import com.mytech.mainservice.exception.myException.UnAuthenticationException;
+import com.mytech.mainservice.helper.JwtTokenHolder;
 import com.mytech.mainservice.model.Order;
 import com.mytech.mainservice.repository.IOrderRepository;
 import com.mytech.mainservice.repository.IWorkingTimeRepository;
@@ -24,6 +28,8 @@ public class BookingService implements IBookingService {
     private IWorkingTimeRepository workingTimeRepo;
     @Autowired
     private IOrderRepository orderRepo;
+    @Autowired
+    private JwtTokenHolder jwtTokenHolder;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -71,5 +77,21 @@ public class BookingService implements IBookingService {
         notificationForeignClient.saveNotification(notificationDTO2);
     }
 
+    @Override
+    public List<OrderDto> getOrdersByProviderId() {
+        List<Order> orders = orderRepo.findByProviderUser_IdOrderByCreateDate(jwtTokenHolder.getUserId());
+        return orders.stream().map((order) -> modelMapper.map(order, OrderDto.class)).toList();
+    }
 
+    @Override
+    public void changeOderStatus(long orderId, OrderStatus orderStatus) throws UnAuthenticationException {
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Couldn't find order'"));
+        if(!order.getProviderUser().getId().equals(jwtTokenHolder.getUserId())){
+            throw new UnAuthenticationException("You don't have permission");
+        }
+        order.setStatus(orderStatus);
+        orderRepo.save(order);
+
+    }
 }

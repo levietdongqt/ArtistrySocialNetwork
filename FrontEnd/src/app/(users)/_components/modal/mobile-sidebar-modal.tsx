@@ -94,7 +94,8 @@ export function MobileSidebarModal({
     console.log("SIGN OUT")
     await deleteCookieTokenSSR();
     await signOut();
-    router.push("/login");
+    window.location.href = "/login"
+    window.location.reload()
   }
   return (
     <>

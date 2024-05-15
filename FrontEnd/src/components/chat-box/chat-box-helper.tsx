@@ -2,7 +2,7 @@
 import {Avatar, MessageSeparator} from "@chatscope/chat-ui-kit-react";
 import {MessageDto} from "@models/message";
 import {ConversationDto, ConversationMember} from "@models/conversation";
-import {ACTION_TYPE, ChatAction, stateType} from "@lib/reducer/chat-reducer";
+import {ACTION_TYPE, ChatAction, initMemberMapOfConversation, stateType} from "@lib/reducer/chat-reducer";
 import {checkConversation} from "../../services/realtime/clientRequest/conversationClient";
 import {User} from "@models/user";
 import {toast} from "react-toastify";
@@ -94,8 +94,10 @@ export function isLastMessageOutGoing(isLastMessage: boolean, direction: string)
     return isLastMessage && direction === "outgoing";
 }
 
-export async function openConversationWithAnyone(currentUser: User, friend: User, state: stateType, dispatch: React.Dispatch<any>) {
+export async function openConversationWithAnyone(currentUser: User, friend: any, state: stateType, dispatch: React.Dispatch<any>) {
     const requestBody = JSON.stringify({
+        createAt: new Date(Date.now() + 1000 * 60 * 60 * 7),
+        type: "PRIVATE",
         members: [
             {
                 id: currentUser.id,
@@ -113,8 +115,9 @@ export async function openConversationWithAnyone(currentUser: User, friend: User
         ]
     })
     const response = await checkConversation(requestBody)
+    console.log("openConversationWithAnyone", response)
     if (response.status === 200) {
-        const conversation = response.data as ConversationDto
+        let conversation = response.data as ConversationDto
         const curIndex = state.pickedConversations.findIndex(value => value?.id === conversation.id);
         //Conversation was picked and is showing
         if (curIndex !== -1 && (state.showChatBoxes[curIndex])) {
@@ -127,6 +130,8 @@ export async function openConversationWithAnyone(currentUser: User, friend: User
             newShowChatBoxes[curIndex] = true
         } else {
             console.log("Conversation not picked and not showing")
+            conversation = initMemberMapOfConversation(conversation)
+            console.log("Conversation: ", conversation)
             const newPickedCon = handlePickedConversations(conversation, state.pickedConversations)
             dispatch(ChatAction(newPickedCon, ACTION_TYPE.SET_PICKED_CONVERSATIONS))
             newShowChatBoxes = [true, ...newShowChatBoxes].slice(0, 3)

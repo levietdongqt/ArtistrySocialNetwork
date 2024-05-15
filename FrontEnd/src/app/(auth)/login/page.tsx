@@ -47,9 +47,10 @@ export default function FormLogin() {
                 showToastVerify()
                 return;
             }
+            setCurrentUser(result.data.user)
+            console.log("Login Error: ", result)
             toast.success("Đăng nhập thành công")
             setCookieHandler(result.data).then(value => {
-                setCurrentUser(result.data.user)
                 const prevPage = getCookie("prev_page")?.toString();
                 console.log("prevPage: ", prevPage);
                 (prevPage && prevPage !== '/login') ? router.push(prevPage) : router.push("/home")

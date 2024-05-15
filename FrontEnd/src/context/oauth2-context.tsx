@@ -140,7 +140,7 @@ export function useOAuth2(): Oauth2Context {
 }
 
 async function handleSuccessResponse(oauth2Response: any, router: any) {
-    setCookieHandler(oauth2Response.data)
+    await setCookieHandler(oauth2Response.data)
     console.log("LOGIN GOOGLE SUCCESSFUL: ")
     const prevPage = getCookie("prev_page")?.toString();
     console.log("Previous: ",prevPage)
