@@ -19,6 +19,7 @@ import BookingModal from "../booking/bookingModal";
 import CreateReview from "../../(main-layout)/profile/[ID]/review/create-review";
 import ServiceDetail from "./servicer-detail";
 import {Promotion} from "@models/promotion";
+import {useUser} from "../../../../context/user-context";
 
 
 interface ProServiceCard {
@@ -27,6 +28,7 @@ interface ProServiceCard {
 
 
 export function ServiceCard({data}: ProServiceCard): JSX.Element {
+    const {currentUser} = useUser()
     const [openModalCreateReview, setOpenModalCreateReview] = React.useState(false);
     const [openModalServiceDetail, setOpenModalServiceDetail] = useState(false);
     const [openBookingModal, setOpenBookingModal] = useState(false)
@@ -56,10 +58,8 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
         endDate: new Date('2024-07-31'),
         // Thêm bất kỳ giá trị mặc định nào cho các thuộc tính khác
     };
-    console.log('promotion', data)
     const decription = data?.description;
     const cleanFullBioContent = DOMPurify.sanitize(decription);
-    console.log("cleanBioContent: ", cleanFullBioContent);
     const menu = (
         <Menu items={[
             {
@@ -207,12 +207,15 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
                                     </Dropdown>
                                 </div>
 
-                                <button type="button"
-                                        className="self-end bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                        onClick={() => setOpenBookingModal(true)}
-                                >
-                                    Đặt Dịch vụ
-                                </button>
+                                {
+                                    currentUser?.id !== data.provider?.id &&
+                                    <button type="button"
+                                            className="self-end bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                            onClick={() => setOpenBookingModal(true)}
+                                    >
+                                        Đặt Dịch vụ
+                                    </button>
+                                }
 
                                 <div onClick={handleOpenServiceDetail}
                                      className="cursor-pointer text-blue-500 hover:text-blue-700 transition ease-in duration-300">

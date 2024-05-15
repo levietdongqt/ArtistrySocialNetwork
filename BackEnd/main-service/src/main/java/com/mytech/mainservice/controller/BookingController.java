@@ -55,4 +55,16 @@ public class BookingController {
                         .data(null)
                         .build());
     }
+
+    @PreAuthorize("hasRole('PROVIDER')")
+    @PostMapping("/get/orders-by-provider")
+    public ResponseEntity<?> getByProviderId() {
+        List<OrderDto> orderDtos = bookingService.getOrdersByProviderId();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("get orders by provider successfully")
+                        .data(orderDtos)
+                        .build());
+    }
 }

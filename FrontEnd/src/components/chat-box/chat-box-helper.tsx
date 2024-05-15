@@ -96,6 +96,8 @@ export function isLastMessageOutGoing(isLastMessage: boolean, direction: string)
 
 export async function openConversationWithAnyone(currentUser: User, friend: User, state: stateType, dispatch: React.Dispatch<any>) {
     const requestBody = JSON.stringify({
+        createAt: new Date(Date.now() + 1000 * 60 * 60 * 7),
+        type: "PRIVATE",
         members: [
             {
                 id: currentUser.id,

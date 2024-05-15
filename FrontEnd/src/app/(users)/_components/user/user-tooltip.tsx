@@ -45,7 +45,6 @@ export function UserTooltip({
   avatarCheck
 }: UserTooltipProps):JSX.Element {
   const parser = new DOMParser();
-  console.log("bio",bio)
   const { isMobile } = useWindow();
   const [hovered, setHovered] = useState(false);
   const [doc,setDoc] = useState<any>();

@@ -7,6 +7,7 @@ import { addRowNumber } from "@lib/helper/addRowSerivce";
 import { Button, Tabs } from "antd";
 import { Order } from "@models/order";
 import OrderTable from "./order-table";
+import {getOrderByProvider} from "../../../../services/main/clientRequest/orderClient";
 
 
 export default function Order() {
@@ -15,7 +16,7 @@ export default function Order() {
   const [orderPendingData, setOrderPendingData] = useState<Order[]>([]);
   const [orderActiveData, setOrderActiveData] = useState<Order[]>([]);
   const [orderCancelledData, setOrderCancelledData] = useState<Order[]>([]);
-  
+  const [data, setData] = useState<any>([])
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -27,38 +28,42 @@ export default function Order() {
     setIsModalOpen(false);
   };
   //Call all order api lấy data ở đây
-  const data : any = {
-    data: []
-  };
   //Set data vào từng mảng theo trạng thái ở đây
-  // useEffect(() => {
-  //   if (data) {
-  //     setOrderPendingData(
-  //       addRowNumber(
-  //         data.data.filter((value:any) => value.status === 'PENDING').sort(
-  //           (a: any, b: any) =>
-  //             b.id - a.id
-  //         )
-  //       )
-  //     );
-  //     setOrderActiveData(
-  //       addRowNumber(
-  //         data.data.filter((value:any) => value.status === 'ACTIVE').sort(
-  //           (a: any, b: any) =>
-  //             b.id - a.id
-  //         )
-  //       )
-  //     );
-  //     setOrderCancelledData(
-  //       addRowNumber(
-  //         data.data.filter((value:any) => value.status === 'CANCELLED').sort(
-  //           (a: any, b: any) =>
-  //             b.id - a.id
-  //         )
-  //       )
-  //     );
-  //   }
-  // }, [data]);
+  useEffect(() => {
+    getOrderByProvider().then ((data) => {
+      if(data.status === 200) {
+        data.data.forEach((order: Order) => {
+          order.startDate = new Date(order.startDate);
+          order.endDate = new Date(order.endDate);
+          order.createDate = new Date(order.createDate);
+        })
+        setOrderPendingData(
+            addRowNumber(
+                data.data.filter((value:any) => value.status === 'PENDING').sort(
+                    (a: any, b: any) =>
+                        b.id - a.id
+                )
+            )
+        );
+        setOrderActiveData(
+            addRowNumber(
+                data.data.filter((value:any) => value.status === 'ACTIVE').sort(
+                    (a: any, b: any) =>
+                        b.id - a.id
+                )
+            )
+        );
+        setOrderCancelledData(
+            addRowNumber(
+                data.data.filter((value:any) => value.status === 'CANCELLED').sort(
+                    (a: any, b: any) =>
+                        b.id - a.id
+                )
+            )
+        );
+      }
+    })
+  }, []);
 
   //Hàm dùng để chuyển các dữ liệu theo status có sai thì em sửa ở đây cho phù hợp với status nhe, + với sửa ở OrderTable ở dưới
   const handleChange = () =>{

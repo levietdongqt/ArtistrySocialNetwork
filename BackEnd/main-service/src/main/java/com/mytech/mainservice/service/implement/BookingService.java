@@ -3,6 +3,7 @@ package com.mytech.mainservice.service.implement;
 import com.mytech.mainservice.dto.OrderDto;
 import com.mytech.mainservice.dto.WorkingTimeDTO;
 import com.mytech.mainservice.dto.request.BookingDTO;
+import com.mytech.mainservice.helper.JwtTokenHolder;
 import com.mytech.mainservice.model.Order;
 import com.mytech.mainservice.repository.IOrderRepository;
 import com.mytech.mainservice.repository.IWorkingTimeRepository;
@@ -21,6 +22,8 @@ public class BookingService implements IBookingService {
     private IWorkingTimeRepository workingTimeRepo;
     @Autowired
     private IOrderRepository orderRepo;
+    @Autowired
+    private JwtTokenHolder jwtTokenHolder;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -45,5 +48,11 @@ public class BookingService implements IBookingService {
             order.setAdditionalService(extraServiceIds);
         }
         orderRepo.save(order);
+    }
+
+    @Override
+    public List<OrderDto> getOrdersByProviderId() {
+        List<Order> orders = orderRepo.findByProviderUser_IdOrderByCreateDate(jwtTokenHolder.getUserId());
+        return orders.stream().map((order) -> modelMapper.map(order, OrderDto.class)).toList();
     }
 }

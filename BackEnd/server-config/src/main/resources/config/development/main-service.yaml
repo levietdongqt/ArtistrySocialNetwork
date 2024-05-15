@@ -36,7 +36,6 @@ spring:
     useSSL: true
     username: root
     password: RHUowB1w__*e3MBZGAf0
-
   jpa:
     hibernate:
       ddl-auto: validate
@@ -81,5 +80,5 @@ env:
   images:
     default:
       avatar: "https://firebasestorage.googleapis.com/v0/b/artistrysocialnetwork.appspot.com/o/images%2Fdefault%2Favatar.png?alt=media&token=c2a513bb-f750-4710-a0fb-4e745c8359ac"
-      background: "https://firebasestorage.googleapis.com/v0/b/artistrysocialnetwork.appspot.com/o/images%2Fdefault%2Fbackgroud.png?alt=media&token=0492673b-2bac-4859-a48b-40acd4cfc220"
+      background: "https://firebasestorage.googleapis.com/v0/b/artistrysocialnetwork.appspot.com/o/images%2Fdefault%2Fbackgroud.png?alt=media&token=9c09872c-9511-4c9a-8e1b-646227d81348"
 
