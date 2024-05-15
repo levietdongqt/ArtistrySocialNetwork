@@ -38,7 +38,10 @@ export type User = {
   friendShipStatus: string;
 };
 
-
+export type ChangePassDTO = {
+  oldPass : string;
+  newPass : string;
+}
 
 export type EditableData = Extract<
   keyof User,

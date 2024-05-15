@@ -58,13 +58,13 @@ public class AuthConfig {
                 })
                 .exceptionHandling(handler -> {
                     handler.authenticationEntryPoint((request, response, authException) -> {
-                        log.error(HttpStatus.valueOf(response.getStatus()).toString());
-                        log.error(authException.getMessage());
-                        response.sendError(response.getStatus());
+                        log.error("authenticationEntryPoint: " +HttpStatus.valueOf(response.getStatus()).toString());
+                        log.error("authenticationEntryPoint: "+  authException.getMessage());
+                        response.sendError(HttpStatus.UNAUTHORIZED.value());
                         //response.sendRedirect("/api/main/auth/error/true");
                     }).accessDeniedHandler((request, response, accessDeniedException) -> {
-                        log.error(accessDeniedException.getMessage());
-                        response.sendError(response.getStatus());
+                        log.error("accessDeniedHandler: " + accessDeniedException.getMessage());
+                        response.sendError(HttpStatus.FORBIDDEN.value());
                         //response.sendRedirect("/api/main/auth/error/true");
                     });
                 });

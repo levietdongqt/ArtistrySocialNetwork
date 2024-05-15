@@ -2,14 +2,15 @@ import { fetcherWithToken } from "@lib/config/SwrFetcherConfig";
 import { useUser } from "context/user-context";
 import { useEffect, useState } from "react";
 import { Modal } from "../modal/modal";
-import {GetAllExtraService, GetAllMainService} from "services/main/clientRequest/service";
-import useSWR from "swr";
+import {GetAllExtraService, GetAllMainService, GetExtraServiceById} from "services/main/clientRequest/service";
+import useSWR, {mutate} from "swr";
 import {addRowNumber} from "@lib/helper/addRowSerivce";
 import ServiceMainTable from "./extraservice-table";
 import { Button, Tabs } from "antd";
 import CreateExtraServiceForm from "../../(main-layout)/provider/extra-service/create-service";
 import {ExtraService} from "@models/extra-service";
 import ServiceExtraTable from "./extraservice-table";
+
 
 
 
@@ -26,15 +27,17 @@ export default function ServiceExtra() {
   const handleOk = () => {
     setIsModalOpen(false);
   };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+
   const {
     data: data,
     isLoading: isLoading,
     error: error2,
   } = useSWR(GetAllExtraService(currentUser?.id as string), fetcherWithToken);
 
+    const handleCancel = () => {
+        setIsModalOpen(false);
+        mutate(GetAllExtraService)
+    };
 
   useEffect(() => {
     if (data) {
@@ -60,7 +63,7 @@ export default function ServiceExtra() {
       );
     }
   }, [data]);
-
+    console.log('extradata', data)
   const handleChange = () =>{
     setChangeStatus(!changeStatus);
   }
@@ -87,7 +90,7 @@ export default function ServiceExtra() {
         closeModal={handleCancel}
         className="w-1/2 ml-auto"
       >
-        <CreateExtraServiceForm closeModal={() => setIsModalOpen(false)} />
+        <CreateExtraServiceForm closeModal={handleCancel} />
       </Modal>
       <ServiceExtraTable data={!changeStatus ? extraDataTrue as any : extraDataFalse as any}></ServiceExtraTable>
     </div>

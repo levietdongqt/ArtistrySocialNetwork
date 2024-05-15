@@ -15,11 +15,9 @@ export default function MyAvatarGroup({members, size, onClick: callback}: props)
             color: '#f56a00',
             backgroundColor: '#fde3cf',
         }}>
-            <Tooltip title={members[0].nickname} placement="top">
             <Avatar onClick={() => callback?.()}
                     src={members[0].avatar || "https://chatscope.io/storybook/react/assets/lilly-aj6lnGPk.svg"}
             />
-            </Tooltip>
             {
 
                 members.slice(1).map((member, index) => {

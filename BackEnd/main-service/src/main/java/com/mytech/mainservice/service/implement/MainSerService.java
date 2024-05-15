@@ -99,10 +99,10 @@ public class MainSerService implements IMainSerService {
 
         List<ExtraService> extraServices = checkValidExtraServiceIds(mainServiceDTO.getExtraServiceDTOs());
         Promotion promotion = checkValidPromotion(mainServiceDTO.getPromotionDTO());
-        mainService.setPromotion(promotion);
+        mainService.setPromotionDTO(promotion);
         mainService.setStatus(true);
         mainService.setCreateDate(LocalDateTime.now());
-        mainService.setExtraServices(extraServices);
+        mainService.setExtraServiceDTOs(extraServices);
         var createdMainService =  mainServiceRepo.save(mainService);
         //Lưu vào ELS Search
         ServiceELS serviceELS = modelMapper.map(createdMainService,ServiceELS.class);
@@ -116,8 +116,17 @@ public class MainSerService implements IMainSerService {
             throw new NotFoundException("Not found main service ");
         }
         if (jwtTokenHolder.isValidUserId(mainService.get().getProvider().getId())) {
-            mainService.get().setStatus(false);
-            mainServiceRepo.save(mainService.get());
+//            mainService.get().setStatus(false);
+            if (mainService.get().isStatus() ) {
+                mainService.get().setStatus(false);
+                mainServiceRepo.save(mainService.get());
+
+            } else {
+                mainService.get().setStatus(true);
+                mainServiceRepo.save(mainService.get());
+            }
+
+//            mainServiceRepo.save(mainService.get());
             //Xóa khỏi els search
             elsService.deleteServiceELSById(mainService.get().getId());
             return;
