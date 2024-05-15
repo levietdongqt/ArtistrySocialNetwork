@@ -21,6 +21,8 @@ import {deleteAllBokMarksByUserId} from "../../../../services/realtime/ServerAct
 import {SEO} from "../common/seo";
 import {GetAllSavedMainService} from "../../../../services/main/clientRequest/service";
 import {ServiceCard} from "../main-service/service-card";
+import {MainService} from "@models/main-service";
+
 
 const ContainerService = () => {
     const { currentUser } = useUser();
@@ -29,12 +31,13 @@ const ContainerService = () => {
 
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
     const { data: savedRef, isLoading: savedRefLoading } = useSWR(GetAllSavedMainService(userId),fetcherWithToken);
-
+console.log('savedRefLoading,',savedRef)
     const handleClear = async (): Promise<void> => {
         await deleteAllBokMarksByUserId(userId);
         closeModal();
         toast.success('Xóa tất cả Services thành công');
     };
+
     return (
         <>
             <Modal
@@ -81,9 +84,14 @@ const ContainerService = () => {
                     />
                 ) : (
                     <AnimatePresence mode='popLayout'>
-                        {savedRef?.data?.map((service:any) => (
-                            <ServiceCard data={service} key={service.id} />
-                        ))}
+
+                        {savedRef?.data?.map((service:any) => {
+                            if (service.status) {
+                                console.log('status',service.status)
+                                return <ServiceCard data={service} key={service.id} />;
+                            }
+                            return null;
+                        })}
                     </AnimatePresence>
                 )}
             </section>

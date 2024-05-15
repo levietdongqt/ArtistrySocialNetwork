@@ -40,9 +40,12 @@ export function ServiceProvider(): JSX.Element {
 
                 <h2 className='text-xl font-bold text-center'>Dịch vụ</h2>
 
-            {response?.data.map((service: MainService) => (
-                <ServiceCard data={service}/>
-            ))}
+            {response?.data?.map((service: any) => {
+                if (service.status) {
+                    return <ServiceCard data={service} key={service.id} />;
+                }
+                return null;
+            })}
 
         </>
     );
