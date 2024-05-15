@@ -29,7 +29,7 @@ public class ELSConfig extends ElasticsearchConfiguration {
 
     @Override
     public ClientConfiguration clientConfiguration() {
-        if (hostAndPort.contains("elastic")) {
+        if (hostAndPort.contains("elastic") || hostAndPort.contains("34")) {
             return ClientConfiguration.builder()
                     .connectedTo(hostAndPort)
                     .withBasicAuth("elastic", password)

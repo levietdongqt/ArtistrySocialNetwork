@@ -35,7 +35,7 @@ public class FriendController {
         );
     }
 
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @PreAuthorize("  hasRole('USER')")
     @GetMapping("/is-friend/{userId}")
     public ResponseEntity<?> getIsFriendedFriends(@PathVariable String userId) {
         List<UserDTO> friends = friendService.getIsFriendFriends(userId);

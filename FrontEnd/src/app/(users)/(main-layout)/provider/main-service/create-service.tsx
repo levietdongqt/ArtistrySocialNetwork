@@ -18,6 +18,7 @@ import {uploadImages} from "../../../../../firebase/utils";
 import DescriptionInput from "../../../_components/input/input-description";
 import {toast} from "react-toastify";
 
+
 interface CreateMainServiceFormProps {
     closeModal: () => void;
 };
@@ -27,7 +28,7 @@ const CreateMainServiceForm :React.FC<CreateMainServiceFormProps> = ({ closeModa
     const [promotions, setPromotions] = useState<Promotion[]>([]);
     const {files} = useUpload();
     const [newdescription, setNewDescription] = useState('')
-    const handleDescriptionChange = (content: string) => {
+       const handleDescriptionChange = (content: string) => {
         setNewDescription(content);
     };
     const {
@@ -82,7 +83,7 @@ const CreateMainServiceForm :React.FC<CreateMainServiceFormProps> = ({ closeModa
                 ...values,
                 imageUrls: imageUrls as string[],
                 promotionDTO: applyPromotion,
-                description : newdescription
+                description : newdescription,
             };
 
             try {
@@ -103,7 +104,7 @@ const CreateMainServiceForm :React.FC<CreateMainServiceFormProps> = ({ closeModa
 
             } catch (error) {
 
-                console.error("Failed to create service", error);
+                console.error("Failed to create services", error);
             }
         },
     });
@@ -131,7 +132,6 @@ const CreateMainServiceForm :React.FC<CreateMainServiceFormProps> = ({ closeModa
                     <div className="text-red-700 text-sm">{errors.name}</div>
                 ) : null}
             </div>
-
             <div className="mb-4">
                 <label htmlFor="servicePrice" className="block text-gray-700 text-sm font-bold mb-2">
                     Giá Dịch Vụ
@@ -145,6 +145,14 @@ const CreateMainServiceForm :React.FC<CreateMainServiceFormProps> = ({ closeModa
                     onChange={handleChange}
                     value={values.price}
                 />
+                {values.price>0 && (
+                    <div className="text-green-600 text-sm mt-1">
+                        Giá tương ứng: {new Intl.NumberFormat('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND'
+                    }).format(values.price)}
+                    </div>
+                )}
                 {errors.price && touched.price ? (
                     <div className="text-red-700 text-sm">{errors.price}</div>
                 ) : null}
@@ -163,17 +171,19 @@ const CreateMainServiceForm :React.FC<CreateMainServiceFormProps> = ({ closeModa
                 >
                     <option value='null'>Chọn loại giá</option>
                     <option value="Giờ">Giờ</option>
-                    <option value="Concept">Concept</option>
                     <option value="Ngày">Ngày</option>
+                    <option value="Album ảnh">Album ảnh</option>
+                    <option value="Phiên trang điểm">Phiên trang điểm</option>
                     <option value="Khác">Khác...</option>
                 </select>
+
                 {errors.priceType && touched.priceType ? (
                     <div className="text-red-700 text-sm">{errors.priceType}</div>
                 ) : null}
             </div>
             <div className="mb-4">
                 <label htmlFor="servicePrice" className="block text-gray-700 text-sm font-bold mb-2">
-                    Khoảng thời gian(Giờ)
+                    Khoảng thời gian (Giờ)
                 </label>
                 <input
                     type="number"
@@ -191,7 +201,7 @@ const CreateMainServiceForm :React.FC<CreateMainServiceFormProps> = ({ closeModa
 
             <div className="mb-4">
                 <label htmlFor="servicePrice" className="block text-gray-700 text-sm font-bold mb-2">
-                    Thời gian nghỉ(Giờ)
+                    Thời gian nghỉ (Phút)
                 </label>
                 <input
                     type="number"

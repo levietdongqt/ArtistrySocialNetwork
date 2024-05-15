@@ -4,6 +4,7 @@ import { AsideTrends } from '../aside/aside-trends';
 import { Suggestions } from '../aside/suggestions';
 import { Placeholder } from '../common/placeholder';
 import type { ReactNode } from 'react';
+
 import {sleep} from "@lib/utils";
 import {getPostsCount} from "../../../../services/realtime/clientRequest/postClient";
 import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
@@ -81,7 +82,7 @@ export function TrendsLayout({ children }: LayoutProps): JSX.Element {
   );
 }
 
-export function PeopleLayout({ children }: LayoutProps): JSX.Element {
+export function FriendLayout({ children }: LayoutProps): JSX.Element {
   return (
     <>
       {children}
@@ -98,7 +99,8 @@ export function NotificationLayout({ children }: LayoutProps): JSX.Element {
       {children}
       <Aside>
         {/* <AsideTrends /> */}
-        <Suggestions />
+        {/* <Suggestions /> */}
+        <ServiceAll />
       </Aside>
     </>
   );

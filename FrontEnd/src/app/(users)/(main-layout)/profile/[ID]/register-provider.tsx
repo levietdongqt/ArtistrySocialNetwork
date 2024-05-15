@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {useUser} from "../../../../../context/user-context";
 import {useFormik} from 'formik';
 import ReactQuill from 'react-quill'; // Thêm dòng này để import ReactQuill
-import 'react-quill/dist/quill.snow.css';
+// import 'react-quill/dist/quill.snow.css';
 import {EditableProviderData, User} from "@models/user";
 import {UserRole} from "@lib/enum/UserRole";
 import {getUserById, updateUser} from "../../../../../services/main/clientRequest/userClient";

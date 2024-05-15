@@ -18,4 +18,11 @@ public interface CommentsRepository extends MongoRepository<Comments,String> {
 
     @Query(value = "{'postId': ?0}", sort = "{'sentDate': -1}")
     Optional<Comments> findCommentsByPostId(String postId);
+
+
+    @Query(value = "{'parentCommentId': ?0}", sort = "{'sentDate': -1}")
+    List<Comments> findCommentsByParentCommentId(String parentCommentId);
+
+    @Query(value = "{'parentCommentId': ?0}", count = true)
+    Long countParentCommentsId(String parentCommentId);
 }

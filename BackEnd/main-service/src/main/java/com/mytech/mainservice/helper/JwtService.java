@@ -73,7 +73,7 @@ public class JwtService {
         claims.put("roles", roleNames);
         claims.put("id", user.getId());
         claims.put("status", user.getStatus().toString());
-        return createToken(claims, user.getEmail());
+        return createToken(claims, user.getEmail() == null? user.getPhoneNumber() : user.getEmail());
     }
 
     private String createToken(Map<String, Object> claims, String userName) {

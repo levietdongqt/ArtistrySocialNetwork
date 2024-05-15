@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_twitter_clone/helper/enum.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/model/feedModel.dart';
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 import 'package:flutter_twitter_clone/state/feedState.dart';
+import 'package:flutter_twitter_clone/state/postState.dart';
 import 'package:flutter_twitter_clone/ui/page/feed/feedPostDetail.dart';
 import 'package:flutter_twitter_clone/ui/page/profile/profilePage.dart';
 import 'package:flutter_twitter_clone/ui/page/profile/widgets/circular_image.dart';
@@ -19,7 +21,7 @@ import 'widgets/retweetWidget.dart';
 import 'widgets/tweetImage.dart';
 
 class Tweet extends StatelessWidget {
-  final FeedModel model;
+  final myPost model;
   final Widget? trailing;
   final TweetType type;
   final bool isDisplayOnProfile;
@@ -37,21 +39,21 @@ class Tweet extends StatelessWidget {
     if (type == TweetType.Detail || type == TweetType.ParentTweet) {
       Utility.copyToClipBoard(
           context: context,
-          text: model.description ?? "",
-          message: "Tweet copy to clipboard");
+          text: model.content ?? "",
+          message: "Bài viết đã copu to ClipBoard");
     }
   }
 
   void onTapTweet(BuildContext context) {
-    var feedState = Provider.of<FeedState>(context, listen: false);
+    var postState = Provider.of<PostState>(context, listen: false);
     if (type == TweetType.Detail || type == TweetType.ParentTweet) {
       return;
     }
     if (type == TweetType.Tweet && !isDisplayOnProfile) {
-      feedState.clearAllDetailAndReplyTweetStack();
+      postState.clearAllDetailAndReplyTweetStack();
     }
-    feedState.getPostDetailFromDatabase(null, model: model);
-    Navigator.push(context, FeedPostDetail.getRoute(model.key!));
+    postState.getPostDetailFromDatabase(null, model: model);
+    Navigator.push(context, FeedPostDetail.getRoute(model.id ?? ""));
   }
 
   @override
@@ -111,14 +113,6 @@ class Tweet extends StatelessWidget {
                   type: type,
                 ),
               ),
-              model.childRetwetkey == null
-                  ? const SizedBox.shrink()
-                  : RetweetWidget(
-                      childRetwetkey: model.childRetwetkey!,
-                      type: type,
-                      isImageAvailable: model.imagePath != null &&
-                          model.imagePath!.isNotEmpty,
-                    ),
               Padding(
                 padding:
                     EdgeInsets.only(left: type == TweetType.Detail ? 10 : 60),
@@ -144,7 +138,7 @@ class Tweet extends StatelessWidget {
 }
 
 class _TweetBody extends StatelessWidget {
-  final FeedModel model;
+  final myPost model;
   final Widget? trailing;
   final TweetType type;
   final bool isDisplayOnProfile;
@@ -189,9 +183,9 @@ class _TweetBody extends StatelessWidget {
                 return;
               }
               Navigator.push(
-                  context, ProfilePage.getRoute(profileId: model.userId));
+                  context, ProfilePage.getRoute(profileId: model.user?.id as String ?? ""));
             },
-            child: CircularImage(path: model.user!.profilePic),
+            child: CircularImage(path: model.user!.avatar),
           ),
         ),
         const SizedBox(width: 20),
@@ -210,13 +204,13 @@ class _TweetBody extends StatelessWidget {
                         ConstrainedBox(
                           constraints: BoxConstraints(
                               minWidth: 0, maxWidth: context.width * .5),
-                          child: TitleText(model.user!.displayName!,
+                          child: TitleText(model.user?.fullName ?? "No Name",
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
                               overflow: TextOverflow.ellipsis),
                         ),
                         const SizedBox(width: 3),
-                        model.user!.isVerified!
+                        model.user!.verified!
                             ? customIcon(
                                 context,
                                 icon: AppIcon.blueTick,
@@ -227,14 +221,7 @@ class _TweetBody extends StatelessWidget {
                               )
                             : const SizedBox(width: 0),
                         SizedBox(
-                          width: model.user!.isVerified! ? 5 : 0,
-                        ),
-                        Flexible(
-                          child: customText(
-                            '${model.user!.userName}',
-                            style: TextStyles.userNameStyle,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          width: model.user!.verified! ? 5 : 0,
                         ),
                         const SizedBox(width: 4),
                         customText(
@@ -248,13 +235,13 @@ class _TweetBody extends StatelessWidget {
                   Container(child: trailing ?? const SizedBox()),
                 ],
               ),
-              model.description == null
+              model.content == null
                   ? const SizedBox()
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         UrlText(
-                          text: model.description!.removeSpaces,
+                          text: model.content!.removeSpaces,
                           onHashTagPressed: (tag) {
                             cprint(tag);
                           },
@@ -263,8 +250,8 @@ class _TweetBody extends StatelessWidget {
                         ),
                       ],
                     ),
-              if (model.imagePath == null && model.description != null)
-                CustomLinkMediaInfo(text: model.description!),
+              if (model.mediaUrl?.isEmpty == true && model.content != null)
+                CustomLinkMediaInfo(text: model.content!),
             ],
           ),
         ),
@@ -275,7 +262,7 @@ class _TweetBody extends StatelessWidget {
 }
 
 class _TweetDetailBody extends StatelessWidget {
-  final FeedModel model;
+  final myPost model;
   final Widget? trailing;
   final TweetType type;
   const _TweetDetailBody({
@@ -311,11 +298,11 @@ class _TweetDetailBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        model.parentkey != null &&
-                model.childRetwetkey == null &&
+        model.id != null &&
+                model.id == null &&
                 type != TweetType.ParentTweet
             ? ParentTweetWidget(
-                childRetwetkey: model.parentkey!,
+                childRetwetkey: model.id!,
                 trailing: trailing,
                 type: type,
               )
@@ -330,22 +317,22 @@ class _TweetDetailBody extends StatelessWidget {
                 leading: GestureDetector(
                   onTap: () {
                     Navigator.push(
-                        context, ProfilePage.getRoute(profileId: model.userId));
+                        context, ProfilePage.getRoute(profileId: model.user!.id as String));
                   },
-                  child: CircularImage(path: model.user!.profilePic),
+                  child: CircularImage(path: model.user?.avatar),
                 ),
                 title: Row(
                   children: <Widget>[
                     ConstrainedBox(
                       constraints: BoxConstraints(
                           minWidth: 0, maxWidth: context.width * .5),
-                      child: TitleText(model.user!.displayName!,
+                      child: TitleText(model.user!.fullName!,
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                           overflow: TextOverflow.ellipsis),
                     ),
                     const SizedBox(width: 3),
-                    model.user!.isVerified!
+                    model.user!.verified!
                         ? customIcon(
                             context,
                             icon: AppIcon.blueTick,
@@ -356,15 +343,15 @@ class _TweetDetailBody extends StatelessWidget {
                           )
                         : const SizedBox(width: 0),
                     SizedBox(
-                      width: model.user!.isVerified! ? 5 : 0,
+                      width: model.user!.verified! ? 5 : 0,
                     ),
                   ],
                 ),
-                subtitle: customText('${model.user!.userName}',
+                subtitle: customText('${model.user!.fullName}',
                     style: TextStyles.userNameStyle),
                 trailing: trailing,
               ),
-              model.description == null
+              model.content == null
                   ? const SizedBox()
                   : Padding(
                       padding: type == TweetType.ParentTweet
@@ -374,7 +361,7 @@ class _TweetDetailBody extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           UrlText(
-                              text: model.description!.removeSpaces,
+                              text: model.content!.removeSpaces,
                               onHashTagPressed: (tag) {
                                 cprint(tag);
                               },
@@ -383,10 +370,10 @@ class _TweetDetailBody extends StatelessWidget {
                         ],
                       ),
                     ),
-              if (model.imagePath == null && model.description != null)
+              if (model.mediaUrl?.isEmpty == true && model.content != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: CustomLinkMediaInfo(text: model.description!),
+                  child: CustomLinkMediaInfo(text: model.content!),
                 )
             ],
           ),

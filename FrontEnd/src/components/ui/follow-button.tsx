@@ -1,5 +1,5 @@
 import { useModal } from "@lib/hooks/useModal";
-import { preventBubbling } from "@lib/utils";
+import {preventBubbling, sleep} from "@lib/utils";
 import { Modal } from "../../app/(users)/_components/modal/modal";
 import { ActionModal } from "../../app/(users)/_components/modal/action-modal";
 import { Button } from "@components/ui/button";
@@ -21,13 +21,15 @@ import { FollowButtonType } from "@models/notifications";
 import { Typography } from "antd";
 import { toast } from "react-toastify";
 import { getUserSearch } from "services/main/clientRequest/searchClient";
+import {useRecoilValue} from "recoil";
+import {mutateFriend} from "@lib/hooks/mutateFriend";
 
 const { Text } = Typography;
 
 type FollowButtonProps = {
   userTargetId: string;
   userTargetUsername: string;
-  hovered: boolean;
+  hovered:boolean;
 };
 
 export function FollowButton({
@@ -70,37 +72,34 @@ export function FollowButton({
       revalidateOnFocus: false,
     }
   );
-  const {} = useSWR(
-    shouldUnFollowed
-      ? unFollowingFriend({
-          userId: currentUser?.id as string,
-          friendId: userTargetId,
-        })
-      : null,
-    fetcherWithToken,
-    {
-      revalidateOnFocus: false,
-      onSuccess(data, key, config) {
-        toast.success("Bỏ theo dõi thành công");
-    },
-    }
-  );
+  const {isLoading:unFollowLoadingFriend} = useSWR(
+    shouldUnFollowed?
+    unFollowingFriend({
+        userId: currentUser?.id as string,
+        friendId: userTargetId
+      }):null,
+  fetcherWithToken,{
+    revalidateOnFocus: false,
+          onSuccess(data, key, config) {
+              toast.success("Bỏ theo dõi thành công");
+          },
+  }
+);
 
-  const {} = useSWR(
-    shouldFollowed
-      ? followingFriend({
-          userId: currentUser?.id as string,
-          friendId: userTargetId,
-        })
-      : null,
-    fetcherWithToken,
-    {
-      revalidateOnFocus: false,
-      onSuccess(data, key, config) {
-        toast.success("Theo dõi thành công");
-    },
-    }
-  );
+
+const {isLoading:FollowLoadingFriend} = useSWR(
+  shouldFollowed?
+  followingFriend({
+      userId: currentUser?.id as string,
+      friendId: userTargetId
+    }):null,
+fetcherWithToken,{
+  revalidateOnFocus: false,
+        onSuccess(data, key, config) {
+            toast.success("Theo dõi thành công");
+        },
+}
+);
 
   useEffect(() => {
     if (shouldUnFollowed) {
@@ -116,46 +115,54 @@ export function FollowButton({
     }
   }, [shouldFollowed]);
 
-  const handleUnfollow = () => {
-    setShouldUnFollowed(true);
-    closeUnFollowModal();
-  };
-
-  const handlefollow = () => {
-    setShouldFollowed(true);
-  };
-
-  //Xử lý kết bạn
-  const {} = useSWR(
-    shouldAddFriend
-      ? addFriend({
-          userId: currentUser?.id as string,
-          friendId: userTargetId,
-        })
-      : null,
-    fetcherWithToken,
-    {
-      revalidateOnFocus: false,
-      onSuccess(data, key, config) {
-          toast.success("Thêm bạn bè thành công");
-      },
+const handleUnfollow = async () =>{
+  setShouldUnFollowed(true);
+    if(unFollowLoadingFriend == false){
+        await sleep(2000);
+        if(mutateFriends){
+            await mutateFriends();
+        }
     }
-  );
-  const {} = useSWR(
-    shouldUnFriend
-      ? removeFriend({
-          userId: currentUser?.id as string,
-          friendId: userTargetId,
-        })
-      : null,
-    fetcherWithToken,
-    {
-      revalidateOnFocus: false,
-      onSuccess(data, key, config) {
-        toast.success("Xóa bạn bè thành công");
-    },
+  closeUnFollowModal();
+}
+
+const handlefollow = async () =>{
+  setShouldFollowed(true);
+    if(FollowLoadingFriend == false){
+        await sleep(2000);
+        if(mutateFriends){
+            await mutateFriends();
+        }
     }
-  );
+}
+
+//Xử lý kết bạn
+const {isLoading} = useSWR(
+  shouldAddFriend?
+  addFriend({
+      userId: currentUser?.id as string,
+      friendId: userTargetId
+    }):null,
+fetcherWithToken,{
+  revalidateOnFocus: false,
+        onSuccess(data, key, config) {
+            toast.success("Thêm bạn bè thành công");
+        },
+}
+);
+const {isLoading:removeLoadingFriend} = useSWR(
+  shouldUnFriend?
+  removeFriend({
+      userId: currentUser?.id as string,
+      friendId: userTargetId
+    }):null,
+fetcherWithToken,{
+  revalidateOnFocus: false,
+        onSuccess(data, key, config) {
+            toast.success("Xóa bạn bè thành công");
+        },
+}
+);
 
   const {} = useSWR(
     shouldReFriend
@@ -189,12 +196,19 @@ export function FollowButton({
     }
   );
 
-  const handleAddFriend = () => {
+    const mutateFriends = useRecoilValue(mutateFriend);
+  const handleAddFriend = async () =>{
     setShouldAddFriend(true);
   };
 
-  const handleRemoveFriend = () => {
+  const handleRemoveFriend = async () =>{
     setShouldUnFriend(true);
+    if(removeLoadingFriend == false){
+        await sleep(2000);
+        if(mutateFriends){
+            await mutateFriends();
+        }
+    }
     closeUnFriendModal();
   };
 
@@ -280,9 +294,9 @@ export function FollowButton({
         />
       </Modal>
       <div className="flex flex-col">
-        {data?.data.follow ? (
+        {data?.data?.follow ? (
           <Button
-            className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
+            className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5
                      font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
                      hover:before:content-["Bỏ_theo_dõi"] inner:hover:hidden dark:border-light-secondary'
             onClick={preventBubbling(openUnFollowModal)}
@@ -291,7 +305,7 @@ export function FollowButton({
           </Button>
         ) : (
           <Button
-            className="self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90 
+            className="self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90
                      focus-visible:bg-light-primary/90 active:bg-light-border/75 dark:bg-light-border 
                      dark:text-light-primary dark:hover:bg-light-border/90 dark:focus-visible:bg-light-border/90 
                      dark:active:bg-light-border/75 min-w-[120px]"
@@ -304,7 +318,7 @@ export function FollowButton({
         )}
         {data?.data.friend ? (
           <Button
-            className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
+            className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5
                      font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
                      hover:before:content-["Hủy_kết_bạn"] inner:hover:hidden dark:border-light-secondary'
             onClick={preventBubbling(openUnFriendModal)}
@@ -313,7 +327,7 @@ export function FollowButton({
           </Button>
         ) : data?.data.pending ? (
           <Button
-            className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5 
+            className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5
                    font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
                    hover:before:content-["Rút_lại_lời_mời"] inner:hover:hidden dark:border-light-secondary'
             onClick={preventBubbling(openReAcceptModal)}
@@ -322,7 +336,7 @@ export function FollowButton({
           </Button>
         ) : data?.data.acceptFriend ? (
           <Button
-            className="self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90 
+            className="self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90
                      focus-visible:bg-light-primary/90 active:bg-light-border/75 dark:bg-light-border 
                      dark:text-light-primary dark:hover:bg-light-border/90 dark:focus-visible:bg-light-border/90 
                      dark:active:bg-light-border/75 min-w-[120px]"
@@ -334,7 +348,7 @@ export function FollowButton({
           </Button>
         ) : (
           <Button
-            className="self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90 
+            className="self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90
                      focus-visible:bg-light-primary/90 active:bg-light-border/75 dark:bg-light-border 
                      dark:text-light-primary dark:hover:bg-light-border/90 dark:focus-visible:bg-light-border/90 
                      dark:active:bg-light-border/75 min-w-[120px]"

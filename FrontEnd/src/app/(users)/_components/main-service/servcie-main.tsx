@@ -3,13 +3,14 @@ import { useUser } from "context/user-context";
 import { useEffect, useState } from "react";
 import { Modal } from "../modal/modal";
 import { GetAllMainService } from "services/main/clientRequest/service";
-import useSWR from "swr";
+import useSWR, {mutate} from "swr";
 import { addRowNumber } from "@lib/helper/addRowSerivce";
 import { MainService } from "@models/main-service";
 import ServiceMainTable from "./mainservice-table";
 import { Button, Tabs } from "antd";
 
 import CreateMainServiceForm from "app/(users)/(main-layout)/provider/main-service/create-service";
+import * as console from "node:console";
 
 
 export default function ServiceMain() {
@@ -24,15 +25,16 @@ export default function ServiceMain() {
   const handleOk = () => {
     setIsModalOpen(false);
   };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+
   const {
     data: data,
     isLoading: isLoading,
     error: error2,
   } = useSWR(GetAllMainService(currentUser?.id as string), fetcherWithToken);
-
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    mutate(GetAllMainService)
+  };
   useEffect(() => {
     if (data) {
       setMainDataTrue(
@@ -55,6 +57,7 @@ export default function ServiceMain() {
       );
     }
   }, [data]);
+
 
   const handleChange = () =>{
     setChangeStatus(!changeStatus);
@@ -82,7 +85,7 @@ export default function ServiceMain() {
         closeModal={handleCancel}
         className="w-1/2 ml-auto"
       >
-        <CreateMainServiceForm closeModal={()=>setIsModalOpen(false)} />
+        <CreateMainServiceForm closeModal={handleCancel} />
       </Modal>
       <ServiceMainTable data={!changeStatus ? mainDataTrue as any : mainDataFalse as any}></ServiceMainTable>
     </div>

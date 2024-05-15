@@ -18,7 +18,10 @@ type ThemeContextProviderProps = {
 };
 
 function setInitialTheme(): Theme{
-  return 'light';
+  if (typeof window === 'undefined') return 'light';
+  const savedTheme = localStorage.getItem('theme') as Theme | null;
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return savedTheme ?? (prefersDark ? 'dark' : 'light');
 }
 
 function setInitialAccent(): Accent {

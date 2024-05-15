@@ -1,5 +1,5 @@
 'use client'
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Button} from "@components/ui/button";
 import {HeroIcon} from "@components/ui/hero-icon";
 import {ToolTip} from "@components/ui/tooltip";
@@ -19,26 +19,35 @@ import {ContentPost} from "../content/content";
 import {toast} from "react-toastify";
 import {deleteAllBokMarksByUserId} from "../../../../services/realtime/ServerAction/bookmarksService";
 import {SEO} from "../common/seo";
+import {useRecoilState} from "recoil";
+import {mutateBookmarkByPostId} from "@lib/hooks/mutateBookmarkByPostId";
+import {mutateBookmark} from "@lib/hooks/mutateBookmark";
 
 const ContainerBookmarks = () => {
+    const [, setMutateBookmarkPostId] = useRecoilState(mutateBookmarkByPostId);
+    const [, setMutateBookmark] = useRecoilState(mutateBookmark);
     const { currentUser } = useUser();
-
     const { open, openModal, closeModal } = useModal();
-
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
     const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken,{
         revalidateIfStale: false,
+        refreshInterval: 0,
         revalidateOnFocus: false,
         revalidateOnReconnect: false
     });
 
+    const { data: bookmarksRef, isLoading: bookmarksRefLoading,mutate: mutateBookmarkUserId } = useSWR(getBookmarksByUserId(userId),fetcherWithToken);
     const postId = useMemo(
         () => bookmarksRef?.data?.map((item: any) => item.postId) ?? [],
         [bookmarksRef]
     );
-
-    const { data: postData, isLoading: postLoading } = useSWR(getPostListByPostId(postId),fetcherWithToken);
-
+    const { data: postData, isLoading: postLoading,mutate: mutatePost } = useSWR(getPostListByPostId(postId),fetcherWithToken);
+    useEffect(() => {
+        setMutateBookmarkPostId(()=>mutatePost);
+    }, [mutatePost,setMutateBookmarkPostId]);
+    useEffect(() => {
+        setMutateBookmark(()=>mutateBookmarkUserId);
+    }, [mutateBookmarkUserId,setMutateBookmark]);
 
     const handleClear = async (): Promise<void> => {
         await deleteAllBokMarksByUserId(userId);
@@ -47,7 +56,6 @@ const ContainerBookmarks = () => {
     };
     return (
         <>
-            <SEO title='Page / Bookmarks' />
             <Modal
                 modalClassName='max-w-xs bg-main-background w-full p-8 rounded-2xl'
                 open={open}
@@ -55,8 +63,8 @@ const ContainerBookmarks = () => {
             >
                 <ActionModal
                     actionReport={()=>{}}
-                    title='Clear all Page?'
-                    description='This can’t be undone and you’ll remove all Tweets you’ve added to your Page.'
+                    title='Xóa tất cả bài post đẫ lưu'
+                    description='Có thể mất tất cả bài post đã lưu không thể hồi phục'
                     mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75 accent-tab
                             focus-visible:bg-accent-red/90'
                     mainBtnLabel='Clear'
@@ -66,10 +74,8 @@ const ContainerBookmarks = () => {
             </Modal>
             <MainHeader className='flex items-center justify-between'>
                 <div className='-mb-1 flex flex-col'>
-                    <h2 className='-mt-1 text-xl font-bold'>Đã Lưu</h2>
-                    <p className='text-xs text-light-secondary dark:text-dark-secondary'>
-                        {currentUser?.fullName}
-                    </p>
+                    <h2 className='-mt-1 text-xl font-bold'>Filter</h2>
+
                 </div>
                 <Button
                     className='dark-bg-tab group relative p-2 hover:bg-light-primary/10
@@ -89,14 +95,14 @@ const ContainerBookmarks = () => {
                     <Loading className='mt-5' />
                 ) : !bookmarksRef ? (
                     <StatsEmpty
-                        title='Save Tweets for later'
-                        description='Don’t let the good ones fly away! Bookmark Tweets to easily find them again in the future.'
+                        title='Lưu bài post '
+                        description='Đừng để bài post của bạn mất'
                         imageData={{ src: '/assets/no-bookmarks.png', alt: 'No bookmarks' }}
                     />
                 ) : (
                     <AnimatePresence mode='popLayout'>
                         {postData?.data?.map((post:any) => (
-                            <ContentPost {...post} key={post.id} />
+                            <ContentPost {...post} key={post.id}/>
                         ))}
                     </AnimatePresence>
                 )}

@@ -31,6 +31,7 @@ export type TweetProps = Post & {
   profile?: User | null;
   parentTweet?: boolean;
   comment?: boolean;
+  bookmark?: boolean;
 };
 
 export const variants: Variants = {
@@ -59,7 +60,8 @@ export function ContentPost(tweet: TweetProps) {
     modal,
     profile,
     parentTweet,
-      comment
+      comment,
+    bookmark
   } = tweet;
   const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData;
   const { currentUser } = useUser();
@@ -149,6 +151,7 @@ export function ContentPost(tweet: TweetProps) {
               <div className='px-4'>
                 {!modal && (
                     <ContentAction
+                        bookmark={bookmark}
                         reported={handleReported}
                         isOwner={isOwner}
                         ownerId={ownerId}
@@ -168,7 +171,7 @@ export function ContentPost(tweet: TweetProps) {
                   <ImagePreview
                       post
                       imagesPreview={mediaUrl as ImagesPreview}
-                      previewCount={mediaUrl?.length as number }
+                      previewCount={mediaUrl?.length as number}
                   />
               )}
               <ContentStats

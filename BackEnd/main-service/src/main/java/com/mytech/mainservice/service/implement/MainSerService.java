@@ -3,6 +3,7 @@ package com.mytech.mainservice.service.implement;
 import com.mytech.mainservice.dto.ExtraServiceDTO;
 import com.mytech.mainservice.dto.MainServiceDTO;
 import com.mytech.mainservice.dto.PromotionDTO;
+import com.mytech.mainservice.dto.SaveServiceDTO;
 import com.mytech.mainservice.enums.PromotionType;
 import com.mytech.mainservice.exception.myException.InvalidPropertyException;
 import com.mytech.mainservice.exception.myException.NotFoundException;
@@ -10,14 +11,18 @@ import com.mytech.mainservice.helper.JwtTokenHolder;
 import com.mytech.mainservice.model.ExtraService;
 import com.mytech.mainservice.model.MainService;
 import com.mytech.mainservice.model.Promotion;
+import com.mytech.mainservice.model.User;
 import com.mytech.mainservice.model.elasticsearch.ServiceELS;
 import com.mytech.mainservice.repository.IExtraServiceRepository;
 import com.mytech.mainservice.repository.IMainServiceRepository;
 import com.mytech.mainservice.repository.IPromotionRepository;
+import com.mytech.mainservice.repository.IUserRepository;
 import com.mytech.mainservice.service.IELSService;
 import com.mytech.mainservice.service.IMainSerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,6 +35,8 @@ import java.util.stream.Collectors;
 public class MainSerService implements IMainSerService {
     @Autowired
     private IMainServiceRepository mainServiceRepo;
+    @Autowired
+    private IUserRepository userRepo;
     @Autowired
     private IPromotionRepository promotionRepo;
     @Autowired
@@ -60,17 +67,42 @@ public class MainSerService implements IMainSerService {
         }
         return modelMapper.map(mainService, MainServiceDTO.class);
     }
+    @Override
+    public void saveMainService(SaveServiceDTO saveServiceDTO){
+        Optional<MainService> mainService = mainServiceRepo.findById(saveServiceDTO.getMainServiceId());
+        Optional<User> user = userRepo.findById(saveServiceDTO.getUserId());
+        if(mainService.isEmpty() || user.isEmpty()){
+            throw new NotFoundException("Not found main service or user");
+        }
+        MainService getMainService = mainService.get();
+        User getUser = user.get();
 
+        getUser.getSavedMainServices().add(getMainService);
+        getMainService.getSavedByUser().add(getUser);
+
+        userRepo.save(getUser);
+        mainServiceRepo.save(getMainService);
+    }
+
+    @Override
+    public List<MainServiceDTO> findMainServiceSavedByUserId(String userId){
+        List<MainService> listMainService = mainServiceRepo.findMainServiceByUserId(userId);
+        return listMainService.stream().map(mainService -> modelMapper.map(mainService, MainServiceDTO.class)).collect(Collectors.toList());
+    }
+    public void deleteAllSaved(String userId){
+
+
+    }
     @Override
     public void createMainService(MainServiceDTO mainServiceDTO) {
         MainService mainService = modelMapper.map(mainServiceDTO, MainService.class);
 
         List<ExtraService> extraServices = checkValidExtraServiceIds(mainServiceDTO.getExtraServiceDTOs());
         Promotion promotion = checkValidPromotion(mainServiceDTO.getPromotionDTO());
-        mainService.setPromotion(promotion);
+        mainService.setPromotionDTO(promotion);
         mainService.setStatus(true);
         mainService.setCreateDate(LocalDateTime.now());
-        mainService.setExtraServices(extraServices);
+        mainService.setExtraServiceDTOs(extraServices);
         var createdMainService =  mainServiceRepo.save(mainService);
         //Lưu vào ELS Search
         ServiceELS serviceELS = modelMapper.map(createdMainService,ServiceELS.class);
@@ -84,8 +116,17 @@ public class MainSerService implements IMainSerService {
             throw new NotFoundException("Not found main service ");
         }
         if (jwtTokenHolder.isValidUserId(mainService.get().getProvider().getId())) {
-            mainService.get().setStatus(false);
-            mainServiceRepo.save(mainService.get());
+//            mainService.get().setStatus(false);
+            if (mainService.get().isStatus() ) {
+                mainService.get().setStatus(false);
+                mainServiceRepo.save(mainService.get());
+
+            } else {
+                mainService.get().setStatus(true);
+                mainServiceRepo.save(mainService.get());
+            }
+
+//            mainServiceRepo.save(mainService.get());
             //Xóa khỏi els search
             elsService.deleteServiceELSById(mainService.get().getId());
             return;
@@ -100,6 +141,13 @@ public class MainSerService implements IMainSerService {
         //Update the mainService ELS
         ServiceELS serviceELS = modelMapper.map(mainService,ServiceELS.class);
         elsService.updateServiceELS(serviceELS);
+    }
+
+    @Override
+    public List<MainServiceDTO> findTrendMainService() {
+        Pageable topTen = PageRequest.of(0, 10);
+        List<MainService> mainServiceList = mainServiceRepo.findTrendMainService(topTen);
+        return mainServiceList.stream().map(mainService -> modelMapper.map(mainService, MainServiceDTO.class)).collect(Collectors.toList());
     }
 
     private boolean isValidUser(String userId) {

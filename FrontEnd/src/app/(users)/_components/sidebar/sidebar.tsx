@@ -53,10 +53,9 @@ const navLinksBot: Readonly<NavLink[]> = [
         canBeHidden: true
     },
     {
-        href: '/lists',
+        href: '/friends',
         linkName: 'Bạn bè',
         iconName: 'Bars3BottomLeftIcon',
-        disabled: true,
         canBeHidden: true
     }
 ];
@@ -156,7 +155,9 @@ export function Sidebar() {
                             <p className="hidden xl:block">Post</p>
                         </Button>
                     </section>
+                    
                     {!isMobile && <SidebarProfile/>}
+
                 </div>
 
             </header>

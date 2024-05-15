@@ -7,7 +7,7 @@ import 'package:flutter_twitter_clone/helper/shared_prefrence_helper.dart';
 import 'package:flutter_twitter_clone/helper/utility.dart';
 import 'package:flutter_twitter_clone/ui/page/common/locator.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:flutter_twitter_clone/myModel/myPost.dart';
 class ApiHelper {
   static String _scheme = 'http';
   static String _host = '10.0.2.2';
@@ -60,12 +60,10 @@ class ApiHelper {
       if (response.statusCode == 200) {
         final String decodedBody = utf8.decode(response.bodyBytes);
         final responseData = json.decode(decodedBody);
-        ResponseObject responseObject =
-            ResponseObject.fromJson(responseData, null);
+        ResponseObject responseObject = ResponseObject.fromJson(responseData,null);
         return responseObject;
       }
-      throw Exception(
-          "ApiHelper: call api failed with status code: ${response.statusCode}");
+      throw Exception("ApiHelper: call api failed with status code: ${response.statusCode}");
     } catch (exception) {
       cprint(exception, errorIn: 'ApiHelper');
       return ResponseObject(status: 500, message: "ApiHelper: call api failed");

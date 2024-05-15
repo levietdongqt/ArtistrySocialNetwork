@@ -22,7 +22,6 @@ class FollowNotificationTile extends StatelessWidget {
       children: [
         Container(
           color: TwitterColor.white,
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
           child: Column(
             children: [
               Row(
@@ -66,31 +65,31 @@ class _UserCard extends StatelessWidget {
     var g = "";
     switch (type) {
       case "FOLLOWING":
-        g = " đang theo dõi bạn";
+        g = "Đang theo dõi bạn";
         break;
       case "LIKE":
-        g = " đã like bài viết của bạn";
+        g = "Đã like bài viết của bạn";
         break;
       case "NORMAL":
-        g = " đã đăng bài viết mới";
+        g = "Đã đăng bài viết mới";
         break;
       case "TAG":
-        g = " đã gắn bạn vào bài viết của họ";
+        g = "Đã gắn bạn vào bài viết của họ";
         break;
       case "COMMENT":
-        g = " đã bình luận bài viết của họ";
+        g = "Đã bình luận bài viết của họ";
         break;
       case "FRIEND":
-        g = " đã gửi lời mời kết bạn";
+        g = "Đã gửi lời mời kết bạn";
         break;
       case "ACCEPT_FRIEND":
-        g = " đã chấp nhận lời mời kết bạn";
+        g = "Đã chấp nhận kết bạn";
         break;
     }
     return Padding(
         padding: const EdgeInsets.only(left: 30, top: 10, bottom: 8),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
           decoration: BoxDecoration(
             border: Border.all(color: AppColor.extraLightGrey, width: .5),
             borderRadius: const BorderRadius.all(Radius.circular(15)),
@@ -101,7 +100,7 @@ class _UserCard extends StatelessWidget {
               CircularImage(path: user.avatar!, height: 40),
               const SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: Row(
                   children: <Widget>[
                     UrlText(
@@ -113,7 +112,7 @@ class _UserCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 3),
-                    Text(g, style: TextStyles.subtitleStyle),
+                   
                     
                   ],
                 ),
@@ -126,7 +125,15 @@ class _UserCard extends StatelessWidget {
                   style: TextStyles.subtitleStyle.copyWith(fontSize: 13),
                 ),
               ),
+               Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: customText(
+                  '${g}',
+                  style: TextStyles.subtitleStyle.copyWith(fontSize: 15),
+                ),
+              ),
             ],
+            
           ),
         ).ripple(() {
           Navigator.push(context, ProfilePage.getRoute(profileId: user.id!));
