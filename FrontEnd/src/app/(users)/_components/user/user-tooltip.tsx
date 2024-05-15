@@ -5,7 +5,7 @@ import { useWindow } from '../../../../context/window-context';
 import { FollowButton } from '@components/ui/follow-button';
 import { NextImage } from '@components/ui/next-image';
 import { UserAvatar } from './user-avatar';
-import { UserName } from './user-name';
+import { UserName }  from './user-name';
 import { UserFollowing } from './user-following';
 import { UserUsername } from './user-username';
 import React, { ReactNode } from 'react';
@@ -45,6 +45,7 @@ export function UserTooltip({
   avatarCheck
 }: UserTooltipProps):JSX.Element {
   const parser = new DOMParser();
+  console.log("bio",bio)
   const { isMobile } = useWindow();
   const [hovered, setHovered] = useState(false);
   const [doc,setDoc] = useState<any>();

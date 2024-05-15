@@ -119,14 +119,12 @@ fetcherWithToken,{
 
   useEffect(() => {
     if (shouldUnFollowed) {
-      mutate(isFollowing);
       setShouldUnFollowed(false);
     }
   }, [shouldUnFollowed]);
 
   useEffect(() => {
     if (shouldFollowed) {
-      mutate(isFollowing);
       setShouldFollowed(false);
     }
   }, [shouldFollowed]);
@@ -245,28 +243,24 @@ fetcherWithToken,{
 
   useEffect(() => {
     if (shouldAddFriend) {
-      mutate(isFollowing);
       setShouldAddFriend(false);
     }
   }, [shouldAddFriend]);
 
   useEffect(() => {
     if (shouldUnFriend) {
-      mutate(isFollowing);
       setShouldUnFriend(false);
     }
   }, [shouldUnFriend]);
 
   useEffect(() => {
     if (shouldReFriend) {
-      mutate(isFollowing);
       setShouldReFriend(false);
     }
   }, [shouldReFriend]);
 
   useEffect(() => {
     if (shouldAcceptFriend) {
-      mutate(isFollowing);
       setShouldAcceptFriend(false);
     }
   }, [shouldAcceptFriend]);
