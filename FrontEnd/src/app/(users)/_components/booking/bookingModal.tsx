@@ -41,11 +41,12 @@ const range = (start: number, end: number) => {
     return result;
 };
 
-export default function BookingModal({providerId, mainService,closeModal}: props) {
+export default function BookingModal({providerId, mainService, closeModal}: props) {
     const {currentUser, setCurrentUser} = useUser()
     const {captchaVerifier} = useOAuth2()
 
     const [showVerifyPhone, setShowVerifyPhone] = useState(false)
+    const [fullName, setFullName] = useState(currentUser!.fullName)
     const [mainServiceNumber, setMainServiceNumber] = useState(1)
     const [isShowCaptcha, setIsShowCaptcha] = useState(true)
     const [isEditMainServiceNumber, setIsEditMainServiceNumber] = useState(false)
@@ -53,7 +54,8 @@ export default function BookingModal({providerId, mainService,closeModal}: props
     const [phoneNumber, setPhoneNumber] = useState(currentUser?.phoneNumber?.substring(3) ?? "")
     const [isShowInvoice, setIsShowInvoice] = useState(false)
     const [extraServices, setExtraServices] = useState<ExtraService[]>([])
-    const [total, setTotal] = useState(mainService.price)
+    const [noDiscountTotal, setNoDiscountTotal] = useState(mainService.price)
+    const [finalTotal, setFinalTotal] = useState(!mainService.promotionDTO ? mainService.price : mainService.price * (100-mainService.promotionDTO.discountPercent)/100)
     const [selectedExtraServices, setSelectedExtraServices] = useState<ExtraService[]>([])
     const [disableTimePicker, setDisableTimePicker] = useState(true)
     const [showTimePickerTooltip, setShowTimePickerTooltip] = useState(true)
@@ -98,16 +100,19 @@ export default function BookingModal({providerId, mainService,closeModal}: props
         const disabledHours: number[] = [];
         const disabledMinutes: Record<number, number[]> = {};
         // Tìm giờ làm việc cho nhà cung cấp vào ngày được chọn
-        const todayWorkingTime = providerWorkingTimes.find(workingTime => {
-            return selectedDate.valueOf() >= workingTime.startDate.getTime()
-                && selectedDate.valueOf() <= workingTime.endDate.getTime()
-        })!;
+        let todayWorkingTime = providerWorkingTimes.find(workingTime => {
+            return selectedDate.endOf('day').valueOf() >= workingTime.startDate.getTime()
+                && selectedDate.startOf('day').valueOf() <= workingTime.endDate.getTime()
+        })!
         const hourStart = todayWorkingTime.startDate.getHours()
         const hourEnd = todayWorkingTime.endDate.getHours()
         const minusEnd = todayWorkingTime.endDate.getMinutes()
+
         handlePushDisableTime(disabledHours, range(0, hourStart - 1))
         handlePushDisableTime(disabledHours, minusEnd > 0 ? range(hourEnd + 1, 23) : range(hourEnd, 23))
 
+        const today = new Date(Date.now())
+        const todayEndTime = new Date(selectedDate.year(), selectedDate.month(), selectedDate.date(), hourEnd, minusEnd);
         const minusDisableDefault = [
             ...range(1, 14),
             ...range(16, 29),
@@ -123,12 +128,19 @@ export default function BookingModal({providerId, mainService,closeModal}: props
             for (let minute = 0; minute < 60; minute += 15) {
                 const timeSlotStart = selectedDate.hour(hour).minute(minute).second(0);
                 const timeSlotEnd = timeSlotStart.add(mainService.duration * 60 - 1, 'minute');
-                const isNotOverlapOrders = orders.every(order => {
-                    if (hour === 11 && minute < 3) {
-                        console.log("timeSlotStart: ", `${hour}:${minute}`, timeSlotStart.toDate(), timeSlotEnd.toDate())
-                        console.log("startTime: ", `${hour}:${minute}`, order.startDate, order.endDate)
+                if (timeSlotEnd.add(1, "minute").isAfter(todayEndTime)) {
+                    console.log("Disabel: ", hour, minute, timeSlotEnd, timeSlotEnd)
+                    handlePushDisableTime(disabledMinutes[hour], [minute]);
+                    continue;
+                }
 
-                    }
+                if (hour === 11 && minute < 3) {
+                    console.log("timeSlotStart: ", `${hour}:${minute}`, timeSlotStart.toDate(), timeSlotEnd.toDate())
+                    // console.log("startTime: ", `${hour}:${minute}`, order.startDate, order.endDate)
+
+                }
+                const isNotOverlapOrders = orders.every(order => {
+
                     return (!timeSlotStart.isAfter(order.startDate) && !timeSlotEnd.isAfter(order.startDate))
                         || (!timeSlotStart.isBefore(order.endDate) && !timeSlotEnd.isBefore(order.endDate))
                 })
@@ -220,15 +232,26 @@ export default function BookingModal({providerId, mainService,closeModal}: props
             toastId = toast.warning("Số điện thoại không hợp lệ!")
             return
         }
+        if (!(fullName?.trim().length > 3)) {
+            if (toast.isActive(toastId))
+                return
+            toastId = toast.warning("Tên khách hàng quá ngắn!")
+            return
+        }
         const durationSchedule = mainService.duration * mainServiceNumber
         const order: Order = {
             additionalService: selectedExtraServices,
-            created: new Date(Date.now() + 1000 * 60 * 7),
+            createDate: new Date(Date.now() + 1000 * 60 * 60 * 7),
             customerUser: currentUser!,
             endDate: selectedDate.add(7, 'hour').add(durationSchedule * 60, 'minute').toDate(),
             mainService: mainService,
-            promotion: undefined,
-            totalPrice: total,
+            promotion: mainService.promotionDTO,
+            metaData: {
+                fullName: fullName,
+                phoneNumber: phoneFinal
+            },
+
+            totalPrice: finalTotal,
             amount: mainServiceNumber,
             providerUser: mainService.provider!,
             startDate: selectedDate.add(7, 'hour').toDate(),
@@ -237,8 +260,8 @@ export default function BookingModal({providerId, mainService,closeModal}: props
 
         if (phoneFinal != currentUser?.phoneNumber) {
             Swal.fire({
-                    title: "Thay đổi số điện thoại?!",
-                    text: "Chúng tôi sẽ thực hiện xác thực số điện thoại mới của bạn! ",
+                    title: "Số điện thoại mới?!",
+                    text: "Chúng tôi sẽ thực hiện xác thực số điện thoại mới này! ",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#3085d6",
@@ -271,7 +294,8 @@ export default function BookingModal({providerId, mainService,closeModal}: props
         if (index !== -1) {
             return;
         }
-        setTotal(prevState => prevState + extraService.price)
+        setNoDiscountTotal(prevState => prevState + extraService.price)
+        setFinalTotal(prevState => prevState + extraService.price)
         newSelectedExtra.push({...extraService} as ExtraService)
         setSelectedExtraServices(newSelectedExtra);
     }
@@ -282,31 +306,21 @@ export default function BookingModal({providerId, mainService,closeModal}: props
         if (index === -1) {
             return;
         }
-        setTotal(prevState => prevState - extraService.price)
+        setNoDiscountTotal(prevState => prevState - extraService.price)
+        setFinalTotal(prevState => prevState - extraService.price)
         newSelectedExtra.splice(index, 1)
         setSelectedExtraServices(newSelectedExtra);
     }
     const verifyCodeCallBack = async () => {
-        const requestBody = {
-            id: currentUser?.id,
-            phoneNumber: checkPhoneFormat(phoneNumber),
-            roles: currentUser?.roles,
-            phoneConfirmed: true
-        }
-        const response = await updateUser(requestBody)
-        if (response.status === 200) {
-            setCurrentUser(response.data as User)
             setShowVerifyPhone(false)
             setIsShowInvoice(true)
-            return;
-        }
-        toast.error("Có lỗi xảy ra, vui lòng thử lại!")
-        window.location.reload();
     }
     return (
         <>
             <Modal open={isShowInvoice} closeModal={() => setIsShowInvoice(false)}>
-                <Invoice order={orderDetail!} callback={() => {
+                <Invoice order={orderDetail!}
+                         isCreate={true}
+                         callback={() => {
                     setIsShowInvoice(false);
                     closeModal?.()
                 }}/>
@@ -344,8 +358,26 @@ export default function BookingModal({providerId, mainService,closeModal}: props
                         </div>
 
                         <div className={"flex justify-start mt-7"}>
-                            <div className="w-[50%] ">
-                                <div className="">
+                            <div className={'w-[50%]'}>
+                                <div className="relative w-full mb-3">
+                                    <label
+                                        className="block uppercase text-slate-600 text-xs font-bold mb-2"
+                                        htmlFor="grid-password"
+                                    >
+                                        Họ tên
+                                    </label>
+                                    <input
+                                        type="text" id="fullName" name="fullName"
+                                        className="border-0 px-3 py-2 placeholder-slate-300 text-slate-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
+                                    />
+                                    {/*{errors.fullName && touched.fullName ?*/}
+                                    {/*    <div className="text-red-700 text-sm ">{errors.fullName}</div> : null}*/}
+                                </div>
+                            </div>
+                            <div className="w-[50%] flex justify-end">
+                                <div className="w-[70%]">
                                     <label
                                         className="block uppercase text-slate-600 text-xs font-bold mb-2"
                                         htmlFor="grid-password"
@@ -479,9 +511,14 @@ export default function BookingModal({providerId, mainService,closeModal}: props
 
                         <div className="flex  justify-end mt-2">
                             <div>
+                                {
+                                    mainService.promotionDTO && <div className="flex justify-end">
+                                        <span className={'line-through'}> {noDiscountTotal}</span>đ
 
+                                    </div>
+                                }
                                 <div className="">
-                                    Tổng: {total}đ
+                                    Tổng: {finalTotal}đ
                                 </div>
                                 <div
                                     className="my-2   flex items-center before:mt-0.5 before:flex-1 before:border-t-2 before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t-2 after:border-neutral-300">

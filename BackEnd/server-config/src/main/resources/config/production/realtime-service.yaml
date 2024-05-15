@@ -14,7 +14,7 @@ spring:
     exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   data:
     mongodb:
-      uri: mongodb://root:RHUowB1w__*e3MBZGAf0@34.87.190.66:27017/snap_connectDb?authSource=admin
+      uri: mongodb://root:RHUowB1w__*e3MBZGAf0@host.docker.internal:27017/snap_connectDb?authSource=admin
 eureka:
   client:
     service-url:

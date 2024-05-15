@@ -91,6 +91,7 @@ export async function checkConversation(body: string) {
     const fullUrl = `${process.env.NEXT_PUBLIC_REALTIME_SERVICE_URL}/conversation/check`
     const config: AxiosRequestConfig = {
         url: fullUrl,
+        data: body,
         method: 'POST',
     };
     const response = await axiosWithToken(config);

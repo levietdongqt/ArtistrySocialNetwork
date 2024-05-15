@@ -8,19 +8,20 @@ export type Order = {
     status: OrderStatus;
     startDate: Date;
     endDate: Date;
-    created: Date;
+    createDate: Date;
     updated?: Date;
     providerUser: User;
     customerUser:User;
     mainService: MainService;
     amount?: number;
+    metaData: any;
     totalPrice?: number;
-    promotion?: Promotion;
+    promotion?: Promotion | null;
     additionalService?: ExtraService[];
 }
 
 export enum OrderStatus {
-    PENDING,
-    ACTIVE,
-    CANCELLED
+    PENDING = "PENDING",
+    ACTIVE = "ACTIVE",
+    CANCELLED = "CANCELLED"
 }

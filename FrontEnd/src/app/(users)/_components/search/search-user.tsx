@@ -36,7 +36,7 @@ export default function SearchUser() {
               {
             data?.data.map((item: any, index : number) => {
               return (
-                <div className="mt-3">
+                <div className="mt-3" key={index}>
                 <SearchUserCard key={index} data={item}/>
                 </div>
               )

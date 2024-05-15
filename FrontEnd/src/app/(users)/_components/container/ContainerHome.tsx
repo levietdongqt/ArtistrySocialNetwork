@@ -32,9 +32,9 @@ function ContainerHome() {
                                     dataLength={Data?.length as number ?? 0}
                                     >
                         <AnimatePresence mode='popLayout'>
-                            {Data?.map((content) =>
+                            {Data?.map((content,index) =>
                                     content === undefined ?
-                                        <Error message='Không có bài viết nào cả bạn nên follow để có bài viết' /> :
+                                        <Error key={index} message='Không có bài viết nào cả bạn nên follow để có bài viết' /> :
                                         <ContentPost {...content} key={content?.id}/>
                             )}
                         </AnimatePresence>
