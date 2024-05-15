@@ -50,10 +50,10 @@ public class Promotion implements Serializable {
     @Column(name = "status")
     private boolean status = true;
 
-    @OneToMany(mappedBy = "promotion")
+    @OneToMany(mappedBy = "promotionDTO")
     private List<MainService> mainServices;
 
-    @OneToMany(mappedBy = "promotion")
+    @OneToMany(mappedBy = "promotionDTO")
     private List<ExtraService> extraServices;
 
     @OneToMany(mappedBy = "promotion")

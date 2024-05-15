@@ -1,8 +1,8 @@
-"use client"
+
 import cn from 'clsx';
 import Link from 'next/link';
 import { HeroIcon } from '@components/ui/hero-icon';
-
+import { useEffect, useState } from 'react';
 type UserNameProps = {
   tag?: keyof JSX.IntrinsicElements;
   id?:string;
@@ -12,7 +12,6 @@ type UserNameProps = {
   className?: string;
   iconClassName?: string;
 };
-
 export function UserName({
   id,
   tag,
@@ -23,16 +22,18 @@ export function UserName({
   iconClassName
 }: UserNameProps): JSX.Element {
   const CustomTag = tag ? tag : 'p';
+
   return (
     <Link href={id ? `/profile/${id}` : '#'}  className={cn(
         'flex items-center gap-1 truncate font-bold',
         username ? 'custom-underline' : 'pointer-events-none',
-        className
+        className 
     )}
           tabIndex={username ? 0 : -1}
     >
-
-        <CustomTag className='truncate'>{name}</CustomTag>
+        <CustomTag className='truncate' >{username}</CustomTag>
+       
+        
         {verified && (
           <i>
             <HeroIcon

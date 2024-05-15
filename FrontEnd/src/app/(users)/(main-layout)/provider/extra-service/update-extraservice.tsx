@@ -4,12 +4,12 @@ import { EditableMainServiceData, MainService } from "@models/main-service";
 import { useUser } from "../../../../../context/user-context";
 import {
   createMainService,
-  GetMainServiceById,
+  GetMainServiceById, updateExtraService,
   updateMainService,
 } from "../../../../../services/main/clientRequest/service";
 import ImageService, { ImageItem } from "./image-service";
 import { useFormik } from "formik";
-import ServiceValidation from "@lib/validations/ServiceValidation";
+import  {ExtraServiceValidation} from "@lib/validations/ServiceValidation";
 import { Promotion } from "@models/promotion";
 import useSWR from "swr";
 import { getPromotions } from "services/main/clientRequest/promotion";
@@ -21,13 +21,14 @@ import { transformToFilesWithId } from "@lib/utils";
 import { uploadImages } from "../../../../../firebase/utils";
 import DescriptionInput from "../../../_components/input/input-description";
 import {toast} from "react-toastify";
+import {ExtraService} from "@models/extra-service";
 type PropUpdateMainService = {
   data: MainService;
   closeModal: () => void;
 };
 
 
-const UpdateMainService = ({ data,closeModal }: PropUpdateMainService) => {
+const UpdateExtraService = ({ data,closeModal }: PropUpdateMainService) => {
   console.log("UpdateMainService", data);
   const { currentUser } = useUser();
   const [updateService1, setUpdateService1] = useState<MainService>();
@@ -97,33 +98,16 @@ const UpdateMainService = ({ data,closeModal }: PropUpdateMainService) => {
         status: data.status,
         createDate: data.createDate,
       },
-      validationSchema: ServiceValidation,
-      onSubmit: async (values: MainService, { setSubmitting, resetForm }) => {
-        var updatedUploadUrls : any[] = [];
-        if (files.length > 0) {
-          const uploadedImagesData = await uploadImages(
-            currentUser?.id as string,
-            files as FilesWithId
-          );
-          var imageUrls = uploadedImagesData?.map(
-            (upload: any, index: any) => upload.src
-          );
-          var existedUrls = urlUpload.map((data: any) => data.url);
-          updatedUploadUrls = [...existedUrls, ...(imageUrls as string[])];
-        }else{
-          updatedUploadUrls = urlUpload.map((data: any) => data.url);
-        }
-        setFiles((prev) => []);
-
+      validationSchema: ExtraServiceValidation,
+      onSubmit: async (values: ExtraService, { setSubmitting, resetForm }) => {
         const newService = {
             ...values,
-            imageUrls: updatedUploadUrls,
             promotionDTO: applyPromotion,
             description : newdescription
         };
         try {
           toast.promise(
-              updateMainService(newService), // Hàm async để thực thi
+              updateExtraService(newService), // Hàm async để thực thi
               {
                 pending: 'Đang cập nhật thông tin...', // Thông báo khi đang xử lý
                 success: 'Cập nhật thông tin thành công', // Thông báo khi thành công
@@ -140,41 +124,13 @@ const UpdateMainService = ({ data,closeModal }: PropUpdateMainService) => {
         }
       },
     });
-  // const handleImageListChange = (newImageList: ImageItem[]) => {
-  //     console.log("newImageList",newImageList)
-  //     // Chỉ cần cập nhật mService imageUrl thay vì gọi setFieldValue tại đây.
-  //     setMService({
-  //         ...mService,
-  //         imageUrls: newImageList.map((imageItem) => imageItem.src),
-  //     });
-  // };
 
-  // useEffect(() => {
-  //     if (service?.data) {
-  //         setUpdateService({
-  //             id: serviceId,
-  //             name: service.data.name,
-  //             price: service.data.price,
-  //             priceType: service.data.priceType,
-  //             duration: service.data.duration,
-  //             restTime: service.data.restTime,
-  //             imageUrls: service.data.imageUrls,
-  //             description: service.data.description,
-  //             updateDate: new Date(),
-  //             promotionDTO: service.data.promotionDTO,
-  //         });
-  //         setNewDescription(service.data.description || '');
-  //         setPromotionId(service.data.promotionDTO?.id || null);
-  //     }
-  // }, [service, serviceId]);
-
-  // console.log('updatedata',values.name)
   return (
       <form
           onSubmit={handleSubmit}
           className="w-full mx-auto p-6 bg-white rounded shadow mr-10"
       >
-        <UploadFile urlMedia={values.imageUrls}/>
+        {/*<UploadFile urlMedia={values.imageUrls}/>*/}
 
         {/* <ImageService onImageListChange={handleImageListChange}/> */}
         <div className="mb-4">
@@ -249,47 +205,47 @@ const UpdateMainService = ({ data,closeModal }: PropUpdateMainService) => {
               <div className="text-red-700 text-sm">{errors.priceType}</div>
           ) : null}
         </div>
-        <div className="mb-4">
-          <label
-              htmlFor="servicePrice"
-              className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            Khoảng thời gian (Giờ)
-          </label>
-          <input
-              type="number"
-              id="duration"
-              name="duration"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-              onChange={handleChange}
-              value={values.duration}
-          />
-          {errors.duration && touched.duration ? (
-              <div className="text-red-700 text-sm">{errors.duration}</div>
-          ) : null}
-        </div>
+        {/*<div className="mb-4">*/}
+        {/*  <label*/}
+        {/*      htmlFor="servicePrice"*/}
+        {/*      className="block text-gray-700 text-sm font-bold mb-2"*/}
+        {/*  >*/}
+        {/*    Khoảng thời gian (Giờ)*/}
+        {/*  </label>*/}
+        {/*  <input*/}
+        {/*      type="number"*/}
+        {/*      id="duration"*/}
+        {/*      name="duration"*/}
+        {/*      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"*/}
+        {/*      required*/}
+        {/*      onChange={handleChange}*/}
+        {/*      value={values.duration}*/}
+        {/*  />*/}
+        {/*  {errors.duration && touched.duration ? (*/}
+        {/*      <div className="text-red-700 text-sm">{errors.duration}</div>*/}
+        {/*  ) : null}*/}
+        {/*</div>*/}
 
-        <div className="mb-4">
-          <label
-              htmlFor="servicePrice"
-              className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            Thời gian nghỉ (Phút)
-          </label>
-          <input
-              type="number"
-              id="restTime"
-              name="restTime"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-              onChange={handleChange}
-              value={values.restTime}
-          />
-          {errors.restTime && touched.restTime ? (
-              <div className="text-red-700 text-sm">{errors.restTime}</div>
-          ) : null}
-        </div>
+        {/*<div className="mb-4">*/}
+        {/*  <label*/}
+        {/*      htmlFor="servicePrice"*/}
+        {/*      className="block text-gray-700 text-sm font-bold mb-2"*/}
+        {/*  >*/}
+        {/*    Thời gian nghỉ (Phút)*/}
+        {/*  </label>*/}
+        {/*  <input*/}
+        {/*      type="number"*/}
+        {/*      id="restTime"*/}
+        {/*      name="restTime"*/}
+        {/*      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"*/}
+        {/*      required*/}
+        {/*      onChange={handleChange}*/}
+        {/*      value={values.restTime}*/}
+        {/*  />*/}
+        {/*  {errors.restTime && touched.restTime ? (*/}
+        {/*      <div className="text-red-700 text-sm">{errors.restTime}</div>*/}
+        {/*  ) : null}*/}
+        {/*</div>*/}
         <div className="mb-4">
           <select
               id="promotionId"
@@ -331,4 +287,4 @@ const UpdateMainService = ({ data,closeModal }: PropUpdateMainService) => {
   );
 };
 
-export default UpdateMainService;
+export default UpdateExtraService;

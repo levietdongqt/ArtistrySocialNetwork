@@ -12,16 +12,16 @@ import {mutateState} from "@lib/hooks/mutateState";
 
 
 function ContainerHome() {
-    const { paginatedPosts:Data, isLoadingMore,LoadMore,isReachedEnd,setSize,size,mutate,error } =
-    useInfiniteScroll(
-        getPostsLimit
-    );
-    const [, setMutateFunction ] = useRecoilState(mutateState);
+    const {paginatedPosts: Data, isLoadingMore, LoadMore, isReachedEnd, setSize, size, mutate, error} =
+        useInfiniteScroll(
+            getPostsLimit
+        );
+    const [, setMutateFunction] = useRecoilState(mutateState);
     useEffect(() => {
         setMutateFunction(() => mutate);
     }, [mutate, setMutateFunction]);
-    console.log("show ,",Data);
-    const theEndPost = ():ReactNode =>{
+
+    const theEndPost = (): ReactNode => {
         return (
             <div className={'mt-10'}>
                 <p className='text-center text-gray-500 text-2xl font-bold'>Không còn bài viết</p>

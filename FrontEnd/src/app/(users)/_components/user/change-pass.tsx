@@ -3,11 +3,10 @@ import {useEffect} from "react";
 import {useRouter} from "next/navigation";
 import Swal from "sweetalert2";
 import {useFormik} from "formik";
-import RegisterValidation from "@lib/validations/ForgotPassValidation";
 import {toast} from "react-toastify";
-import {getCookie} from "cookies-next";
-import {changePassword} from "../../../../services/main/auth-service";
 import ChangePassValidation from "@lib/validations/ChangePassValidation";
+import {changePasswordUser} from "../../../../services/main/clientRequest/userClient";
+import {ChangePassDTO} from "@models/user";
 interface  Proptype {
     phoneNum: string;
     callback:()=> void;
@@ -17,21 +16,19 @@ export default function ChangePass({phoneNum,callback}: Proptype) {
     const router = useRouter()
 
 
-    const {values, touched, handleSubmit, handleChange, errors, isValid, resetForm} = useFormik({
+    const {values, touched, handleSubmit, handleChange, errors, isValid, resetForm, setFieldError} = useFormik({
         initialValues: {
-            oldPassword:'',
-            rePassword: '',
-            password: ''
+            oldPass:'',
+            newPass:'',
+            reNewPass:'',
         },
         onSubmit: values => {
-            console.log("ON Submit")
-
-            showConfirmation({password: values.password, phoneNumber: phoneNum})
+            showConfirmation({oldPass:values.oldPass, newPass:values.newPass});
         },
         validationSchema: ChangePassValidation,
     });
 
-    const showConfirmation = (data: {}) => {
+    const showConfirmation = (data: ChangePassDTO) => {
         Swal.fire({
             title: " Mật khẩu sẽ được thay đổi? ",
             icon: "warning",
@@ -42,14 +39,26 @@ export default function ChangePass({phoneNum,callback}: Proptype) {
             cancelButtonText: "Huỷ bỏ"
         }).then((result) => {
             if (result.isConfirmed) {
-                toast.promise(changePassword(data), {
+                toast.promise(changePasswordUser(data), {
                     pending: "Đang đổi mật khẩu ...",
                     success: " Đổi mật khẩu thành công!",
                     error: "Đổi mật khẩu thất bại! "
-                }).then(value => callback())
+                })
+                    .then(value => callback())
+                    .catch(error => {
+                        if (error.response && error.response.data && error.response.data.message === "Old password is not valid") {
+                            // Set lỗi cho 'oldPass'
+                            setFieldError("oldPass", "Mật khẩu cũ không đúng.");
+                        } else {
+                            // Có thể có lỗi khác không liên quan đến mật khẩu cũ.
+                            // Bạn có thể muốn hiển thị một thông báo chung cho người dùng,
+                            // hoặc dựa vào thông tin lỗi để hiển thị thông báo cụ thể hơn.
+                            toast.error("Có lỗi xảy ra khi đổi mật khẩu.");
+                        }
+                    });
             }
         });
-    }
+    };
     return (
         <>
             <div className="flex-auto px-4 lg:px-10 py-10 pt-0 bg-amber-50">
@@ -67,13 +76,13 @@ export default function ChangePass({phoneNum,callback}: Proptype) {
                             Mật khẩu cũ
                         </label>
                         <input
-                            type="password" id="oldPassword" name="oldPassword"
+                            type="password" id="oldPass" name="oldPass"
                             className="border-0 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                             placeholder="Mật khẩu"
                             onChange={handleChange}
-                            value={values.oldPassword}/>
-                        {errors.oldPassword && touched.oldPassword ?
-                            <div className="text-red-700 text-sm">{errors.oldPassword}</div> : null}
+                            value={values.oldPass}/>
+                        {errors.oldPass && touched.oldPass ?
+                            <div className="text-red-700 text-sm">{errors.oldPass}</div> : null}
                     </div>
                     <div className="relative w-full mb-3">
                         <label
@@ -83,13 +92,13 @@ export default function ChangePass({phoneNum,callback}: Proptype) {
                             Mật khẩu
                         </label>
                         <input
-                            type="password" id="password" name="password"
+                            type="password" id="newPass" name="newPass"
                             className="border-0 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                             placeholder="Mật khẩu"
                             onChange={handleChange}
-                            value={values.password}/>
-                        {errors.password && touched.password ?
-                            <div className="text-red-700 text-sm">{errors.password}</div> : null}
+                            value={values.newPass}/>
+                        {errors.newPass && touched.newPass ?
+                            <div className="text-red-700 text-sm">{errors.newPass}</div> : null}
                     </div>
 
                     <div className="relative w-full mb-5">
@@ -100,13 +109,13 @@ export default function ChangePass({phoneNum,callback}: Proptype) {
                             Xác nhận mật khẩu
                         </label>
                         <input
-                            type="password" id="rePassword" name="rePassword"
+                            type="password" id="reNewPass" name="reNewPass"
                             className="border-0 px-3 py-3 placeholder-slate-300 text-slate-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                             placeholder="Mật khẩu"
                             onChange={handleChange}
-                            value={values.rePassword}/>
-                        {errors.rePassword && touched.rePassword ?
-                            <div className="text-red-700 text-sm">{errors.rePassword}</div> : null}
+                            value={values.reNewPass}/>
+                        {errors.reNewPass && touched.reNewPass ?
+                            <div className="text-red-700 text-sm">{errors.reNewPass}</div> : null}
                     </div>
                     <div className="text-center mt-6">
                         <button

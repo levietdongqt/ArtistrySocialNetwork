@@ -21,7 +21,7 @@ export default function Register() {
     const router = useRouter();
     const [errorExistAccount, setErrorExistAccount] = useState(false)
     const [showValidPhone, setShowValidPhone] = useState(false)
-    const [isShowCapcha, setIsShowCapcha] = useState(false)
+    const [isShowCapcha, setIsShowCapcha] = useState(true)
     const [finalPhone, setFinalPhone] = useState("")
 
     let {values, touched, handleSubmit, handleChange, errors, isValid, resetForm} = useFormik({
@@ -54,6 +54,7 @@ export default function Register() {
     }, [errors.phoneNumber]);
 
     const registerHandler = async (data: any) => {
+        console.log("Show Captcha: ",isShowCapcha)
         const register = () => {
             setIsShowCapcha(false)
             toast.promise(registerService(data), {
@@ -68,6 +69,7 @@ export default function Register() {
                 });
         }
         await captchaVerifier({
+            destination: "/verify/continue",
             phoneNumber: finalPhone,
             callBack: register
         })
@@ -217,7 +219,7 @@ export default function Register() {
                         <div id="recaptcha-container" className="my-5"></div>
                     </div>}
 
-                    {!isShowCapcha &&
+                    {
                         <div className="text-center mt-6">
                             <button
                                 className="bg-slate-800 text-white active:bg-slate-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"

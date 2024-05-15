@@ -6,6 +6,14 @@ import { Modal } from "../modal/modal";
 import { useState } from "react";
 import {MainService} from "@models/main-service";
 import UpdateMainService from "../../(main-layout)/provider/main-service/update-service";
+import {deletePromotion, getAllPromotions, reworkPromotion} from "../../../../services/main/clientRequest/promotion";
+import {mutate} from "swr";
+import {toast} from "react-toastify";
+import {
+  createExtraService,
+  GetMainServiceById,
+  updateStatusMainService
+} from "../../../../services/main/clientRequest/service";
 
 type DataTable = {
   data: MainService[];
@@ -27,17 +35,12 @@ export default function ServiceMainTable({ data }: DataTable) {
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
   const [editingServiceId, setEditingServiceId] = useState<any>();
 
-  // Mở modal shows ảnh grand ắng handling event
-  // const handleViewImage = (imageUrl: string) => {
-  //   setSelectedImage(imageUrl);
-  //   setUpdateModalVisible(true);
-  // };
 
   const handleCancel = () => {
     console.log("Cancelled");
     //setEditingServiceId(null);
     setUpdateModalVisible(false);
-   
+    mutate(GetMainServiceById)
   };
 
   // Người dùng nhấn vào "Chỉnh sửa"
@@ -50,14 +53,34 @@ export default function ServiceMainTable({ data }: DataTable) {
   };
 
   const handleTest = (value: any) => {
+  };
+
+
+  const handleDelete = async (value: any) => {
     console.log("data ne", value);
+    try {
+      await updateStatusMainService(value);
+
+      mutate(GetMainServiceById)
+      toast.success("Dừng hoạt động dịch vụ thành công")
+    } catch (error) {
+      console.error("Failed to update working time", error);
+      toast.error("Dừng hoạt động dịch vụ thất bại")
+    }
   };
-  console.log("data ne main",data);
-  const imageStyle = {
-    width: "100px", // Chiều rộng cố định bạn muốn áp dụng
-    height: "60px", // Chiều cao cố định bạn muốn áp dụng
-    objectFit: "cover" // Sử dụng object-fit để đảm bảo ảnh không bị méo khi thay đổi kích thước
+
+  const handleRework = async (value: any) => {
+    console.log("data ne", value);
+    try {
+      await updateStatusMainService(value);
+      mutate(GetMainServiceById)
+      toast.success(" hoạt động dịch vụ thành công")
+    } catch (error) {
+      console.error("Failed to update working time", error);
+      toast.error(" hoạt động dịch vụ thất bại")
+    }
   };
+
   const content = (record: any) => (
     <div className="flex flex-col">
       <Button
@@ -68,15 +91,26 @@ export default function ServiceMainTable({ data }: DataTable) {
         Chỉnh sửa
       </Button>
 
-      {record.status && (
-        <Button
-          className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5 
+      {
+          record.status && (
+              <Button
+                  className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5
                            font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
-          onClick={() => handleTest(record.id)}
-        >
-          Áp dụng khuyến mãi
-        </Button>
-      )}
+                  onClick={() => handleDelete(record.id)}
+              >
+                Dừng hoạt động
+              </Button>
+          )
+      }
+      {
+          !record.status &&<Button
+              className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5
+                           font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
+              onClick={() => handleRework(record.id)}
+          >
+            Hoạt động
+          </Button>
+      }
     </div>
   );
   const columns: any = [
@@ -165,9 +199,9 @@ export default function ServiceMainTable({ data }: DataTable) {
     },
     {
       title: "Khuyến mãi",
-      dataIndex: "promotion",
-      showSorterTooltip: {
-        target: "full-header",
+      dataIndex: "promotionDTO",
+      render: (promotionDTO: { name?: string } | null) => {
+        return promotionDTO ? promotionDTO.name : "";  // Hiển thị thông báo nếu không có thông tin khuyến mãi
       },
     },
     {
@@ -202,24 +236,13 @@ export default function ServiceMainTable({ data }: DataTable) {
   return (
     <>
       <Table columns={columns} dataSource={data} />
-      {/* <Modal
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={null}
-      >
-        {selectedImage && <Image src={selectedImage} />}
-      </Modal>
-      <Modal
-        open={updateModalVisible}
-        onCancel={() => setUpdateModalVisible(false)} // thay cho closeModal
-      > */}
 
       <Modal
         open={updateModalVisible}
         closeModal={handleCancel}
         className="w-1/2 ml-auto mr-auto"
       >
-        <UpdateMainService data={editingServiceId!}  />
+        <UpdateMainService data={editingServiceId!} closeModal={handleCancel} />
       </Modal>
     </>
   );

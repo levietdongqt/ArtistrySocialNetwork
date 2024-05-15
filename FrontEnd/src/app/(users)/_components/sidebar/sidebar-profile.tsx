@@ -16,6 +16,9 @@ import {useUser} from "../../../../context/user-context";
 import {useRouter} from "next/navigation";
 import {useOAuth2} from "../../../../context/oauth2-context";
 import {deleteCookieTokenSSR} from "@lib/helper/serverCookieHandle";
+import dynamic from 'next/dynamic';
+
+
 
 export function SidebarProfile(): JSX.Element {
     // const {  signOut } = useAuth();
@@ -65,8 +68,8 @@ export function SidebarProfile(): JSX.Element {
                             <div className='flex gap-3 truncate'>
                                 <UserAvatar src={currentUser?.avatar as string} alt={'username'}
                                             size={40}/>
-                                <div className='hidden truncate text-start leading-5 xl:block'>
-                                    <UserName name={currentUser?.fullName as string} username={currentUser?.fullName as string} className='truncate' verified={currentUser?.verified as boolean}/>
+                                <div className='hidden truncate text-start leading-5 xl:block' suppressHydrationWarning>
+                                    <UserName name={currentUser?.fullName!} username={currentUser?.fullName!} className='truncate' verified={!currentUser?.verified} />
                                 </div>
                             </div>
                             <HeroIcon

@@ -4,6 +4,8 @@ import {AxiosRequestConfig} from "axios";
 import axiosWithToken from "@lib/config/AxiosConfig";
 import {ExtraService} from "@models/extra-service";
 import {Review} from "@models/review";
+import process from "process";
+import {ChangePassDTO} from "@models/user";
 
 
 export function getUserById(userId: string): fetcherParams {
@@ -45,4 +47,32 @@ export async function createReview(data: Review): Promise<any> {
     }
 }
 
+export async function changePasswordUser(values: ChangePassDTO): Promise<boolean> {
+    // Cấu hình request bằng Axios
+    const config = {
+        method: 'PUT',
+        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/user/change-password`,
+        data: values,
+        headers: {
+            "Content-Type": "application/json"
+            // Lưu ý: Không cần thêm "Authorization" ở đây
+            // vì nó sẽ được thêm tự động bởi hàm axiosWithToken
+        }
+    };
 
+    try {
+        // Gửi request với token thông qua hàm axiosWithToken
+        const response = await axiosWithToken(config);
+
+        // Kiểm tra phản hồi và trả về boolean tương ứng
+        if (response && response.status === 200) {
+            return true;
+        } else {
+            console.error('Failed to change password:', response.data.message);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error while changing password:', error);
+        throw error;
+    }
+}

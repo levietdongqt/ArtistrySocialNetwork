@@ -19,12 +19,12 @@ export function UserAvatar({
   size,
   username,
   className,
-                             friend
+  friend
 }: UserAvatarProps): JSX.Element {
   const pictureSize = size ?? 48;
 
   return (
-    <Link href={id ? `/profile/${id}` : '#'} className={cn(
+    <Link href={ id? `/profile/${id}` : '#'} className={cn(
         'blur-picture flex self-start',
         !username && 'pointer-events-none',
         className,

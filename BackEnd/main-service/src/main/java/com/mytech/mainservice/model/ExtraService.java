@@ -57,7 +57,7 @@ public class ExtraService implements Serializable  {
     @Column(name = "update_Date")
     private LocalDateTime updateDate;
 
-    @ManyToMany(mappedBy = "extraServices")
+    @ManyToMany(mappedBy = "extraServiceDTOs")
     private List<MainService> mainServices;
 
     @ManyToOne()
@@ -66,6 +66,6 @@ public class ExtraService implements Serializable  {
 
     @ManyToOne
     @JoinColumn(name = "promotion_Id")
-    private Promotion promotion;
+    private Promotion promotionDTO;
 
 }

@@ -47,23 +47,7 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
     const {currentUser} = useUser();
     const userId = currentUser?.id as string;
     const provider: User | null = data?.provider;
-    // const promotion:any |null = data?.promotionDTO;
-    const promotion : {
-        discountPercent: number;
-        endDate: Date;
-        name: string;
-        description: string;
-        id: number;
-        startDate: Date
-    } = {
-        id: 1,
-        name: 'Giảm giá 10%',
-        description: 'Get a 20% discount on all beachwear.',
-        discountPercent: 20, // Đây là giả định rằng discountRate là phần trăm
-        startDate: new Date('2024-06-01'),
-        endDate: new Date('2024-07-31'),
-        // Thêm bất kỳ giá trị mặc định nào cho các thuộc tính khác
-    };
+    const promotion:any |null = data?.promotionDTO;
     const decription = data?.description;
     const cleanFullBioContent = DOMPurify.sanitize(decription);
     const mutateSaved = useRecoilValue(mutateSavedService);
@@ -204,14 +188,19 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
 
                                     </UserTooltip>
                                 </div>
+
                                 <div className="text-sm text-light-secondary dark:text-dark-secondary">
                                     <strong>Giá</strong>:
                                     {promotion && promotion.discountPercent
                                         ? <>
-                                            <span className="line-through">{data?.price}</span>
-                                            {" "}VNĐ - <span>{data?.price * (1 - promotion.discountPercent / 100)}</span> VNĐ
+        <span className="line-through">
+          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data?.price)}
+        </span>{" "}
+                                            VNĐ - <span>
+          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data?.price * (1 - promotion.discountPercent / 100))}
+        </span> VNĐ
                                         </>
-                                        : `${data?.price} VNĐ`
+                                        : `${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data?.price)} VNĐ`
                                     }
                                 </div>
 
