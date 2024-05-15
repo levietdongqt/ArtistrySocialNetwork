@@ -16,6 +16,9 @@ import {useUser} from "../../../../context/user-context";
 import {useRouter} from "next/navigation";
 import {useOAuth2} from "../../../../context/oauth2-context";
 import {deleteCookieTokenSSR} from "@lib/helper/serverCookieHandle";
+import dynamic from 'next/dynamic';
+
+
 
 export function SidebarProfile(): JSX.Element {
     // const {  signOut } = useAuth();

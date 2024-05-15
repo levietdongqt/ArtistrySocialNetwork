@@ -59,6 +59,10 @@ export function FollowButton({
   const [shouldUnFriend, setShouldUnFriend] = useState(false);
   const [shouldReFriend, setShouldReFriend] = useState(false);
   const [shouldAcceptFriend, setShouldAcceptFriend] = useState(false);
+  const [renderFollow,setRenderFollow] = useState(false);
+  const [renderFriend,setRenderFriend] = useState(false);
+  const [renderPending,setRenderPending] = useState(false);
+  const [renderAccept,setRenderAccept] = useState(false);
   //Xử lý follow
   const { data: data } = useSWR(
     hovered
@@ -72,6 +76,16 @@ export function FollowButton({
       revalidateOnFocus: false,
     }
   );
+  useEffect(()=>{
+    if(data){
+      setRenderFollow(data.data.follow)
+      setRenderPending(data.data.pending)
+      setRenderAccept(data.data.acceptFriend)
+      setRenderFriend(data.data.friend)
+    }
+  },[data])
+
+
   const {isLoading:unFollowLoadingFriend} = useSWR(
     shouldUnFollowed?
     unFollowingFriend({
@@ -82,6 +96,7 @@ export function FollowButton({
     revalidateOnFocus: false,
           onSuccess(data, key, config) {
               toast.success("Bỏ theo dõi thành công");
+              setRenderFollow(false);
           },
   }
 );
@@ -97,6 +112,7 @@ fetcherWithToken,{
   revalidateOnFocus: false,
         onSuccess(data, key, config) {
             toast.success("Theo dõi thành công");
+            setRenderFollow(true);
         },
 }
 );
@@ -147,6 +163,7 @@ fetcherWithToken,{
   revalidateOnFocus: false,
         onSuccess(data, key, config) {
             toast.success("Thêm bạn bè thành công");
+            setRenderPending(true)
         },
 }
 );
@@ -160,6 +177,8 @@ fetcherWithToken,{
   revalidateOnFocus: false,
         onSuccess(data, key, config) {
             toast.success("Xóa bạn bè thành công");
+            setRenderFriend(false);
+            setRenderFollow(false);
         },
 }
 );
@@ -176,6 +195,7 @@ fetcherWithToken,{
       revalidateOnFocus: false,
       onSuccess(data, key, config) {
         toast.success("Rút lại lời mời kết bạn thành công");
+        setRenderPending(!renderPending)
     },
     }
   );
@@ -192,6 +212,8 @@ fetcherWithToken,{
       revalidateOnFocus: false,
       onSuccess(data, key, config) {
         toast.success("Chấp nhận lời mời kết bạn thành công");
+        setRenderFriend(true);
+        setRenderFollow(true);
     },
     }
   );
@@ -294,7 +316,7 @@ fetcherWithToken,{
         />
       </Modal>
       <div className="flex flex-col">
-        {data?.data.follow ? (
+        {renderFollow ? (
           <Button
             className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5
                      font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
@@ -316,7 +338,7 @@ fetcherWithToken,{
             {FollowButtonType.FOLLOW_BUTTON}
           </Button>
         )}
-        {data?.data.friend ? (
+        {renderFriend ? (
           <Button
             className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5
                      font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
@@ -325,7 +347,7 @@ fetcherWithToken,{
           >
             <span>{FollowButtonType.FRIENDED_BUTTON}</span>
           </Button>
-        ) : data?.data.pending ? (
+        ) : renderPending ? (
           <Button
             className='dark-bg-tab min-w-[120px] self-start border border-light-line-reply px-4 py-1.5
                    font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
@@ -334,7 +356,7 @@ fetcherWithToken,{
           >
             <span>{FollowButtonType.PENDING_BUTTON}</span>
           </Button>
-        ) : data?.data.acceptFriend ? (
+        ) : renderAccept ? (
           <Button
             className="self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90
                      focus-visible:bg-light-primary/90 active:bg-light-border/75 dark:bg-light-border 

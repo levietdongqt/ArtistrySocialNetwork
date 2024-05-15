@@ -24,7 +24,7 @@ type History = {
   fullName?: string;
   content?: string;
   description?: string;
-  nameService?: string;
+  name?: string;
   type?: string;
 };
 
@@ -45,6 +45,7 @@ export function HistoryBarCard({
   );
   useEffect(() => {
     if (data2) {
+      console.log("history",data2.data)
       setServiceData(data2.data);
     }
   }, [data2]);
@@ -104,7 +105,7 @@ export function HistoryBarCard({
               <h5 className="text">
                 {data?.keyword ||
                   data?.fullName ||
-                  <HtmlRenderer htmlString={data?.description as string || data?.content as string} />}
+                  <HtmlRenderer htmlString={data?.name as string || data?.content as string} />}
               </h5>
             </div>
             {!data?.keyword && data?.type === "user" && (
