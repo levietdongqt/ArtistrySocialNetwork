@@ -66,7 +66,7 @@ export function SidebarProfile(): JSX.Element {
                                 <UserAvatar src={currentUser?.avatar as string} alt={'username'}
                                             size={40}/>
                                 <div className='hidden truncate text-start leading-5 xl:block'>
-                                    <UserName name={currentUser?.fullName!} username={currentUser?.fullName!} className='truncate' verified={!currentUser?.verified}/>
+                                    <UserName name={currentUser?.fullName as string} username={currentUser?.fullName as string} className='truncate' verified={currentUser?.verified as boolean}/>
                                 </div>
                             </div>
                             <HeroIcon
@@ -92,10 +92,8 @@ export function SidebarProfile(): JSX.Element {
                                             <UserAvatar src={currentUser?.avatar as string}
                                                         alt={currentUser?.fullName ? currentUser?.fullName : ""}/>
                                             <div className='truncate'>
-                                                {/*<UserName name={'name'} verified={verified} />*/}
                                                 <UserName name={currentUser?.fullName ? currentUser?.fullName : ""}
                                                           verified={!!currentUser?.verified}/>
-                                                {/*<UserUsername username={currentUser?.fullName ? currentUser?.fullName : ""} disableLink/>*/}
                                             </div>
                                         </div>
                                         <i>

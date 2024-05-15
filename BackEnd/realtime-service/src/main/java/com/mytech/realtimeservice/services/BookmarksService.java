@@ -6,6 +6,10 @@ import com.mytech.realtimeservice.repositories.BookmarksRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,12 +27,14 @@ public class BookmarksService implements IBookmarksService {
 
     @Autowired
     private ModelMapper modelMapper;
-    public List<BookmarkDTO> getBookmarksByUserId(String userId) {
-        List<BookMarks> bookmarks = bookmarkRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    public List<BookmarkDTO> getBookmarksByUserId(String userId,int limit, int pageIndex) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(pageIndex, limit, sort);
+        Page<BookMarks> bookmarks = bookmarkRepository.findByUserIdOrderByCreatedAtDesc(userId,pageable);
         if(bookmarks.isEmpty()){
             return Collections.emptyList();
         }
-        return bookmarks.stream()
+        return bookmarks.getContent().stream()
                 .map(bookmark -> modelMapper.map(bookmark, BookmarkDTO.class))
                 .collect(Collectors.toList());
     }

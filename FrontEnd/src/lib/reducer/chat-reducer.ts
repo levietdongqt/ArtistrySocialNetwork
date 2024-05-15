@@ -53,16 +53,20 @@ const reducer = (state: any, action: any): stateType => {
     switch (action.type) {
 
         case ACTION_TYPE.SET_CONVERSATIONS:
-            const conversations = [...action.payload] as ConversationDto[];
-            if (!(conversations?.length > 0))
-                return state;
-            const updatedConversations = conversations.map(conversation => initMemberMapOfConversation(conversation));
+            try {
+                const conversations = [...action.payload] as ConversationDto[];
+                if (!(conversations?.length > 0))
+                    return state;
+                const updatedConversations = conversations.map(conversation => initMemberMapOfConversation(conversation));
 
-            newState = {
-                ...state,
-                conversations: updatedConversations
+                newState = {
+                    ...state,
+                    conversations: updatedConversations
+                }
+                break;
+            }catch (e) {
+                return  state;
             }
-            break;
 
         case ACTION_TYPE.ADD_CONVERSATION:
             const newConversation1 = action.payload as ConversationDto;

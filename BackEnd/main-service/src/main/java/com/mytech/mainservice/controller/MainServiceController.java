@@ -46,8 +46,8 @@ public class MainServiceController {
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
     @GetMapping("/getAllSavedMainService/{userId}")
-    public ResponseEntity<?> getAllSavedByUserId(@PathVariable("userId") String userId) {
-        List<MainServiceDTO> mainServiceDTOs = mainService2.findMainServiceSavedByUserId(userId);
+    public ResponseEntity<?> getAllSavedByUserId(@PathVariable("userId") String userId, @RequestParam("limit") int limit, @RequestParam("pageIndex") int pageIndex) {
+        List<MainServiceDTO> mainServiceDTOs = mainService2.findMainServiceSavedByUserId(userId,limit,pageIndex);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
@@ -63,7 +63,7 @@ public class MainServiceController {
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
                         .status(HttpStatus.OK)
-                        .message("Get Saved Service successfully")
+                        .message("Delete All saved Service successfully")
                         .data(null).build()
         );
     }

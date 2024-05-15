@@ -19,7 +19,7 @@ import {ContentPost} from "../content/content";
 import {toast} from "react-toastify";
 import {deleteAllBokMarksByUserId} from "../../../../services/realtime/ServerAction/bookmarksService";
 import {SEO} from "../common/seo";
-import {GetAllSavedMainService} from "../../../../services/main/clientRequest/service";
+import {deleteSavedMainService, GetAllSavedMainService} from "../../../../services/main/clientRequest/service";
 import {ServiceCard} from "../main-service/service-card";
 import {useRecoilState} from "recoil";
 import {mutateSavedService} from "@lib/hooks/mutateSavedService";
@@ -37,9 +37,10 @@ const ContainerService = () => {
         setMutateSaved(()=>savedRefMutate);
     }, [savedRefMutate,setMutateSaved]);
     const handleClear = async (): Promise<void> => {
-        await deleteAllBokMarksByUserId(userId);
+        await deleteSavedMainService(userId);
+        await savedRefMutate();
         closeModal();
-        toast.success('Xóa tất cả Services thành công');
+        toast.success('Xóa tất cả dịch vụ thành công');
     };
     return (
         <>
@@ -50,11 +51,11 @@ const ContainerService = () => {
             >
                 <ActionModal
                     actionReport={()=>{}}
-                    title='Xóa tất cả bài post đẫ lưu'
-                    description='Có thể mất tất cả bài post đã lưu không thể hồi phục'
+                    title='Xóa tất cả bài dịch vụ đẫ lưu'
+                    description='Có thể mất tất cả bài services đã lưu không thể hồi phục'
                     mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75 accent-tab
                             focus-visible:bg-accent-red/90'
-                    mainBtnLabel='Clear'
+                    mainBtnLabel='Xóa'
                     action={handleClear}
                     closeModal={closeModal}
                 />
@@ -78,18 +79,18 @@ const ContainerService = () => {
                     <HeroIcon className='h-5 w-5' iconName='ArchiveBoxXMarkIcon' />
                     <ToolTip
                         className='!-translate-x-20 translate-y-3 md:-translate-x-1/2'
-                        tip='Clear bookmarks'
+                        tip='xóa dịch vụ'
                     />
                 </Button>
             </MainHeader>
             <section className='mt-0.5'>
                 {savedRefLoading  ? (
                     <Loading className='mt-5' />
-                ) : !savedRef ? (
+                ) : !savedRef || savedRef?.data?.length === 0 ? (
                     <StatsEmpty
-                        title='Lưu bài post '
-                        description='Đừng để bài post của bạn mất'
-                        imageData={{ src: '/assets/no-bookmarks.png', alt: 'No bookmarks' }}
+                        title='Lưu bài dịch vụ'
+                        description='Đừng để dịch vụ của bạn mất'
+                        imageData={{ src: '/no-bookmarks.png', alt: 'No services' }}
                     />
                 ) : (
                     <AnimatePresence mode='popLayout'>

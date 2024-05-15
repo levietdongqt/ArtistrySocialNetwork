@@ -1,7 +1,10 @@
 package com.mytech.mainservice.repository;
 
+import org.springframework.data.domain.Page;
+import com.mytech.mainservice.dto.SaveServiceDTO;
 import com.mytech.mainservice.model.MainService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -34,8 +37,13 @@ public interface IMainServiceRepository extends JpaRepository<MainService, Long>
     @Query("SELECT m FROM MainService m join m.savedByUser u WHERE m.id = :mainId AND u.id = :userId")
     Optional<MainService> findByIdAndUSerId(Long mainId, String userId);
 
-    @Query("SELECT m from MainService m join m.savedByUser u WHERE u.id = :userId")
-    List<MainService> findSavedByUserId(String userId);
-    @Query("SELECT ms FROM MainService ms JOIN ms.savedByUser u WHERE u.id = :userId ORDER BY ms.createDate DESC")
-    List<MainService> findMainServiceByUserId(@Param("userId") String userId);
+    @Query(value = "SELECT EXISTS (SELECT * FROM saved_service WHERE main_service_id = :mainId AND user_id like :userId)", nativeQuery = true)
+    Long existsByIdAndUserId(@Param("mainId") Long mainId,@Param("userId") String userId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM saved_service WHERE user_id LIKE :userId", nativeQuery = true)
+    void deleteSavedByUserId(@Param("userId") String userId);
+    @Query("SELECT ms FROM MainService ms JOIN ms.savedByUser u WHERE u.id = :userId")
+    Page<MainService> findMainServiceByUserId(@Param("userId") String userId, Pageable pageable);
 }
