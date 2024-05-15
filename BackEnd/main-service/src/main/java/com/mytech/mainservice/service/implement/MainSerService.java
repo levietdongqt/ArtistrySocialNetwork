@@ -116,10 +116,17 @@ public class MainSerService implements IMainSerService {
             throw new NotFoundException("Not found main service ");
         }
         if (jwtTokenHolder.isValidUserId(mainService.get().getProvider().getId())) {
-            mainService.get().setStatus(false);
-            mainServiceRepo.save(mainService.get());
-            //Xóa khỏi els search
-            elsService.deleteServiceELSById(mainService.get().getId());
+//            mainService.get().setStatus(false);
+            if (mainService.get().isStatus() ) {
+                mainService.get().setStatus(false);
+                mainServiceRepo.save(mainService.get());
+                elsService.deleteServiceELSById(mainService.get().getId());
+            } else {
+                mainService.get().setStatus(true);
+                mainServiceRepo.save(mainService.get());
+                ServiceELS serviceELS = modelMapper.map(mainService.get(),ServiceELS.class);
+               elsService.saveServiceELS(serviceELS);
+            }
             return;
         }
         throw new InvalidPropertyException("You are not the owner of this service");

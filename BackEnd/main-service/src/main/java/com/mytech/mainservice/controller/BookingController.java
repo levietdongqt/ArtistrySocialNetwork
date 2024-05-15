@@ -4,6 +4,8 @@ import com.mytech.mainservice.dto.OrderDto;
 import com.mytech.mainservice.dto.ResponseObject;
 import com.mytech.mainservice.dto.WorkingTimeDTO;
 import com.mytech.mainservice.dto.request.BookingDTO;
+import com.mytech.mainservice.enums.OrderStatus;
+import com.mytech.mainservice.exception.myException.UnAuthenticationException;
 import com.mytech.mainservice.service.IBookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -65,6 +67,30 @@ public class BookingController {
                         .status(HttpStatus.OK)
                         .message("get orders by provider successfully")
                         .data(orderDtos)
+                        .build());
+    }
+
+    @PreAuthorize("hasRole('PROVIDER')")
+    @PostMapping("/order/accept/{orderId}")
+    public ResponseEntity<?> acceptOrder(@PathVariable long orderId) throws UnAuthenticationException {
+        bookingService.changeOderStatus(orderId, OrderStatus.ACTIVE);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Accept Order successfully")
+                        .data(null)
+                        .build());
+    }
+
+    @PreAuthorize("hasRole('PROVIDER')")
+    @PostMapping("/order/cancel/{orderId}")
+    public ResponseEntity<?> CancelOrder(@PathVariable long orderId) throws UnAuthenticationException {
+         bookingService.changeOderStatus(orderId, OrderStatus.CANCELLED);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Cancel Order successfully")
+                        .data(null)
                         .build());
     }
 }

@@ -158,20 +158,23 @@ const ServiceDetail: React.FC<ProServiceDetail> = ({ data, isModalVisible, setIs
                                 <strong>Giá</strong>:
                                 {promotion && promotion.discountPercent
                                     ? <>
-                                        <span className="line-through">{data?.price}</span>
-                                        {" "}VNĐ
-                                        - <span>{data?.price * (1 - promotion.discountPercent / 100)}</span> VNĐ
+        <span className="line-through">
+          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data?.price)}
+        </span>{" "}
+                                        VNĐ - <span>
+          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data?.price * (1 - promotion.discountPercent / 100))}
+        </span> VNĐ
                                     </>
-                                    : `${data?.price} VNĐ`
+                                    : `${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data?.price)} VNĐ`
                                 }
                             </div>
 
                             {promotion?.endDate && (
                                 <div
                                     className="text-sm text-light-secondary dark:text-dark-secondary"
-
+                                    title={`Áp dụng đến ${new Date(promotion.endDate).toLocaleDateString('vi-VN')}`}
                                 >
-                                    (<strong>Khuyến mãi</strong>: {promotion.name} Áp dụng đến {new Date(promotion.endDate).toLocaleDateString('vi-VN')})
+                                    (<strong>Khuyến mãi</strong>: {promotion.name})
                                 </div>
                             )}
 
@@ -194,7 +197,7 @@ const ServiceDetail: React.FC<ProServiceDetail> = ({ data, isModalVisible, setIs
                                     <strong> Thời lượng:</strong> {data.duration} Giờ
                                 </div>
                             )}
-                            {data.restTime && (
+                            {data.restTime > 0 && (
                                 <div className="text-sm text-light-secondary dark:text-dark-secondary">
                                     <strong> Thời gian nghỉ:</strong> {data.restTime} phút
                                 </div>

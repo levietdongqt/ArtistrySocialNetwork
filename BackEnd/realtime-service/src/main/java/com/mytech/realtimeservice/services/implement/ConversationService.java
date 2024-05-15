@@ -12,6 +12,7 @@ import com.mytech.realtimeservice.repositories.IConversationRepository;
 import com.mytech.realtimeservice.repositories.MyRepository;
 import com.mytech.realtimeservice.services.IConversationService;
 import com.mytech.realtimeservice.services.IMessageService;
+import com.mytech.realtimeservice.services.INotificationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ConversationService implements IConversationService {
@@ -33,6 +35,8 @@ public class ConversationService implements IConversationService {
     private ModelMapper modelMapper;
     @Autowired
     private MyRepository myRepository;
+    @Autowired
+    private INotificationService notificationService;
 
     @Override
     public Conversation getConversationById(String id) {
@@ -45,6 +49,12 @@ public class ConversationService implements IConversationService {
         conversation.setCreateAt(LocalDateTime.now());
         conversation.setUpdatedAt(LocalDateTime.now());
         conversationRepo.save(conversation);
+        String ownerId =  jwtTokenHolder.getUserId();
+        var usersInGroup = conversation.getMembers().stream().filter(user -> !user.getId().equals(ownerId)).collect(Collectors.toList());
+        var owner = conversation.getMembers().stream().filter(user -> user.getId().equals(ownerId)).findFirst().get();
+        usersInGroup.forEach(user ->{
+            notificationService.sendNotification(user,owner,"GROUP","đã tạo phòng chat","");
+        });
         return modelMapper.map(conversation, ConversationDTO.class);
     }
 

@@ -24,6 +24,7 @@ export function ChatAlert() {
     useEffect(() => {
         if (!isInMessagePage) {
             findUnReadConversations().then((response: MyResponse<ConversationDto[]>) => {
+                console.log("UNREAD: ", response)
                 dispatch(ChatAction(response.data, ACTION_TYPE.SET_CONVERSATIONS))
             })
         }

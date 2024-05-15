@@ -19,7 +19,6 @@ import BookingModal from "../booking/bookingModal";
 import CreateReview from "../../(main-layout)/profile/[ID]/review/create-review";
 import ServiceDetail from "./servicer-detail";
 import {Promotion} from "@models/promotion";
-import {useUser} from "../../../../context/user-context";
 
 
 interface ProServiceCard {
@@ -28,7 +27,6 @@ interface ProServiceCard {
 
 
 export function ServiceCard({data}: ProServiceCard): JSX.Element {
-    const {currentUser} = useUser()
     const [openModalCreateReview, setOpenModalCreateReview] = React.useState(false);
     const [openModalServiceDetail, setOpenModalServiceDetail] = useState(false);
     const [openBookingModal, setOpenBookingModal] = useState(false)
@@ -41,23 +39,7 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
     const [isPreviewImage, setIsPreviewImage] = useState(false);
 
     const provider: User | null = data?.provider;
-    // const promotion:any |null = data?.promotionDTO;
-    const promotion : {
-        discountPercent: number;
-        endDate: Date;
-        name: string;
-        description: string;
-        id: number;
-        startDate: Date
-    } = {
-        id: 1,
-        name: 'Giảm giá 10%',
-        description: 'Get a 20% discount on all beachwear.',
-        discountPercent: 20, // Đây là giả định rằng discountRate là phần trăm
-        startDate: new Date('2024-06-01'),
-        endDate: new Date('2024-07-31'),
-        // Thêm bất kỳ giá trị mặc định nào cho các thuộc tính khác
-    };
+    const promotion:any |null = data?.promotionDTO;
     const decription = data?.description;
     const cleanFullBioContent = DOMPurify.sanitize(decription);
     const menu = (
@@ -173,14 +155,19 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
 
                                     </UserTooltip>
                                 </div>
+
                                 <div className="text-sm text-light-secondary dark:text-dark-secondary">
                                     <strong>Giá</strong>:
                                     {promotion && promotion.discountPercent
                                         ? <>
-                                            <span className="line-through">{data?.price}</span>
-                                            {" "}VNĐ - <span>{data?.price * (1 - promotion.discountPercent / 100)}</span> VNĐ
+        <span className="line-through">
+          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data?.price)}
+        </span>{" "}
+                                            VNĐ - <span>
+          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data?.price * (1 - promotion.discountPercent / 100))}
+        </span> VNĐ
                                         </>
-                                        : `${data?.price} VNĐ`
+                                        : `${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data?.price)} VNĐ`
                                     }
                                 </div>
 
@@ -207,15 +194,12 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
                                     </Dropdown>
                                 </div>
 
-                                {
-                                    currentUser?.id !== data.provider?.id &&
-                                    <button type="button"
-                                            className="self-end bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                            onClick={() => setOpenBookingModal(true)}
-                                    >
-                                        Đặt Dịch vụ
-                                    </button>
-                                }
+                                <button type="button"
+                                        className="self-end bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                        onClick={() => setOpenBookingModal(true)}
+                                >
+                                    Đặt Dịch vụ
+                                </button>
 
                                 <div onClick={handleOpenServiceDetail}
                                      className="cursor-pointer text-blue-500 hover:text-blue-700 transition ease-in duration-300">

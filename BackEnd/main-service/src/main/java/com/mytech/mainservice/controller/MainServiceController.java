@@ -100,6 +100,7 @@ public class MainServiceController {
                         .data(null).build()
         );
     }
+
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#mainServiceDTO.provider.id) && hasRole('PROVIDER')")
     @PutMapping("/update")
     public ResponseEntity<?> updateMainService(@RequestBody MainServiceDTO mainServiceDTO) {

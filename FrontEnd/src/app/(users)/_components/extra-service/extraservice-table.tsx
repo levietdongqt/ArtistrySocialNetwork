@@ -3,6 +3,16 @@ import { Button } from "@components/ui/button";
 import {Carousel, Image, Popover, Table, Tag} from "antd";
 import React, {useState} from "react";
 import {ExtraService} from "@models/extra-service";
+import {Modal} from "../modal/modal";
+import UpdateMainService from "../../(main-layout)/provider/main-service/update-service";
+import UpdateExtraService from "../../(main-layout)/provider/extra-service/update-extraservice";
+import {
+    GetExtraServiceById,
+    GetMainServiceById, updateStatusExtraService,
+    updateStatusMainService
+} from "../../../../services/main/clientRequest/service";
+import {mutate} from "swr";
+import {toast} from "react-toastify";
 
 type DataTable = {
   data: ExtraService[];
@@ -10,34 +20,75 @@ type DataTable = {
 
 
 export default function ServiceExtraTable({ data }: DataTable) {
+    const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
+    const [editingServiceId, setEditingServiceId] = useState<any>();
+    const handleCancel = () => {
+        setUpdateModalVisible(false);
+        mutate(GetExtraServiceById)
+    };
     const handleTest = (value: any) => {
         console.log("data ne", value);
+    };
+    const handleEditClick = (record: any) => {
+
+        // console.log('serviceId', data.serviceId);
+        setEditingServiceId(record);
+        setUpdateModalVisible(true);
+    };
+    const handleDelete = async (value: any) => {
+        console.log("data ne", value);
+        try {
+            await updateStatusExtraService(value);
+
+            mutate(GetExtraServiceById)
+            toast.success("Dừng hoạt động dịch vụ thành công")
+        } catch (error) {
+            console.error("Failed to update working time", error);
+            toast.error("Dừng hoạt động dịch vụ thất bại")
+        }
+    };
+
+    const handleRework = async (value: any) => {
+        console.log("data ne", value);
+        try {
+            await updateStatusExtraService(value);
+            mutate(GetExtraServiceById)
+            toast.success(" hoạt động dịch vụ thành công")
+        } catch (error) {
+            console.error("Failed to update working time", error);
+            toast.error(" hoạt động dịch vụ thất bại")
+        }
     };
     const content = (record: any) => (
         <div className="flex flex-col">
             <Button
                 className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5
                            font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
-                onClick={() => handleTest(record.id)}
+                onClick={() => handleEditClick(record)}
             >
                 Chỉnh sửa
             </Button>
-            <Button
-                className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5
+
+            {
+                record.status && (
+                    <Button
+                        className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5
                            font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
-                onClick={() => handleTest(record.id)}
-            >
-                Chi tiết dịch vụ
-            </Button>
-            {record.status && (
-                <Button
+                        onClick={() => handleDelete(record.id)}
+                    >
+                        Dừng hoạt động
+                    </Button>
+                )
+            }
+            {
+                !record.status &&<Button
                     className="dark-bg-tab min-w-[120px] self-start border  border-light-line-reply px-4 py-1.5
                            font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red"
-                    onClick={() => handleTest(record.id)}
+                    onClick={() => handleRework(record.id)}
                 >
-                    Áp dụng khuyến mãi
+                    Hoạt động
                 </Button>
-            )}
+            }
         </div>
     );
     const columns: any = [
@@ -79,22 +130,22 @@ export default function ServiceExtraTable({ data }: DataTable) {
             dataIndex: "price",
             sorter: (a: any, b: any) => a.price - b.price,
         },
-        {
-            title: "Thời gian",
-            dataIndex: "duration",
-            sorter: (a: any, b: any) => a.duration - b.duration,
-            render: (duration: any) => {
-                return new Date(duration).toLocaleTimeString();
-            },
-        },
-        {
-            title: "Thời gian nghỉ",
-            dataIndex: "restTime",
-            sorter: (a: any, b: any) => a.restTime - b.restTime,
-            render: (restTime: any) => {
-                return new Date(restTime).toLocaleTimeString();
-            },
-        },
+        // {
+        //     title: "Thời gian",
+        //     dataIndex: "duration",
+        //     sorter: (a: any, b: any) => a.duration - b.duration,
+        //     render: (duration: any) => {
+        //         return duration;
+        //     },
+        // },
+        // {
+        //     title: "Thời gian nghỉ",
+        //     dataIndex: "restTime",
+        //     sorter: (a: any, b: any) => a.restTime - b.restTime,
+        //     render: (restTime: any) => {
+        //         return restTime;
+        //     },
+        // },
         {
             title: "Kiểu Giá",
             dataIndex: "priceType",
@@ -126,9 +177,9 @@ export default function ServiceExtraTable({ data }: DataTable) {
         },
         {
             title: "Khuyến mãi",
-            dataIndex: "promotion",
-            showSorterTooltip: {
-                target: "full-header",
+            dataIndex: "promotionDTO",
+            render: (promotionDTO: { name?: string } | null) => {
+                return promotionDTO ? promotionDTO.name : "";  // Hiển thị thông báo nếu không có thông tin khuyến mãi
             },
         },
         {
@@ -164,6 +215,14 @@ export default function ServiceExtraTable({ data }: DataTable) {
     return(
         <>
         <Table columns={columns} dataSource={data} />
+
+            <Modal
+                open={updateModalVisible}
+                closeModal={handleCancel}
+                className="w-1/2 ml-auto mr-auto"
+            >
+                <UpdateExtraService data={editingServiceId!} closeModal={handleCancel} />
+            </Modal>
         </>
     );
 
