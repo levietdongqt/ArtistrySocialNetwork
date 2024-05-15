@@ -201,8 +201,8 @@ export async function getExtraServiceByProvider (providerId :string){
     }
 }
 
-export function GetAllSavedMainService (userId :string): fetcherParams {
-    return [`/main-service/getAllSavedMainService/${userId}`, 'GET', null, ServiceDestination.MAIN];
+export function GetAllSavedMainService (userId?:string,limit?: number,pageIndex?:number): fetcherParams {
+    return [`/main-service/getAllSavedMainService/${userId}?limit=${limit}&pageIndex=${pageIndex}`, 'GET', null, ServiceDestination.MAIN];
 }
 
 

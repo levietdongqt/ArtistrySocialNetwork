@@ -293,6 +293,7 @@ export default function AllNotification() {
                     (key: string, index: any) =>
                       notificationsLikePost && (
                         <NotificationPostCard
+                            key={index}
                           data={
                             notificationsLikePost.get(
                               key
@@ -308,6 +309,7 @@ export default function AllNotification() {
                     (key: string, index: any) =>
                       notificationsTagPost && (
                         <NotificationPostCard
+                            key={index}
                           data={
                             notificationsTagPost.get(key) as NotificationModel[]
                           }

@@ -5,7 +5,7 @@ import com.mytech.realtimeservice.dto.BookmarkDTO;
 import java.util.List;
 
 public interface IBookmarksService {
-    List<BookmarkDTO> getBookmarksByUserId(String userId,int limit, int pageIndex);
+    List<BookmarkDTO> getBookmarksByUserId(String userId);
     BookmarkDTO createOrDeleteBookmark(BookmarkDTO bookmarkDTO);
     Boolean deleteBookmark(String postId, String userId);
     Boolean deleteAllBookmarks(String userId);

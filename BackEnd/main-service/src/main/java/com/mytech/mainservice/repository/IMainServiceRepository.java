@@ -33,7 +33,13 @@ public interface IMainServiceRepository extends JpaRepository<MainService, Long>
     Set<MainService> searchMainServiceByKeyword(@Param("keyword") String keyword);
 
 
-
+    @Query("SELECT ms " +
+            "FROM MainService ms " +
+            "LEFT JOIN Order o " +
+            "ON ms.id = o.mainService.id " +
+            "GROUP BY ms " +
+            "ORDER BY sum(o.amount) DESC")
+    List<MainService> findTrendMainService(Pageable pageable);
     @Query("SELECT m FROM MainService m join m.savedByUser u WHERE m.id = :mainId AND u.id = :userId")
     Optional<MainService> findByIdAndUSerId(Long mainId, String userId);
 

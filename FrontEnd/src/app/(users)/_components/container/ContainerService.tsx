@@ -1,5 +1,5 @@
 'use client'
-import React, {useEffect, useMemo} from 'react';
+import React, {ReactNode, useEffect, useMemo} from 'react';
 import {Button} from "@components/ui/button";
 import {HeroIcon} from "@components/ui/hero-icon";
 import {ToolTip} from "@components/ui/tooltip";
@@ -24,6 +24,8 @@ import {ServiceCard} from "../main-service/service-card";
 import {useRecoilState} from "recoil";
 import {mutateSavedService} from "@lib/hooks/mutateSavedService";
 import {Form} from "antd";
+import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const ContainerService = () => {
     const { currentUser } = useUser();
@@ -31,7 +33,7 @@ const ContainerService = () => {
     const { open, openModal, closeModal } = useModal();
 
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
-    const { data: savedRef, isLoading: savedRefLoading,mutate: savedRefMutate } = useSWR(GetAllSavedMainService(userId),fetcherWithToken);
+    const { paginatedPosts: savedRef, isLoadingMore: savedRefLoading,mutate: savedRefMutate,isReachedEnd,LoadMore,size,setSize,error } = useInfiniteScroll(GetAllSavedMainService);
     const [,setMutateSaved] = useRecoilState(mutateSavedService);
     useEffect(() => {
         setMutateSaved(()=>savedRefMutate);
@@ -42,6 +44,13 @@ const ContainerService = () => {
         closeModal();
         toast.success('Xóa tất cả dịch vụ thành công');
     };
+    const theEndPost = (): ReactNode => {
+        return (
+            <div className={'mt-10'}>
+                <p className='text-center text-gray-500 text-2xl font-bold'>Không còn dịch vụ</p>
+            </div>
+        )
+    }
     return (
         <>
             <Modal
@@ -86,18 +95,24 @@ const ContainerService = () => {
             <section className='mt-0.5'>
                 {savedRefLoading  ? (
                     <Loading className='mt-5' />
-                ) : !savedRef || savedRef?.data?.length === 0 ? (
+                ) : !savedRef || savedRef?.length === 0 ? (
                     <StatsEmpty
                         title='Lưu bài dịch vụ'
                         description='Đừng để dịch vụ của bạn mất'
                         imageData={{ src: '/no-bookmarks.png', alt: 'No services' }}
                     />
                 ) : (
-                    <AnimatePresence mode='popLayout'>
-                        {savedRef?.data?.map((service:any) => (
-                            <ServiceCard data={service} key={service.id} />
-                        ))}
-                    </AnimatePresence>
+                    <InfiniteScroll style={{overflow: 'initial'}} next={() => setSize(size as number + 1)}
+                                    hasMore={!isReachedEnd}
+                                    loader={savedRef?.map((content)=> content === undefined ? null : <LoadMore />)}
+                                    dataLength={savedRef?.length as number ?? 0}
+                                    endMessage={!isReachedEnd ? theEndPost() : ''}>
+                        <AnimatePresence mode='popLayout'>
+                            {savedRef?.map((service:any) => (
+                                <ServiceCard data={service} key={service.id} />
+                            ))}
+                        </AnimatePresence>
+                    </InfiniteScroll>
                 )}
             </section>
         </>

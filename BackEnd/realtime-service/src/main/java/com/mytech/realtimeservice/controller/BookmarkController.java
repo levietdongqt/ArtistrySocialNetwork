@@ -22,8 +22,8 @@ public class BookmarkController {
 
     @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId)&& hasRole('USER')")
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getBookmarksByUserId(@PathVariable String userId,@RequestParam("limit") int limit, @RequestParam("pageIndex") int pageIndex) {
-        List<BookmarkDTO> bookmarks = bookmarksService.getBookmarksByUserId(userId,limit,pageIndex);
+    public ResponseEntity<?> getBookmarksByUserId(@PathVariable String userId) {
+        List<BookmarkDTO> bookmarks = bookmarksService.getBookmarksByUserId(userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(
                         ResponseObject.builder()

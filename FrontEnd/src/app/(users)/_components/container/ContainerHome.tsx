@@ -20,25 +20,17 @@ function ContainerHome() {
     useEffect(() => {
         setMutateFunction(() => mutate);
     }, [mutate, setMutateFunction]);
-
-    const theEndPost = (): ReactNode => {
-        return (
-            <div className={'mt-10'}>
-                <p className='text-center text-gray-500 text-2xl font-bold'>Không còn bài viết</p>
-            </div>
-        )
-    }
     return (
         <section className='mt-0.5 xs:mt-0'>
             {Data?.length === 0 || Data === undefined ? (
-                <Error message='Không có bài viết nào cả bạn nên follow để có bài viết' />
+                <LoadMore />
             ) : (
                 <>
                     <InfiniteScroll style={{overflow: 'initial'}} next={() => setSize(size as number + 1)}
-                                    hasMore={!isReachedEnd}
-                                    loader={Data?.map((content)=> content === undefined ? null : <LoadMore />)}
+                                    hasMore={!isReachedEnd as boolean}
+                                    loader={<LoadMore />}
                                     dataLength={Data?.length as number ?? 0}
-                                    endMessage={!isReachedEnd ? theEndPost() : ''}>
+                                    >
                         <AnimatePresence mode='popLayout'>
                             {Data?.map((content) =>
                                     content === undefined ?
