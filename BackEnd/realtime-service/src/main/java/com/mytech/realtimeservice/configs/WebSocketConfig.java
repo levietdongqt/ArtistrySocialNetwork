@@ -44,6 +44,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/socket.io")
                 .setAllowedOrigins(clientUrl)
                 .setAllowedOrigins("http://34.126.138.202")
+                .setAllowedOrigins("http://34.87.190.66")
+                .setAllowedOrigins("http://172.16.1.204")
+                .setAllowedOrigins("http://113.161.58.1")
                 .setAllowedOrigins("http://host.docker.internal")
                 .setHandshakeHandler(userHandshakeHandler);
     }
