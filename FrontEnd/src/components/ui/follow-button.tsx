@@ -161,6 +161,7 @@ fetcherWithToken,{
   revalidateOnFocus: false,
         onSuccess(data, key, config) {
             toast.success("Thêm bạn bè thành công");
+            setRenderFollow(true);
             setRenderPending(true)
         },
 }
@@ -177,6 +178,7 @@ fetcherWithToken,{
             toast.success("Xóa bạn bè thành công");
             setRenderFriend(false);
             setRenderFollow(false);
+            setRenderAccept(false);
         },
 }
 );
@@ -212,6 +214,7 @@ fetcherWithToken,{
         toast.success("Chấp nhận lời mời kết bạn thành công");
         setRenderFriend(true);
         setRenderFollow(true);
+
     },
     }
   );

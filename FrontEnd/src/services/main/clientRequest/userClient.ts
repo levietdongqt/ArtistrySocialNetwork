@@ -50,7 +50,7 @@ export async function createReview(data: Review): Promise<any> {
 export async function changePasswordUser(values: ChangePassDTO): Promise<boolean> {
     // Cấu hình request bằng Axios
     const config = {
-        method: 'PUT',
+        method: 'POST',
         url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/user/change-password`,
         data: values,
         headers: {

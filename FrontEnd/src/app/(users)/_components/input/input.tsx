@@ -20,6 +20,7 @@ import { badWords, blackList } from 'vn-badwords';
 import {useRecoilValue} from "recoil";
 import {mutateState} from "@lib/hooks/mutateState";
 import {mutatePostId} from "@lib/hooks/mutatePostId";
+import {mutateProfilePost} from "@lib/hooks/mutateProfilePost";
 type InputProps = {
   postID?: string;
   modal?: boolean;
@@ -33,6 +34,7 @@ type InputProps = {
   childComments?: boolean;
   fullName?: string;
   idComment?: string;
+  profile?:boolean;
 };
 
 export const variants: Variants = {
@@ -51,7 +53,7 @@ export function Input({
   replyModal,
   closeModal,
                         childComments,fullName,
-                        idComment
+                        idComment,profile
 }: InputProps): JSX.Element {
   const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
   const [imagesPreview, setImagesPreview] = useState<ImagesPreview>([]);
@@ -74,6 +76,7 @@ export function Input({
   );
   const mutate = useRecoilValue(mutateState);
   const mutatePostById = useRecoilValue(mutatePostId);
+  const mutatePostProfile = useRecoilValue(mutateProfilePost);
   const sendPost = async (): Promise<void> => {
     try {
     inputRef.current?.blur();
@@ -96,6 +99,9 @@ export function Input({
       var savedPost = await postPosts1(postData);
       if(mutate) {
         await mutate((currentData: any) => [savedPost,...currentData?.data]);
+      }
+      if(mutatePostProfile){
+        await mutatePostProfile((currentData: any) => [savedPost,...currentData?.data]);
       }
     }else{
       const commentData = {
@@ -219,6 +225,7 @@ export function Input({
         '-mx-4': reply,
         'gap-2': replyModal,
         'cursor-not-allowed': disabled,
+        '!w-full':profile
 
       })}
     >
@@ -237,12 +244,13 @@ export function Input({
                 (disabled || loading) && 'pointer-events-none opacity-50',
                 {
                   'sticky z-10 bottom-[0px] bg-white dark:bg-white pt-2': comment,
-                  'px-0 !pl-[3.8rem] !py-0 !pr-0' : childComments
+                  'px-0 !pl-[3.8rem] !py-0 !pr-0' : childComments,
+                  '!flex':profile
                 }
             )}
             htmlFor={formId}
         >
-          <UserAvatar src={currentUser?.avatar as string} alt={currentUser?.fullName as string} username={currentUser?.fullName as string} />
+          {!profile && <UserAvatar src={currentUser?.avatar as string} alt={currentUser?.fullName as string} username={currentUser?.fullName as string} />}
           <div className={cn(`flex w-full flex-col gap-4`,{
             '!gap-0': childComments
           })}>

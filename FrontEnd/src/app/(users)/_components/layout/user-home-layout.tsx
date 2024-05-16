@@ -35,6 +35,7 @@ import { SearchButton } from '../search/search-button';
 import { isCheckFriend, isFollowing } from 'services/main/clientRequest/friendsClient';
 import {openConversationWithAnyone} from "@components/chat-box/chat-box-helper";
 import {useChat} from "../../../../context/chat-context";
+import InputMobile from "../input/InputMobile";
 
 
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
@@ -53,19 +54,19 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
 
     //console.log("currentUser",currentUser)
     const {ID} = useParams() || currentUser?.id;
-    const { data: data, isLoading} = useSWR(
-        isCheckFriend({
-             userId: currentUser?.id as string,
-             friendId: ID,
-           }),
-       fetcherWithToken,
-     );
-
-     useEffect(()=>{
-        if(data){
-            setA(data.data);
-        }
-     },[data])
+    // const { data: data, isLoading} = useSWR(
+    //     isCheckFriend({
+    //          userId: currentUser?.id as string,
+    //          friendId: ID,
+    //        }),
+    //    fetcherWithToken,
+    //  );
+    //
+    //  useEffect(()=>{
+    //     if(data){
+    //         setA(data.data);
+    //     }
+    //  },[data])
     console.log("currentUser", ID)
     const {
         isLoading: loading,
@@ -192,26 +193,27 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                                             <HeroIcon className='h-5 w-5' iconName='EnvelopeIcon'/>
                                             <ToolTip tip='Message'/>
                                         </Button>
-                                        <SearchButton
-                                                userTargetUsername={response?.data?.fullName}
-                                                userTargetId={ID as string}
-                                                follow={a?.follow}
-                                                acceptedFriend={a?.acceptFriend}
-                                                friend={a?.friend}
-                                                pending={a?.pending}
-                                                />
+                                        {/*<SearchButton*/}
+                                        {/*        userTargetUsername={response?.data?.fullName}*/}
+                                        {/*        userTargetId={ID as string}*/}
+                                        {/*        follow={a?.follow}*/}
+                                        {/*        acceptedFriend={a?.acceptFriend}*/}
+                                        {/*        friend={a?.friend}*/}
+                                        {/*        pending={a?.pending}*/}
+                                        {/*        />*/}
                                         
                                         
-                                        {/* <FollowButton
+                                        <FollowButton
                                             userTargetId={response?.data?.id}
                                             userTargetUsername={response?.data?.fullName}
                                             hovered={true}
                                         />
-                                         */}
+
                                         {/*{isOwner && <UserEditProfile hide/>}*/}
                                     </div>
                                 )}
                             </div>
+                                <UserDetails {...response?.data} />
                             </div>
                         </>
                     )
@@ -220,11 +222,9 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
 
             {response?.data && (
                 <>
-
                     {
                         isProvider && <UserNav/>
                     }
-
                     {children}
                 </>
             )}

@@ -94,7 +94,7 @@ console.log("iso2",isoTimeString);
  return isoTimeString;
 }
 
-export function formatDate(date: any): Date {
+    export function formatDate(date: any): Date {
     const dateformat = new Date(date);
     
     dateformat.setHours(0);
