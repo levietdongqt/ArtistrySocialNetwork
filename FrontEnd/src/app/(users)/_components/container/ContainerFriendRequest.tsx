@@ -15,6 +15,7 @@ import cn from "clsx";
 import {FriendRequestCard} from "../friend/FriendRequestCard";
 import {mutateFriendRequest} from "@lib/hooks/mutateFriendRequest";
 import {useRecoilState} from "recoil";
+import {StatsEmpty} from "../content/stats-empty";
 
 const ContainerFriendRequest = () => {
     const {currentUser} = useUser();
@@ -33,9 +34,10 @@ const ContainerFriendRequest = () => {
                     <Error message='Something went wrong' />
                 ) : friends?.data.length === 0 ?
                     (
-                        <div className={cn(`flex items-center justify-center mt-20`)}>
-                            <p className={'text-center text-2xl font-bold'}>Không có lời mời kết bạn nào</p>
-                        </div>
+                        <StatsEmpty
+                            title='Không có lời bạn'
+                            imageData={{ src:'/no-followers.png', alt: 'No friends' }}
+                        />
                     )
                     : (
                         <>

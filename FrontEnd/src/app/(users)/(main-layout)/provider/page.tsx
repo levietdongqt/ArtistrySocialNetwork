@@ -7,6 +7,8 @@ import Promotions from "app/(users)/_components/main-service/promotions";
 import ServiceExtra from "../../_components/extra-service/servcie-extra";
 import WorkingTimes from "app/(users)/_components/main-service/workingtimes";
 import Order from "app/(users)/_components/order/order";
+import {useUser} from "../../../../context/user-context";
+import {UserRole} from "@lib/enum/UserRole";
 
 const items = [
     {
@@ -36,7 +38,21 @@ const items = [
     },
 ];
 export default function AdminMain() {
-    
+    // const {currentUser} = useUser()
+    // const {back} = useRouter();
+    // if(currentUser?.roles.includes(UserRole.ROLE_PROVIDER)){
+    //     return (
+    //         <>
+    //             <MainHeader useActionButton action={back}>
+    //                 Quay lại
+    //             </MainHeader>
+    //             <div>
+    //                 <Tabs items={items}/>
+    //             </div>
+    //         </>
+    //     );
+    // }
+    // back()
     const {back} = useRouter();
     return (
         <>

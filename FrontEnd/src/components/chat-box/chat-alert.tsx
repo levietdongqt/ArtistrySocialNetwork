@@ -24,6 +24,7 @@ export function ChatAlert() {
     useEffect(() => {
         if (!isInMessagePage) {
             findUnReadConversations().then((response: MyResponse<ConversationDto[]>) => {
+                console.log("UNREAD: ", response)
                 dispatch(ChatAction(response.data, ACTION_TYPE.SET_CONVERSATIONS))
             })
         }
@@ -53,7 +54,7 @@ export function ChatAlert() {
                                 isMinus = true
                             }
                             return isMinus &&
-                                <div className={`my-1 ml-2 `}>
+                                <div className={`my-1 ml-2 `} key={index}>
                                     <ChatBox isMinusChatBox={isMinus}
                                              curConversation={pickedConversations[index]!}/>
                                 </div>

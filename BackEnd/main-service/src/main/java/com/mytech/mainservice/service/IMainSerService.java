@@ -11,10 +11,9 @@ public interface IMainSerService {
     Set<MainServiceDTO> getMainServices(String userId);
     void saveMainService(SaveServiceDTO saveServiceDTO);
 
-    List<MainServiceDTO> findMainServiceSavedByUserId(String userId);
+    List<MainServiceDTO> findMainServiceSavedByUserId(String userId,int limit,int pageIndex);
     MainServiceDTO getById(long serviceId);
-
-
+    void deleteAllSaved(String userId);
     void createMainService(MainServiceDTO mainServiceDTO);
 
     void deleteService(Long serviceId);

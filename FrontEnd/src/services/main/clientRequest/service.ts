@@ -28,6 +28,43 @@ export async function createMainService(data: MainService): Promise<any> {
         throw error; // Hoặc return thứ gì đó cho ngữ cảnh của bạn
     }
 }
+export async function savedMainService(data: any): Promise<any> {
+    const config: AxiosRequestConfig = {
+        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/main-service/save-services`,
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json', // Đặt Content-Type cho yêu cầu là JSON
+        },
+        data: JSON.stringify(data), // Gửi đối tượng data như là JSON; không cần JSON.stringify
+    };
+
+    try {
+        const response = await axiosWithToken(config);
+        return response.data.data; // Giả định rằng cấu trúc phản hồi có dạng { data: { data: ... } }
+    } catch (error) {
+        // Xử lý lỗi ở đây
+        console.error('Error creating main service:', error);
+        throw error; // Hoặc return thứ gì đó cho ngữ cảnh của bạn
+    }
+}
+export async function deleteSavedMainService(userId: string): Promise<any> {
+    const config: AxiosRequestConfig = {
+        url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/main-service/deleteAllSaved/${userId}`,
+        method: "DELETE",
+        headers: {
+            'Content-Type': 'application/json', // Đặt Content-Type cho yêu cầu là JSON
+        },
+        data: null, // Gửi đối tượng data như là JSON; không cần JSON.stringify
+    };
+    try {
+        const response = await axiosWithToken(config);
+        return response.data.data; // Giả định rằng cấu trúc phản hồi có dạng { data: { data: ... } }
+    } catch (error) {
+        // Xử lý lỗi ở đây
+        console.error('Error creating main service:', error);
+        throw error; // Hoặc return thứ gì đó cho ngữ cảnh của bạn
+    }
+}
 export async function updateMainService(data: EditableMainServiceData ): Promise<any> {
     const config: AxiosRequestConfig = {
         url: `${process.env.NEXT_PUBLIC_MAIN_SERVICE_URL}/main-service/update`,
@@ -164,8 +201,8 @@ export async function getExtraServiceByProvider (providerId :string){
     }
 }
 
-export function GetAllSavedMainService (userId :string): fetcherParams {
-    return [`/main-service/getAllSavedMainService/${userId}`, 'GET', null, ServiceDestination.MAIN];
+export function GetAllSavedMainService (userId?:string,limit?: number,pageIndex?:number): fetcherParams {
+    return [`/main-service/getAllSavedMainService/${userId}?limit=${limit}&pageIndex=${pageIndex}`, 'GET', null, ServiceDestination.MAIN];
 }
 
 

@@ -26,8 +26,10 @@ const ReviewComponent: React.FC<ReviewComponentProps> = ({ id }) => {
                 )}
             </div>
             <div className="container mx-auto p-4 space-y-4">
-                {reviews?.data.map((review: any) => (
-                    <ReviewCard key={review.id} review={review}/>
+                {reviews?.data.map((review: any,index: number) => (
+                    <div key={index}>
+                        <ReviewCard key={review.id}  review={review}/>
+                    </div>
                 ))}
             </div>
         </>

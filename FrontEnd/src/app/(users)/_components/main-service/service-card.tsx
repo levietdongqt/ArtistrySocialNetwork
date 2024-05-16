@@ -19,6 +19,12 @@ import BookingModal from "../booking/bookingModal";
 import CreateReview from "../../(main-layout)/profile/[ID]/review/create-review";
 import ServiceDetail from "./servicer-detail";
 import {Promotion} from "@models/promotion";
+import {preventBubbling} from "@lib/utils";
+import {useUser} from "../../../../context/user-context";
+import {savedMainService} from "../../../../services/main/clientRequest/service";
+import {toast} from "react-toastify";
+import {useRecoilValue} from "recoil";
+import {mutateSavedService} from "@lib/hooks/mutateSavedService";
 
 
 interface ProServiceCard {
@@ -30,6 +36,7 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
     const [openModalCreateReview, setOpenModalCreateReview] = React.useState(false);
     const [openModalServiceDetail, setOpenModalServiceDetail] = useState(false);
     const [openBookingModal, setOpenBookingModal] = useState(false)
+    const [isCheckService, setIsCheckService] = useState(false);
     const handleOpenCreateReview = () => {
         setOpenModalCreateReview(true)
     }
@@ -37,31 +44,56 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
         setOpenModalServiceDetail(true);
     }
     const [isPreviewImage, setIsPreviewImage] = useState(false);
-
+    const {currentUser} = useUser();
+    const userId = currentUser?.id as string;
     const provider: User | null = data?.provider;
     const promotion:any |null = data?.promotionDTO;
     const decription = data?.description;
     const cleanFullBioContent = DOMPurify.sanitize(decription);
+    const mutateSaved = useRecoilValue(mutateSavedService);
+    const handleAddToFavorite = async () =>{
+        try{
+            const item = {
+                userId: userId,
+                mainServiceId: data?.id
+            }
+            await savedMainService(item);
+            if (mutateSaved) {
+                await mutateSaved();
+            }
+            setIsCheckService(true);
+            toast.success(
+                `Đã lưu services ${data?.name} thành công`,
+            );
+        }catch (e){
+            console.log(e);
+            toast.success(
+                `Đã lưu services ${data?.name} thất bại`,
+            );
+        }
+    }
     const menu = (
         <Menu items={[
             {
                 key: '1',
                 label: (
-                    <Link href="">
+                    <Button onClick={preventBubbling(handleAddToFavorite)} className={'w-full border-0'}>
                         <div className="flex items-center">
                             <HeartOutlined className="mr-2"/>
                             Lưu dịch vụ
                         </div>
-                    </Link>
+                    </Button>
                 ),
             },
             {
                 key: '2',
                 label: (
-                    <div onClick={handleOpenCreateReview} className="flex items-center">
-                        <PlusCircleOutlined className="mr-2"/>
-                        Viết đánh giá
-                    </div>
+                    <Button onClick={handleOpenCreateReview} className={'w-full border-0'}>
+                        <div className="flex items-center">
+                            <PlusCircleOutlined className="mr-2"/>
+                            Viết đánh giá
+                        </div>
+                    </Button>
                 ),
             },
         ]}/>
@@ -91,12 +123,9 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
                 </div>
             </Modal>
 
-
             <Modal open={openModalCreateReview} closeModal={() => setOpenModalCreateReview(false)}>
                 <CreateReview closeModal={() => setOpenModalCreateReview(false)} service={data}/>
             </Modal>
-
-
             {
                 openBookingModal &&
                 <Modal

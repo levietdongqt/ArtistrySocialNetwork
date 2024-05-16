@@ -21,11 +21,11 @@ public interface PostRepository extends MongoRepository<Post,String> {
 
     @Query(value = "{'user.id': ?0}")
     Page<Post> findPostByUser(String userId,Pageable pageable);
-
     @Query(value = "{'id': ?0}")
     Optional<Post> findPostById(String postId);
     @Query(value = "{'_id': {$nin: ?1},'user.id' : { $in: ?0 }}")
     Page<Post> findByOrderByCreatedAtDesc(List<String> userIds, Set<String> reportedPostIds, Pageable pageable);
+
 
     @Query(value = "{'id': {$nin: ?1},'user.id' : { $in: ?0 }}",sort = "{'createdAt': -1}")
     List<Post> findByOrderByCreatedAtDescNotPag(List<String> userIds, Set<String> reportedPostIds);
@@ -35,6 +35,8 @@ public interface PostRepository extends MongoRepository<Post,String> {
     @Query(value = "{'id': {$in: ?0}}")
     List<Post> findByPostIdsIn(List<String> postIds);
 
+    @Query(value = "{'priorityScore':{'$gt':0} }")
+    Page<Post> findTreddingPosts(Pageable pageable);
 
     @Query(value = "{'_id': ?0}",fields = "{'totalLikes': 1}")
     Optional<Post> showTotalLikesByPostId(String postId);

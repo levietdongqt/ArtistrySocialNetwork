@@ -1,6 +1,5 @@
 import {MainLayout} from "../_components/layout/main-layout";
 import React, {Suspense} from "react";
-import {ChatAlert} from "@components/chat-box/chat-alert";
 import {UserContextProvider} from "../../../context/user-context";
 import ChatContextProvider from "../../../context/chat-context";
 import {NotificationContextProvider} from "../../../context/notification-context";

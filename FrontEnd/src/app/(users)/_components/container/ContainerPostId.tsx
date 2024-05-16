@@ -41,7 +41,7 @@ const ContainerPostId = () => {
         <>
             <MainHeader
                 useActionButton
-                title={'Post'}
+                title={'Bài viết'}
                 action={back}
             />
             <section>

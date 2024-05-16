@@ -25,8 +25,6 @@ const InputColors: Readonly<InputAccentData> = {
 
 export function InputAccentRadio({ type }: InputAccentRadioProps): JSX.Element {
   const { accent, changeAccent } = useTheme();
-  console.log("accent" + accent);
-  console.log("changeAccent" + changeAccent);
   const bgColor = InputColors[type];
   const isChecked = type === accent;
 

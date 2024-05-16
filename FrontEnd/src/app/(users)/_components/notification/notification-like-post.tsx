@@ -58,7 +58,7 @@ export default function NotificationPostCard({ data }: NotificationCardParams) {
             {data?.map((notify: any, index: any) => {
               return (
                 !notify.status && (
-                  <UserTooltip avatarCheck={true} {...notify?.userTo}>
+                  <UserTooltip avatarCheck={true} {...notify?.userTo} key={index}>
                     <UserAvatar
                       src={
                         notify?.userTo.avatar ||
@@ -66,7 +66,6 @@ export default function NotificationPostCard({ data }: NotificationCardParams) {
                       }
                       alt={"name"}
                       username={`${notify?.id}`}
-                      key={index}
                     />
                   </UserTooltip>
                 )

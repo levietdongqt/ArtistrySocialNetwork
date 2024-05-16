@@ -1,5 +1,5 @@
 'use client'
-import React, {useMemo} from 'react';
+import React, {ReactNode, useEffect, useMemo} from 'react';
 import {Button} from "@components/ui/button";
 import {HeroIcon} from "@components/ui/hero-icon";
 import {ToolTip} from "@components/ui/tooltip";
@@ -19,8 +19,13 @@ import {ContentPost} from "../content/content";
 import {toast} from "react-toastify";
 import {deleteAllBokMarksByUserId} from "../../../../services/realtime/ServerAction/bookmarksService";
 import {SEO} from "../common/seo";
-import {GetAllSavedMainService} from "../../../../services/main/clientRequest/service";
+import {deleteSavedMainService, GetAllSavedMainService} from "../../../../services/main/clientRequest/service";
 import {ServiceCard} from "../main-service/service-card";
+import {useRecoilState} from "recoil";
+import {mutateSavedService} from "@lib/hooks/mutateSavedService";
+import {Form} from "antd";
+import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
+import InfiniteScroll from "react-infinite-scroll-component";
 import {MainService} from "@models/main-service";
 
 
@@ -30,14 +35,25 @@ const ContainerService = () => {
     const { open, openModal, closeModal } = useModal();
 
     const userId = useMemo(() => currentUser?.id as string, [currentUser]);
-    const { data: savedRef, isLoading: savedRefLoading } = useSWR(GetAllSavedMainService(userId),fetcherWithToken);
-console.log('savedRefLoading,',savedRef)
+    const { paginatedPosts: savedRef, isLoadingMore: savedRefLoading,mutate: savedRefMutate,isReachedEnd,LoadMore,size,setSize,error } = useInfiniteScroll(GetAllSavedMainService);
+    const [,setMutateSaved] = useRecoilState(mutateSavedService);
+    useEffect(() => {
+        setMutateSaved(()=>savedRefMutate);
+    }, [savedRefMutate,setMutateSaved]);
     const handleClear = async (): Promise<void> => {
-        await deleteAllBokMarksByUserId(userId);
+        await deleteSavedMainService(userId);
+        await savedRefMutate();
         closeModal();
-        toast.success('Xóa tất cả Services thành công');
+        toast.success('Xóa tất cả dịch vụ thành công');
     };
 
+    const theEndPost = (): ReactNode => {
+        return (
+            <div className={'mt-10'}>
+                <p className='text-center text-gray-500 text-2xl font-bold'>Không còn dịch vụ</p>
+            </div>
+        )
+    }
     return (
         <>
             <Modal
@@ -47,11 +63,11 @@ console.log('savedRefLoading,',savedRef)
             >
                 <ActionModal
                     actionReport={()=>{}}
-                    title='Xóa tất cả bài post đẫ lưu'
-                    description='Có thể mất tất cả bài post đã lưu không thể hồi phục'
+                    title='Xóa tất cả bài dịch vụ đẫ lưu'
+                    description='Có thể mất tất cả bài services đã lưu không thể hồi phục'
                     mainBtnClassName='bg-accent-red hover:bg-accent-red/90 active:bg-accent-red/75 accent-tab
                             focus-visible:bg-accent-red/90'
-                    mainBtnLabel='Clear'
+                    mainBtnLabel='Xóa'
                     action={handleClear}
                     closeModal={closeModal}
                 />
@@ -60,6 +76,12 @@ console.log('savedRefLoading,',savedRef)
                 <div className='-mb-1 flex flex-col'>
                     <h2 className='-mt-1 text-xl font-bold'>Filter</h2>
                 </div>
+                <Form className={'flex gap-2'}>
+                    <div className={'py-1'}>
+                        <HeroIcon iconName={'MagnifyingGlassIcon'}/>
+                    </div>
+                    <input type="search" name={'search'} className={'border-2 border-black rounded py-1 px-2'} placeholder={'Tìm kiếm'}/>
+                </Form>
                 <Button
                     className='dark-bg-tab group relative p-2 hover:bg-light-primary/10
                      active:bg-light-primary/20 dark:hover:bg-dark-primary/10
@@ -69,30 +91,32 @@ console.log('savedRefLoading,',savedRef)
                     <HeroIcon className='h-5 w-5' iconName='ArchiveBoxXMarkIcon' />
                     <ToolTip
                         className='!-translate-x-20 translate-y-3 md:-translate-x-1/2'
-                        tip='Clear bookmarks'
+                        tip='xóa dịch vụ'
                     />
                 </Button>
             </MainHeader>
             <section className='mt-0.5'>
                 {savedRefLoading  ? (
                     <Loading className='mt-5' />
-                ) : !savedRef ? (
+                ) : !savedRef || savedRef?.length === 0 ? (
                     <StatsEmpty
-                        title='Lưu bài post '
-                        description='Đừng để bài post của bạn mất'
-                        imageData={{ src: '/assets/no-bookmarks.png', alt: 'No bookmarks' }}
+                        title='Lưu bài dịch vụ'
+                        description='Đừng để dịch vụ của bạn mất'
+                        imageData={{ src: '/no-bookmarks.png', alt: 'No services' }}
                     />
                 ) : (
-                    <AnimatePresence mode='popLayout'>
-
-                        {savedRef?.data?.map((service:any) => {
-                            if (service.status) {
-                                console.log('status',service.status)
-                                return <ServiceCard data={service} key={service.id} />;
-                            }
-                            return null;
-                        })}
-                    </AnimatePresence>
+                    <InfiniteScroll style={{overflow: 'initial'}} next={() => setSize(size as number + 1)}
+                                    hasMore={!isReachedEnd}
+                                    loader={savedRef?.map((content)=> content === undefined ? null : <LoadMore />)}
+                                    dataLength={savedRef?.length as number ?? 0}
+                                    endMessage={!isReachedEnd ? theEndPost() : ''}>
+                        <AnimatePresence mode='popLayout'>
+                            {savedRef?.map((service:any) => {
+                                if (service.status) {
+                                    <ServiceCard data={service} key={service.id}/>
+                                } return null})}
+                        </AnimatePresence>
+                    </InfiniteScroll>
                 )}
             </section>
         </>

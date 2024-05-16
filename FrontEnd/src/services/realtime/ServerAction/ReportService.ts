@@ -15,7 +15,6 @@ export async function createReport(data:any): Promise<any> {
             });
         if (res.ok) {
             const data = await res.json();
-            console.log("show data",data);
             return data;
         } else {
             console.log("SAI ROI", res.statusText, res.status)
@@ -37,7 +36,6 @@ export async function undoReport(userId:string, postId:string): Promise<any> {
             });
         if (res.ok) {
             const data = await res.json();
-            console.log("show data",data);
             return data;
         } else {
             console.log("SAI ROI", res.statusText, res.status)

@@ -33,9 +33,12 @@ import {EditProfileModal} from "../modal/edit-profile-modal";
 import RegisterProviderForm from "../../(main-layout)/profile/[ID]/register-provider";
 import { SearchButton } from '../search/search-button';
 import { isCheckFriend, isFollowing } from 'services/main/clientRequest/friendsClient';
+import {openConversationWithAnyone} from "@components/chat-box/chat-box-helper";
+import {useChat} from "../../../../context/chat-context";
 
 
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
+    const {state,dispatch} = useChat()
     const [openModal, setOpenModal] = useState(false)
     const [openModalProvider, setOpenModalProvider] = useState(false)
     const [a, setA] = useState<any>()
@@ -84,6 +87,11 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
     /* const { id: userId } = user ?? {};*/
 
     const isOwner = response?.data?.id === currentUser?.id;
+
+    const onRequestChat = () => {
+        console.log("onRequestChat")
+        openConversationWithAnyone(currentUser!,response.data as User,state,dispatch)
+    }
 
     const handleMenuClick = async () => {
 
@@ -176,10 +184,11 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                                         <div className='flex gap-2 self-start'>
                                             <UserShare username={response?.data?.fullName}/>
                                             <Button
-                                                className='dark-bg-tab group relative cursor-not-allowed border border-light-line-reply p-2
+                                                className='dark-bg-tab group relative  border border-light-line-reply p-2
                                  hover:bg-light-primary/10 active:bg-light-primary/20 dark:border-light-secondary
                                  dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20'
-                                        >
+                                        onClick={() => onRequestChat()}
+                                            >
                                             <HeroIcon className='h-5 w-5' iconName='EnvelopeIcon'/>
                                             <ToolTip tip='Message'/>
                                         </Button>

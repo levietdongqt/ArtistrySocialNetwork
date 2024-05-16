@@ -1,4 +1,4 @@
-'use client'
+
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
@@ -21,8 +21,8 @@ export function WindowContextProvider({
                                         children
                                       }: WindowContextProviderProps): JSX.Element {
   const [windowSize, setWindowSize] = useState<WindowSize>(() => ({
-    width: 1024,
-    height: 1024
+    width: window.innerWidth,
+    height: window.innerHeight
   }));
   useEffect(() => {
     const handleResize = (): void =>

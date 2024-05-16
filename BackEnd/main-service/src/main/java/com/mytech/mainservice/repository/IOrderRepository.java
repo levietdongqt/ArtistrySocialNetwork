@@ -14,6 +14,8 @@ public interface IOrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT o FROM Order o WHERE DATE(o.startDate) = :startDate AND o.providerUser.id = :providerId")
     List<Order> findByStartDateAndProviderUser_Id(LocalDate startDate, String providerId);
+
+    List<Order> findByProviderUser_IdOrderByCreateDate(String providerId);
 }
 
 
