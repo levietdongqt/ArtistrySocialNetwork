@@ -26,6 +26,8 @@ import {mutateSavedService} from "@lib/hooks/mutateSavedService";
 import {Form} from "antd";
 import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
 import InfiniteScroll from "react-infinite-scroll-component";
+import {MainService} from "@models/main-service";
+
 
 const ContainerService = () => {
     const { currentUser } = useUser();
@@ -44,6 +46,7 @@ const ContainerService = () => {
         closeModal();
         toast.success('Xóa tất cả dịch vụ thành công');
     };
+
     const theEndPost = (): ReactNode => {
         return (
             <div className={'mt-10'}>
@@ -108,9 +111,10 @@ const ContainerService = () => {
                                     dataLength={savedRef?.length as number ?? 0}
                                     endMessage={!isReachedEnd ? theEndPost() : ''}>
                         <AnimatePresence mode='popLayout'>
-                            {savedRef?.map((service:any) => (
-                                <ServiceCard data={service} key={service.id} />
-                            ))}
+                            {savedRef?.map((service:any) => {
+                                if (service.status) {
+                                    <ServiceCard data={service} key={service.id}/>
+                                } return null})}
                         </AnimatePresence>
                     </InfiniteScroll>
                 )}
