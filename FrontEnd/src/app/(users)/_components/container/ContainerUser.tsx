@@ -10,6 +10,8 @@ import {ContentPost} from "../content/content";
 import DOMPurify from 'dompurify';
 import {ServiceProvider} from "../../services/[id]/service-provider";
 import PostUser from "../../(main-layout)/profile/[ID]/post/post-user";
+import {Input} from "../input/input";
+import {useWindow} from "../../../../context/window-context";
 
 const ContainerUser = () => {
 
@@ -18,21 +20,26 @@ const ContainerUser = () => {
     const isProvider = response?.data?.roles?.includes('ROLE_PROVIDER');
     const bioContent = response?.data?.bio || '';
     const cleanBioContent = DOMPurify.sanitize(bioContent);
+    const { isMobile } = useWindow();
     return (
-        <section>
-            {loading ? (
-                <Loading className='mt-5'/>
-            ) : isProvider ? (
+        <>
+            {!isMobile && !isProvider && <Input profile/>}
+            <section>
+                {loading ? (
+                    <Loading className='mt-5'/>
+                ) : isProvider ? (
 
-                <AnimatePresence mode='popLayout'>
-                    <div className="pt-2.5" dangerouslySetInnerHTML={{__html: cleanBioContent}}/>
-                </AnimatePresence>
+                    <AnimatePresence mode='popLayout'>
+                        <div className="pt-2.5" dangerouslySetInnerHTML={{__html: cleanBioContent}}/>
+                    </AnimatePresence>
                 ) : (
-                <div className="border border-gray-300 rounded p-4 shadow">
-                    <PostUser  />
-                </div>
+                    <div className="border border-gray-300 rounded p-4 shadow">
+                        <PostUser/>
+                    </div>
                 )}
-        </section>
+            </section>
+        </>
+
     );
 };
 
