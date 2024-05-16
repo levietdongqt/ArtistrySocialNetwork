@@ -34,6 +34,7 @@ import {mutatePostId} from "@lib/hooks/mutatePostId";
 import {mutateDeleteCommentState} from "@lib/hooks/mutateDeleteState";
 import {mutateBookmarkByPostId} from "@lib/hooks/mutateBookmarkByPostId";
 import {mutateBookmark} from "@lib/hooks/mutateBookmark";
+import {mutateProfilePost} from "@lib/hooks/mutateProfilePost";
 
 export const variants: Variants = {
   initial: { opacity: 0, y: -25 },
@@ -113,6 +114,7 @@ export function ContentAction({
   const mutateCommentState = useRecoilValue(mutateDeleteCommentState);
   const mutateBookmarkByPostIdAndUserId = useRecoilValue(mutateBookmarkByPostId);
   const mutateBookmarks = useRecoilValue(mutateBookmark);
+    const mutatePostProfile = useRecoilValue(mutateProfilePost);
     useEffect(() => {
         if(hovered){
             setHovered((prev:boolean) => !prev);
@@ -121,32 +123,37 @@ export function ContentAction({
   // const isInAdminControl = isAdmin && !isOwner;
   // const postIsPinned = pinnedTweet === postId;
  const handleRemove = async (): Promise<void> => {
-    if(currentUser !== null){
-        if(!comment){
+    if(currentUser !== null) {
+        if (!comment) {
             if (mutatePost) {
-                await Promise.all([
-                    deletePosts1(postId),
-                    mutatePost(),
-                ]);
+                await deletePosts1(postId);
+                if( mutatePost){
+                    await mutatePost()
+                }
+                if (mutatePostProfile) {
+                    await mutatePostProfile();
+                }
                 toast.success(
                     `bài viết bạn đã xóa`
                 );
             }
             removeCloseModal();
-        }else{
-            if (muatateComment && mutatePostById) {
-                await Promise.all([
-                    deleteComment(commentId as string),
-                    mutatePostById,
-                    muatateComment,
-                    mutateCommentState
-                ]);
-                toast.success(
-                    `bài viết bạn đã bình luận này`
-                );
+        } else {
+            await deleteComment(commentId as string);
+            if (muatateComment) {
+                await muatateComment()
             }
-            removeCloseModal();
+            if (mutatePostById) {
+                await mutatePostById()
+            }
+            if (mutateCommentState) {
+                await mutateCommentState()
+            }
+            toast.success(
+                `bài viết bạn đã bình luận này`
+            );
         }
+            removeCloseModal();
     }
   };
     const {data: userBookmarks, isLoading} = useSWR(hovered ? getBookmarksByUserId(userId) : null, fetcherWithToken);
@@ -160,9 +167,14 @@ export function ContentAction({
                 }
                     setIsCheckBookmark(prevState => !prevState);
                     await bookmarksPost(data);
-                    if(mutatePost && mutateBookmarks){
+                    if(mutatePost ){
                         await mutatePost();
-                        await  mutateBookmarks();
+                    }
+                    if(mutatePostProfile){
+                        await mutatePostProfile();
+                    }
+                    if(mutateBookmarks){
+                        await mutateBookmarks();
                     }
                 closeMenu();
                 toast.success(

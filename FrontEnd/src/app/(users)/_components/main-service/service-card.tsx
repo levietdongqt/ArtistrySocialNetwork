@@ -190,8 +190,8 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
                                 </div>
 
                                 <div className="text-sm text-light-secondary dark:text-dark-secondary">
-                                    <strong>Giá</strong>:
-                                    {promotion && promotion.discountPercent
+                                    <strong>Giá</strong>:{" "}
+                                    {promotion && promotion.status && promotion.discountPercent
                                         ? <>
         <span className="line-through">
           {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data?.price)}
@@ -204,7 +204,7 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
                                     }
                                 </div>
 
-                                {promotion?.endDate && (
+                                {promotion && promotion.status && promotion.endDate && (
                                     <div
                                         className="text-sm text-light-secondary dark:text-dark-secondary"
                                         title={`Áp dụng đến ${new Date(promotion.endDate).toLocaleDateString('vi-VN')}`}

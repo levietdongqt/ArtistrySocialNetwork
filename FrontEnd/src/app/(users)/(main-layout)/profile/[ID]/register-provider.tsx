@@ -25,6 +25,7 @@ import {useOAuth2} from "../../../../../context/oauth2-context";
 import {setCookie} from "cookies-next";
 import {useRouter} from "next/navigation";
 import {refresh_token_options} from "@lib/config/TokenConfig";
+import {deleteCookieTokenSSR} from "@lib/helper/serverCookieHandle";
 
 type RegisterProviderFormProps = {
     closeModal: () => void;
@@ -44,7 +45,15 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
         location: currentUser?.location ?? {},
         address: currentUser?.address ?? ""
     });
-
+    const {signOut} = useOAuth2()
+    /*const { name, username, verified, photoURL } = user as User;*/
+    const handleSignOut = async () => {
+        // router.prefetch("/login")
+        console.log("SIGN OUT")
+        await deleteCookieTokenSSR();
+        await signOut();
+        push("/login");
+    }
     const [newbio, setNewBio] = useState(user.bio)
     const roleOptions = [
         {label: 'Studio', value: UserRole.ROLE_STUDIO},
@@ -97,14 +106,14 @@ const RegisterProviderForm: React.FC<RegisterProviderFormProps> = ({closeModal})
     const registerProvider = async (provider: any) => {
         try {
             const response = await updateUser(provider);
-            toast.success('Đăng ký nhà cung cấp thành công');
+            toast.success('Đăng ký nhà cung cấp thành công. Vui lòng đăng nhập lại');
             console.log("Provider Register successfully", response);
             const updatedUser = response.data as User;
             setCurrentUser(updatedUser)
 
             setCookie('user', JSON.stringify(updatedUser),refresh_token_options);
 
-            push("/provider")
+            handleSignOut();
             closeModal();
         } catch (error) {
             console.error("Failed to Provider Register", error);
