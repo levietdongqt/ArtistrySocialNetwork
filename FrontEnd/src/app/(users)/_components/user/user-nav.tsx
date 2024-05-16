@@ -11,10 +11,10 @@ type UserNavProps = {
 const allNavs = [
 
   [
-    { name: 'Overview', path: '' },
-    { name: 'Review', path: 'review' },
-    { name: 'Post', path: 'post' },
-    { name: 'Service', path: 'service' },
+    { name: 'Tổng quan', path: '' },
+    { name: 'Đánh giá', path: 'review' },
+    { name: 'Bài viết', path: 'post' },
+    { name: 'Dịch vụ', path: 'service' },
   ],
   [
     { name: 'Following', path: 'following' },

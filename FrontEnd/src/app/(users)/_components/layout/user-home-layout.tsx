@@ -213,6 +213,7 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                                     </div>
                                 )}
                             </div>
+                                <UserDetails {...response?.data} />
                             </div>
                         </>
                     )
