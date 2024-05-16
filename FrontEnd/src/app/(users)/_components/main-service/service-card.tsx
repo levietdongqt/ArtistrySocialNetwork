@@ -37,20 +37,24 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
     const [openModalServiceDetail, setOpenModalServiceDetail] = useState(false);
     const [openBookingModal, setOpenBookingModal] = useState(false)
     const [isCheckService, setIsCheckService] = useState(false);
-    const handleOpenCreateReview = () => {
-        setOpenModalCreateReview(true)
-    }
-    const handleOpenServiceDetail = () => {
-        setOpenModalServiceDetail(true);
-    }
-    const [isPreviewImage, setIsPreviewImage] = useState(false);
     const {currentUser} = useUser();
+    const [isShowButton, setIsShowButton] = useState(currentUser?.id!==data.provider?.id);
+    
+    
+    const [isPreviewImage, setIsPreviewImage] = useState(false);
+    
     const userId = currentUser?.id as string;
     const provider: User | null = data?.provider;
     const promotion:any |null = data?.promotionDTO;
     const decription = data?.description;
     const cleanFullBioContent = DOMPurify.sanitize(decription);
     const mutateSaved = useRecoilValue(mutateSavedService);
+    const handleOpenCreateReview = () => {
+        setOpenModalCreateReview(true)
+    }
+    const handleOpenServiceDetail = () => {
+        setOpenModalServiceDetail(true);
+    }
     const handleAddToFavorite = async () =>{
         try{
             const item = {
@@ -88,7 +92,7 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
             {
                 key: '2',
                 label: (
-                    <Button onClick={handleOpenCreateReview} className={'w-full border-0'}>
+                    isShowButton && <Button onClick={handleOpenCreateReview} className={'w-full border-0'}>
                         <div className="flex items-center">
                             <PlusCircleOutlined className="mr-2"/>
                             Viết đánh giá
@@ -124,7 +128,7 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
             </Modal>
 
             <Modal open={openModalCreateReview} closeModal={() => setOpenModalCreateReview(false)}>
-                <CreateReview closeModal={() => setOpenModalCreateReview(false)} service={data}/>
+            <CreateReview closeModal={() => setOpenModalCreateReview(false)} service={data}/>
             </Modal>
             {
                 openBookingModal &&

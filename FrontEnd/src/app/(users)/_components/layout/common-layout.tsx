@@ -53,8 +53,7 @@ export function SearchLayout({ children }: LayoutProps): JSX.Element {
         <>
             {children}
             <Aside>
-                <Suggestions />
-                <AsideTrends />
+            <ServiceAll />
             </Aside>
         </>
     );
