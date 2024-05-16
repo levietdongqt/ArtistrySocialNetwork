@@ -1,5 +1,5 @@
 'use client'
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {Button} from "@components/ui/button";
 import {HeroIcon} from "@components/ui/hero-icon";
 import {ToolTip} from "@components/ui/tooltip";
@@ -18,13 +18,15 @@ import {fetcherWithToken} from "@lib/config/SwrFetcherConfig";
 import {ContentPost} from "../../../../_components/content/content";
 import {useInfiniteScroll} from "@lib/hooks/useInfiniteScroll";
 import {useParams} from "next/navigation";
+import {useRecoilState} from "recoil";
+import {mutateProfilePost} from "@lib/hooks/mutateProfilePost";
 
 
 const PostUser = () => {
     const { currentUser } = useUser();
     const { ID } = useParams()
     const { open, openModal, closeModal } = useModal();
-
+    const [,setMutateProfile] = useRecoilState(mutateProfilePost);
     const userId = ID;
     // const { data: bookmarksRef, isLoading: bookmarksRefLoading } = useSWR(getBookmarksByUserId(userId),fetcherWithToken,{
     //     revalidateIfStale: false,
@@ -37,7 +39,9 @@ const PostUser = () => {
         useInfiniteScroll(
             getPostsByUserId
         );
-    console.log('postData' , postData);
+    useEffect(() => {
+        setMutateProfile(() => mutate);
+    }, [mutate,setMutateProfile]);
     return (
         <>
             <section className='mt-0.5'>

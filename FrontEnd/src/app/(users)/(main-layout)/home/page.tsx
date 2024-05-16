@@ -15,7 +15,7 @@ export default async function Home(){
         <>
                 <HomeLayout>
                 <MainContainer>
-                <SEO title='Home / Social' />
+                <SEO title='Trang chủ / Social' />
                 <MainHeader
                 useMobileSidebar
                 title='Trang chủ'
@@ -23,7 +23,7 @@ export default async function Home(){
                 >
                     <UpdateUsername />
                 </MainHeader>
-                    <InputMobile />
+                <InputMobile />
                 <ContainerHome />
                 </MainContainer>
                 </HomeLayout>

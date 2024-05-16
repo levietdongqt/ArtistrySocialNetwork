@@ -35,6 +35,7 @@ import { SearchButton } from '../search/search-button';
 import { isCheckFriend, isFollowing } from 'services/main/clientRequest/friendsClient';
 import {openConversationWithAnyone} from "@components/chat-box/chat-box-helper";
 import {useChat} from "../../../../context/chat-context";
+import InputMobile from "../input/InputMobile";
 
 
 export function UserHomeLayout({children}: LayoutProps): JSX.Element {
@@ -220,11 +221,9 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
 
             {response?.data && (
                 <>
-
                     {
                         isProvider && <UserNav/>
                     }
-
                     {children}
                 </>
             )}
