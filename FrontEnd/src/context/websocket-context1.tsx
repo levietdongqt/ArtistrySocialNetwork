@@ -41,7 +41,7 @@ export const SocketProvider = ({children}: any) => {
             connectHeaders: {
                 access_token: access_token!,
             },
-            brokerURL: 'ws://34.126.138.202:8060/api/realtime/socket.io',
+            brokerURL: 'ws://34.87.190.66:8060/api/realtime/socket.io',
             onConnect: () => {
                 console.log('connected');
                 // client.subscribe(`/user/chat/message`, (message) => {
