@@ -64,6 +64,7 @@ export function ContentPost(tweet: TweetProps) {
     bookmark
   } = tweet;
   const { id: ownerId, fullName, verified, avatar,coverImage,bio } = postUserData;
+
   const { currentUser } = useUser();
   const userId = currentUser?.id as string;
   const isOwner = userId === createdBy;

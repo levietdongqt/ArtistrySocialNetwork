@@ -1,4 +1,3 @@
-
 import "./styles/globals.scss";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,8 +12,6 @@ export default async function RootLayout({
                                    }: {
     children: React.ReactNode;
 }) {
-    // var params = usePathname();
-    // var isLogin = params.includes("/login")
     return (
         <html lang="en">
         <AppHead/>

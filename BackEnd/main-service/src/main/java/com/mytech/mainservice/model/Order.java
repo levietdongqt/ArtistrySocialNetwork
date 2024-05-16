@@ -10,6 +10,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @Builder
@@ -65,6 +66,10 @@ public class Order implements Serializable {
     @ManyToOne
     @JoinColumn(name = "customer_User_Id")
     private User customerUser;
+
+    @JoinColumn(name = "meta_Data")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private HashMap<String,Object> metaData;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_Service_Id")

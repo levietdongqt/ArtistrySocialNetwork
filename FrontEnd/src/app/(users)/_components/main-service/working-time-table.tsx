@@ -175,7 +175,7 @@ export default function WorkingTimesTable({ data,trueData }: DataTable) {
         return (
           <div className="flex flex-col">
             {workingDays.map((day: any, index: number) => (
-              <List>
+              <List key={index}>
                 <Tag color={"red"}>{day}</Tag>
               </List>
             ))}

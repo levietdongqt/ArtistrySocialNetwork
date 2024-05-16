@@ -129,13 +129,12 @@ export function InputOptions({
         <div>
           {
             filteredOptions.map(({ name, iconName, disabled },index) => (
-                <Popover trigger="click" content={name === 'Emoji' && content}>
+                <Popover key={name} trigger="click" content={name === 'Emoji' && content}>
                   <Button
                       className={`accent-tab accent-bg-tab group relative rounded-full p-2
         hover:bg-main-accent/10 active:bg-main-accent/20 ${showEmojiPicker ? 'cursor-default' : 'cursor-pointer'}`}
                       onClick={(event) => handleOptionClick(event, index)}
                       disabled={disabled}
-                      key={name}
                   >
                     <HeroIcon className='h-5 w-5' iconName={iconName} />
                     <ToolTip tip={name} modal={modal} />
@@ -194,7 +193,7 @@ export function InputOptions({
                   disabled={!isValidTweet}
                   onClick={callBack}
               >
-                {'Post'}
+                {'Đăng'}
               </Button>
           )
         }

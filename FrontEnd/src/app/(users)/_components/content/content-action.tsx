@@ -88,7 +88,9 @@ export function ContentAction({
 }: TweetActionsProps): JSX.Element {
   const { currentUser } = useUser();
   const { push } = useRouter();
-  const userId = currentUser?.id as string;
+    const [hovered, setHovered] = useState(false);
+
+    const userId = currentUser?.id as string;
     const [isCheckBookmark, setIsCheckBookmark] = useState(false);
   const {
     open: removeOpen,
@@ -111,6 +113,11 @@ export function ContentAction({
   const mutateCommentState = useRecoilValue(mutateDeleteCommentState);
   const mutateBookmarkByPostIdAndUserId = useRecoilValue(mutateBookmarkByPostId);
   const mutateBookmarks = useRecoilValue(mutateBookmark);
+    useEffect(() => {
+        if(hovered){
+            setHovered((prev:boolean) => !prev);
+        }
+    }, [hovered]);
   // const isInAdminControl = isAdmin && !isOwner;
   // const postIsPinned = pinnedTweet === postId;
  const handleRemove = async (): Promise<void> => {
@@ -142,11 +149,7 @@ export function ContentAction({
         }
     }
   };
-    const {data: userBookmarks, isLoading} = useSWR(getBookmarksByUserId(userId),fetcherWithToken);
-    useEffect(() => {
-        mutate(getBookmarksByUserId(userId)).then(()=>{
-        });
-    }, [isCheckBookmark]);
+    const {data: userBookmarks, isLoading} = useSWR(hovered ? getBookmarksByUserId(userId) : null, fetcherWithToken);
     const handleBookmark =
         (closeMenu: () => void, args:string, useid:string,postid:string) =>
             async (): Promise<void> => {
@@ -177,7 +180,6 @@ export function ContentAction({
             };
 
  const handleReport = async (value:string, content:string) : Promise<void> =>{
-     console.log("show post",postId);
     if(currentUser !== null){
         const reportData = {
             userId:currentUser?.id,
@@ -223,7 +225,7 @@ const  userIsFollowed = false;
         const tweetIsBookmarked = !!userBookmarks?.data?.some((items:any) => items.postId === postId);
         if(tweetIsBookmarked)
             setIsCheckBookmark(true);
-    }, [isCheckBookmark]);
+    }, [isCheckBookmark,userBookmarks?.data]);
   let currentPinModalData = {
     title: 'Pin Content to from profile?',
     description:
@@ -293,6 +295,9 @@ const  userIsFollowed = false;
                  focus-visible:!ring-accent-blue/80 active:bg-accent-blue/20`,
                 open && 'bg-accent-blue/10 [&>div>svg]:text-accent-blue'
               )}
+              onMouseOver={() => {
+                  setHovered((prev:boolean) => !prev)}
+            }
             >
               <div className='group relative'>
                 <HeroIcon

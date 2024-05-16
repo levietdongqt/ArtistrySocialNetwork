@@ -6,7 +6,7 @@ export type StatsEmptyProps = {
   title: string;
   modal?: boolean;
   imageData?: ImageData;
-  description: string;
+  description?: string;
 };
 
 export function StatsEmpty({

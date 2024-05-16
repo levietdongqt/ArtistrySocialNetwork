@@ -31,9 +31,10 @@ export function MoreSettings(): JSX.Element {
     const handleSignOut = async () => {
         // router.prefetch("/login")
         console.log("SIGN OUT")
-       await deleteCookieTokenSSR();
-       await signOut();
-       router.push("/login");
+        await deleteCookieTokenSSR();
+        await signOut();
+        window.location.href = "/login"
+        window.location.reload()
     }
     return (
         <>

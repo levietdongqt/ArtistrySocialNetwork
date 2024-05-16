@@ -177,6 +177,7 @@ CREATE TABLE IF NOT EXISTS orders (
 	status ENUM('PENDING', 'ACTIVE', 'CANCELLING', 'CANCELLED') DEFAULT 'PENDING',
     amount int,
     total_Price bigint,
+    meta_Data json,
     primary key(id),
     Foreign key(customer_User_Id) references users(id),
     Foreign key(promotion_Id) references promotions(id),

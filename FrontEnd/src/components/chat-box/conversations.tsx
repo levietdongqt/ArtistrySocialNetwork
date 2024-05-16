@@ -65,12 +65,12 @@ export function Conversations({closeConversations, callback}: ConversationsProps
                 return
             }
 
-            let newPickedCon = [response.data[0], undefined, undefined]
+            let newPickedCon = [response.data?.[0], undefined, undefined]
             if (searchPramId) {
-                const response = await findConversationById(searchPramId)
-                console.log("searchPramId: ", response)
-                if (response.status === 200) {
-                    newPickedCon[0] = response.data as ConversationDto
+                const response1 = await findConversationById(searchPramId)
+                console.log("searchPramId: ", response1)
+                if (response1.status === 200) {
+                    newPickedCon[0] = response1.data as ConversationDto
                     initMemberMapOfConversation(newPickedCon[0])
                 }
             }

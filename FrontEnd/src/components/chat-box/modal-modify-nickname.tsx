@@ -66,7 +66,7 @@ export function ModalModifyNickname({conversation}: props) {
         {
             conversation.members.map((member, index) => {
                 return (
-                    <div className="flex text-slate-500 items-center justify-between my-5 w-full">
+                    <div className="flex text-slate-500 items-center justify-between my-5 w-full" key={index}>
                         <div className="flex items-center">
                             <Avatar
                                 content={"HELO"}

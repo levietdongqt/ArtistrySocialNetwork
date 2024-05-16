@@ -62,7 +62,6 @@ export function SidebarLink({
   );
 
   function handleClickSlidebar(e: any) {
-    console.log("e");
     callBack?.();
     if (!disabled) {
       if (e.target.innerHTML === "Thông báo") {

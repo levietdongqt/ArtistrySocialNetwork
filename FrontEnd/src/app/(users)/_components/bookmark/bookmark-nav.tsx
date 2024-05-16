@@ -12,7 +12,7 @@ const allNavs = [
 
     [
         { name: 'Bài viết đã lưu', path: '' },
-        { name: 'Services đã lưu', path: 'services' },
+        { name: 'Dịch vụ đã lưu', path: 'services' },
     ],
     [
         { name: 'Following', path: 'following' },

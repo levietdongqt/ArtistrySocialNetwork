@@ -1,4 +1,4 @@
-
+'use client'
 import cn from 'clsx';
 import Link from 'next/link';
 import { HeroIcon } from '@components/ui/hero-icon';
@@ -6,13 +6,13 @@ import { useEffect, useState } from 'react';
 type UserNameProps = {
   tag?: keyof JSX.IntrinsicElements;
   id?:string;
-  name?: string;
+  name: string;
   verified: boolean;
   username?: string;
   className?: string;
   iconClassName?: string;
 };
-export function UserName({
+export default function UserName({
   id,
   tag,
   name,
@@ -32,6 +32,8 @@ export function UserName({
           tabIndex={username ? 0 : -1}
     >
         <CustomTag className='truncate' >{username}</CustomTag>
+       
+        
         {verified && (
           <i>
             <HeroIcon

@@ -21,7 +21,7 @@ export default function MyAvatarGroup({members, size, onClick: callback}: props)
             {
 
                 members.slice(1).map((member, index) => {
-                    return <Tooltip title={member.nickname} placement="top">
+                    return <Tooltip title={member.nickname} key={index} placement="top">
                         <Avatar onClick={() => callback?.()}
                                 style={{
                                     backgroundColor: '#87d068',

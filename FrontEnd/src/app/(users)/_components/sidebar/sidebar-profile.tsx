@@ -9,7 +9,7 @@ import {Button} from '@components/ui/button';
 import {HeroIcon} from '@components/ui/hero-icon';
 import {CustomIcon} from '@components/ui/custom-icon';
 import {UserAvatar} from '../user/user-avatar';
-import {UserName } from '../user/user-name';
+import {UserName} from '../user/user-name';
 import {UserUsername} from '../user/user-username';
 import {variants} from './more-settings';
 import {useUser} from "../../../../context/user-context";
@@ -26,6 +26,7 @@ export function SidebarProfile(): JSX.Element {
     const router = useRouter()
     const {signOut} = useOAuth2()
     const {currentUser} = useUser()
+    const fullName = currentUser?.fullName as string;
     /*const { name, username, verified, photoURL } = user as User;*/
     const handleSignOut = async () => {
         // router.prefetch("/login")
@@ -54,7 +55,7 @@ export function SidebarProfile(): JSX.Element {
                     closeModal={closeModal}
                 />
             </Modal>
-            <Menu className='relative' as='section'>
+            <Menu className='relative bottom-[-6rem]' as='section'>
                 {({open}): JSX.Element => (
                     <>
                         <Menu.Button
@@ -65,11 +66,11 @@ export function SidebarProfile(): JSX.Element {
                                 open && 'bg-light-primary/10 dark:bg-dark-primary/10'
                             )}
                         >
-                            <div className='flex gap-3 truncate'>
+                            <div className='flex gap-3 truncate items-center'>
                                 <UserAvatar src={currentUser?.avatar as string} alt={'username'}
                                             size={40}/>
-                                <div className='hidden truncate text-start leading-5 xl:block'>
-                                    <UserName name={currentUser?.fullName!} username={currentUser?.fullName!} className='truncate' verified={!currentUser?.verified} />
+                                <div className='hidden truncate text-start leading-5 xl:block' suppressHydrationWarning>
+                                    <UserName name={fullName} username={fullName} className='truncate' verified={!currentUser?.verified} />
                                 </div>
                             </div>
                             <HeroIcon
@@ -93,12 +94,10 @@ export function SidebarProfile(): JSX.Element {
                                     >
                                         <div className='flex items-center gap-3 truncate'>
                                             <UserAvatar src={currentUser?.avatar as string}
-                                                        alt={currentUser?.fullName ? currentUser?.fullName : ""}/>
+                                                        alt={fullName}/>
                                             <div className='truncate'>
-                                                {/*<UserName name={'name'} verified={verified} />*/}
-                                                <UserName name={currentUser?.fullName ? currentUser?.fullName : ""}
-                                                          verified={!!currentUser?.verified}/>
-                                                {/*<UserUsername username={currentUser?.fullName ? currentUser?.fullName : ""} disableLink/>*/}
+                                                <UserName username={fullName} className={'truncate text-black'}
+                                                          verified={currentUser?.verified as boolean} name={fullName}/>
                                             </div>
                                         </div>
                                         <i>

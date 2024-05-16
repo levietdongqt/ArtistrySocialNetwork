@@ -90,7 +90,6 @@ export async function uploadImages(
 
     const imagesPreview = await Promise.all(
         files.map(async (file) => {
-          console.log("uploading",file);
             let src: string;
             const { id, name: alt } = file;
 

@@ -20,7 +20,7 @@ public interface IConversationRepository extends MongoRepository<Conversation, S
     @Query("{ $text: { $search: ?1 } }")
     List<Conversation> findByMemberName(String userId, String searchName);
 
-    @Query("{ 'members': { $elemMatch: { 'id': ?0, 'notSeen': true,'isExited': {$ne :  true} } } }")
+    @Query("{ 'members': { $elemMatch: { 'id': ?0, 'notSeen': true,'isExited': {$ne :  true} } },'type': {$ne :  'HIDE'} }")
     List<Conversation> findUnReads(String userId);
 
     @Query("{'$and': [" +

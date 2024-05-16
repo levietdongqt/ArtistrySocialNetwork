@@ -47,7 +47,9 @@ export const config = {
     matcher: [
         '/home',
         '/',
+        '/provider',
         '/message',
+        '/profile/:path*',
         // '/login',
         '/profile/edit',
         // '/profile/create/main-services',
