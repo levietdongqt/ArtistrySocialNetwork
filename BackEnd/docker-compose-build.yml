@@ -1,0 +1,49 @@
+version: '3'
+networks:
+  my_network:
+    driver: bridge
+services:
+  # Config for Server-Config
+  server-config:
+    build: ./server-config/
+    restart: unless-stopped
+    container_name: server-config
+    networks:
+      - my_network
+    ports:
+      - "8088:8088"
+
+
+  # Config for Main-Service
+  main-service:
+    build: ./main-service/
+    restart: unless-stopped
+    container_name: main-service
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+    environment:
+      - ELASTICSEARCH_URL=elasticsearch:9200
+      - SPRING_DATA_ELASTICSEARCH_CLUSTERNODES=elasticsearch:9200
+    entrypoint: ./wait-for-it.sh server-registry:8761 --strict -- java -jar main-service.jar
+    networks:
+      - my_network
+    ports:
+      - "8081:8081"
+    depends_on:
+      - server-config
+
+  # Config for Realtime-Service
+  realtime-service:
+    build: ./realtime-service/
+    container_name: realtime-service
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+    entrypoint: ./wait-for-it.sh server-registry:8761 --strict -- java -jar realtime-service.jar
+    networks:
+      - my_network
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    depends_on:
+      - server-config
+
