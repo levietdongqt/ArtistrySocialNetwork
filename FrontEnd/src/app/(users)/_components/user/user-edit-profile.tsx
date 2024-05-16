@@ -29,6 +29,7 @@ import {setCookie} from "cookies-next";
 import {refresh_token_options} from "@lib/config/TokenConfig";
 import {useOAuth2} from "../../../../context/oauth2-context";
 import {differenceInMonths} from "date-fns";
+import {deleteCookieTokenSSR} from "@lib/helper/serverCookieHandle";
 
 interface FormValues {
   coverImage: string | null;
@@ -50,12 +51,23 @@ export function UserEditProfile(): JSX.Element {
   const {files} = useUpload();
   const [newUpdateData, setNewUpdateData] = useState({})
   const {prefetch,push,back} = useRouter()
+  const router = useRouter()
   const [openVerifyAccount, setOpenVerifyAccount] = useState(false);
   const [openVerifyCode, setOpenVerifyCode] = useState(false);
   const [errorExistAccount, setErrorExistAccount] = useState(false)
   const [showValidPhone, setShowValidPhone] = useState(false)
   const [finalPhone, setFinalPhone] = useState("")
   const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [isAddRoles, setIsAddRoles] = useState(false)
+  const {signOut} = useOAuth2()
+  /*const { name, username, verified, photoURL } = user as User;*/
+  const handleSignOut = async () => {
+    // router.prefetch("/login")
+    console.log("SIGN OUT")
+    await deleteCookieTokenSSR();
+    await signOut();
+    push("/login");
+  }
   const [editUserData, setEditUserData] = useState<EditableUserData>({
     id: currentUser!.id,
     bio:response?.data.bio,
@@ -161,15 +173,23 @@ export function UserEditProfile(): JSX.Element {
             setIsShowCaptcha(false)
           },
         })
-      } else {
-        await toast.promise(
-            updateProfile(editData), // Hàm async để thực thi
-            {
-              pending: 'Đang cập nhật thông tin...', // Thông báo khi đang xử lý
-              success: 'Cập nhật thông tin thành công', // Thông báo khi thành công
-              error: 'Cập nhật thông tin thất bại!' // Thông báo khi có lỗi
-            }
-        );
+      }else {
+        if (!isAddRoles) {
+          toast.promise(
+              updateProfile(editData),
+              {
+                pending: 'Đang cập nhật thông tin...',
+                success: 'Cập nhật thông tin thành công',
+                error: 'Cập nhật thông tin thất bại!'
+              }
+          ).then(() => {
+            back();
+          });
+        }else {
+          updateProfile(editData)
+          toast.success('Vui lòng đăng nhập lại để cập nhật thông tin nhà cung cấp');
+          handleSignOut()
+        }
 
       }
 
@@ -182,7 +202,7 @@ export function UserEditProfile(): JSX.Element {
       console.log('updatedUser', updatedUser);
       setCurrentUser(updatedUser);
       setCookie('user', JSON.stringify(updatedUser), refresh_token_options);
-      back();
+      // back();
     } catch (error) {
       console.error("Failed to Provider Register", error);
     }
@@ -241,6 +261,7 @@ export function UserEditProfile(): JSX.Element {
     if (hasAdditionalRoles && !updatedRoles.includes(UserRole.ROLE_PROVIDER)) {
       updatedRoles.push(UserRole.ROLE_PROVIDER, UserRole.ROLE_USER);
       const uniqueRoles = Array.from(new Set(updatedRoles));
+      setIsAddRoles(true)
       setValues(prevValues => ({
         ...prevValues,
         roles: uniqueRoles,

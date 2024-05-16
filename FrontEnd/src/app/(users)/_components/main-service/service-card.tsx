@@ -90,9 +90,13 @@ export function ServiceCard({data}: ProServiceCard): JSX.Element {
                     </div>
                 </div>
             </Modal>
+
+
             <Modal open={openModalCreateReview} closeModal={() => setOpenModalCreateReview(false)}>
                 <CreateReview closeModal={() => setOpenModalCreateReview(false)} service={data}/>
             </Modal>
+
+
             {
                 openBookingModal &&
                 <Modal
