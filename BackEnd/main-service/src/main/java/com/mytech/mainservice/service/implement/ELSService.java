@@ -136,7 +136,7 @@ public class ELSService implements IELSService {
 
     public List<Object> suggestsKeyword(String searchText) {
         RestClient restClient = RestClient.builder(
-                new HttpHost("34.87.190.66", 9200)).build();
+                new HttpHost("34.126.138.202", 9200)).build();
 
         ElasticsearchTransport transport = new RestClientTransport(
                 restClient, new JacksonJsonpMapper());

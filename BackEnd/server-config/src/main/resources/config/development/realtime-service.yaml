@@ -14,7 +14,7 @@ spring:
   data:
     mongodb:
 #      uri: mongodb+srv://root:AQLCAUH0uODgUg71@cluster0.rjasq9p.mongodb.net/realtimeDB
-      uri: mongodb://root:RHUowB1w__*e3MBZGAf0@34.87.190.66:27017/snap_connectDb?authSource=admin
+      uri: mongodb://root:RHUowB1w__*e3MBZGAf0@34.126.138.202:27017/snap_connectDb?authSource=admin
 eureka:
   client:
     service-url:
