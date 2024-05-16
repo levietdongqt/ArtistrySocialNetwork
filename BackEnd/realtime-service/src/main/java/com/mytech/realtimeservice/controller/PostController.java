@@ -44,7 +44,7 @@ public class PostController {
     @Autowired
     private IWSSocket socket;
 
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId)")
     @GetMapping("/get-posts/{userId}")
     public ResponseEntity<?> getPostList(@PathVariable String userId,@RequestParam("limit") int limit,@RequestParam("pageIndex") int pageIndex) {
             log.info("Post List ");
@@ -70,7 +70,7 @@ public class PostController {
         );
     }
 
-    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId) && hasRole('USER')")
+    @PreAuthorize("@jwtTokenHolder.isValidUserId(#userId)")
     @GetMapping("/get-posts-pag/{userId}")
     public ResponseEntity<?> getPostListNotPag(@PathVariable String userId) {
         log.info("Post List ");

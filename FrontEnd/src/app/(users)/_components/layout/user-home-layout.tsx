@@ -224,7 +224,6 @@ export function UserHomeLayout({children}: LayoutProps): JSX.Element {
                     {
                         isProvider && <UserNav/>
                     }
-                    <InputMobile />
                     {children}
                 </>
             )}

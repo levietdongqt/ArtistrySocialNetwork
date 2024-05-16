@@ -20,6 +20,7 @@ function ContainerHome() {
     useEffect(() => {
         setMutateFunction(() => mutate);
     }, [mutate, setMutateFunction]);
+    console.log("show data",Data);
     return (
         <section className='mt-0.5 xs:mt-0'>
             {Data?.length === 0 || Data === undefined ? (
