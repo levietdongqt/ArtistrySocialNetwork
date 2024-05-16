@@ -43,6 +43,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         log.info("Registering endpoint");
         registry.addEndpoint("/socket.io")
                 .setAllowedOrigins(clientUrl)
+                .setAllowedOrigins("http://34.126.138.202")
+                .setAllowedOrigins("http://host.docker.internal")
                 .setHandshakeHandler(userHandshakeHandler);
     }
 

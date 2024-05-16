@@ -98,10 +98,22 @@ public class UserService implements IUserService {
                 .avatar(DEFAULT_AVATAR)
                 .coverImage(DEFAULT_BACKGROUND)
                 .theme(Theme.LIGHT)
+                .updateAt(LocalDateTime.now().minusMonths(-7))
                 .accent(AccentType.BLUE)
                 .build();
         User savedUser = userRepo.save(user);
         log.info("User added to this system");
+        var vietnameseRoles = getVietnameseRolesFromRolesTable(savedUser.getRoles());
+        UserELS userELS = UserELS.builder()
+                .id(savedUser.getId())
+                .fullName(savedUser.getFullName())
+                .avatar(savedUser.getAvatar())
+                .coverImage(savedUser.getCoverImage())
+                .email(savedUser.getEmail())
+                .bio(savedUser.getBio())
+                .roles(vietnameseRoles).build();
+        elsService.saveUserELS(userELS);
+        log.info("Save to els search successfully");
         return savedUser;
     }
 
@@ -128,6 +140,7 @@ public class UserService implements IUserService {
                 .roles(roles)
                 .status(UserStatus.ACTIVED)
                 .theme(Theme.LIGHT)
+                .updateAt(LocalDateTime.now().minusMonths(-7))
                 .accent(AccentType.BLUE)
                 .build();
         User savedUser = userRepo.save(user);
